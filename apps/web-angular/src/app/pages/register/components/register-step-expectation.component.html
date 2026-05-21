@@ -1,0 +1,116 @@
+<section>
+  <h2>Expectation</h2>
+  <div class="field-grid">
+    <div class="form-field">
+      <label for="preferredCities">Prefered Cities</label>
+      <input type="text" id="preferredCities" name="preferredCities" [(ngModel)]="vm.preferredCities" required maxlength="120" />
+    </div>
+
+    <div class="form-field">
+      <label for="expectedManglik">Mangal</label>
+      <select id="expectedManglik" name="expectedManglik" [(ngModel)]="vm.expectedManglik">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="expectedCaste">Expected Caste</label>
+      <select id="expectedCaste" name="expectedCaste" [(ngModel)]="vm.expectedCaste">
+        <option value="Maratha">Maratha</option>
+        <option value="Kunbi Maratha">Kunbi Maratha</option>
+        <option value="Deshmukh Maratha">Deshmukh Maratha</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="maxAgeDifference">Max Age Difference</label>
+      <select id="maxAgeDifference" name="maxAgeDifference" [(ngModel)]="vm.maxAgeDifference">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="expectedHeightFt">Expected Height</label>
+      <div class="height-group">
+        <select id="expectedHeightFt" name="expectedHeightFt" [(ngModel)]="vm.expectedHeightFt">
+          @for (ft of ['4','5','6','7']; track ft) { <option [value]="ft">{{ ft }}</option> }
+        </select>
+        <select name="expectedHeightIn" [(ngModel)]="vm.expectedHeightIn">
+          @for (inch of ['0','1','2','3','4','5','6','7','8','9','10','11']; track inch) { <option [value]="inch">{{ inch }}</option> }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="expectedEducation">Expected Education</label>
+      <textarea id="expectedEducation" name="expectedEducation" [(ngModel)]="vm.expectedEducation" rows="3" required maxlength="250"></textarea>
+    </div>
+
+    <div class="form-field">
+      <label for="expectedOccupationIncome">Expected Occupation & Income per Annum</label>
+      <textarea id="expectedOccupationIncome" name="expectedOccupationIncome" [(ngModel)]="vm.expectedOccupationIncome" rows="3" required maxlength="250"></textarea>
+    </div>
+
+    <div class="form-field">
+      <label for="divorceeYes">Divorcee</label>
+      <div class="radio-group">
+        <label>
+          <input type="radio" id="divorceeYes" name="divorcee" value="Yes" [(ngModel)]="vm.divorcee" />
+          Yes
+        </label>
+        <label>
+          <input type="radio" name="divorcee" value="No" [(ngModel)]="vm.divorcee" />
+          No
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="verification-section">
+    <div class="verification-code">{{ vm.verificationCode }}</div>
+    <p>Please Enter Above Verification Code</p>
+    <div class="form-field">
+      <input type="text" id="verificationInput" name="verificationInput" [(ngModel)]="vm.verificationInput" placeholder="Enter verification code" required maxlength="5" />
+    </div>
+    <p class="verification-hint">* Please enter verification code then click submit.</p>
+  </div>
+
+  <div class="profile-photos-section">
+    <h3>Account Credentials</h3>
+    <div class="field-grid">
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" [(ngModel)]="vm.password" minlength="8" required />
+      </div>
+      <div class="form-field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" [(ngModel)]="vm.confirmPassword" minlength="8" required />
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-photos-section">
+    <h3>Profile Photos</h3>
+    <p class="photo-hint">* Kindly bring cropping lines on photo at proper position and then click on submit.</p>
+
+    <div class="photo-upload">
+      <p>1) Upload your first profile picture (Close-up preferred)</p>
+      <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="vm.onPhotoSelected($event)" />
+      @if (vm.uploadedPhotoName) { <span>{{ vm.uploadedPhotoName }}</span> }
+    </div>
+
+    <div class="photo-upload">
+      <p>2) Upload your second profile picture, If interested</p>
+      <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="vm.onPhoto2Selected($event)" />
+      @if (vm.uploadedPhoto2Name) { <span>{{ vm.uploadedPhoto2Name }}</span> }
+    </div>
+
+    <p class="photo-note">You can also submit your photos after getting registration number through photo edit option.</p>
+  </div>
+</section>

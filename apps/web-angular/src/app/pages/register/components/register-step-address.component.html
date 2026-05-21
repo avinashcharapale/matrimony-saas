@@ -1,0 +1,39 @@
+<section>
+  <h2>Address</h2>
+  <div class="field-grid">
+    <div class="form-field">
+      <label for="idProofNumber">PAN / Aadhar / Driving License / Passport No.</label>
+      <input type="text" id="idProofNumber" name="idProofNumber" [(ngModel)]="vm.idProofNumber" />
+    </div>
+
+    <div class="form-field">
+      <label for="residenceAddress">Residence Address With City</label>
+      <textarea id="residenceAddress" name="residenceAddress" [(ngModel)]="vm.residenceAddress" rows="3" required minlength="10" maxlength="250"></textarea>
+    </div>
+
+    <div class="form-field">
+      <label for="contactEmail"><span class="required">*</span>Email id (It's important)</label>
+      <input type="email" id="contactEmail" name="contactEmail" [(ngModel)]="vm.contactEmail" required maxlength="120" />
+    </div>
+
+    <div class="form-field">
+      <label for="smsMobile"><span class="required">*</span>Mobile For SMS Alert (It's important)</label>
+      <input type="text" id="smsMobile" name="smsMobile" [(ngModel)]="vm.smsMobile" required pattern="[0-9]{10}" maxlength="10" />
+    </div>
+
+    <div class="form-field">
+      <label for="mobile2">Mobile II</label>
+      <input type="text" id="mobile2" name="mobile2" [(ngModel)]="vm.mobile2" pattern="[0-9]{10}" maxlength="10" />
+    </div>
+
+    <div class="form-field">
+      <label for="phone1">Phone I</label>
+      <input type="text" id="phone1" name="phone1" [(ngModel)]="vm.phone1" pattern="[0-9]{10}" maxlength="10" />
+    </div>
+
+    <div class="form-field">
+      <label for="phone2">Phone II</label>
+      <input type="text" id="phone2" name="phone2" [(ngModel)]="vm.phone2" pattern="[0-9]{10}" maxlength="10" />
+    </div>
+  </div>
+</section>

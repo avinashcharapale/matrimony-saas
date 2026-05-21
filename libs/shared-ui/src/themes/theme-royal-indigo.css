@@ -1,0 +1,8 @@
+:root[data-theme='royal-indigo'] {
+  --tenant-primary: #4d56d6;
+  --tenant-accent: #66a7ff;
+  --tenant-bg-start: #eef1ff;
+  --tenant-bg-mid: #e8ecff;
+  --tenant-bg-end: #f1f4ff;
+  --tenant-text: #1f2544;
+}

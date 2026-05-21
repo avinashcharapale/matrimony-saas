@@ -1,0 +1,8 @@
+:root[data-theme='emerald-sand'] {
+  --tenant-primary: #17776d;
+  --tenant-accent: #46bda8;
+  --tenant-bg-start: #edf8f4;
+  --tenant-bg-mid: #eef6f3;
+  --tenant-bg-end: #f6fbf9;
+  --tenant-text: #1e2f30;
+}

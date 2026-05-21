@@ -1,0 +1,325 @@
+<ion-page>
+  <ion-content>
+    <div class="shell">
+      <h2>Create Profile</h2>
+      <p class="intro">Fill the same profile sections stored in the database so your mobile registration matches the web experience.</p>
+
+      <section class="section-card">
+        <h3>Personal Details</h3>
+        <ion-item>
+          <ion-label position="stacked">First Name</ion-label>
+          <ion-input [(ngModel)]="details.personal.firstName" name="firstName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Middle Name</ion-label>
+          <ion-input [(ngModel)]="details.personal.middleName" name="middleName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Last Name</ion-label>
+          <ion-input [(ngModel)]="details.personal.lastName" name="lastName"></ion-input>
+        </ion-item>
+        <div class="triple-grid">
+          <ion-item>
+            <ion-label position="stacked">DOB Day</ion-label>
+            <ion-input [(ngModel)]="details.personal.dobDay" name="dobDay" inputmode="numeric"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">DOB Month</ion-label>
+            <ion-input [(ngModel)]="details.personal.dobMonth" name="dobMonth"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">DOB Year</ion-label>
+            <ion-input [(ngModel)]="details.personal.dobYear" name="dobYear" inputmode="numeric"></ion-input>
+          </ion-item>
+        </div>
+        <ion-item>
+          <ion-label position="stacked">Gender</ion-label>
+          <ion-select [(ngModel)]="details.personal.gender" name="gender">
+            <ion-select-option value="Male">Male</ion-select-option>
+            <ion-select-option value="Female">Female</ion-select-option>
+            <ion-select-option value="Other">Other</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Religion</ion-label>
+          <ion-input [(ngModel)]="details.personal.religion" name="religion"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Caste</ion-label>
+          <ion-input [(ngModel)]="details.personal.caste" name="caste"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Sub Caste</ion-label>
+          <ion-input [(ngModel)]="details.personal.subCast" name="subCast"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Marital Status</ion-label>
+          <ion-select [(ngModel)]="details.personal.maritalStatus" name="maritalStatus">
+            <ion-select-option value="Unmarried">Unmarried</ion-select-option>
+            <ion-select-option value="Divorced">Divorced</ion-select-option>
+            <ion-select-option value="Widowed">Widowed</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">Height Ft</ion-label>
+            <ion-input [(ngModel)]="details.personal.heightFt" name="heightFt" inputmode="numeric"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Height In</ion-label>
+            <ion-input [(ngModel)]="details.personal.heightIn" name="heightIn" inputmode="numeric"></ion-input>
+          </ion-item>
+        </div>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">Weight Kg</ion-label>
+            <ion-input [(ngModel)]="details.personal.weightKg" name="weightKg" inputmode="numeric"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Blood Group</ion-label>
+            <ion-input [(ngModel)]="details.personal.bloodGroup" name="bloodGroup"></ion-input>
+          </ion-item>
+        </div>
+        <ion-item>
+          <ion-label position="stacked">Complexion</ion-label>
+          <ion-input [(ngModel)]="details.personal.complexion" name="complexion"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Diet</ion-label>
+          <ion-input [(ngModel)]="details.personal.diet" name="diet"></ion-input>
+        </ion-item>
+      </section>
+
+      <section class="section-card">
+        <h3>Horoscope</h3>
+        <ion-item>
+          <ion-label position="stacked">Manglik</ion-label>
+          <ion-select [(ngModel)]="details.horoscope.manglik" name="manglik">
+            <ion-select-option value="No">No</ion-select-option>
+            <ion-select-option value="Yes">Yes</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Rashi</ion-label>
+          <ion-input [(ngModel)]="details.horoscope.rashi" name="rashi"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Nakshatra</ion-label>
+          <ion-input [(ngModel)]="details.horoscope.nakshatra" name="nakshatra"></ion-input>
+        </ion-item>
+        <div class="triple-grid">
+          <ion-item>
+            <ion-label position="stacked">Hour</ion-label>
+            <ion-input [(ngModel)]="details.horoscope.birthHour" name="birthHour" inputmode="numeric"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Minute</ion-label>
+            <ion-input [(ngModel)]="details.horoscope.birthMinute" name="birthMinute" inputmode="numeric"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">AM/PM</ion-label>
+            <ion-input [(ngModel)]="details.horoscope.birthPeriod" name="birthPeriod"></ion-input>
+          </ion-item>
+        </div>
+        <ion-item>
+          <ion-label position="stacked">Birth District</ion-label>
+          <ion-input [(ngModel)]="details.horoscope.birthDistrict" name="birthDistrict"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Devak</ion-label>
+          <ion-input [(ngModel)]="details.horoscope.devak" name="devak"></ion-input>
+        </ion-item>
+      </section>
+
+      <section class="section-card">
+        <h3>Education & Work</h3>
+        <ion-item>
+          <ion-label position="stacked">Education Area</ion-label>
+          <ion-input [(ngModel)]="details.professional.educationArea" name="educationArea"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Education</ion-label>
+          <ion-input [(ngModel)]="details.professional.education" name="education"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Occupation Type</ion-label>
+          <ion-input [(ngModel)]="details.professional.occupationType" name="occupationType"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Occupation Details</ion-label>
+          <ion-textarea [(ngModel)]="details.professional.occupationDetails" name="occupationDetails" autoGrow="true"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Working City/Country</ion-label>
+          <ion-input [(ngModel)]="details.professional.workingCityCountry" name="workingCityCountry"></ion-input>
+        </ion-item>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">Income Amount</ion-label>
+            <ion-input [(ngModel)]="details.professional.incomeAmount" name="incomeAmount" inputmode="decimal"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Income Period</ion-label>
+            <ion-input [(ngModel)]="details.professional.incomePeriod" name="incomePeriod"></ion-input>
+          </ion-item>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <h3>Contact</h3>
+        <ion-item>
+          <ion-label position="stacked">Residence Address</ion-label>
+          <ion-textarea [(ngModel)]="details.contact.residenceAddress" name="residenceAddress" autoGrow="true"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">ID Proof Number</ion-label>
+          <ion-input [(ngModel)]="details.contact.idProofNumber" name="idProofNumber"></ion-input>
+        </ion-item>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">SMS Mobile</ion-label>
+            <ion-input [(ngModel)]="details.contact.smsMobile" name="smsMobile" inputmode="tel"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Secondary Mobile</ion-label>
+            <ion-input [(ngModel)]="details.contact.mobileSecondary" name="mobileSecondary" inputmode="tel"></ion-input>
+          </ion-item>
+        </div>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">Primary Phone</ion-label>
+            <ion-input [(ngModel)]="details.contact.phonePrimary" name="phonePrimary" inputmode="tel"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Secondary Phone</ion-label>
+            <ion-input [(ngModel)]="details.contact.phoneSecondary" name="phoneSecondary" inputmode="tel"></ion-input>
+          </ion-item>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <h3>Family</h3>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">Father Status</ion-label>
+            <ion-input [(ngModel)]="details.family.fatherStatus" name="fatherStatus"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Mother Status</ion-label>
+            <ion-input [(ngModel)]="details.family.motherStatus" name="motherStatus"></ion-input>
+          </ion-item>
+        </div>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">Brothers</ion-label>
+            <ion-input [(ngModel)]="details.family.brothers" name="brothers" inputmode="numeric"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Sisters</ion-label>
+            <ion-input [(ngModel)]="details.family.sisters" name="sisters" inputmode="numeric"></ion-input>
+          </ion-item>
+        </div>
+        <ion-item>
+          <ion-label position="stacked">Parents Full Name</ion-label>
+          <ion-input [(ngModel)]="details.family.parentsFullName" name="parentsFullName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Parents Occupation</ion-label>
+          <ion-input [(ngModel)]="details.family.parentsOccupation" name="parentsOccupation"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Parents Resident City</ion-label>
+          <ion-input [(ngModel)]="details.family.parentsResidentCity" name="parentsResidentCity"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Relatives Surnames</ion-label>
+          <ion-textarea [(ngModel)]="details.family.relativesSurnames" name="relativesSurnames" autoGrow="true"></ion-textarea>
+        </ion-item>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">Native District</ion-label>
+            <ion-input [(ngModel)]="details.family.nativeDistrict" name="nativeDistrict"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Native Taluka</ion-label>
+            <ion-input [(ngModel)]="details.family.nativeTaluka" name="nativeTaluka"></ion-input>
+          </ion-item>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <h3>Expectations</h3>
+        <ion-item>
+          <ion-label position="stacked">Preferred Cities</ion-label>
+          <ion-textarea [(ngModel)]="details.expectations.preferredCities" name="preferredCities" autoGrow="true"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Expected Caste</ion-label>
+          <ion-input [(ngModel)]="details.expectations.expectedCaste" name="expectedCaste"></ion-input>
+        </ion-item>
+        <div class="double-grid">
+          <ion-item>
+            <ion-label position="stacked">Expected Height Ft</ion-label>
+            <ion-input [(ngModel)]="details.expectations.expectedHeightFt" name="expectedHeightFt" inputmode="numeric"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Expected Height In</ion-label>
+            <ion-input [(ngModel)]="details.expectations.expectedHeightIn" name="expectedHeightIn" inputmode="numeric"></ion-input>
+          </ion-item>
+        </div>
+        <ion-item>
+          <ion-label position="stacked">Expected Education</ion-label>
+          <ion-textarea [(ngModel)]="details.expectations.expectedEducation" name="expectedEducation" autoGrow="true"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Expected Occupation & Income</ion-label>
+          <ion-textarea [(ngModel)]="details.expectations.expectedOccupationIncome" name="expectedOccupationIncome" autoGrow="true"></ion-textarea>
+        </ion-item>
+      </section>
+
+      <section class="section-card">
+        <h3>Verification & Account</h3>
+        <p class="verification-code">Code: {{ details.verification.verificationCode }}</p>
+        <ion-item>
+          <ion-label position="stacked">Verification Input</ion-label>
+          <ion-input [(ngModel)]="details.verification.verificationInput" name="verificationInput"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input type="email" [(ngModel)]="email" name="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Password</ion-label>
+          <ion-input type="password" [(ngModel)]="password" name="password"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Confirm Password</ion-label>
+          <ion-input type="password" [(ngModel)]="confirmPassword" name="confirmPassword"></ion-input>
+        </ion-item>
+      </section>
+
+      <section class="section-card">
+        <h3>Photos</h3>
+        <label class="upload-field">
+          <span>Primary Photo</span>
+          <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPrimaryPhotoSelected($event)" />
+          @if (primaryPhotoName) {
+          <small>{{ primaryPhotoName }}</small>
+          }
+        </label>
+        <label class="upload-field">
+          <span>Secondary Photo</span>
+          <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onSecondaryPhotoSelected($event)" />
+          @if (secondaryPhotoName) {
+          <small>{{ secondaryPhotoName }}</small>
+          }
+        </label>
+      </section>
+
+      <ion-button expand="block" (click)="submit()">Register</ion-button>
+      @if (message) {
+      <p class="msg" [class.error]="isError">{{ message }}</p>
+      }
+    </div>
+  </ion-content>
+</ion-page>

@@ -1,53 +1,28 @@
-{
+﻿{
   "graph": {
     "nodes": {
-      "feature-product-detail": {
-        "name": "feature-product-detail",
+      "matrimony-models": {
+        "name": "matrimony-models",
         "type": "lib",
         "data": {
-          "root": "libs/shop/feature-product-detail",
+          "root": "libs/matrimony-models",
           "targets": {
             "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
               "cache": true,
-              "options": {
-                "cwd": "libs/shop/feature-product-detail",
-                "command": "eslint ."
-              },
               "inputs": [
                 "default",
-                "^default",
-                "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/tools/eslint-rules/**/*",
-                {
-                  "externalDependencies": [
-                    "eslint"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{options.outputFile}"
-              ],
-              "metadata": {
-                "technologies": [
-                  "eslint"
-                ],
-                "description": "Runs ESLint on project",
-                "help": {
-                  "command": "npx eslint --help",
-                  "example": {
-                    "options": {
-                      "max-warnings": 0
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
             },
             "test": {
               "options": {
-                "cwd": "libs/shop/feature-product-detail",
+                "cwd": "libs/matrimony-models",
                 "command": "vitest"
               },
               "cache": true,
@@ -64,7 +39,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shop\\feature-product-detail"
+                "{workspaceRoot}\\coverage\\libs\\matrimony-models"
               ],
               "metadata": {
                 "technologies": [
@@ -97,7 +72,7 @@
                 }
               ],
               "options": {
-                "cwd": "libs/shop/feature-product-detail",
+                "cwd": "libs/matrimony-models",
                 "command": "tsc --noEmit -p tsconfig.lib.json"
               },
               "metadata": {
@@ -134,14 +109,14 @@
               ],
               "executor": "nx:run-commands",
               "options": {
-                "command": "npx nx watch --projects feature-product-detail --includeDependentProjects -- npx nx build-deps feature-product-detail"
+                "command": "npx nx watch --projects matrimony-models --includeDependentProjects -- npx nx build-deps matrimony-models"
               },
               "configurations": {},
               "parallelism": true
             },
             "vite:test": {
               "options": {
-                "cwd": "libs/shop/feature-product-detail",
+                "cwd": "libs/matrimony-models",
                 "command": "vitest"
               },
               "cache": true,
@@ -158,7 +133,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shop\\feature-product-detail"
+                "{workspaceRoot}\\coverage\\libs\\matrimony-models"
               ],
               "metadata": {
                 "technologies": [
@@ -182,33 +157,213 @@
           },
           "metadata": {},
           "projectType": "library",
-          "name": "feature-product-detail",
-          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "libs/shop/feature-product-detail/src",
-          "prefix": "shop",
-          "tags": [
-            "scope:shop",
-            "type:feature"
-          ],
+          "name": "matrimony-models",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/matrimony-models/src",
+          "prefix": "lib",
+          "tags": [],
           "implicitDependencies": []
         }
       },
-      "feature-products": {
-        "name": "feature-products",
-        "type": "lib",
+      "mobile-ionic-e2e": {
+        "name": "mobile-ionic-e2e",
+        "type": "e2e",
         "data": {
-          "root": "libs/shop/feature-products",
+          "root": "apps/mobile-ionic-e2e",
+          "metadata": {
+            "targetGroups": {
+              "E2E (CI)": [
+                "e2e-ci--src/example.spec.ts",
+                "e2e-ci",
+                "e2e-ci--merge-reports"
+              ]
+            }
+          },
           "targets": {
+            "e2e": {
+              "options": {
+                "cwd": "apps/mobile-ionic-e2e",
+                "command": "playwright test"
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests",
+                "help": {
+                  "command": "npx playwright test --help",
+                  "example": {
+                    "options": {
+                      "workers": 1
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                {
+                  "projects": [
+                    "mobile-ionic"
+                  ],
+                  "target": "serve"
+                }
+              ],
+              "cache": true,
+              "inputs": [
+                "default",
+                "^{projectRoot}/tsconfig*.json",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "@playwright/test"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/test-output",
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/playwright-report",
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/blob-report"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "e2e-ci--src/example.spec.ts": {
+              "options": {
+                "cwd": "apps/mobile-ionic-e2e",
+                "env": {
+                  "PLAYWRIGHT_HTML_OUTPUT_DIR": "..\\..\\dist\\.playwright\\apps\\mobile-ionic-e2e\\playwright-report\\src-example-spec-ts",
+                  "PLAYWRIGHT_HTML_REPORT": "..\\..\\dist\\.playwright\\apps\\mobile-ionic-e2e\\playwright-report\\src-example-spec-ts",
+                  "PLAYWRIGHT_BLOB_OUTPUT_FILE": "..\\..\\dist\\.playwright\\apps\\mobile-ionic-e2e\\blob-report\\src-example-spec-ts.zip"
+                },
+                "command": "playwright test src/example.spec.ts --output=..\\..\\dist\\.playwright\\apps\\mobile-ionic-e2e\\test-output\\src-example-spec-ts"
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests in src/example.spec.ts in CI",
+                "help": {
+                  "command": "npx playwright test --help",
+                  "example": {
+                    "options": {
+                      "workers": 1
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                {
+                  "projects": [
+                    "mobile-ionic"
+                  ],
+                  "target": "serve"
+                }
+              ],
+              "cache": true,
+              "inputs": [
+                "default",
+                "^{projectRoot}/tsconfig*.json",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "@playwright/test"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/test-output/src-example-spec-ts",
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/playwright-report/src-example-spec-ts",
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/blob-report/src-example-spec-ts.zip"
+              ],
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "e2e-ci": {
+              "executor": "nx:noop",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^{projectRoot}/tsconfig*.json",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "@playwright/test"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/test-output",
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/playwright-report",
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/blob-report"
+              ],
+              "dependsOn": [
+                {
+                  "target": "e2e-ci--src/example.spec.ts",
+                  "projects": "self",
+                  "params": "forward",
+                  "options": "forward"
+                }
+              ],
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Runs Playwright Tests in CI",
+                "nonAtomizedTarget": "e2e",
+                "help": {
+                  "command": "npx playwright test --help",
+                  "example": {
+                    "options": {
+                      "workers": 1
+                    }
+                  }
+                }
+              },
+              "configurations": {},
+              "options": {},
+              "parallelism": true
+            },
+            "e2e-ci--merge-reports": {
+              "executor": "@nx/playwright:merge-reports",
+              "cache": true,
+              "inputs": [
+                "default",
+                "^{projectRoot}/tsconfig*.json",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "@playwright/test"
+                  ]
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/playwright-report"
+              ],
+              "options": {
+                "config": "playwright.config.ts",
+                "expectedSuites": 1
+              },
+              "metadata": {
+                "technologies": [
+                  "playwright"
+                ],
+                "description": "Merges Playwright blob reports from atomized tasks to produce unified reports for the configured reporters."
+              },
+              "configurations": {},
+              "parallelism": true
+            },
             "lint": {
               "cache": true,
               "options": {
-                "cwd": "libs/shop/feature-products",
+                "cwd": "apps/mobile-ionic-e2e",
                 "command": "eslint ."
               },
               "inputs": [
                 "default",
                 "^default",
                 "{workspaceRoot}/eslint.config.mjs",
+                "{workspaceRoot}/apps/mobile-ionic-e2e/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
                   "externalDependencies": [
@@ -236,10 +391,40 @@
               "executor": "nx:run-commands",
               "configurations": {},
               "parallelism": true
+            }
+          },
+          "name": "mobile-ionic-e2e",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
+          "sourceRoot": "apps/mobile-ionic-e2e/src",
+          "implicitDependencies": [
+            "mobile-ionic"
+          ],
+          "tags": []
+        }
+      },
+      "shared-services": {
+        "name": "shared-services",
+        "type": "lib",
+        "data": {
+          "root": "libs/shared-services",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
             },
             "test": {
               "options": {
-                "cwd": "libs/shop/feature-products",
+                "cwd": "libs/shared-services",
                 "command": "vitest"
               },
               "cache": true,
@@ -256,7 +441,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shop\\feature-products"
+                "{workspaceRoot}\\coverage\\libs\\shared-services"
               ],
               "metadata": {
                 "technologies": [
@@ -289,7 +474,7 @@
                 }
               ],
               "options": {
-                "cwd": "libs/shop/feature-products",
+                "cwd": "libs/shared-services",
                 "command": "tsc --noEmit -p tsconfig.lib.json"
               },
               "metadata": {
@@ -326,14 +511,14 @@
               ],
               "executor": "nx:run-commands",
               "options": {
-                "command": "npx nx watch --projects feature-products --includeDependentProjects -- npx nx build-deps feature-products"
+                "command": "npx nx watch --projects shared-services --includeDependentProjects -- npx nx build-deps shared-services"
               },
               "configurations": {},
               "parallelism": true
             },
             "vite:test": {
               "options": {
-                "cwd": "libs/shop/feature-products",
+                "cwd": "libs/shared-services",
                 "command": "vitest"
               },
               "cache": true,
@@ -350,7 +535,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shop\\feature-products"
+                "{workspaceRoot}\\coverage\\libs\\shared-services"
               ],
               "metadata": {
                 "technologies": [
@@ -374,13 +559,12 @@
           },
           "metadata": {},
           "projectType": "library",
-          "name": "feature-products",
-          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "libs/shop/feature-products/src",
-          "prefix": "shop",
+          "name": "shared-services",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/shared-services/src",
+          "prefix": "lib",
           "tags": [
-            "scope:shop",
-            "type:feature"
+            "scope:shared"
           ],
           "implicitDependencies": []
         }
@@ -623,199 +807,6 @@
           "tags": []
         }
       },
-      "shared-ui": {
-        "name": "shared-ui",
-        "type": "lib",
-        "data": {
-          "root": "libs/shop/shared-ui",
-          "targets": {
-            "lint": {
-              "cache": true,
-              "options": {
-                "cwd": "libs/shop/shared-ui",
-                "command": "eslint ."
-              },
-              "inputs": [
-                "default",
-                "^default",
-                "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/libs/shop/shared-ui/eslint.config.mjs",
-                "{workspaceRoot}/tools/eslint-rules/**/*",
-                {
-                  "externalDependencies": [
-                    "eslint"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{options.outputFile}"
-              ],
-              "metadata": {
-                "technologies": [
-                  "eslint"
-                ],
-                "description": "Runs ESLint on project",
-                "help": {
-                  "command": "npx eslint --help",
-                  "example": {
-                    "options": {
-                      "max-warnings": 0
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "test": {
-              "options": {
-                "cwd": "libs/shop/shared-ui",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shop\\shared-ui"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vite"
-                ],
-                "description": "Run Vite tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "typecheck": {
-              "cache": true,
-              "inputs": [
-                "production",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "typescript"
-                  ]
-                }
-              ],
-              "options": {
-                "cwd": "libs/shop/shared-ui",
-                "command": "tsc --noEmit -p tsconfig.lib.json"
-              },
-              "metadata": {
-                "description": "Runs type-checking for the project.",
-                "technologies": [
-                  "typescript"
-                ],
-                "help": {
-                  "command": "npx tsc -p tsconfig.lib.json --help",
-                  "example": {
-                    "options": {
-                      "noEmit": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "build-deps": {
-              "dependsOn": [
-                "^build"
-              ],
-              "configurations": {},
-              "options": {},
-              "parallelism": true,
-              "executor": "nx:noop"
-            },
-            "watch-deps": {
-              "continuous": true,
-              "dependsOn": [
-                "build-deps"
-              ],
-              "executor": "nx:run-commands",
-              "options": {
-                "command": "npx nx watch --projects shared-ui --includeDependentProjects -- npx nx build-deps shared-ui"
-              },
-              "configurations": {},
-              "parallelism": true
-            },
-            "vite:test": {
-              "options": {
-                "cwd": "libs/shop/shared-ui",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shop\\shared-ui"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vitest"
-                ],
-                "description": "Run Vitest tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            }
-          },
-          "metadata": {},
-          "projectType": "library",
-          "name": "shared-ui",
-          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "libs/shop/shared-ui/src",
-          "prefix": "lib",
-          "tags": [
-            "scope:shop",
-            "type:ui"
-          ],
-          "implicitDependencies": []
-        }
-      },
       "models": {
         "name": "models",
         "type": "lib",
@@ -1002,60 +993,33 @@
           "$schema": "../../../node_modules/nx/schemas/project-schema.json",
           "sourceRoot": "libs/shared/models/src",
           "tags": [
-            "scope:shared",
-            "type:data"
+            "scope:shared"
           ],
           "implicitDependencies": []
         }
       },
-      "products": {
-        "name": "products",
-        "type": "lib",
+      "mobile-ionic": {
+        "name": "mobile-ionic",
+        "type": "app",
         "data": {
-          "root": "libs/api/products",
+          "root": "apps/mobile-ionic",
           "targets": {
             "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
               "cache": true,
-              "options": {
-                "cwd": "libs/api/products",
-                "command": "eslint ."
-              },
               "inputs": [
                 "default",
-                "^default",
-                "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/libs/api/products/eslint.config.mjs",
-                "{workspaceRoot}/tools/eslint-rules/**/*",
-                {
-                  "externalDependencies": [
-                    "eslint"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{options.outputFile}"
-              ],
-              "metadata": {
-                "technologies": [
-                  "eslint"
-                ],
-                "description": "Runs ESLint on project",
-                "help": {
-                  "command": "npx eslint --help",
-                  "example": {
-                    "options": {
-                      "max-warnings": 0
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
             },
             "test": {
               "options": {
-                "cwd": "libs/api/products",
+                "cwd": "apps/mobile-ionic",
                 "command": "vitest"
               },
               "cache": true,
@@ -1072,7 +1036,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\api\\products"
+                "{workspaceRoot}\\coverage\\apps\\mobile-ionic"
               ],
               "metadata": {
                 "technologies": [
@@ -1105,8 +1069,8 @@
                 }
               ],
               "options": {
-                "cwd": "libs/api/products",
-                "command": "tsc --noEmit -p tsconfig.lib.json"
+                "cwd": "apps/mobile-ionic",
+                "command": "tsc --noEmit -p tsconfig.app.json"
               },
               "metadata": {
                 "description": "Runs type-checking for the project.",
@@ -1114,7 +1078,7 @@
                   "typescript"
                 ],
                 "help": {
-                  "command": "npx tsc -p tsconfig.lib.json --help",
+                  "command": "npx tsc -p tsconfig.app.json --help",
                   "example": {
                     "options": {
                       "noEmit": true
@@ -1142,14 +1106,14 @@
               ],
               "executor": "nx:run-commands",
               "options": {
-                "command": "npx nx watch --projects products --includeDependentProjects -- npx nx build-deps products"
+                "command": "npx nx watch --projects mobile-ionic --includeDependentProjects -- npx nx build-deps mobile-ionic"
               },
               "configurations": {},
               "parallelism": true
             },
             "vite:test": {
               "options": {
-                "cwd": "libs/api/products",
+                "cwd": "apps/mobile-ionic",
                 "command": "vitest"
               },
               "cache": true,
@@ -1166,7 +1130,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\api\\products"
+                "{workspaceRoot}\\coverage\\apps\\mobile-ionic"
               ],
               "metadata": {
                 "technologies": [
@@ -1186,25 +1150,94 @@
               "executor": "nx:run-commands",
               "configurations": {},
               "parallelism": true
+            },
+            "build": {
+              "executor": "@angular/build:application",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "options": {
+                "outputPath": "dist/apps/mobile-ionic",
+                "browser": "apps/mobile-ionic/src/main.ts",
+                "tsConfig": "apps/mobile-ionic/tsconfig.app.json",
+                "assets": [
+                  {
+                    "glob": "**/*",
+                    "input": "apps/mobile-ionic/public"
+                  }
+                ],
+                "styles": [
+                  "apps/mobile-ionic/src/styles.css"
+                ]
+              },
+              "configurations": {
+                "production": {
+                  "budgets": [
+                    {
+                      "type": "initial",
+                      "maximumWarning": "900kb",
+                      "maximumError": "1mb"
+                    },
+                    {
+                      "type": "anyComponentStyle",
+                      "maximumWarning": "12kb",
+                      "maximumError": "16kb"
+                    }
+                  ],
+                  "outputHashing": "all"
+                },
+                "development": {
+                  "optimization": false,
+                  "extractLicenses": false,
+                  "sourceMap": true
+                }
+              },
+              "defaultConfiguration": "production",
+              "parallelism": true,
+              "cache": true,
+              "dependsOn": [
+                "^build"
+              ],
+              "inputs": [
+                "production",
+                "^production"
+              ]
+            },
+            "serve": {
+              "continuous": true,
+              "executor": "@angular/build:dev-server",
+              "configurations": {
+                "production": {
+                  "buildTarget": "mobile-ionic:build:production"
+                },
+                "development": {
+                  "buildTarget": "mobile-ionic:build:development"
+                }
+              },
+              "defaultConfiguration": "development",
+              "options": {},
+              "parallelism": true
+            },
+            "serve-static": {
+              "continuous": true,
+              "executor": "@nx/web:file-server",
+              "options": {
+                "buildTarget": "mobile-ionic:build",
+                "port": 4200,
+                "staticFilePath": "dist/apps/mobile-ionic/browser",
+                "spa": true
+              },
+              "configurations": {},
+              "parallelism": true
             }
           },
-          "metadata": {
-            "targetGroups": {},
-            "js": {
-              "packageName": "@org/products",
-              "packageVersion": "0.0.1",
-              "packageMain": "./src/index.js",
-              "isInPackageManagerWorkspaces": false
-            }
-          },
-          "projectType": "library",
-          "name": "products",
-          "tags": [
-            "npm:private",
-            "scope:api"
-          ],
-          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "libs/api/products/src",
+          "metadata": {},
+          "projectType": "application",
+          "name": "mobile-ionic",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "prefix": "app",
+          "sourceRoot": "apps/mobile-ionic/src",
+          "tags": [],
           "implicitDependencies": []
         }
       },
@@ -1385,13 +1418,13 @@
                   "budgets": [
                     {
                       "type": "initial",
-                      "maximumWarning": "500kb",
+                      "maximumWarning": "900kb",
                       "maximumError": "1mb"
                     },
                     {
                       "type": "anyComponentStyle",
-                      "maximumWarning": "4kb",
-                      "maximumError": "8kb"
+                      "maximumWarning": "12kb",
+                      "maximumError": "16kb"
                     }
                   ],
                   "outputHashing": "all"
@@ -1447,904 +1480,6 @@
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
           "prefix": "app",
           "sourceRoot": "apps/web-angular/src",
-          "tags": [],
-          "implicitDependencies": []
-        }
-      },
-      "data": {
-        "name": "data",
-        "type": "lib",
-        "data": {
-          "root": "libs/shop/data",
-          "targets": {
-            "lint": {
-              "cache": true,
-              "options": {
-                "cwd": "libs/shop/data",
-                "command": "eslint ."
-              },
-              "inputs": [
-                "default",
-                "^default",
-                "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/libs/shop/data/eslint.config.mjs",
-                "{workspaceRoot}/tools/eslint-rules/**/*",
-                {
-                  "externalDependencies": [
-                    "eslint"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{options.outputFile}"
-              ],
-              "metadata": {
-                "technologies": [
-                  "eslint"
-                ],
-                "description": "Runs ESLint on project",
-                "help": {
-                  "command": "npx eslint --help",
-                  "example": {
-                    "options": {
-                      "max-warnings": 0
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "test": {
-              "options": {
-                "cwd": "libs/shop/data",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shop\\data"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vite"
-                ],
-                "description": "Run Vite tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "typecheck": {
-              "cache": true,
-              "inputs": [
-                "production",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "typescript"
-                  ]
-                }
-              ],
-              "options": {
-                "cwd": "libs/shop/data",
-                "command": "tsc --noEmit -p tsconfig.lib.json"
-              },
-              "metadata": {
-                "description": "Runs type-checking for the project.",
-                "technologies": [
-                  "typescript"
-                ],
-                "help": {
-                  "command": "npx tsc -p tsconfig.lib.json --help",
-                  "example": {
-                    "options": {
-                      "noEmit": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "build-deps": {
-              "dependsOn": [
-                "^build"
-              ],
-              "configurations": {},
-              "options": {},
-              "parallelism": true,
-              "executor": "nx:noop"
-            },
-            "watch-deps": {
-              "continuous": true,
-              "dependsOn": [
-                "build-deps"
-              ],
-              "executor": "nx:run-commands",
-              "options": {
-                "command": "npx nx watch --projects data --includeDependentProjects -- npx nx build-deps data"
-              },
-              "configurations": {},
-              "parallelism": true
-            },
-            "vite:test": {
-              "options": {
-                "cwd": "libs/shop/data",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shop\\data"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vitest"
-                ],
-                "description": "Run Vitest tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            }
-          },
-          "metadata": {},
-          "projectType": "library",
-          "name": "data",
-          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "libs/shop/data/src",
-          "prefix": "lib",
-          "tags": [
-            "scope:shop",
-            "type:data"
-          ],
-          "implicitDependencies": []
-        }
-      },
-      "shop-e2e": {
-        "name": "shop-e2e",
-        "type": "e2e",
-        "data": {
-          "root": "apps/shop-e2e",
-          "metadata": {
-            "targetGroups": {
-              "E2E (CI)": [
-                "e2e-ci--src/navigation-flow.spec.ts",
-                "e2e-ci--src/product-detail.spec.ts",
-                "e2e-ci--src/product-listing.spec.ts",
-                "e2e-ci--src/shop-homepage.spec.ts",
-                "e2e-ci",
-                "e2e-ci--merge-reports"
-              ]
-            }
-          },
-          "targets": {
-            "e2e": {
-              "options": {
-                "cwd": "apps/shop-e2e",
-                "command": "playwright test"
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                {
-                  "projects": [
-                    "shop"
-                  ],
-                  "target": "serve"
-                }
-              ],
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/test-output",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/playwright-report",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/blob-report"
-              ],
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "e2e-ci--src/navigation-flow.spec.ts": {
-              "options": {
-                "cwd": "apps/shop-e2e",
-                "env": {
-                  "PLAYWRIGHT_HTML_OUTPUT_DIR": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\playwright-report\\src-navigation-flow-spec-ts",
-                  "PLAYWRIGHT_HTML_REPORT": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\playwright-report\\src-navigation-flow-spec-ts",
-                  "PLAYWRIGHT_BLOB_OUTPUT_FILE": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\blob-report\\src-navigation-flow-spec-ts.zip"
-                },
-                "command": "playwright test src/navigation-flow.spec.ts --output=..\\..\\dist\\.playwright\\apps\\shop-e2e\\test-output\\src-navigation-flow-spec-ts"
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests in src/navigation-flow.spec.ts in CI",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                {
-                  "projects": [
-                    "shop"
-                  ],
-                  "target": "serve"
-                }
-              ],
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/test-output/src-navigation-flow-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/playwright-report/src-navigation-flow-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/blob-report/src-navigation-flow-spec-ts.zip"
-              ],
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "e2e-ci--src/product-detail.spec.ts": {
-              "options": {
-                "cwd": "apps/shop-e2e",
-                "env": {
-                  "PLAYWRIGHT_HTML_OUTPUT_DIR": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\playwright-report\\src-product-detail-spec-ts",
-                  "PLAYWRIGHT_HTML_REPORT": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\playwright-report\\src-product-detail-spec-ts",
-                  "PLAYWRIGHT_BLOB_OUTPUT_FILE": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\blob-report\\src-product-detail-spec-ts.zip"
-                },
-                "command": "playwright test src/product-detail.spec.ts --output=..\\..\\dist\\.playwright\\apps\\shop-e2e\\test-output\\src-product-detail-spec-ts"
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests in src/product-detail.spec.ts in CI",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                {
-                  "projects": [
-                    "shop"
-                  ],
-                  "target": "serve"
-                }
-              ],
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/test-output/src-product-detail-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/playwright-report/src-product-detail-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/blob-report/src-product-detail-spec-ts.zip"
-              ],
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "e2e-ci--src/product-listing.spec.ts": {
-              "options": {
-                "cwd": "apps/shop-e2e",
-                "env": {
-                  "PLAYWRIGHT_HTML_OUTPUT_DIR": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\playwright-report\\src-product-listing-spec-ts",
-                  "PLAYWRIGHT_HTML_REPORT": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\playwright-report\\src-product-listing-spec-ts",
-                  "PLAYWRIGHT_BLOB_OUTPUT_FILE": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\blob-report\\src-product-listing-spec-ts.zip"
-                },
-                "command": "playwright test src/product-listing.spec.ts --output=..\\..\\dist\\.playwright\\apps\\shop-e2e\\test-output\\src-product-listing-spec-ts"
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests in src/product-listing.spec.ts in CI",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                {
-                  "projects": [
-                    "shop"
-                  ],
-                  "target": "serve"
-                }
-              ],
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/test-output/src-product-listing-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/playwright-report/src-product-listing-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/blob-report/src-product-listing-spec-ts.zip"
-              ],
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "e2e-ci--src/shop-homepage.spec.ts": {
-              "options": {
-                "cwd": "apps/shop-e2e",
-                "env": {
-                  "PLAYWRIGHT_HTML_OUTPUT_DIR": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\playwright-report\\src-shop-homepage-spec-ts",
-                  "PLAYWRIGHT_HTML_REPORT": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\playwright-report\\src-shop-homepage-spec-ts",
-                  "PLAYWRIGHT_BLOB_OUTPUT_FILE": "..\\..\\dist\\.playwright\\apps\\shop-e2e\\blob-report\\src-shop-homepage-spec-ts.zip"
-                },
-                "command": "playwright test src/shop-homepage.spec.ts --output=..\\..\\dist\\.playwright\\apps\\shop-e2e\\test-output\\src-shop-homepage-spec-ts"
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests in src/shop-homepage.spec.ts in CI",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                {
-                  "projects": [
-                    "shop"
-                  ],
-                  "target": "serve"
-                }
-              ],
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/test-output/src-shop-homepage-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/playwright-report/src-shop-homepage-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/blob-report/src-shop-homepage-spec-ts.zip"
-              ],
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "e2e-ci": {
-              "executor": "nx:noop",
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/test-output",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/playwright-report",
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/blob-report"
-              ],
-              "dependsOn": [
-                {
-                  "target": "e2e-ci--src/navigation-flow.spec.ts",
-                  "projects": "self",
-                  "params": "forward",
-                  "options": "forward"
-                },
-                {
-                  "target": "e2e-ci--src/product-detail.spec.ts",
-                  "projects": "self",
-                  "params": "forward",
-                  "options": "forward"
-                },
-                {
-                  "target": "e2e-ci--src/product-listing.spec.ts",
-                  "projects": "self",
-                  "params": "forward",
-                  "options": "forward"
-                },
-                {
-                  "target": "e2e-ci--src/shop-homepage.spec.ts",
-                  "projects": "self",
-                  "params": "forward",
-                  "options": "forward"
-                }
-              ],
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests in CI",
-                "nonAtomizedTarget": "e2e",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "configurations": {},
-              "options": {},
-              "parallelism": true
-            },
-            "e2e-ci--merge-reports": {
-              "executor": "@nx/playwright:merge-reports",
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/shop-e2e/playwright-report"
-              ],
-              "options": {
-                "config": "playwright.config.ts",
-                "expectedSuites": 4
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Merges Playwright blob reports from atomized tasks to produce unified reports for the configured reporters."
-              },
-              "configurations": {},
-              "parallelism": true
-            },
-            "lint": {
-              "cache": true,
-              "options": {
-                "cwd": "apps/shop-e2e",
-                "command": "eslint ."
-              },
-              "inputs": [
-                "default",
-                "^default",
-                "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/apps/shop-e2e/eslint.config.mjs",
-                "{workspaceRoot}/tools/eslint-rules/**/*",
-                {
-                  "externalDependencies": [
-                    "eslint"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{options.outputFile}"
-              ],
-              "metadata": {
-                "technologies": [
-                  "eslint"
-                ],
-                "description": "Runs ESLint on project",
-                "help": {
-                  "command": "npx eslint --help",
-                  "example": {
-                    "options": {
-                      "max-warnings": 0
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            }
-          },
-          "name": "shop-e2e",
-          "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "projectType": "application",
-          "sourceRoot": "apps/shop-e2e/src",
-          "implicitDependencies": [
-            "shop"
-          ],
-          "tags": []
-        }
-      },
-      "shop": {
-        "name": "shop",
-        "type": "app",
-        "data": {
-          "root": "apps/shop",
-          "targets": {
-            "lint": {
-              "cache": true,
-              "options": {
-                "cwd": "apps/shop",
-                "command": "eslint ."
-              },
-              "inputs": [
-                "default",
-                "^default",
-                "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/apps/shop/eslint.config.mjs",
-                "{workspaceRoot}/tools/eslint-rules/**/*",
-                {
-                  "externalDependencies": [
-                    "eslint"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{options.outputFile}"
-              ],
-              "metadata": {
-                "technologies": [
-                  "eslint"
-                ],
-                "description": "Runs ESLint on project",
-                "help": {
-                  "command": "npx eslint --help",
-                  "example": {
-                    "options": {
-                      "max-warnings": 0
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "test": {
-              "options": {
-                "cwd": "apps/shop",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\apps\\shop"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vite"
-                ],
-                "description": "Run Vite tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "typecheck": {
-              "cache": true,
-              "inputs": [
-                "production",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "typescript"
-                  ]
-                }
-              ],
-              "options": {
-                "cwd": "apps/shop",
-                "command": "tsc --noEmit -p tsconfig.app.json"
-              },
-              "metadata": {
-                "description": "Runs type-checking for the project.",
-                "technologies": [
-                  "typescript"
-                ],
-                "help": {
-                  "command": "npx tsc -p tsconfig.app.json --help",
-                  "example": {
-                    "options": {
-                      "noEmit": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "build-deps": {
-              "dependsOn": [
-                "^build"
-              ],
-              "configurations": {},
-              "options": {},
-              "parallelism": true,
-              "executor": "nx:noop"
-            },
-            "watch-deps": {
-              "continuous": true,
-              "dependsOn": [
-                "build-deps"
-              ],
-              "executor": "nx:run-commands",
-              "options": {
-                "command": "npx nx watch --projects shop --includeDependentProjects -- npx nx build-deps shop"
-              },
-              "configurations": {},
-              "parallelism": true
-            },
-            "vite:test": {
-              "options": {
-                "cwd": "apps/shop",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\apps\\shop"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vitest"
-                ],
-                "description": "Run Vitest tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "build": {
-              "executor": "@angular/build:application",
-              "outputs": [
-                "{options.outputPath}"
-              ],
-              "options": {
-                "outputPath": "dist/apps/shop",
-                "browser": "apps/shop/src/main.ts",
-                "polyfills": [
-                  "zone.js"
-                ],
-                "tsConfig": "apps/shop/tsconfig.app.json",
-                "assets": [
-                  {
-                    "glob": "**/*",
-                    "input": "apps/shop/public"
-                  }
-                ],
-                "styles": [
-                  "apps/shop/src/styles.css"
-                ],
-                "server": "apps/shop/src/main.server.ts",
-                "ssr": {
-                  "entry": "apps/shop/src/server.ts"
-                },
-                "outputMode": "server"
-              },
-              "configurations": {
-                "production": {
-                  "budgets": [
-                    {
-                      "type": "initial",
-                      "maximumWarning": "500kb",
-                      "maximumError": "1mb"
-                    },
-                    {
-                      "type": "anyComponentStyle",
-                      "maximumWarning": "4kb",
-                      "maximumError": "8kb"
-                    }
-                  ],
-                  "outputHashing": "all"
-                },
-                "development": {
-                  "optimization": false,
-                  "extractLicenses": false,
-                  "sourceMap": true
-                }
-              },
-              "defaultConfiguration": "production",
-              "parallelism": true,
-              "cache": true,
-              "dependsOn": [
-                "^build"
-              ],
-              "inputs": [
-                "production",
-                "^production"
-              ]
-            },
-            "serve": {
-              "dependsOn": [
-                "api:serve"
-              ],
-              "continuous": true,
-              "executor": "@angular/build:dev-server",
-              "configurations": {
-                "production": {
-                  "buildTarget": "shop:build:production"
-                },
-                "development": {
-                  "buildTarget": "shop:build:development"
-                }
-              },
-              "defaultConfiguration": "development",
-              "options": {
-                "proxyConfig": "apps/shop/proxy.conf.json"
-              },
-              "parallelism": true
-            },
-            "extract-i18n": {
-              "executor": "@angular/build:extract-i18n",
-              "options": {
-                "buildTarget": "shop:build"
-              },
-              "configurations": {},
-              "parallelism": true
-            },
-            "serve-static": {
-              "continuous": true,
-              "executor": "@nx/web:file-server",
-              "options": {
-                "buildTarget": "shop:build",
-                "port": 4200,
-                "staticFilePath": "dist/apps/shop/browser",
-                "spa": true
-              },
-              "configurations": {},
-              "parallelism": true
-            }
-          },
-          "metadata": {},
-          "projectType": "application",
-          "name": "shop",
-          "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "prefix": "app",
-          "sourceRoot": "apps/shop/src",
           "tags": [
             "scope:shop"
           ],
@@ -2700,37 +1835,18 @@
       }
     },
     "dependencies": {
-      "feature-product-detail": [
+      "matrimony-models": [],
+      "mobile-ionic-e2e": [
         {
-          "source": "feature-product-detail",
-          "target": "data",
-          "type": "static"
-        },
-        {
-          "source": "feature-product-detail",
-          "target": "models",
-          "type": "static"
-        },
-        {
-          "source": "feature-product-detail",
-          "target": "shared-ui",
-          "type": "static"
+          "source": "mobile-ionic-e2e",
+          "target": "mobile-ionic",
+          "type": "implicit"
         }
       ],
-      "feature-products": [
+      "shared-services": [
         {
-          "source": "feature-products",
-          "target": "data",
-          "type": "static"
-        },
-        {
-          "source": "feature-products",
+          "source": "shared-services",
           "target": "models",
-          "type": "static"
-        },
-        {
-          "source": "feature-products",
-          "target": "shared-ui",
           "type": "static"
         }
       ],
@@ -2741,14 +1857,14 @@
           "type": "implicit"
         }
       ],
-      "shared-ui": [
+      "models": [],
+      "mobile-ionic": [
         {
-          "source": "shared-ui",
-          "target": "models",
+          "source": "mobile-ionic",
+          "target": "shared-services",
           "type": "static"
         }
       ],
-      "models": [],
       "products": [
         {
           "source": "products",
@@ -2757,32 +1873,6 @@
         }
       ],
       "web-angular": [],
-      "data": [
-        {
-          "source": "data",
-          "target": "models",
-          "type": "static"
-        }
-      ],
-      "shop-e2e": [
-        {
-          "source": "shop-e2e",
-          "target": "shop",
-          "type": "implicit"
-        }
-      ],
-      "shop": [
-        {
-          "source": "shop",
-          "target": "feature-products",
-          "type": "dynamic"
-        },
-        {
-          "source": "shop",
-          "target": "feature-product-detail",
-          "type": "dynamic"
-        }
-      ],
       "api": [
         {
           "source": "api",

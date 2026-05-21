@@ -1,0 +1,54 @@
+<section class="content-grid">
+  <article class="panel top-matches">
+    <div class="panel-title">
+      <h3>Top Matches For You</h3>
+      <a routerLink="/profiles">View All</a>
+    </div>
+
+    <div class="match-list">
+      @for (match of topMatches; track match.id) {
+      <div class="match-item">
+        <div class="match-main">
+          <p class="match-id">{{ match.id }}</p>
+          <h4>{{ match.name }}</h4>
+          <p class="match-detail">{{ match.detail }}</p>
+        </div>
+        <div class="match-side">
+          <strong>{{ match.score }}%</strong>
+          <span>{{ match.badge }}</span>
+        </div>
+      </div>
+      }
+    </div>
+  </article>
+
+  <div class="stacked-right">
+    <article class="panel compact-panel">
+      <div class="panel-title">
+        <h3>Interests Received</h3>
+      </div>
+      <div class="simple-list">
+        @for (item of interests; track item.name) {
+        <div>
+          <strong>{{ item.name }}</strong>
+          <p>{{ item.detail }}</p>
+        </div>
+        }
+      </div>
+    </article>
+
+    <article class="panel compact-panel">
+      <div class="panel-title">
+        <h3>Recent Activity</h3>
+      </div>
+      <div class="simple-list">
+        @for (item of activities; track item.text) {
+        <div>
+          <strong>{{ item.text }}</strong>
+          <p>{{ item.time }}</p>
+        </div>
+        }
+      </div>
+    </article>
+  </div>
+</section>

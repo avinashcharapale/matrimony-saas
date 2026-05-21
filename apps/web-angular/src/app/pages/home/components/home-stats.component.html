@@ -1,0 +1,11 @@
+<section class="stats-grid">
+  @for (card of stats; track card.label) {
+  <article class="stat-card" [class]="'stat-card ' + card.tone">
+    <div class="stat-head">
+      <p>{{ card.label }}</p>
+      <span>{{ card.hint }}</span>
+    </div>
+    <h2>{{ card.value }}</h2>
+  </article>
+  }
+</section>

@@ -1,0 +1,7 @@
+<div class="stepper">
+  @for (step of steps; track step.title; let i = $index) {
+  <div class="step-item" [class.active]="i + 1 === currentStep" [class.done]="i + 1 < currentStep">
+    <p>{{ step.title }}</p>
+  </div>
+  }
+</div>

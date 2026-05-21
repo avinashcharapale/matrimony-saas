@@ -1,0 +1,27 @@
+<aside class="dashboard-sidebar">
+  <div class="sidebar-brand">
+    <img
+      class="brand-photo"
+      src="https://i.pravatar.cc/90?u=logged-in-user"
+      alt="Rajesh Patil"
+      loading="lazy"
+      referrerpolicy="no-referrer"
+    />
+    <div>
+      <span class="brand-label">Rajesh Patil</span>
+      <p>Assistant Manager</p>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="nav-icon" aria-hidden="true">⌂</span><span>Dashboard</span></a>
+    <a routerLink="/profiles" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">⌕</span><span>Search Matches</span></a>
+    <a routerLink="/interests" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">♡</span><span>Interests</span></a>
+    <a routerLink="/messages" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">✉</span><span>Messages</span></a>
+    <a routerLink="/events" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">☷</span><span>Events &amp; Meets</span></a>
+    <a routerLink="/gallery" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">▣</span><span>Photo Gallery</span></a>
+    <a routerLink="/success-stories" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">★</span><span>Success Stories</span></a>
+    <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">⚙</span><span>Settings</span></a>
+    <a routerLink="/login"><span class="nav-icon" aria-hidden="true">↪</span><span>Logout</span></a>
+  </nav>
+</aside>

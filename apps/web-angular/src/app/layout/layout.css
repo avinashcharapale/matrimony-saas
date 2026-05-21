@@ -1,0 +1,201 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: radial-gradient(circle at top right, var(--tenant-bg-start) 0%, var(--tenant-bg-mid) 45%, var(--tenant-bg-end) 100%);
+  color: var(--text-strong);
+}
+
+.app-header {
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  box-shadow: 0 6px 18px rgba(24, 20, 16, 0.06);
+}
+
+.app-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 260px;
+}
+
+.brand-icon {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 0.7rem;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--tenant-primary) 18%, var(--color-white));
+  font-size: 1.15rem;
+  overflow: hidden;
+}
+
+.brand-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.12rem;
+  color: var(--text-strong);
+  line-height: 1.1;
+}
+
+.brand-subtitle {
+  margin: 0.1rem 0 0;
+  font-size: 0.74rem;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.toolbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.toolbar-contact {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.toolbar-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.menu-toggle {
+  display: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.6rem;
+  background: var(--surface-soft);
+  color: var(--accent-strong);
+  font-weight: 700;
+  padding: 0.45rem 0.75rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: 0.95rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.main-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.36rem 0.08rem;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+  color: var(--tenant-primary);
+  border-color: color-mix(in srgb, var(--tenant-primary) 55%, var(--color-white));
+}
+
+.menu-cta {
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 0.72rem;
+  padding: 0.68rem 1rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--on-primary);
+  background: linear-gradient(90deg, var(--tenant-primary) 0%, var(--tenant-accent) 100%);
+  border: 1px solid color-mix(in srgb, var(--tenant-primary) 70%, var(--color-white));
+}
+
+.app-content {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .app-toolbar {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem;
+  }
+
+  .brand-block {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .toolbar-center {
+    width: 100%;
+    justify-content: flex-start;
+    display: none;
+  }
+
+  .toolbar-center.open {
+    display: flex;
+  }
+
+  .toolbar-contact {
+    font-size: 0.72rem;
+  }
+
+  .toolbar-right {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+
+  .toolbar-right.open {
+    display: flex;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .main-nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem 0.7rem;
+  }
+
+  .main-nav a {
+    width: 100%;
+    text-align: left;
+    padding: 0.32rem 0;
+  }
+
+  .menu-cta {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .app-content {
+    padding: 1rem 0.85rem 2rem;
+  }
+}

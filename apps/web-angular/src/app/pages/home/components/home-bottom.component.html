@@ -1,0 +1,51 @@
+<section class="bottom-grid">
+  <article class="panel small-panel">
+    <div class="panel-title">
+      <h3>My Horoscope</h3>
+    </div>
+    <div class="tag-row">
+      @for (tag of horoscopeTags; track tag) {
+      <span>{{ tag }}</span>
+      }
+    </div>
+    <p class="compatibility">Avg match with your recent views <strong>76%</strong></p>
+    <a routerLink="/home" class="panel-link">View Full Report Match</a>
+  </article>
+
+  <article class="panel small-panel">
+    <div class="panel-title">
+      <h3>Messages</h3>
+    </div>
+    <div class="message-list">
+      @for (item of messages; track item.name) {
+      <div>
+        <div class="message-head">
+          <strong>{{ item.name }}</strong>
+          @if (item.unread) { <span>{{ item.unread }}</span> }
+        </div>
+        <p>{{ item.text }}</p>
+      </div>
+      }
+    </div>
+  </article>
+
+  <article class="panel small-panel">
+    <div class="panel-title">
+      <h3>Upcoming Events</h3>
+    </div>
+    <div class="event-list">
+      @for (event of upcomingEvents; track event.title) {
+      <div class="event-item">
+        <div class="event-date">
+          <strong>{{ event.day }}</strong>
+          <span>{{ event.month }}</span>
+        </div>
+        <div>
+          <h4>{{ event.title }}</h4>
+          <p>{{ event.time }}</p>
+        </div>
+      </div>
+      }
+    </div>
+  </article>
+</section>

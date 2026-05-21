@@ -1,0 +1,117 @@
+<ion-page>
+  <ion-content>
+    <ion-toolbar class="mobile-toolbar">
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/login"></ion-back-button>
+      </ion-buttons>
+      <ion-title>{{ tenant.displayName }}</ion-title>
+    </ion-toolbar>
+
+    <section class="mobile-shell">
+      <article class="hero-card">
+        <p class="eyebrow">Trusted for 26+ years</p>
+        <h1>{{ heroText.heading }}</h1>
+        <p>{{ heroText.subheading }}</p>
+        <div class="hero-visual">👫</div>
+        <div class="hero-actions">
+          <a routerLink="/login" class="btn primary">Register Now - Free</a>
+          <a routerLink="/login" class="btn ghost">Browse Profiles</a>
+        </div>
+      </article>
+
+      <article class="stats-grid">
+        @for (stat of stats; track stat.label) {
+        <div class="stat-tile">
+          <h3>{{ stat.value }}</h3>
+          <p>{{ stat.label }}</p>
+        </div>
+        }
+      </article>
+
+      <article class="stack-card">
+        <p class="section-label">Why Choose Us</p>
+        <h2>Why Choose {{ tenant.displayName }}?</h2>
+        <ul>
+          @for (item of whyUs; track item) {
+          <li>{{ item }}</li>
+          }
+        </ul>
+      </article>
+
+      <article class="stack-card">
+        <p class="section-label">How It Works</p>
+        @for (step of howItWorks; track step.title; let idx = $index) {
+        <div class="step-item">
+          <span>{{ idx + 1 }}</span>
+          <div>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+          </div>
+        </div>
+        }
+      </article>
+
+      <article class="stack-card">
+        <p class="section-label">Recently Joined</p>
+        <h2>Recently Added Profiles</h2>
+        @for (profile of profiles; track profile.name) {
+        <div class="profile-card">
+          <div class="avatar">{{ profile.icon }}</div>
+          <div>
+            <h3>{{ profile.name }}</h3>
+            <p>{{ profile.occupation }} - {{ profile.age }} yrs</p>
+            <p>{{ profile.location }}</p>
+          </div>
+        </div>
+        }
+      </article>
+
+      <article class="stack-card">
+        <p class="section-label">Why Trusted</p>
+        <h2>Best Maratha Matrimony</h2>
+        <div class="trust-grid">
+          @for (card of trustCards; track card.title) {
+          <div class="trust-card">
+            <span>{{ card.icon }}</span>
+            <h3>{{ card.value }}</h3>
+            <p>{{ card.title }}</p>
+          </div>
+          }
+        </div>
+      </article>
+
+      <article class="cta-card">
+        <h2>{{ ctaText.heading }}</h2>
+        <p>{{ ctaText.subheading }}</p>
+        <div class="hero-actions">
+          <a routerLink="/login" class="btn light">Register</a>
+          <a routerLink="/login" class="btn outline">Login</a>
+        </div>
+      </article>
+
+      <footer class="mobile-footer">
+        <h3>{{ tenant.displayName }}</h3>
+        <p>Trusted Vadhhu Var Suchak Kendra for the Maratha community.</p>
+
+        <div class="footer-block">
+          <h4>Enquiry & Support</h4>
+          <p>📞 {{ tenant.supportPhone }}</p>
+          <p>✉️ {{ tenant.supportEmail }}</p>
+        </div>
+
+        <div class="footer-block">
+          <h4>Address</h4>
+          <p>{{ tenant.supportAddress }}</p>
+        </div>
+
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms & Conditions</a>
+          <a href="#">Refund Policy</a>
+        </div>
+
+        <p class="copyright">{{ tenant.copyrightText }}</p>
+      </footer>
+    </section>
+  </ion-content>
+</ion-page>

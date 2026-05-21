@@ -1,0 +1,25 @@
+<section class="menu-page-shell">
+  <article class="menu-hero">
+    <p class="eyebrow">{{ tenant.displayName }}</p>
+    <h1>{{ pageData.title }}</h1>
+    <p>{{ pageData.description }}</p>
+  </article>
+
+  <section class="menu-highlights">
+    @for (item of pageData.highlights; track item; let idx = $index) {
+    <article class="highlight-card">
+      <div class="highlight-no">{{ idx + 1 }}</div>
+      <p>{{ item }}</p>
+    </article>
+    }
+  </section>
+
+  <section class="menu-cta">
+    <h2>Start Your Matrimony Journey</h2>
+    <p>Use verified profiles and trusted guidance to find the right life partner.</p>
+    <div class="cta-actions">
+      <a routerLink="/register" class="btn btn-primary">Register Now - Free</a>
+      <a routerLink="/profiles" class="btn btn-muted">Browse Profiles</a>
+    </div>
+  </section>
+</section>

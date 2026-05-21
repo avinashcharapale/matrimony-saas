@@ -1,0 +1,39 @@
+<ion-page>
+  <ion-content>
+    <ion-toolbar class="mobile-toolbar">
+      <ion-title>{{ tenant.ctaLogin }}</ion-title>
+    </ion-toolbar>
+
+    <div class="form-card">
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="name@example.com"
+          required
+          maxlength="120"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Password</ion-label>
+        <ion-input
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Enter password"
+          required
+          minlength="6"
+          maxlength="64"
+        ></ion-input>
+      </ion-item>
+
+      <ion-button expand="block" class="submit-button" (click)="submit()">Sign In</ion-button>
+      @if (error) {
+      <p class="error-message">{{ error }}</p>
+      }
+    </div>
+  </ion-content>
+</ion-page>

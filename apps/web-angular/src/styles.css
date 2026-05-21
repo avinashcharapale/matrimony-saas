@@ -1,1 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+@import '../../../libs/shared-ui/src/themes/tenant-themes.css';
+@import '@angular/material/prebuilt-themes/rose-red.css';
+
+* {
+	box-sizing: border-box;
+}

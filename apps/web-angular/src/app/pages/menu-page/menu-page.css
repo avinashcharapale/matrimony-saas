@@ -1,0 +1,107 @@
+.menu-page-shell {
+  width: min(980px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.menu-hero,
+.menu-highlights,
+.menu-cta {
+  background: #ffffff;
+  border: 1px solid #eadfd7;
+  border-radius: 1rem;
+  padding: 1.1rem;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: #9a5e45;
+  font-weight: 700;
+}
+
+.menu-hero h1 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  color: #2a2c3b;
+}
+
+.menu-hero p {
+  margin: 0.6rem 0 0;
+  color: #6f7486;
+  line-height: 1.6;
+}
+
+.menu-highlights {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.highlight-card {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.7rem;
+  padding: 0.8rem;
+  border: 1px solid #efe2d9;
+  border-radius: 0.85rem;
+  background: #fcf8f5;
+}
+
+.highlight-no {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #8a4f36;
+  font-weight: 800;
+  background: #f2dfd4;
+}
+
+.highlight-card p {
+  margin: 0;
+  color: #656b7e;
+  line-height: 1.55;
+}
+
+.menu-cta h2 {
+  margin: 0;
+  color: #2d2f3e;
+}
+
+.menu-cta p {
+  margin: 0.55rem 0 0;
+  color: #6c7285;
+}
+
+.cta-actions {
+  margin-top: 0.85rem;
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 0.72rem 1rem;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background: #b45a3a;
+  color: #ffffff;
+}
+
+.btn-muted {
+  background: #ffffff;
+  border-color: #ddcabe;
+  color: #4f566b;
+}

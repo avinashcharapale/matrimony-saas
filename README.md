@@ -10,22 +10,21 @@
 
 This repository demonstrates a production-ready Angular monorepo with:
 
-- **2 Applications**
+- **3 Applications**
 
-  - `shop` - Angular e-commerce application with product listings and detail views
-  - `api` - Backend API with Docker support serving product data
+  - `web-angular` - Web client
+  - `mobile-ionic` - Ionic mobile client
+  - `api` - Backend API with Docker support
 
-- **6 Libraries**
+- **Core Libraries**
 
-  - `@org/feature-products` - Product listing feature (Angular)
-  - `@org/feature-product-detail` - Product detail feature (Angular)
-  - `@org/data` - Data access layer for shop features
-  - `@org/shared-ui` - Shared UI components
-  - `@org/models` - Shared data models
-  - `@org/products` - API product service library
+  - `@org/shared-services` - Shared API/business services
+  - `@org/matrimony-models` - Domain models and interfaces
+  - `@org/models` - Shared base models
 
 - **E2E Testing**
-  - `shop-e2e` - Playwright tests for the shop application
+  - `web-angular-e2e` - Playwright tests for web app
+  - `mobile-ionic-e2e` - Playwright tests for mobile app
 
 ## 🚀 Quick Start
 
@@ -38,8 +37,11 @@ cd <your-repository-name>
 # (Note: You may need --legacy-peer-deps)
 npm install
 
-# Serve the Angular shop application (this will simultaneously serve the API backend)
-npx nx serve shop
+# Serve the web application
+npx nx serve web-angular
+
+# Serve the mobile application
+npx nx serve mobile-ionic
 
 # ...or you can serve the API separately
 npx nx serve api
@@ -54,7 +56,8 @@ npx nx run-many -t test
 npx nx run-many -t lint
 
 # Run e2e tests
-npx nx e2e shop-e2e
+npx nx e2e web-angular-e2e
+npx nx e2e mobile-ionic-e2e
 
 # Run tasks in parallel
 
@@ -73,7 +76,6 @@ This repository showcases several powerful Nx features:
 Enforces architectural constraints using tags. Each project has specific dependencies it can use:
 
 - `scope:shared` - Can be used by all projects
-- `scope:shop` - Shop-specific libraries
 - `scope:api` - API-specific libraries
 - `type:feature` - Feature libraries
 - `type:data` - Data access libraries
@@ -86,7 +88,7 @@ Enforces architectural constraints using tags. Each project has specific depende
 npx nx graph
 
 # View a specific project's details
-npx nx show project shop --web
+npx nx show project web-angular --web
 ```
 
 [Learn more about module boundaries →](https://nx.dev/features/enforce-module-boundaries)
@@ -116,10 +118,10 @@ End-to-end testing with Playwright is pre-configured:
 
 ```bash
 # Run e2e tests
-npx nx e2e shop-e2e
+npx nx e2e web-angular-e2e
 
 # Run e2e tests in CI mode
-npx nx e2e-ci shop-e2e
+npx nx e2e-ci web-angular-e2e
 ```
 
 [Learn more about E2E testing →](https://nx.dev/technologies/test-tools/playwright/introduction#e2e-testing)
@@ -160,19 +162,18 @@ This feature helps maintain a healthy CI pipeline by automatically detecting and
 
 ```
 ├── apps/
-│   ├── shop/           [scope:shop]    - Angular e-commerce app
-│   ├── shop-e2e/                       - E2E tests for shop
-│   └── api/            [scope:api]     - Backend API with Docker
+│   ├── web-angular/                  - Angular web app
+│   ├── web-angular-e2e/              - E2E tests for web app
+│   ├── mobile-ionic/                 - Ionic mobile app
+│   ├── mobile-ionic-e2e/             - E2E tests for mobile app
+│   └── api/                          - Backend API with Docker
 ├── libs/
-│   ├── shop/
-│   │   ├── feature-products/        [scope:shop,type:feature] - Product listing
-│   │   ├── feature-product-detail/  [scope:shop,type:feature] - Product details
-│   │   ├── data/                    [scope:shop,type:data]    - Data access
-│   │   └── shared-ui/               [scope:shop,type:ui]      - UI components
 │   ├── api/
-│   │   └── products/    [scope:api]    - Product service
+│   │   └── products/                 - Product service
+│   ├── matrimony-models/             - Domain models
+│   ├── shared-services/              - Shared services
 │   └── shared/
-│       └── models/      [scope:shared,type:data] - Shared models
+│       └── models/                   - Shared models
 ├── nx.json             - Nx configuration
 ├── tsconfig.json       - TypeScript configuration
 └── eslint.config.mjs   - ESLint with module boundary rules
@@ -182,13 +183,13 @@ This feature helps maintain a healthy CI pipeline by automatically detecting and
 
 This repository uses tags to enforce module boundaries:
 
-| Project            | Tags                         | Can Import From              |
-| ------------------ | ---------------------------- | ---------------------------- |
-| `shop`             | `scope:shop`                 | `scope:shop`, `scope:shared` |
-| `api`              | `scope:api`                  | `scope:api`, `scope:shared`  |
-| `feature-products` | `scope:shop`, `type:feature` | `scope:shop`, `scope:shared` |
-| `data`             | `scope:shop`, `type:data`    | `scope:shared`               |
-| `models`           | `scope:shared`, `type:data`  | Nothing (base library)       |
+| Project            | Tags                        | Can Import From              |
+| ------------------ | --------------------------- | ---------------------------- |
+| `web-angular`      | `scope:web`                 | `scope:shared`, `scope:api`  |
+| `mobile-ionic`     | `scope:mobile`              | `scope:shared`, `scope:api`  |
+| `api`              | `scope:api`                 | `scope:shared`               |
+| `shared-services`  | `scope:shared`, `type:data` | `scope:shared`, `scope:api`  |
+| `models`           | `scope:shared`, `type:data` | Nothing (base library)       |
 
 ## 📚 Useful Commands
 
@@ -196,14 +197,16 @@ This repository uses tags to enforce module boundaries:
 # Project exploration
 npx nx graph                                    # Interactive dependency graph
 npx nx list                                     # List installed plugins
-npx nx show project shop --web                 # View project details
+npx nx show project web-angular --web           # View project details
 
 # Development
-npx nx serve shop                              # Serve Angular app
+npx nx serve web-angular                        # Serve web app
+npx nx serve mobile-ionic                       # Serve mobile app
 npx nx serve api                               # Serve backend API
-npx nx build shop                              # Build Angular app
-npx nx test data                               # Test a specific library
-npx nx lint feature-products                   # Lint a specific library
+npx nx build web-angular                        # Build web app
+npx nx build mobile-ionic                       # Build mobile app
+npx nx test shared-services                     # Test a specific library
+npx nx lint web-angular                         # Lint a specific app
 
 # Running multiple tasks
 npx nx run-many -t build                       # Build all projects

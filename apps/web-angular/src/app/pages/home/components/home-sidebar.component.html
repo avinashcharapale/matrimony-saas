@@ -1,0 +1,21 @@
+<aside class="dashboard-sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">{{ brandMark }}</div>
+    <div>
+      <span class="brand-label">{{ tenantDisplayName }}</span>
+      <p>Matrimony Service</p>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="nav-icon" aria-hidden="true">⌂</span><span>Dashboard</span></a>
+    <a routerLink="/profiles" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">⌕</span><span>Search Matches</span></a>
+    <a routerLink="/interests" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">♡</span><span>Interests</span></a>
+    <a routerLink="/messages" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">✉</span><span>Messages</span></a>
+    <a routerLink="/events" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">☷</span><span>Events & Meets</span></a>
+    <a routerLink="/gallery" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">▣</span><span>Photo Gallery</span></a>
+    <a routerLink="/success-stories" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">★</span><span>Success Stories</span></a>
+    <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">⚙</span><span>Settings</span></a>
+    <a routerLink="/login"><span class="nav-icon" aria-hidden="true">↪</span><span>Logout</span></a>
+  </nav>
+</aside>

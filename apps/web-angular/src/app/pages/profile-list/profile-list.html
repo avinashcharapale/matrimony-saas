@@ -1,0 +1,36 @@
+<section class="search-page">
+  <div class="search-shell">
+    <app-profile-list-sidebar></app-profile-list-sidebar>
+
+    <div class="search-main">
+      <app-profile-list-title></app-profile-list-title>
+      <app-profile-list-search-panel
+        [filters]="filters"
+        [sortBy]="sortBy"
+        [resultsCount]="sortedResults.length"
+        [error]="error"
+        [religionOptions]="religionOptions"
+        [casteOptions]="casteOptions"
+        (searchRequested)="search($event)"
+        (sortByChange)="sortBy = $event">
+      </app-profile-list-search-panel>
+
+      <app-profile-list-results
+        [hasResults]="sortedResults.length > 0"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [pageNumbers]="pageNumbers"
+        [pageResults]="pageResults"
+        [getProfilePhotoUrl]="getProfilePhotoUrl.bind(this)"
+        [getHeight]="getHeight.bind(this)"
+        [getReligion]="getReligion.bind(this)"
+        [getCaste]="getCaste.bind(this)"
+        [getMemberCode]="getMemberCode.bind(this)"
+        [getMatchScore]="getMatchScore.bind(this)"
+        [onPhotoError]="onPhotoError.bind(this)"
+        (pageChange)="goToPage($event)"
+        (profileSelect)="openProfile($event)">
+      </app-profile-list-results>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,54 @@
+@if (hasResults) {
+<section class="results-list">
+  <div class="results-topbar">
+    <p>{{ currentPage }} / {{ totalPages }} <span>Matching profiles</span></p>
+    <div class="pager-mini">
+      <button type="button" (click)="pageChange.emit(currentPage - 1)">Prev</button>
+      <button type="button" (click)="pageChange.emit(currentPage + 1)">Next</button>
+    </div>
+  </div>
+
+  @for (profile of pageResults; track profile.email ?? $index; let i = $index) {
+  <article class="result-card" role="button" tabindex="0" (click)="profileSelect.emit(profile)" (keyup.enter)="profileSelect.emit(profile)">
+    <img
+      class="result-photo"
+      [src]="getProfilePhotoUrl(profile)"
+      [alt]="profile.name"
+      loading="lazy"
+      referrerpolicy="no-referrer"
+      (error)="onPhotoError($event, profile.name)"
+    />
+
+    <div class="result-main">
+      <h2>{{ profile.name }}, {{ profile.age ?? '-' }}</h2>
+      <p class="line1">{{ profile.occupation ?? 'Professional' }}, {{ profile.location ?? 'Maharashtra' }}</p>
+      <p class="line2">{{ getHeight(profile, i) }} | {{ getReligion(profile, i) }} | {{ getCaste(profile, i) }}</p>
+      <div class="tag-row">
+        <span class="premium">Premium</span>
+        <span class="member-code">{{ getMemberCode(profile, i) }}</span>
+      </div>
+    </div>
+
+    <div class="result-side">
+      <div class="score-pill">{{ getMatchScore(profile) }}%</div>
+      <button type="button" class="connect-btn" (click)="$event.stopPropagation(); profileSelect.emit(profile)">Connect</button>
+    </div>
+  </article>
+  }
+
+  <div class="pagination">
+    <button type="button" (click)="pageChange.emit(currentPage - 1)">‹</button>
+    @for (page of pageNumbers; track page) {
+    <button
+      type="button"
+      [class.active]="page === currentPage"
+      (click)="pageChange.emit(page)">
+      {{ page }}
+    </button>
+    }
+    <button type="button" (click)="pageChange.emit(currentPage + 1)">›</button>
+  </div>
+</section>
+} @else {
+  <p class="empty-state">No profiles found for the selected filters.</p>
+}

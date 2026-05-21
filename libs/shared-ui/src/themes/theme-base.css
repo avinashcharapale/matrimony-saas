@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap');
+
+:root {
+  --tenant-primary: #a85436;
+  --tenant-accent: #ca8a66;
+  --tenant-bg-start: #fff2e8;
+  --tenant-bg-mid: #f6f1ed;
+  --tenant-bg-end: #f4f0ec;
+  --tenant-text: #242638;
+
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --on-primary: #fff8f3;
+  --text-strong: var(--tenant-text);
+  --text-muted: color-mix(in srgb, var(--tenant-text) 68%, var(--color-white) 32%);
+  --text-subtle: color-mix(in srgb, var(--tenant-text) 56%, var(--color-white) 44%);
+  --surface-card: color-mix(in srgb, var(--tenant-bg-start) 32%, var(--color-white) 68%);
+  --surface-card-strong: color-mix(in srgb, var(--tenant-bg-mid) 60%, var(--color-white) 40%);
+  --surface-soft: color-mix(in srgb, var(--tenant-bg-start) 72%, var(--color-white) 28%);
+  --surface-overlay: color-mix(in srgb, var(--color-white) 84%, transparent);
+  --border-soft: color-mix(in srgb, var(--tenant-text) 16%, var(--color-white) 84%);
+  --border-strong: color-mix(in srgb, var(--tenant-primary) 40%, var(--color-white) 60%);
+  --accent-strong: color-mix(in srgb, var(--tenant-primary) 86%, var(--color-black) 14%);
+
+  --ion-color-primary: var(--tenant-primary);
+  --ion-color-primary-contrast: var(--color-white);
+  --ion-color-secondary: var(--tenant-accent);
+  --ion-color-secondary-contrast: color-mix(in srgb, var(--tenant-text) 55%, var(--color-black) 45%);
+  --ion-color-tertiary: color-mix(in srgb, var(--tenant-accent) 30%, var(--color-white) 70%);
+  --ion-background-color: var(--tenant-bg-end);
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at top right, var(--tenant-bg-start) 0%, var(--tenant-bg-mid) 45%, var(--tenant-bg-end) 100%);
+  color: var(--tenant-text);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Fraunces', Georgia, serif;
+}

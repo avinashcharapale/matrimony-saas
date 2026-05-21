@@ -1,0 +1,31 @@
+<section class="section-block">
+  <div class="section-head">
+    <div>
+      <p class="section-label">Recently Joined</p>
+      <h2>Recently Added Profiles</h2>
+    </div>
+    <a routerLink="/profiles" class="btn btn-small">View All Profiles</a>
+  </div>
+  <div class="profiles-marquee">
+    <div class="profiles-track">
+      @for (profile of profiles; track profile.name) {
+      <article class="profile-card">
+        <div class="profile-head">
+          <span class="status">{{ profile.status }}</span>
+          @if (profile.photoUrl) {
+            <img class="avatar-photo" [src]="profile.photoUrl" [alt]="profile.name" loading="lazy" referrerpolicy="no-referrer" />
+          } @else {
+            <div class="avatar">{{ profile.icon }}</div>
+          }
+        </div>
+        <div class="profile-body">
+          <h3>{{ profile.name }}</h3>
+          <p>{{ profile.occupation }} - {{ profile.age }} yrs</p>
+          <p>{{ profile.location }}</p>
+        </div>
+        <a routerLink="/profiles" class="profile-link">View Profile</a>
+      </article>
+      }
+    </div>
+  </div>
+</section>

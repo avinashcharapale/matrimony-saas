@@ -1,1 +1,1 @@
-export * from './lib/matrimony-models/matrimony-models';
+export * from './lib/models';

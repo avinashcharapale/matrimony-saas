@@ -1,0 +1,37 @@
+<ion-page>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Browse Profiles</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <div class="profiles-container">
+      @if (profiles.length > 0) {
+      @for (profile of profiles; track profile.email ?? $index) {
+      <ion-card class="profile-card" button (click)="openProfile(profile)">
+        <img [src]="getProfilePhotoUrl(profile)" [alt]="profile.name" class="profile-photo" />
+        <ion-card-header>
+          <ion-card-title>{{ profile.name }}, {{ profile.age ?? '-' }}</ion-card-title>
+          <ion-card-subtitle>{{ profile.occupation ?? 'Professional' }} • {{ profile.location ?? 'Maharashtra' }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p class="bio">{{ profile.bio ?? 'Seeking a meaningful relationship' }}</p>
+          <div class="card-actions">
+            <button ion-button fill="solid" size="small" (click)="$event.stopPropagation(); openProfile(profile)">
+              View Details
+            </button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+      }
+      } @else {
+      <ion-card class="empty-state">
+        <ion-card-content>
+          <p>No profiles available at the moment.</p>
+        </ion-card-content>
+      </ion-card>
+      }
+    </div>
+  </ion-content>
+</ion-page>

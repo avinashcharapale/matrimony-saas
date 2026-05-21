@@ -1,0 +1,171 @@
+<section>
+  <h2>Personal Details</h2>
+  <div class="field-grid">
+    <div class="form-field">
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" name="firstName" [(ngModel)]="vm.firstName" required maxlength="40" pattern="[A-Za-z ]+" />
+    </div>
+
+    <div class="form-field">
+      <label for="middleName">Middle Name</label>
+      <input type="text" id="middleName" name="middleName" [(ngModel)]="vm.middleName" maxlength="40" pattern="[A-Za-z ]*" />
+    </div>
+
+    <div class="form-field">
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" name="lastName" [(ngModel)]="vm.lastName" required maxlength="40" pattern="[A-Za-z ]+" />
+    </div>
+
+    <div class="form-field">
+      <label for="dobDay">Date of Birth</label>
+      <div class="date-group">
+        <select id="dobDay" name="dobDay" [(ngModel)]="vm.dobDay" required>
+          <option value="">DD</option>
+          @for (d of vm.days; track d) { <option [value]="d">{{ d }}</option> }
+        </select>
+        <select name="dobMonth" [(ngModel)]="vm.dobMonth" required>
+          <option value="">MM</option>
+          @for (m of vm.months; track m) { <option [value]="m">{{ m }}</option> }
+        </select>
+        <select name="dobYear" [(ngModel)]="vm.dobYear" required>
+          <option value="">YYYY</option>
+          @for (y of vm.years; track y) { <option [value]="y">{{ y }}</option> }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="gender">Gender</label>
+      <select id="gender" name="gender" [(ngModel)]="vm.gender" required>
+        <option value="">Select</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="religion">Religion</label>
+      <select id="religion" name="religion" [(ngModel)]="vm.religion" required>
+        <option value="">Select</option>
+        @for (opt of religionOptions; track opt.valueCode) {
+          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="caste">Caste</label>
+      <select id="caste" name="caste" [(ngModel)]="vm.caste">
+        <option value="">Select</option>
+        @for (opt of casteOptions; track opt.valueCode) {
+          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="subCast">Sub Cast</label>
+      <select id="subCast" name="subCast" [(ngModel)]="vm.subCast">
+        <option value="">Select</option>
+        @for (opt of subCastOptions; track opt.valueCode) {
+          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="maritalStatus">Marital Status</label>
+      <select id="maritalStatus" name="maritalStatus" [(ngModel)]="vm.maritalStatus">
+        <option value="Unmarried">Unmarried Boy</option>
+        <option value="Divorced">Divorced</option>
+        <option value="Widowed">Widowed</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="heightFt">Height</label>
+      <div class="height-group">
+        <select id="heightFt" name="heightFt" [(ngModel)]="vm.heightFt">
+          @for (ft of ['4','5','6','7']; track ft) { <option [value]="ft">{{ ft }}</option> }
+        </select>
+        <select name="heightIn" [(ngModel)]="vm.heightIn">
+          @for (inch of ['0','1','2','3','4','5','6','7','8','9','10','11']; track inch) { <option [value]="inch">{{ inch }}</option> }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="weightKg">Weight</label>
+      <select id="weightKg" name="weightKg" [(ngModel)]="vm.weightKg">
+        @for (w of ['40','45','50','55','60','65','70','75','80']; track w) { <option [value]="w">{{ w }}</option> }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="bloodGroup">Blood Group</label>
+      <select id="bloodGroup" name="bloodGroup" [(ngModel)]="vm.bloodGroup">
+        <option value="A+">A+</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B-">B-</option>
+        <option value="O+">O+</option>
+        <option value="O-">O-</option>
+        <option value="AB+">AB+</option>
+        <option value="AB-">AB-</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="complexion">Complexion</label>
+      <select id="complexion" name="complexion" [(ngModel)]="vm.complexion">
+        <option value="Fair">FAIR</option>
+        <option value="Wheatish">Wheatish</option>
+        <option value="Dusky">Dusky</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="physicalDisability">Physical Disabilities</label>
+      <select id="physicalDisability" name="physicalDisability" [(ngModel)]="vm.physicalDisability">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="disabilityDetail">If Yes, Please Specify</label>
+      <input type="text" id="disabilityDetail" name="disabilityDetail" [(ngModel)]="vm.disabilityDetail" />
+    </div>
+
+    <div class="form-field">
+      <label for="diet">Diet</label>
+      <select id="diet" name="diet" [(ngModel)]="vm.diet">
+        <option value="N/A">N/A</option>
+        <option value="Veg">Veg</option>
+        <option value="Non-Veg">Non-Veg</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="spectacles">Spectacles</label>
+      <select id="spectacles" name="spectacles" [(ngModel)]="vm.spectacles">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="lens">Lens</label>
+      <select id="lens" name="lens" [(ngModel)]="vm.lens">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="personality">Personality</label>
+      <input type="text" id="personality" name="personality" [(ngModel)]="vm.personality" />
+    </div>
+  </div>
+</section>

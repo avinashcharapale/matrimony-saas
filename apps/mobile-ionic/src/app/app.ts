@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
   selector: 'app-root',
+  standalone: true,
+  imports: [IonicModule, RouterModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {
-  protected title = 'mobile-ionic';
-}
+export class App {}

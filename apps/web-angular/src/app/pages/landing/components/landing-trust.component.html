@@ -1,0 +1,14 @@
+<section class="section-block">
+  <p class="section-label">Why Trusted</p>
+  <h2>Best {{ tenantDisplayName }} Matrimony</h2>
+  <div class="trust-grid">
+    @for (card of trustCards; track card.title) {
+    <article class="trust-card">
+      <div class="trust-icon">{{ card.icon }}</div>
+      <h3>{{ card.value }}</h3>
+      <h4>{{ card.title }}</h4>
+      <p>{{ card.description }}</p>
+    </article>
+    }
+  </div>
+</section>

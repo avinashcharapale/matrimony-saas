@@ -1,0 +1,71 @@
+<section>
+  <h2>Educational / Professional Details</h2>
+  <div class="field-grid compact">
+    <div class="form-field">
+      <label for="educationArea">Education Area (It's important)</label>
+      <select id="educationArea" name="educationArea" [(ngModel)]="vm.educationArea" required>
+        <option value="">Select</option>
+        @for (opt of educationAreaOptions; track opt.valueCode) {
+          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="education">Education</label>
+      <input type="text" id="education" name="education" [(ngModel)]="vm.education" required maxlength="120" />
+    </div>
+
+    <div class="form-field">
+      <label for="occupationType">Occupation Type (It's important)</label>
+      <select id="occupationType" name="occupationType" [(ngModel)]="vm.occupationType" required>
+        <option value="">Select</option>
+        @for (opt of occupationTypeOptions; track opt.valueCode) {
+          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="occupationDetails">Occupation Details</label>
+      <input type="text" id="occupationDetails" name="occupationDetails" [(ngModel)]="vm.occupationDetails" required maxlength="120" />
+    </div>
+
+    <div class="form-field">
+      <label for="workingState">Working State / Country</label>
+      <select id="workingState" name="workingState"
+              [(ngModel)]="workingStateId"
+              (ngModelChange)="onWorkingStateChange($event)">
+        <option [value]="null">Select State</option>
+        @for (s of workingStates; track s.stateId) {
+          <option [value]="s.stateId">{{ s.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="workingCityCountry">Working City / District</label>
+      <select id="workingCityCountry" name="workingCityCountry"
+              [(ngModel)]="vm.workingCityCountry" required
+              [disabled]="workingDistricts.length === 0">
+        <option value="">Select District</option>
+        @for (d of workingDistricts; track d.districtId) {
+          <option [value]="d.name">{{ d.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-field">
+      <label for="incomeAmount">Income Amount</label>
+      <input type="text" id="incomeAmount" name="incomeAmount" [(ngModel)]="vm.incomeAmount" pattern="[0-9.]*" maxlength="12" />
+    </div>
+
+    <div class="form-field">
+      <label for="incomePeriod">Income Period</label>
+      <select id="incomePeriod" name="incomePeriod" [(ngModel)]="vm.incomePeriod">
+        <option value="Per Month">Per Month</option>
+        <option value="Per Year">Per Year</option>
+      </select>
+    </div>
+  </div>
+</section>

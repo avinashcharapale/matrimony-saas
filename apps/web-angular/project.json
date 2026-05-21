@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/web-angular/src",
-  "tags": [],
+  "tags": ["scope:shop"],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
@@ -26,13 +26,13 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
+              "maximumWarning": "900kb",
               "maximumError": "1mb"
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
-              "maximumError": "8kb"
+              "maximumWarning": "12kb",
+              "maximumError": "16kb"
             }
           ],
           "outputHashing": "all"

@@ -1,0 +1,30 @@
+<section class="section-block split">
+  <div>
+    <p class="section-label">Why Choose Us</p>
+    <h2>Why Choose {{ tenantDisplayName }}?</h2>
+    <p class="section-subtitle">The most trusted matrimony platform with decades of service.</p>
+    <div class="stack-cards">
+      @for (feature of whyChoose; track feature.title) {
+      <article class="info-card">
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+      </article>
+      }
+    </div>
+  </div>
+
+  <div>
+    <h2>How It Works</h2>
+    <div class="stack-cards">
+      @for (step of howItWorks; track step.title; let idx = $index) {
+      <article class="step-card">
+        <div class="step-no">{{ idx + 1 }}</div>
+        <div>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.description }}</p>
+        </div>
+      </article>
+      }
+    </div>
+  </div>
+</section>

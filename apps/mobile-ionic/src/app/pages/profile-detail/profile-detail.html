@@ -1,0 +1,102 @@
+<ion-page>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/profiles"></ion-back-button>
+      </ion-buttons>
+      <ion-title>Profile Detail</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    @if (profile) {
+    <div class="profile-detail-container">
+      <!-- Photo Section -->
+      <div class="photo-section">
+        <img 
+          [src]="currentPhotoIndex === 0 ? getProfilePhoto() : getProfilePhoto(true)" 
+          [alt]="profile.name" 
+          class="profile-photo"
+          (click)="openGallery()"
+          title="Click to view gallery"
+        />
+        @if ((profile.registrationDetails?.photos?.length || 0) > 1) {
+        <div class="photo-nav">
+          <button class="photo-btn prev" (click)="prevPhoto()">‹</button>
+          <span class="photo-indicator">{{ currentPhotoIndex + 1 }}/2</span>
+          <button class="photo-btn next" (click)="nextPhoto()">›</button>
+        </div>
+        }
+      </div>
+
+      <!-- Member Info Card -->
+      <div class="member-card">
+        <h1>{{ profile.name }}</h1>
+        <p class="member-id">{{ getMemberId() }}</p>
+        <p class="member-meta">{{ profile.age }} years • {{ profile.location }}</p>
+        <button class="connect-btn">Connect Now</button>
+      </div>
+
+      <!-- Sections -->
+      @for (section of sections; track section.title) {
+      <div class="detail-section">
+        <h2>{{ section.title }}</h2>
+        <div class="fields-list">
+          @for (item of section.fields; track item.label) {
+          <div class="field-item">
+            <span class="field-label">{{ item.label }}</span>
+            <span class="field-value">{{ item.value }}</span>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Gallery Modal -->
+    @if (isGalleryOpen) {
+    <div class="mobile-gallery-overlay" (click)="closeGallery()">
+      <div class="mobile-gallery-modal" (click)="$event.stopPropagation()">
+        <button class="gallery-close-btn" (click)="closeGallery()">✕</button>
+        
+        <div class="mobile-gallery-container">
+          <button class="mobile-gallery-btn prev" (click)="prevGalleryPhoto()" [disabled]="galleryPhotos.length <= 1">‹</button>
+          
+          <img 
+            [src]="galleryPhotos[currentGalleryIndex]" 
+            [alt]="profile.name + ' - photo ' + (currentGalleryIndex + 1)"
+            class="mobile-gallery-image"
+          />
+          
+          <button class="mobile-gallery-btn next" (click)="nextGalleryPhoto()" [disabled]="galleryPhotos.length <= 1">›</button>
+        </div>
+
+        <div class="mobile-gallery-footer">
+          <p class="gallery-counter">{{ currentGalleryIndex + 1 }} / {{ galleryPhotos.length }}</p>
+          <div class="gallery-dots">
+            @for (photo of galleryPhotos; track $index; let i = $index) {
+            <button 
+              class="dot" 
+              [class.active]="i === currentGalleryIndex"
+              (click)="currentGalleryIndex = $index"
+            ></button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+    } @else {
+    <div class="empty-state">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Profile Not Found</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>The selected profile is unavailable.</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+    }
+  </ion-content>
+</ion-page>

@@ -1,0 +1,46 @@
+<header class="app-header">
+  <div class="app-toolbar">
+    <div class="brand-block">
+      <div class="brand-icon">
+        @if (tenant.logoUrl) {
+        <img [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" class="brand-icon-img" />
+        } @else {
+        <span>{{ tenant.logoEmoji || '🌼' }}</span>
+        }
+      </div>
+      <div>
+        <p class="brand-title">{{ tenant.displayName }}</p>
+        <p class="brand-subtitle">{{ tenant.tagline }}</p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      [attr.aria-expanded]="isMobileMenuOpen"
+      aria-label="Toggle navigation menu"
+      (click)="toggleMobileMenu()"
+    >
+      {{ isMobileMenuOpen ? 'Close' : 'Menu' }}
+    </button>
+
+    <div class="toolbar-center" [class.open]="isMobileMenuOpen">
+      <nav class="main-nav">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Home</a>
+        <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">Rules</a>
+        <a routerLink="/register" routerLinkActive="active" (click)="closeMobileMenu()">Register</a>
+        <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
+        <a routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">Login</a>
+        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Contact Us</a>
+      </nav>
+    </div>
+
+    <div class="toolbar-right" [class.open]="isMobileMenuOpen">
+      <p class="toolbar-contact">📞 {{ tenant.supportPhone }} | ✉️ {{ tenant.supportEmail }}</p>
+      <a routerLink="/success-stories" class="menu-cta" routerLinkActive="active-cta" (click)="closeMobileMenu()">Success Stories</a>
+    </div>
+  </div>
+</header>
+<main class="app-content">
+  <router-outlet></router-outlet>
+</main>
