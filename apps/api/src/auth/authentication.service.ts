@@ -46,8 +46,7 @@ export class AuthenticationService {
    */
   async login(request: LoginRequest): Promise<LoginResponse> {
     try {
-      // For now, assume tenantId = 1 (in production, derive from context)
-      const tenantId = 1;
+      const tenantId = request.tenantId || 1;
 
       // Get user from database
       const user = await this.db.getUserByEmail(request.email, tenantId);
@@ -72,6 +71,8 @@ export class AuthenticationService {
         user.id,
         CryptoUtil.hashToken(CryptoUtil.generateToken()),
         refreshTokenExpiresAt,
+        undefined,
+        undefined,
         request.deviceId
       );
 
@@ -82,12 +83,16 @@ export class AuthenticationService {
       };
 
       const tokenPair = JwtUtil.generateTokenPair(jwtPayload, refreshTokenId);
+      await this.db.updateRefreshTokenHash(refreshTokenId, CryptoUtil.hashToken(tokenPair.refreshToken));
 
       // Create session
       const sessionExpiresAt = new Date(Date.now() + this.config.sessionExpiresInMs);
+      const sessionToken = CryptoUtil.generateToken();
       const sessionHash = CryptoUtil.hashToken(CryptoUtil.generateToken());
       await this.db.createSession(
         user.id,
+        user.tenantId,
+        sessionToken,
         sessionHash,
         sessionExpiresAt,
         request.deviceId,
@@ -95,7 +100,7 @@ export class AuthenticationService {
       );
 
       // Record login
-      await this.db.recordLogin(user.id);
+      await this.db.recordLogin(user.id, user.tenantId);
 
       return {
         accessToken: tokenPair.accessToken,
@@ -137,6 +142,7 @@ export class AuthenticationService {
       const passwordHash = await CryptoUtil.hashPassword(request.password);
 
       const user = await this.db.createUser(request.email, passwordHash, tenantId);
+      await this.db.ensureAuthenticationMethod(user.id, 'email_password', true);
 
       const refreshTokenExpiresAt = new Date(Date.now() + this.parseExpiry(this.config.refreshTokenExpiresIn));
       const refreshTokenId = await this.db.storeRefreshToken(
@@ -154,18 +160,22 @@ export class AuthenticationService {
       };
 
       const tokenPair = JwtUtil.generateTokenPair(jwtPayload, refreshTokenId);
+      await this.db.updateRefreshTokenHash(refreshTokenId, CryptoUtil.hashToken(tokenPair.refreshToken));
 
       const sessionExpiresAt = new Date(Date.now() + this.config.sessionExpiresInMs);
+      const sessionToken = CryptoUtil.generateToken();
       const sessionHash = CryptoUtil.hashToken(CryptoUtil.generateToken());
       await this.db.createSession(
         user.id,
+        user.tenantId,
+        sessionToken,
         sessionHash,
         sessionExpiresAt,
         request.deviceId,
         request.deviceInfo
       );
 
-      await this.db.recordLogin(user.id);
+      await this.db.recordLogin(user.id, user.tenantId);
 
       return {
         accessToken: tokenPair.accessToken,
@@ -189,11 +199,16 @@ export class AuthenticationService {
     try {
       // Verify refresh token
       const decoded = JwtUtil.verifyRefreshToken(refreshToken);
+      const tokenId = this.toBigInt(decoded.tokenId);
 
       // Get refresh token record
-      const tokenRecord = await this.db.getRefreshTokenByHash(CryptoUtil.hashToken(refreshToken));
+      const tokenRecord = await this.db.getRefreshTokenById(tokenId);
       if (!tokenRecord || tokenRecord.isRevoked) {
         throw new Error('Refresh token is invalid or revoked');
+      }
+
+      if (tokenRecord.tokenHash !== CryptoUtil.hashToken(refreshToken)) {
+        throw new Error('Refresh token is invalid');
       }
 
       if (new Date(tokenRecord.expiresAt) < new Date()) {
@@ -214,6 +229,7 @@ export class AuthenticationService {
       };
 
       const newTokenPair = JwtUtil.generateTokenPair(jwtPayload, tokenRecord.refreshTokenId);
+      await this.db.updateRefreshTokenHash(tokenRecord.refreshTokenId, CryptoUtil.hashToken(newTokenPair.refreshToken));
 
       return newTokenPair;
     } catch (error) {
@@ -228,7 +244,7 @@ export class AuthenticationService {
     try {
       // Revoke refresh token
       const decoded = JwtUtil.verifyRefreshToken(refreshToken);
-      await this.db.revokeRefreshToken(decoded.tokenId);
+      await this.db.revokeRefreshToken(this.toBigInt(decoded.tokenId));
 
       // Terminate session if provided
       if (sessionId) {
@@ -274,8 +290,7 @@ export class AuthenticationService {
       const newPasswordHash = await CryptoUtil.hashPassword(newPassword);
 
       // Update password in database
-      // In production, implement in AuthDatabase
-      throw new Error('Password update not yet implemented in database layer');
+      await this.db.updateUserPassword(userId, newPasswordHash);
     } catch (error) {
       throw new Error(`Change password failed: ${(error as Error).message}`);
     }
@@ -309,5 +324,12 @@ export class AuthenticationService {
       default:
         return 7 * 24 * 60 * 60 * 1000;
     }
+  }
+
+  private toBigInt(value: bigint | number | string): bigint {
+    if (typeof value === 'bigint') {
+      return value;
+    }
+    return BigInt(value);
   }
 }

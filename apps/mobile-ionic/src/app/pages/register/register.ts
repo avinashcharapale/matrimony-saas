@@ -3,7 +3,7 @@ import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MemberService } from '../../services/member.service';
+import { AuthService } from '@org/shared-services';
 import { RegisterFormDetails, createEmptyRegisterFormDetails } from '@org/models';
 
 @Component({
@@ -27,15 +27,17 @@ export class Register {
   };
   message = '';
   isError = false;
+  isLoading = false;
 
   constructor(
     private readonly router: Router,
-    private readonly memberService: MemberService
+    private readonly authService: AuthService
   ) {}
 
   submit(): void {
     this.message = '';
     this.isError = false;
+    this.isLoading = true;
 
     const fullName = [
       this.details.personal.firstName,
@@ -46,70 +48,64 @@ export class Register {
     if (!this.details.personal.firstName.trim() || !this.details.personal.lastName.trim()) {
       this.isError = true;
       this.message = 'First name and last name are required.';
+      this.isLoading = false;
       return;
     }
 
     if (!this.details.personal.religion.trim()) {
       this.isError = true;
       this.message = 'Religion is required.';
+      this.isLoading = false;
       return;
     }
 
     if (!this.email.trim() || !this.email.includes('@')) {
       this.isError = true;
       this.message = 'Enter a valid email address.';
+      this.isLoading = false;
       return;
     }
 
     if (this.password.trim().length < 8) {
       this.isError = true;
       this.message = 'Password must be at least 8 characters.';
+      this.isLoading = false;
       return;
     }
 
     if (this.password.trim() !== this.confirmPassword.trim()) {
       this.isError = true;
       this.message = 'Password and confirm password must match.';
+      this.isLoading = false;
       return;
     }
 
     if (this.details.verification.verificationInput.trim() !== this.details.verification.verificationCode) {
       this.isError = true;
       this.message = 'Enter the correct verification code.';
+      this.isLoading = false;
       return;
     }
 
-    const result = this.memberService.registerMember({
-      name: fullName,
-      email: this.email.trim().toLowerCase(),
-      password: this.password.trim(),
-      age: this.details.personal.dobYear ? new Date().getFullYear() - Number(this.details.personal.dobYear) : undefined,
-      location: this.details.contact.residenceAddress || this.details.professional.workingCityCountry,
-      occupation: this.details.professional.occupationDetails,
-      bio: [
-        this.details.professional.education && `Education: ${this.details.professional.education}`,
-        this.details.professional.occupationDetails && `Occupation: ${this.details.professional.occupationDetails}`,
-        this.details.expectations.expectedOccupationIncome && `Expectation: ${this.details.expectations.expectedOccupationIncome}`,
-      ].filter(Boolean).join(' | '),
-      registrationDetails: {
-        ...this.details,
-        contact: {
-          ...this.details.contact,
-          contactEmail: this.email.trim().toLowerCase(),
-        },
-        accountPassword: this.password.trim(),
+    this.authService
+      .register({
+        email: this.email.trim().toLowerCase(),
+        password: this.password.trim(),
         confirmPassword: this.confirmPassword.trim(),
-      },
-    });
-
-    if (!result.ok) {
-      this.isError = true;
-      this.message = result.message;
-      return;
-    }
-
-    this.message = 'Profile registered successfully. Please login.';
-    this.router.navigateByUrl('/login');
+        tenantId: 1,
+      })
+      .subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.message = `Profile registered successfully for ${fullName}.`;
+          this.router.navigateByUrl('/home');
+        },
+        error: (error) => {
+          this.isLoading = false;
+          this.isError = true;
+          this.message = error?.error?.error || 'Registration failed. Please try again.';
+        },
+      });
   }
 
   onPrimaryPhotoSelected(event: Event): void {

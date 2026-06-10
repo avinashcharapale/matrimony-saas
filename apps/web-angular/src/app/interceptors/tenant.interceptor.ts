@@ -4,7 +4,7 @@ import { TenantService } from '../services/tenant.service';
 
 export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
   const tenantService = inject(TenantService);
-  const tenantId = tenantService.tenant.id;
+  const tenantId = tenantService.tenantHeaderId;
 
   if (!tenantId) {
     return next(req);

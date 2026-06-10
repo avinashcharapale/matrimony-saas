@@ -17,7 +17,13 @@
     "paths": {
       "@org/models": ["libs/shared/models/src/index.ts"],
       "@org/shared-services": ["libs/shared-services/src/index.ts"],
-      "@org/matrimony-models": ["libs/matrimony-models/src/index.ts"]
+      "@org/matrimony-models": ["libs/matrimony-models/src/index.ts"],
+      "@org/api/identity": ["src/app/api/identity/index.ts"],
+      "@org/api/tenant": ["src/app/api/tenant/index.ts"],
+      "@org/api/profile": ["src/app/api/profile/index.ts"],
+      "@org/api/subscription": ["src/app/api/subscription/index.ts"],
+      "@org/api/match": ["src/app/api/match/index.ts"],
+      "@org/api/chat": ["src/app/api/chat/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -13,6 +13,7 @@ import { Events } from './pages/events/events';
 import { PhotoGallery } from './pages/photo-gallery/photo-gallery';
 import { Settings } from './pages/settings/settings';
 import { SuccessStories } from './pages/success-stories/success-stories';
+import { authGuard } from './guards/auth.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -22,14 +23,14 @@ export const appRoutes: Route[] = [
       { path: '', component: Landing },
       { path: 'login', component: Login },
       { path: 'register', component: Register },
-      { path: 'home', component: Home },
-      { path: 'profiles', component: ProfileList },
-      { path: 'profiles/:id', component: ProfileDetail },
-      { path: 'interests', component: Interests },
-      { path: 'messages', component: Messages },
-      { path: 'events', component: Events },
-      { path: 'gallery', component: PhotoGallery },
-      { path: 'settings', component: Settings },
+      { path: 'home', component: Home, canActivate: [authGuard] },
+      { path: 'profiles', component: ProfileList, canActivate: [authGuard] },
+      { path: 'profiles/:id', component: ProfileDetail, canActivate: [authGuard] },
+      { path: 'interests', component: Interests, canActivate: [authGuard] },
+      { path: 'messages', component: Messages, canActivate: [authGuard] },
+      { path: 'events', component: Events, canActivate: [authGuard] },
+      { path: 'gallery', component: PhotoGallery, canActivate: [authGuard] },
+      { path: 'settings', component: Settings, canActivate: [authGuard] },
       {
         path: 'rules',
         component: MenuPage,
@@ -43,7 +44,7 @@ export const appRoutes: Route[] = [
           ],
         },
       },
-      { path: 'search', component: ProfileList },
+      { path: 'search', component: ProfileList, canActivate: [authGuard] },
       { path: 'success-stories', component: SuccessStories },
       {
         path: 'contact',

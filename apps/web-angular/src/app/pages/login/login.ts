@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { TenantService } from '../../services/tenant.service';
-import { MemberService } from '../../services/member.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,8 +15,9 @@ import { MemberService } from '../../services/member.service';
 })
 export class Login {
   readonly tenant = inject(TenantService).tenant;
-  private readonly memberService = inject(MemberService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   email = '';
   password = '';
@@ -26,10 +27,12 @@ export class Login {
   async submit(form: NgForm): Promise<void> {
     this.message = '';
     this.isLoading = true;
+    this.cdr.detectChanges();
 
     if (form.invalid) {
       this.message = 'Please enter a valid email and password.';
       this.isLoading = false;
+      this.cdr.detectChanges();
       return;
     }
 
@@ -39,19 +42,24 @@ export class Login {
     if (password.length < 6) {
       this.message = 'Password must be at least 6 characters.';
       this.isLoading = false;
+      this.cdr.detectChanges();
       return;
     }
 
     try {
-      const result = await this.memberService.login(email, password);
-      this.message = result.message;
+      const result = await this.authService.login(email, password);
       if (result.ok) {
         this.router.navigateByUrl('/home');
+      } else {
+        this.message = result.message;
+        this.cdr.detectChanges();
       }
-    } catch (error: any) {
-      this.message = error.message || 'Login failed. Please try again.';
+    } catch {
+      this.message = 'Login failed. Please try again.';
+      this.cdr.detectChanges();
     } finally {
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 }

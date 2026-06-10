@@ -8,7 +8,7 @@ export const environment = {
   production: true,
   apiConfig: {
     ...API_CONFIG,
-    baseUrl: 'https://localhost:44307', // Gateway
+    baseUrl: 'http://localhost:8000', // YARP gateway
     identityUrl: 'https://localhost:44341',
     tenantUrl: 'https://localhost:44357',
     profileUrl: 'https://localhost:7109',

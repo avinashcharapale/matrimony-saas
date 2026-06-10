@@ -69,6 +69,28 @@ export const THEME_PALETTES: ThemePalette[] = [
 
 export const TENANT_CONFIGS: TenantConfig[] = [
   {
+    id: 'demo',
+    displayName: 'Matrimony Demo',
+    logoText: 'Matrimony',
+    logoEmoji: '💍',
+    tagline: 'Trusted Matrimony Platform',
+    heroTitle: 'Find Your Life Partner',
+    heroSubtitle: 'Trusted by thousands of families',
+    heroDescription: 'Join the trusted matrimonial platform with real profiles, guidance, and simple enrollment.',
+    heroImage: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1600&q=80',
+    primaryColor: '#b45309',
+    accentColor: '#fbbf24',
+    defaultThemeId: 'warm-ivory',
+    supportPhone: '+91 9999999999',
+    supportEmail: 'support@demo.matrimony.local',
+    supportAddress: 'Demo Address',
+    copyrightText: '© 2026 Matrimony Demo. All rights reserved.',
+    ctaLogin: 'Sign In',
+    ctaEnroll: 'Register Now',
+    domainAliases: ['demo.matrimony.local', 'localhost'],
+    pathAliases: ['demo'],
+  },
+  {
     id: 'anand-maratha',
     displayName: 'Anand Maratha',
     logoText: 'Anand Maratha',
@@ -113,6 +135,13 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     pathAliases: ['petwatch'],
   },
 ];
+
+/** Tenant code returned by the gateway resolve endpoint → local tenant id */
+export const TENANT_CODE_MAP: Record<string, string> = {
+  DEMO_TENANT: 'demo',
+  ANAND_MARATHA: 'anand-maratha',
+  PETWATCH: 'petwatch',
+};
 
 export const DEFAULT_TENANT = TENANT_CONFIGS[0];
 

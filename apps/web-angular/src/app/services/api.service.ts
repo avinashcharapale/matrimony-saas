@@ -5,21 +5,18 @@ import { Observable } from 'rxjs';
 export interface LoginRequest {
   email: string;
   password: string;
-  rememberMe?: boolean;
-  deviceId?: string;
-  deviceInfo?: string;
 }
 
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
-  expiresIn: number;
-  user: {
-    id: number;
-    email: string;
-    tenantId: number;
-  };
+  userId: number;
+  tenantId: number;
+  role: string;
+  expiresAt: string;
 }
+
+export type RefreshResponse = LoginResponse;
 
 export interface RegisterRequest {
   email: string;
@@ -28,7 +25,14 @@ export interface RegisterRequest {
   tenantId?: number;
 }
 
-export type RegisterResponse = LoginResponse;
+export interface RegisterResponse {
+  accessToken: string;
+  refreshToken: string;
+  userId: number;
+  tenantId: number;
+  role: string;
+  expiresAt: string;
+}
 
 export interface ProfileSearchResult {
   profileId: number;
@@ -101,8 +105,8 @@ export class ApiService {
     return this.http.post<{ message: string }>(`${this.apiUrl}/auth/logout`, { refreshToken });
   }
 
-  refreshToken(refreshToken: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/refresh`, { refreshToken });
+  refreshToken(refreshToken: string): Observable<RefreshResponse> {
+    return this.http.post<RefreshResponse>(`${this.apiUrl}/auth/refresh`, { refreshToken });
   }
 
   getCurrentUser(): Observable<any> {

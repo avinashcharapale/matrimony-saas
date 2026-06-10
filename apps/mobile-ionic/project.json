@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/mobile-ionic/src",
-  "tags": [],
+  "tags": ["scope:shop"],
   "targets": {
     "build": {
       "executor": "@angular/build:application",

@@ -5,6 +5,13 @@ import { tap } from 'rxjs/operators';
 import { LoginRequest, LoginResponse, User } from '@org/models';
 import { API_CONFIG } from './config/api.config';
 
+interface RegisterPayload {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  tenantId?: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -47,7 +54,7 @@ export class AuthService {
   /**
    * Register a new user
    */
-  register(userData: Partial<User> & { password: string }): Observable<LoginResponse> {
+  register(userData: RegisterPayload): Observable<LoginResponse> {
     const url = `${this.baseUrl}/auth/register`;
     return this.http.post<LoginResponse>(url, userData).pipe(
       tap((response) => {
@@ -64,7 +71,8 @@ export class AuthService {
    */
   logout(): Observable<void> {
     const url = `${this.baseUrl}/auth/logout`;
-    return this.http.post<void>(url, {}).pipe(
+    const refreshToken = localStorage.getItem('refreshToken');
+    return this.http.post<void>(url, { refreshToken }).pipe(
       tap(() => {
         this.currentUserSubject.next(null);
         localStorage.removeItem('accessToken');

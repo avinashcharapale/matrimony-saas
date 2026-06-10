@@ -1,0 +1,78 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Generate All API Clients",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/generate-clients.ps1"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Identity Client",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/generate-clients.ps1", "-Service", "identity"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Profile Client",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/generate-clients.ps1", "-Service", "profile"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Match Client",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/generate-clients.ps1", "-Service", "match"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Chat Client",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/generate-clients.ps1", "-Service", "chat"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Subscription Client",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/generate-clients.ps1", "-Service", "subscription"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Tenant Client",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/generate-clients.ps1", "-Service", "tenant"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1851,4 +1851,412 @@ LEFT JOIN dbo.ProfileHoroscopeDetails phd ON phd.ProfileId = p.ProfileId
 LEFT JOIN dbo.ProfileProfessionalDetails prf ON prf.ProfileId = p.ProfileId;
 GO
 
-PRINT 'Single-file reset + recreate completed.';
+/* ==============================
+   2026-05-22 schema alignment
+   Adds missing objects from exported DB script
+   ============================== */
+
+IF OBJECT_ID('dbo.Countries', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.Countries (
+    CountryId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    Code NVARCHAR(3) NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    NameMr NVARCHAR(100) NULL,
+    IsDefault BIT NOT NULL CONSTRAINT DF_Countries_IsDefault DEFAULT (0),
+    IsActive BIT NOT NULL CONSTRAINT DF_Countries_IsActive DEFAULT (1),
+    CONSTRAINT UQ_Countries_Code UNIQUE (Code)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.States', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.States (
+    StateId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    CountryId INT NOT NULL,
+    Code NVARCHAR(5) NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    NameMr NVARCHAR(100) NULL,
+    IsActive BIT NOT NULL CONSTRAINT DF_States_IsActive DEFAULT (1),
+    CONSTRAINT UQ_States_Code UNIQUE (CountryId, Code),
+    CONSTRAINT FK_States_Country FOREIGN KEY (CountryId) REFERENCES dbo.Countries(CountryId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.Districts', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.Districts (
+    DistrictId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    StateId INT NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    NameMr NVARCHAR(100) NULL,
+    IsActive BIT NOT NULL CONSTRAINT DF_Districts_IsActive DEFAULT (1),
+    CONSTRAINT UQ_Districts UNIQUE (StateId, Name),
+    CONSTRAINT FK_Districts_State FOREIGN KEY (StateId) REFERENCES dbo.States(StateId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.Talukas', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.Talukas (
+    TalukaId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    DistrictId INT NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    NameMr NVARCHAR(100) NULL,
+    IsActive BIT NOT NULL CONSTRAINT DF_Talukas_IsActive DEFAULT (1),
+    CONSTRAINT UQ_Talukas UNIQUE (DistrictId, Name),
+    CONSTRAINT FK_Talukas_District FOREIGN KEY (DistrictId) REFERENCES dbo.Districts(DistrictId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.TenantFeatures', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.TenantFeatures (
+    FeatureId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_TenantFeatures PRIMARY KEY,
+    TenantId INT NOT NULL,
+    FeatureName NVARCHAR(100) NOT NULL,
+    IsEnabled BIT NOT NULL CONSTRAINT DF_TenantFeatures_IsEnabled DEFAULT (1),
+    CreatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_TenantFeatures_CreatedAt DEFAULT SYSUTCDATETIME(),
+    UpdatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_TenantFeatures_UpdatedAt DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_TenantFeatures_Tenant FOREIGN KEY (TenantId) REFERENCES dbo.Tenants(TenantId) ON DELETE CASCADE
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.TenantSettings', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.TenantSettings (
+    SettingId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_TenantSettings PRIMARY KEY,
+    TenantId INT NOT NULL,
+    SettingKey NVARCHAR(100) NOT NULL,
+    SettingValue NVARCHAR(MAX) NULL,
+    CreatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_TenantSettings_CreatedAt DEFAULT SYSUTCDATETIME(),
+    UpdatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_TenantSettings_UpdatedAt DEFAULT SYSUTCDATETIME(),
+    RowVersion ROWVERSION NOT NULL,
+    CONSTRAINT FK_TenantSettings_Tenant FOREIGN KEY (TenantId) REFERENCES dbo.Tenants(TenantId) ON DELETE CASCADE
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.Interests', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.Interests (
+    InterestId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    ProfileId INT NOT NULL,
+    InterestText NVARCHAR(200) NOT NULL,
+    CreatedAt DATETIME2(7) NULL CONSTRAINT DF_Interests_CreatedAt DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_Interests_Profile FOREIGN KEY (ProfileId) REFERENCES dbo.Profiles(ProfileId) ON DELETE CASCADE
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.ProfileBlocks', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.ProfileBlocks (
+    TenantId INT NOT NULL,
+    BlockerProfileId INT NOT NULL,
+    BlockedProfileId INT NOT NULL,
+    CreatedAt DATETIME2(7) NULL CONSTRAINT DF_ProfileBlocks_CreatedAt DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT PK_ProfileBlocks PRIMARY KEY (TenantId, BlockerProfileId, BlockedProfileId),
+    CONSTRAINT CHK_ProfileBlocks_NotSelf CHECK (BlockerProfileId <> BlockedProfileId),
+    CONSTRAINT FK_ProfileBlocks_Tenant FOREIGN KEY (TenantId) REFERENCES dbo.Tenants(TenantId),
+    CONSTRAINT FK_ProfileBlocks_BlockerTenant FOREIGN KEY (BlockerProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_ProfileBlocks_BlockedTenant FOREIGN KEY (BlockedProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.ProfileFavorites', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.ProfileFavorites (
+    TenantId INT NOT NULL,
+    ProfileId INT NOT NULL,
+    FavoriteProfileId INT NOT NULL,
+    CreatedAt DATETIME2(7) NULL CONSTRAINT DF_ProfileFavorites_CreatedAt DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT PK_ProfileFavorites PRIMARY KEY (TenantId, ProfileId, FavoriteProfileId),
+    CONSTRAINT CHK_ProfileFavorites_NotSelf CHECK (ProfileId <> FavoriteProfileId),
+    CONSTRAINT FK_ProfileFavorites_Tenant FOREIGN KEY (TenantId) REFERENCES dbo.Tenants(TenantId),
+    CONSTRAINT FK_ProfileFavorites_ProfileTenant FOREIGN KEY (ProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_ProfileFavorites_FavoriteTenant FOREIGN KEY (FavoriteProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.ProfileReports', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.ProfileReports (
+    ReportId BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    TenantId INT NOT NULL,
+    ReporterProfileId INT NULL,
+    ReportedProfileId INT NULL,
+    Reason NVARCHAR(250) NULL,
+    CreatedAt DATETIME2(7) NULL CONSTRAINT DF_ProfileReports_CreatedAt DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT CHK_ProfileReports_NotSelf CHECK (ReporterProfileId IS NULL OR ReportedProfileId IS NULL OR ReporterProfileId <> ReportedProfileId),
+    CONSTRAINT FK_ProfileReports_Tenant FOREIGN KEY (TenantId) REFERENCES dbo.Tenants(TenantId),
+    CONSTRAINT FK_ProfileReports_ReporterTenant FOREIGN KEY (ReporterProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_ProfileReports_ReportedTenant FOREIGN KEY (ReportedProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.ChatConversations', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.ChatConversations (
+    ConversationId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    ProfileId1 INT NOT NULL,
+    ProfileId2 INT NOT NULL,
+    UserId1 INT NOT NULL,
+    UserId2 INT NOT NULL,
+    TenantId INT NOT NULL,
+    ConversationName NVARCHAR(200) NULL,
+    Type NVARCHAR(20) NOT NULL CONSTRAINT DF_ChatConversations_Type DEFAULT ('Private'),
+    Status NVARCHAR(20) NOT NULL CONSTRAINT DF_ChatConversations_Status DEFAULT ('Active'),
+    LastMessageDate DATETIME2(3) NULL,
+    LastMessageId INT NULL,
+    LastMessagePreview NVARCHAR(500) NULL,
+    IsArchived BIT NOT NULL CONSTRAINT DF_ChatConversations_IsArchived DEFAULT (0),
+    IsBlocked BIT NOT NULL CONSTRAINT DF_ChatConversations_IsBlocked DEFAULT (0),
+    BlockedByUserId INT NULL,
+    BlockedDate DATETIME2(3) NULL,
+    BlockReason NVARCHAR(250) NULL,
+    TotalMessagesCount INT NOT NULL CONSTRAINT DF_ChatConversations_TotalMessagesCount DEFAULT (0),
+    UnreadMessagesCount1 INT NOT NULL CONSTRAINT DF_ChatConversations_UnreadMessagesCount1 DEFAULT (0),
+    UnreadMessagesCount2 INT NOT NULL CONSTRAINT DF_ChatConversations_UnreadMessagesCount2 DEFAULT (0),
+    CreatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_ChatConversations_CreatedAt DEFAULT SYSUTCDATETIME(),
+    UpdatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_ChatConversations_UpdatedAt DEFAULT SYSUTCDATETIME(),
+    IsDeleted BIT NOT NULL CONSTRAINT DF_ChatConversations_IsDeleted DEFAULT (0),
+    CreatedBy INT NULL,
+    UpdatedBy INT NULL,
+    RowVersion ROWVERSION NOT NULL,
+    CONSTRAINT UQ_ChatConversations_UserPairTenant UNIQUE (TenantId, UserId1, UserId2),
+    CONSTRAINT CHK_ChatConversations_DistinctProfiles CHECK (ProfileId1 <> ProfileId2),
+    CONSTRAINT CHK_ChatConversations_DistinctUsers CHECK (UserId1 <> UserId2),
+    CONSTRAINT CHK_ChatConversations_Type CHECK (Type IN ('Private', 'Group', 'Support')),
+    CONSTRAINT CHK_ChatConversations_Status CHECK (Status IN ('Active', 'Inactive', 'Blocked', 'Archived', 'Deleted')),
+    CONSTRAINT CHK_ChatConversations_UnreadCounts CHECK (TotalMessagesCount >= 0 AND UnreadMessagesCount1 >= 0 AND UnreadMessagesCount2 >= 0),
+    CONSTRAINT FK_ChatConversations_Tenant FOREIGN KEY (TenantId) REFERENCES dbo.Tenants(TenantId),
+    CONSTRAINT FK_ChatConversations_Profile1Tenant FOREIGN KEY (ProfileId1, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_ChatConversations_Profile2Tenant FOREIGN KEY (ProfileId2, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_ChatConversations_User1Tenant FOREIGN KEY (UserId1, TenantId) REFERENCES dbo.Users(Id, TenantId),
+    CONSTRAINT FK_ChatConversations_User2Tenant FOREIGN KEY (UserId2, TenantId) REFERENCES dbo.Users(Id, TenantId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.ChatMessages', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.ChatMessages (
+    MessageId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    ConversationId INT NOT NULL,
+    SenderProfileId INT NOT NULL,
+    SenderUserId INT NOT NULL,
+    TenantId INT NOT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    Type NVARCHAR(20) NOT NULL CONSTRAINT DF_ChatMessages_Type DEFAULT ('Text'),
+    Status NVARCHAR(20) NOT NULL CONSTRAINT DF_ChatMessages_Status DEFAULT ('Sent'),
+    SentDate DATETIME2(3) NOT NULL CONSTRAINT DF_ChatMessages_SentDate DEFAULT SYSUTCDATETIME(),
+    DeliveredDate DATETIME2(3) NULL,
+    ReadDate DATETIME2(3) NULL,
+    EditedDate DATETIME2(3) NULL,
+    IsEdited BIT NOT NULL CONSTRAINT DF_ChatMessages_IsEdited DEFAULT (0),
+    DeletedDate DATETIME2(3) NULL,
+    DeletedByUserId INT NULL,
+    ReplyToMessageId INT NULL,
+    Metadata NVARCHAR(MAX) NULL,
+    IsEncrypted BIT NOT NULL CONSTRAINT DF_ChatMessages_IsEncrypted DEFAULT (0),
+    EncryptionKey NVARCHAR(255) NULL,
+    CreatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_ChatMessages_CreatedAt DEFAULT SYSUTCDATETIME(),
+    UpdatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_ChatMessages_UpdatedAt DEFAULT SYSUTCDATETIME(),
+    IsDeleted BIT NOT NULL CONSTRAINT DF_ChatMessages_IsDeleted DEFAULT (0),
+    CreatedBy INT NULL,
+    UpdatedBy INT NULL,
+    RowVersion ROWVERSION NOT NULL,
+    CONSTRAINT CHK_ChatMessages_Content CHECK (LEN(LTRIM(RTRIM(Content))) > 0),
+    CONSTRAINT CHK_ChatMessages_Status CHECK (Status IN ('Sending', 'Sent', 'Delivered', 'Read', 'Failed', 'Deleted')),
+    CONSTRAINT CHK_ChatMessages_Type CHECK (Type IN ('Text', 'Image', 'Video', 'Audio', 'File', 'Location', 'Contact', 'System', 'Emoji', 'Gif')),
+    CONSTRAINT CHK_ChatMessages_EditState CHECK ((IsEdited = 0 AND EditedDate IS NULL) OR (IsEdited = 1 AND EditedDate IS NOT NULL)),
+    CONSTRAINT FK_ChatMessages_Conversation FOREIGN KEY (ConversationId) REFERENCES dbo.ChatConversations(ConversationId) ON DELETE CASCADE,
+    CONSTRAINT FK_ChatMessages_SenderProfileTenant FOREIGN KEY (SenderProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_ChatMessages_SenderUserTenant FOREIGN KEY (SenderUserId, TenantId) REFERENCES dbo.Users(Id, TenantId),
+    CONSTRAINT FK_ChatMessages_DeletedByUser FOREIGN KEY (DeletedByUserId) REFERENCES dbo.Users(Id),
+    CONSTRAINT FK_ChatMessages_ReplyToMessage FOREIGN KEY (ReplyToMessageId) REFERENCES dbo.ChatMessages(MessageId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.ChatParticipants', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.ChatParticipants (
+    ParticipantId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    ConversationId INT NOT NULL,
+    ProfileId INT NOT NULL,
+    UserId INT NOT NULL,
+    TenantId INT NOT NULL,
+    Role NVARCHAR(20) NOT NULL CONSTRAINT DF_ChatParticipants_Role DEFAULT ('Member'),
+    Status NVARCHAR(20) NOT NULL CONSTRAINT DF_ChatParticipants_Status DEFAULT ('Active'),
+    JoinedDate DATETIME2(3) NOT NULL CONSTRAINT DF_ChatParticipants_JoinedDate DEFAULT SYSUTCDATETIME(),
+    LeftDate DATETIME2(3) NULL,
+    LastSeenDate DATETIME2(3) NULL,
+    IsOnline BIT NOT NULL CONSTRAINT DF_ChatParticipants_IsOnline DEFAULT (0),
+    ReceiveNotifications BIT NOT NULL CONSTRAINT DF_ChatParticipants_ReceiveNotifications DEFAULT (1),
+    IsTyping BIT NOT NULL CONSTRAINT DF_ChatParticipants_IsTyping DEFAULT (0),
+    TypingStarted DATETIME2(3) NULL,
+    DisplayName NVARCHAR(150) NULL,
+    ProfilePhotoUrl NVARCHAR(400) NULL,
+    CreatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_ChatParticipants_CreatedAt DEFAULT SYSUTCDATETIME(),
+    UpdatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_ChatParticipants_UpdatedAt DEFAULT SYSUTCDATETIME(),
+    IsDeleted BIT NOT NULL CONSTRAINT DF_ChatParticipants_IsDeleted DEFAULT (0),
+    CreatedBy INT NULL,
+    UpdatedBy INT NULL,
+    RowVersion ROWVERSION NOT NULL,
+    CONSTRAINT UQ_ChatParticipants_ConversationUser UNIQUE (ConversationId, UserId),
+    CONSTRAINT CHK_ChatParticipants_Role CHECK (Role IN ('Member', 'Admin', 'Owner', 'Moderator')),
+    CONSTRAINT CHK_ChatParticipants_Status CHECK (Status IN ('Active', 'Left', 'Kicked', 'Banned', 'Muted')),
+    CONSTRAINT FK_ChatParticipants_Conversation FOREIGN KEY (ConversationId) REFERENCES dbo.ChatConversations(ConversationId) ON DELETE CASCADE,
+    CONSTRAINT FK_ChatParticipants_ProfileTenant FOREIGN KEY (ProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_ChatParticipants_UserTenant FOREIGN KEY (UserId, TenantId) REFERENCES dbo.Users(Id, TenantId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.MessageReadStatuses', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.MessageReadStatuses (
+    ReadStatusId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    MessageId INT NOT NULL,
+    ConversationId INT NOT NULL,
+    ProfileId INT NOT NULL,
+    UserId INT NOT NULL,
+    TenantId INT NOT NULL,
+    IsRead BIT NOT NULL CONSTRAINT DF_MessageReadStatuses_IsRead DEFAULT (0),
+    ReadDate DATETIME2(3) NULL,
+    IsDelivered BIT NOT NULL CONSTRAINT DF_MessageReadStatuses_IsDelivered DEFAULT (0),
+    DeliveredDate DATETIME2(3) NULL,
+    CreatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_MessageReadStatuses_CreatedAt DEFAULT SYSUTCDATETIME(),
+    UpdatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_MessageReadStatuses_UpdatedAt DEFAULT SYSUTCDATETIME(),
+    IsDeleted BIT NOT NULL CONSTRAINT DF_MessageReadStatuses_IsDeleted DEFAULT (0),
+    CreatedBy INT NULL,
+    UpdatedBy INT NULL,
+    RowVersion ROWVERSION NOT NULL,
+    CONSTRAINT UQ_MessageReadStatuses_MessageUser UNIQUE (MessageId, UserId),
+    CONSTRAINT CHK_MessageReadStatuses_ReadDate CHECK ((IsRead = 0 AND ReadDate IS NULL) OR (IsRead = 1 AND ReadDate IS NOT NULL)),
+    CONSTRAINT CHK_MessageReadStatuses_DeliveredDate CHECK ((IsDelivered = 0 AND DeliveredDate IS NULL) OR (IsDelivered = 1 AND DeliveredDate IS NOT NULL)),
+    CONSTRAINT FK_MessageReadStatuses_Message FOREIGN KEY (MessageId) REFERENCES dbo.ChatMessages(MessageId) ON DELETE CASCADE,
+    CONSTRAINT FK_MessageReadStatuses_Conversation FOREIGN KEY (ConversationId) REFERENCES dbo.ChatConversations(ConversationId),
+    CONSTRAINT FK_MessageReadStatuses_ProfileTenant FOREIGN KEY (ProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_MessageReadStatuses_UserTenant FOREIGN KEY (UserId, TenantId) REFERENCES dbo.Users(Id, TenantId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.UserOnlineStatuses', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.UserOnlineStatuses (
+    UserId INT NOT NULL PRIMARY KEY,
+    ProfileId INT NOT NULL,
+    TenantId INT NOT NULL,
+    IsOnline BIT NOT NULL CONSTRAINT DF_UserOnlineStatuses_IsOnline DEFAULT (0),
+    LastSeenDate DATETIME2(3) NOT NULL CONSTRAINT DF_UserOnlineStatuses_LastSeenDate DEFAULT SYSUTCDATETIME(),
+    Status NVARCHAR(20) NOT NULL CONSTRAINT DF_UserOnlineStatuses_Status DEFAULT ('Offline'),
+    ConnectionId NVARCHAR(100) NULL,
+    DeviceInfo NVARCHAR(500) NULL,
+    IPAddress NVARCHAR(50) NULL,
+    CreatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_UserOnlineStatuses_CreatedAt DEFAULT SYSUTCDATETIME(),
+    UpdatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_UserOnlineStatuses_UpdatedAt DEFAULT SYSUTCDATETIME(),
+    IsDeleted BIT NOT NULL CONSTRAINT DF_UserOnlineStatuses_IsDeleted DEFAULT (0),
+    CreatedBy INT NULL,
+    UpdatedBy INT NULL,
+    RowVersion ROWVERSION NOT NULL,
+    CONSTRAINT UQ_UserOnlineStatuses_Profile UNIQUE (TenantId, ProfileId),
+    CONSTRAINT CHK_UserOnlineStatuses_Status CHECK (Status IN ('Offline', 'Online', 'Away', 'Busy', 'Invisible')),
+    CONSTRAINT FK_UserOnlineStatuses_ProfileTenant FOREIGN KEY (ProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_UserOnlineStatuses_UserTenant FOREIGN KEY (UserId, TenantId) REFERENCES dbo.Users(Id, TenantId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.BlockedChatUsers', 'U') IS NULL
+BEGIN
+  CREATE TABLE dbo.BlockedChatUsers (
+    BlockId INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    BlockerUserId INT NOT NULL,
+    BlockerProfileId INT NOT NULL,
+    BlockedUserId INT NOT NULL,
+    BlockedProfileId INT NOT NULL,
+    TenantId INT NOT NULL,
+    Reason NVARCHAR(30) NOT NULL,
+    Description NVARCHAR(500) NULL,
+    BlockedDate DATETIME2(3) NOT NULL CONSTRAINT DF_BlockedChatUsers_BlockedDate DEFAULT SYSUTCDATETIME(),
+    IsActive BIT NOT NULL CONSTRAINT DF_BlockedChatUsers_IsActive DEFAULT (1),
+    UnblockedDate DATETIME2(3) NULL,
+    UnblockReason NVARCHAR(250) NULL,
+    CreatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_BlockedChatUsers_CreatedAt DEFAULT SYSUTCDATETIME(),
+    UpdatedAt DATETIME2(3) NOT NULL CONSTRAINT DF_BlockedChatUsers_UpdatedAt DEFAULT SYSUTCDATETIME(),
+    IsDeleted BIT NOT NULL CONSTRAINT DF_BlockedChatUsers_IsDeleted DEFAULT (0),
+    CreatedBy INT NULL,
+    UpdatedBy INT NULL,
+    RowVersion ROWVERSION NOT NULL,
+    CONSTRAINT UQ_BlockedChatUsers_Pair UNIQUE (TenantId, BlockerUserId, BlockedUserId),
+    CONSTRAINT CHK_BlockedChatUsers_NotSelf CHECK (BlockerUserId <> BlockedUserId AND BlockerProfileId <> BlockedProfileId),
+    CONSTRAINT CHK_BlockedChatUsers_Reason CHECK (Reason IN ('Spam', 'InappropriateContent', 'Harassment', 'NotInterested', 'FakeProfile', 'Other')),
+    CONSTRAINT CHK_BlockedChatUsers_UnblockState CHECK ((IsActive = 1 AND UnblockedDate IS NULL) OR (IsActive = 0 AND UnblockedDate IS NOT NULL)),
+    CONSTRAINT FK_BlockedChatUsers_Tenant FOREIGN KEY (TenantId) REFERENCES dbo.Tenants(TenantId),
+    CONSTRAINT FK_BlockedChatUsers_BlockerUserTenant FOREIGN KEY (BlockerUserId, TenantId) REFERENCES dbo.Users(Id, TenantId),
+    CONSTRAINT FK_BlockedChatUsers_BlockedUserTenant FOREIGN KEY (BlockedUserId, TenantId) REFERENCES dbo.Users(Id, TenantId),
+    CONSTRAINT FK_BlockedChatUsers_BlockerProfileTenant FOREIGN KEY (BlockerProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId),
+    CONSTRAINT FK_BlockedChatUsers_BlockedProfileTenant FOREIGN KEY (BlockedProfileId, TenantId) REFERENCES dbo.Profiles(ProfileId, TenantId)
+  );
+END;
+GO
+
+IF OBJECT_ID('dbo.ChatConversations', 'U') IS NOT NULL
+  AND OBJECT_ID('dbo.ChatMessages', 'U') IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_ChatConversations_LastMessage' AND parent_object_id = OBJECT_ID('dbo.ChatConversations'))
+BEGIN
+  ALTER TABLE dbo.ChatConversations
+    ADD CONSTRAINT FK_ChatConversations_LastMessage FOREIGN KEY (LastMessageId)
+    REFERENCES dbo.ChatMessages(MessageId);
+END;
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Interests_ProfileId' AND object_id = OBJECT_ID('dbo.Interests'))
+  CREATE INDEX IX_Interests_ProfileId ON dbo.Interests(ProfileId);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_BlockedChatUsers_Tenant_Blocker_IsActive' AND object_id = OBJECT_ID('dbo.BlockedChatUsers'))
+  CREATE INDEX IX_BlockedChatUsers_Tenant_Blocker_IsActive ON dbo.BlockedChatUsers(TenantId, BlockerUserId, IsActive);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ChatConversations_Tenant_LastMessageDate' AND object_id = OBJECT_ID('dbo.ChatConversations'))
+  CREATE INDEX IX_ChatConversations_Tenant_LastMessageDate ON dbo.ChatConversations(TenantId, LastMessageDate DESC);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ChatMessages_Conversation_SentDate' AND object_id = OBJECT_ID('dbo.ChatMessages'))
+  CREATE INDEX IX_ChatMessages_Conversation_SentDate ON dbo.ChatMessages(ConversationId, SentDate DESC);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ChatParticipants_Conversation_Status' AND object_id = OBJECT_ID('dbo.ChatParticipants'))
+  CREATE INDEX IX_ChatParticipants_Conversation_Status ON dbo.ChatParticipants(ConversationId, Status);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_MessageReadStatuses_Conversation_User_IsRead' AND object_id = OBJECT_ID('dbo.MessageReadStatuses'))
+  CREATE INDEX IX_MessageReadStatuses_Conversation_User_IsRead ON dbo.MessageReadStatuses(ConversationId, UserId, IsRead);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_UserOnlineStatuses_Tenant_IsOnline_Status' AND object_id = OBJECT_ID('dbo.UserOnlineStatuses'))
+  CREATE INDEX IX_UserOnlineStatuses_Tenant_IsOnline_Status ON dbo.UserOnlineStatuses(TenantId, IsOnline, Status);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ProfileReports_Tenant_ReportedProfile_CreatedAt' AND object_id = OBJECT_ID('dbo.ProfileReports'))
+  CREATE INDEX IX_ProfileReports_Tenant_ReportedProfile_CreatedAt ON dbo.ProfileReports(TenantId, ReportedProfileId, CreatedAt DESC);
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_TenantUserPlans_TenantId_IsActive' AND object_id = OBJECT_ID('dbo.TenantUserPlans'))
+  CREATE INDEX IX_TenantUserPlans_TenantId_IsActive ON dbo.TenantUserPlans(TenantId, IsActive);
+GO
+
+PRINT 'Single-file reset + recreate completed (aligned with 2026-05-22 script).';

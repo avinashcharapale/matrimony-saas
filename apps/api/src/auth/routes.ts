@@ -26,6 +26,8 @@ export function createAuthRoutes(
   router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password, rememberMe, deviceId, deviceInfo } = req.body;
+      const tenantIdHeader = Number(req.header('x-tenant-id'));
+      const tenantId = Number.isFinite(tenantIdHeader) && tenantIdHeader > 0 ? tenantIdHeader : 1;
 
       if (!email || !password) {
         return res.status(400).json({
@@ -37,6 +39,7 @@ export function createAuthRoutes(
       const result = await authService.login({
         email,
         password,
+        tenantId,
         rememberMe,
         deviceId,
         deviceInfo,
@@ -58,6 +61,14 @@ export function createAuthRoutes(
   router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password, confirmPassword, tenantId } = req.body;
+      const tenantIdHeader = Number(req.header('x-tenant-id'));
+      const tenantIdBody = Number(tenantId);
+      const resolvedTenantId =
+        Number.isFinite(tenantIdBody) && tenantIdBody > 0
+          ? tenantIdBody
+          : Number.isFinite(tenantIdHeader) && tenantIdHeader > 0
+            ? tenantIdHeader
+            : 1;
 
       if (!email || !password || !confirmPassword) {
         return res.status(400).json({
@@ -70,7 +81,7 @@ export function createAuthRoutes(
         email,
         password,
         confirmPassword,
-        tenantId,
+        tenantId: resolvedTenantId,
       });
 
       res.status(201).json(result);
@@ -171,7 +182,15 @@ export function createAuthRoutes(
   router.post('/oauth2/authorize/:provider', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { provider } = req.params;
-      const { redirectUri, state } = req.body;
+      const { redirectUri, state, tenantId } = req.body;
+      const tenantIdHeader = Number(req.header('x-tenant-id'));
+      const tenantIdBody = Number(tenantId);
+      const resolvedTenantId =
+        Number.isFinite(tenantIdBody) && tenantIdBody > 0
+          ? tenantIdBody
+          : Number.isFinite(tenantIdHeader) && tenantIdHeader > 0
+            ? tenantIdHeader
+            : 1;
 
       if (!redirectUri || !state) {
         return res.status(400).json({
@@ -180,7 +199,7 @@ export function createAuthRoutes(
         });
       }
 
-      const authUrl = oauth2Service.generateAuthorizationUrl(provider, 1, redirectUri, state);
+      const authUrl = oauth2Service.generateAuthorizationUrl(provider, resolvedTenantId, redirectUri, state);
       res.json({ authorizationUrl: authUrl });
     } catch (error) {
       res.status(400).json({
@@ -197,7 +216,15 @@ export function createAuthRoutes(
   router.post('/oauth2/callback/:provider', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { provider } = req.params;
-      const { code, redirectUri } = req.body;
+      const { code, redirectUri, tenantId } = req.body;
+      const tenantIdHeader = Number(req.header('x-tenant-id'));
+      const tenantIdBody = Number(tenantId);
+      const resolvedTenantId =
+        Number.isFinite(tenantIdBody) && tenantIdBody > 0
+          ? tenantIdBody
+          : Number.isFinite(tenantIdHeader) && tenantIdHeader > 0
+            ? tenantIdHeader
+            : 1;
 
       if (!code || !redirectUri) {
         return res.status(400).json({
@@ -208,7 +235,7 @@ export function createAuthRoutes(
 
       const tokenPair = await oauth2Service.handleCallback(
         { provider: provider as any, code, redirectUri },
-        1 // tenantId
+        resolvedTenantId
       );
 
       res.json(tokenPair);

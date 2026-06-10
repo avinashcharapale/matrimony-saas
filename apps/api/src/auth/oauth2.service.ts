@@ -95,14 +95,16 @@ export class OAuth2Service {
       };
 
       const tokenPair = JwtUtil.generateTokenPair(jwtPayload, refreshTokenId);
+      await this.db.updateRefreshTokenHash(refreshTokenId, CryptoUtil.hashToken(tokenPair.refreshToken));
 
       // Create session
       const sessionExpiresAt = new Date(Date.now() + this.config.sessionExpiresInMs);
+      const sessionToken = CryptoUtil.generateToken();
       const sessionHash = CryptoUtil.hashToken(CryptoUtil.generateToken());
-      await this.db.createSession(userId, sessionHash, sessionExpiresAt);
+      await this.db.createSession(userId, user.tenantId, sessionToken, sessionHash, sessionExpiresAt);
 
       // Record login
-      await this.db.recordLogin(userId);
+      await this.db.recordLogin(userId, user.tenantId);
 
       return tokenPair;
     } catch (error) {

@@ -134,6 +134,45 @@ export class AuthDatabase {
   }
 
   /**
+   * Get refresh token by ID
+   */
+  async getRefreshTokenById(tokenId: bigint): Promise<RefreshTokenRecord | null> {
+    try {
+      const result = await this.pool
+        .request()
+        .input('tokenId', mssql.BigInt, tokenId.toString())
+        .query(`
+          SELECT RefreshTokenId, UserId, TokenHash, ExpiresAt, IsRevoked, RevokedAt, IpAddress, UserAgent, DeviceId
+          FROM dbo.RefreshTokens
+          WHERE RefreshTokenId = @tokenId
+        `);
+
+      return result.recordset[0] || null;
+    } catch (error) {
+      throw new Error(`Failed to get refresh token by id: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Update refresh token hash after JWT creation
+   */
+  async updateRefreshTokenHash(tokenId: bigint, tokenHash: string): Promise<void> {
+    try {
+      await this.pool
+        .request()
+        .input('tokenId', mssql.BigInt, tokenId.toString())
+        .input('tokenHash', mssql.NVarChar(255), tokenHash)
+        .query(`
+          UPDATE dbo.RefreshTokens
+          SET TokenHash = @tokenHash
+          WHERE RefreshTokenId = @tokenId
+        `);
+    } catch (error) {
+      throw new Error(`Failed to update refresh token hash: ${(error as Error).message}`);
+    }
+  }
+
+  /**
    * Revoke refresh token
    */
   async revokeRefreshToken(tokenId: bigint): Promise<void> {
@@ -156,6 +195,8 @@ export class AuthDatabase {
    */
   async createSession(
     userId: number,
+    tenantId: number,
+    sessionToken: string,
     sessionHash: string,
     expiresAt: Date,
     deviceId?: string,
@@ -167,6 +208,8 @@ export class AuthDatabase {
       const result = await this.pool
         .request()
         .input('userId', mssql.Int, userId)
+        .input('tenantId', mssql.Int, tenantId)
+        .input('sessionToken', mssql.NVarChar(255), sessionToken)
         .input('sessionHash', mssql.NVarChar(255), sessionHash)
         .input('expiresAt', mssql.DateTime2(3), expiresAt)
         .input('deviceId', mssql.NVarChar(100), deviceId || null)
@@ -174,8 +217,8 @@ export class AuthDatabase {
         .input('ipAddress', mssql.NVarChar(50), ipAddress || null)
         .input('userAgent', mssql.NVarChar(250), userAgent || null)
         .query(`
-          INSERT INTO dbo.UserSessions (UserId, SessionHash, ExpiresAt, DeviceId, DeviceInfo, IpAddress, UserAgent, IsActive, LastActivityAt)
-          VALUES (@userId, @sessionHash, @expiresAt, @deviceId, @deviceInfo, @ipAddress, @userAgent, 1, SYSUTCDATETIME())
+          INSERT INTO dbo.UserSessions (UserId, TenantId, SessionToken, SessionHash, ExpiresAt, DeviceId, DeviceInfo, IpAddress, UserAgent, IsActive, LastActivityAt)
+          VALUES (@userId, @tenantId, @sessionToken, @sessionHash, @expiresAt, @deviceId, @deviceInfo, @ipAddress, @userAgent, 1, SYSUTCDATETIME())
           SELECT @@IDENTITY as SessionId
         `);
 
@@ -383,24 +426,72 @@ export class AuthDatabase {
   /**
    * Record login in audit log
    */
-  async recordLogin(userId: number, ipAddress?: string, userAgent?: string): Promise<void> {
+  async recordLogin(userId: number, tenantId: number, ipAddress?: string, userAgent?: string): Promise<void> {
     try {
-      const user = await this.getUserById(userId);
-      if (!user) return;
-
       await this.pool
         .request()
         .input('userId', mssql.Int, userId)
+        .input('tenantId', mssql.Int, tenantId)
         .input('loginTime', mssql.DateTime2(3), new Date())
         .input('ipAddress', mssql.NVarChar(50), ipAddress || null)
         .input('userAgent', mssql.NVarChar(250), userAgent || null)
         .query(`
-          INSERT INTO dbo.LoginHistory (UserId, LoginTime, IpAddress, UserAgent)
-          VALUES (@userId, @loginTime, @ipAddress, @userAgent)
+          INSERT INTO dbo.LoginHistory (UserId, LoginTime, IpAddress, UserAgent, TenantId)
+          VALUES (@userId, @loginTime, @ipAddress, @userAgent, @tenantId)
         `);
     } catch (error) {
       // Log but don't fail on login history recording
       console.error('Failed to record login:', (error as Error).message);
+    }
+  }
+
+  /**
+   * Update user password hash
+   */
+  async updateUserPassword(userId: number, passwordHash: string): Promise<void> {
+    try {
+      await this.pool
+        .request()
+        .input('userId', mssql.Int, userId)
+        .input('passwordHash', mssql.NVarChar(255), passwordHash)
+        .query(`
+          UPDATE dbo.Users
+          SET PasswordHash = @passwordHash,
+              UpdatedAt = SYSUTCDATETIME()
+          WHERE Id = @userId
+        `);
+    } catch (error) {
+      throw new Error(`Failed to update user password: ${(error as Error).message}`);
+    }
+  }
+
+  /**
+   * Ensure authentication method exists for user
+   */
+  async ensureAuthenticationMethod(
+    userId: number,
+    methodType: AuthenticationMethod['methodType'],
+    isPrimary = false
+  ): Promise<void> {
+    try {
+      await this.pool
+        .request()
+        .input('userId', mssql.Int, userId)
+        .input('methodType', mssql.NVarChar(50), methodType)
+        .input('isPrimary', mssql.Bit, isPrimary)
+        .query(`
+          IF NOT EXISTS (
+            SELECT 1
+            FROM dbo.AuthenticationMethods
+            WHERE UserId = @userId AND MethodType = @methodType
+          )
+          BEGIN
+            INSERT INTO dbo.AuthenticationMethods (UserId, MethodType, IsEnabled, IsPrimary, CreatedAt, UpdatedAt)
+            VALUES (@userId, @methodType, 1, @isPrimary, SYSUTCDATETIME(), SYSUTCDATETIME())
+          END
+        `);
+    } catch (error) {
+      throw new Error(`Failed to ensure authentication method: ${(error as Error).message}`);
     }
   }
 }

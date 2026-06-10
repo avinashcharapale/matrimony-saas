@@ -215,7 +215,7 @@ export class MemberService {
       // Store tokens
       localStorage.setItem(AUTH_TOKEN_KEY, response.accessToken);
       localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
-      localStorage.setItem(this.sessionKey, response.user.id.toString());
+      localStorage.setItem(this.sessionKey, response.userId.toString());
 
       return { ok: true, message: 'Login successful.' };
     } catch (error: unknown) {
@@ -241,7 +241,7 @@ export class MemberService {
       // Store tokens
       localStorage.setItem(AUTH_TOKEN_KEY, response.accessToken);
       localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
-      localStorage.setItem(this.sessionKey, response.user.id.toString());
+      localStorage.setItem(this.sessionKey, response.userId.toString());
 
       await firstValueFrom(this.apiService.createOrUpdateProfile(this.buildProfilePayload(payload)));
 

@@ -125,6 +125,7 @@ export interface ApiKeyRecord {
 export interface LoginRequest {
   email: string;
   password: string;
+  tenantId?: number;
   rememberMe?: boolean;
   deviceId?: string;
   deviceInfo?: string;
