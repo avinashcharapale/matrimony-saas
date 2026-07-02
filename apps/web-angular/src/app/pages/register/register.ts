@@ -12,6 +12,7 @@ import { RegisterStepEducationComponent } from './components/register-step-educa
 import { RegisterStepAddressComponent } from './components/register-step-address.component';
 import { RegisterStepFamilyComponent } from './components/register-step-family.component';
 import { RegisterStepExpectationComponent } from './components/register-step-expectation.component';
+import { finalize } from 'rxjs/operators';
 
 interface EnrollStep {
   title: string;
@@ -304,38 +305,39 @@ export class Register implements OnInit, OnDestroy {
     this.queueDraftPersist();
   }
 
-  private async registerAsync(
+  private registerAsync(
     name: string,
     email: string,
     password: string,
     bio: string,
     age?: number
-  ): Promise<void> {
-    try {
-      const result = await this.memberService.registerMember({
-        name,
-        email,
-        password,
-        location: this.normalizeText(this.residenceAddress) || this.workingCityCountry,
-        occupation: this.normalizeText(this.occupationDetails),
-        age,
-        bio,
-        registrationDetails: this.buildRegistrationDetails(),
-      });
-
-      this.isError = !result.ok;
-      this.message = result.message;
-
-      if (result.ok && result.profileSynced) {
-        this.clearDraftFromStorage();
-        this.router.navigateByUrl('/login');
-      }
-    } catch (error: unknown) {
-      this.isError = true;
-      this.message = error instanceof Error ? error.message : 'Registration failed. Please try again.';
-    } finally {
+  ): void {
+    this.memberService.registerMember({
+      name,
+      email,
+      password,
+      location: this.normalizeText(this.residenceAddress) || this.workingCityCountry,
+      occupation: this.normalizeText(this.occupationDetails),
+      age,
+      bio,
+      registrationDetails: this.buildRegistrationDetails(),
+    }).pipe(finalize(() => {
       this.isLoading = false;
-    }
+    })).subscribe({
+      next: (result) => {
+        this.isError = !result.ok;
+        this.message = result.message;
+
+        if (result.ok && result.profileSynced) {
+          this.clearDraftFromStorage();
+          this.router.navigateByUrl('/login');
+        }
+      },
+      error: (error: unknown) => {
+        this.isError = true;
+        this.message = error instanceof Error ? error.message : 'Registration failed. Please try again.';
+      },
+    });
   }
 
   onPhotoSelected(event: Event): void {

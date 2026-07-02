@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import {
   RegisterMasterDataService,
   RegisterLookupOption,
@@ -39,61 +40,57 @@ export class RegisterStepPersonalComponent implements OnInit {
   selectedPersonalityId: number | null = null;
   lookupsLoading = true;
 
-  async ngOnInit(): Promise<void> {
-    try {
-      const [
-        genders,
-        religions,
-        maritalStatuses,
-        bloodGroups,
-        complexions,
-        diets,
-        personalities,
-      ] = await Promise.all([
-        this.registerMasterDataSvc.getGenders(),
-        this.registerMasterDataSvc.getReligions(),
-        this.registerMasterDataSvc.getMaritalStatuses(),
-        this.registerMasterDataSvc.getBloodGroups(),
-        this.registerMasterDataSvc.getComplexions(),
-        this.registerMasterDataSvc.getDiets(),
-        this.registerMasterDataSvc.getPersonalities(),
-      ]);
+  ngOnInit(): void {
+    forkJoin({
+      genders: this.registerMasterDataSvc.getGenders(),
+      religions: this.registerMasterDataSvc.getReligions(),
+      maritalStatuses: this.registerMasterDataSvc.getMaritalStatuses(),
+      bloodGroups: this.registerMasterDataSvc.getBloodGroups(),
+      complexions: this.registerMasterDataSvc.getComplexions(),
+      diets: this.registerMasterDataSvc.getDiets(),
+      personalities: this.registerMasterDataSvc.getPersonalities(),
+    }).subscribe({
+      next: ({ genders, religions, maritalStatuses, bloodGroups, complexions, diets, personalities }) => {
+        this.genderOptions = genders;
+        this.religionOptions = religions;
+        this.maritalStatusOptions = maritalStatuses;
+        this.bloodGroupOptions = bloodGroups;
+        this.complexionOptions = complexions;
+        this.dietOptions = diets;
+        this.personalityOptions = personalities;
 
-      this.genderOptions = genders;
-      this.religionOptions = religions;
-      this.maritalStatusOptions = maritalStatuses;
-      this.bloodGroupOptions = bloodGroups;
-      this.complexionOptions = complexions;
-      this.dietOptions = diets;
-      this.personalityOptions = personalities;
-
-      this.selectedGenderId = this.findIdByVmValue(this.genderOptions, this.vm.gender);
-      this.selectedMaritalStatusId = this.findIdByVmValue(this.maritalStatusOptions, this.vm.maritalStatus);
-      this.selectedBloodGroupId = this.findIdByVmValue(this.bloodGroupOptions, this.vm.bloodGroup);
-      this.selectedComplexionId = this.findIdByVmValue(this.complexionOptions, this.vm.complexion);
-      this.selectedDietId = this.findIdByVmValue(this.dietOptions, this.vm.diet);
-      this.selectedPersonalityId = this.findIdByVmValue(this.personalityOptions, this.vm.personality);
-      this.selectedReligionId = this.findIdByVmValue(this.religionOptions, this.vm.religion);
-      if (this.selectedReligionId) {
-        await this.loadCastes(this.selectedReligionId, true);
-      }
-    } finally {
-      this.lookupsLoading = false;
-      // Ensure async-loaded lookup options are rendered immediately on first page load.
-      this.cdr.detectChanges();
-    }
+        this.selectedGenderId = this.findIdByVmValue(this.genderOptions, this.vm.gender);
+        this.selectedMaritalStatusId = this.findIdByVmValue(this.maritalStatusOptions, this.vm.maritalStatus);
+        this.selectedBloodGroupId = this.findIdByVmValue(this.bloodGroupOptions, this.vm.bloodGroup);
+        this.selectedComplexionId = this.findIdByVmValue(this.complexionOptions, this.vm.complexion);
+        this.selectedDietId = this.findIdByVmValue(this.dietOptions, this.vm.diet);
+        this.selectedPersonalityId = this.findIdByVmValue(this.personalityOptions, this.vm.personality);
+        this.selectedReligionId = this.findIdByVmValue(this.religionOptions, this.vm.religion);
+        if (this.selectedReligionId) {
+          this.loadCastes(this.selectedReligionId, true);
+        }
+      },
+      complete: () => {
+        this.lookupsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.lookupsLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
-  async onReligionChange(religionId: number | null): Promise<void> {
+  onReligionChange(religionId: number | null): void {
     this.selectedReligionId = religionId;
     this.setVmFieldFromSelection(this.religionOptions, religionId, 'religion');
-    await this.loadCastes(religionId, false);
+    this.loadCastes(religionId, false);
   }
 
-  async onCasteChange(casteId: number | null): Promise<void> {
+  onCasteChange(casteId: number | null): void {
     this.selectedCasteId = casteId;
     this.setVmFieldFromSelection(this.casteOptions, casteId, 'caste');
-    await this.loadSubCastes(casteId, false);
+    this.loadSubCastes(casteId, false);
   }
 
   onSubCasteChange(subCasteId: number | null): void {
@@ -126,7 +123,7 @@ export class RegisterStepPersonalComponent implements OnInit {
     this.setVmFieldFromSelection(this.personalityOptions, id, 'personality');
   }
 
-  private async loadCastes(religionId: number | null, preserveSelection: boolean): Promise<void> {
+  private loadCastes(religionId: number | null, preserveSelection: boolean): void {
     this.casteOptions = [];
     this.subCastOptions = [];
     this.selectedCasteId = null;
@@ -138,24 +135,26 @@ export class RegisterStepPersonalComponent implements OnInit {
       return;
     }
 
-    this.casteOptions = await this.registerMasterDataSvc.getCastes(religionId);
+    this.registerMasterDataSvc.getCastes(religionId).subscribe((castes) => {
+      this.casteOptions = castes;
 
-    if (preserveSelection) {
-      this.selectedCasteId = this.findIdByVmValue(this.casteOptions, this.vm.caste);
-    } else {
-      this.vm.caste = '';
-      this.vm.subCast = '';
-    }
+      if (preserveSelection) {
+        this.selectedCasteId = this.findIdByVmValue(this.casteOptions, this.vm.caste);
+      } else {
+        this.vm.caste = '';
+        this.vm.subCast = '';
+      }
 
-    if (this.selectedCasteId) {
-      this.setVmFieldFromSelection(this.casteOptions, this.selectedCasteId, 'caste');
-      await this.loadSubCastes(this.selectedCasteId, preserveSelection);
-    }
+      if (this.selectedCasteId) {
+        this.setVmFieldFromSelection(this.casteOptions, this.selectedCasteId, 'caste');
+        this.loadSubCastes(this.selectedCasteId, preserveSelection);
+      }
 
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
+    });
   }
 
-  private async loadSubCastes(casteId: number | null, preserveSelection: boolean): Promise<void> {
+  private loadSubCastes(casteId: number | null, preserveSelection: boolean): void {
     this.subCastOptions = [];
     if (!casteId) {
       this.vm.subCast = '';
@@ -163,20 +162,22 @@ export class RegisterStepPersonalComponent implements OnInit {
       return;
     }
 
-    this.subCastOptions = await this.registerMasterDataSvc.getSubCastes(casteId);
+    this.registerMasterDataSvc.getSubCastes(casteId).subscribe((subCastes) => {
+      this.subCastOptions = subCastes;
 
-    if (preserveSelection) {
-      this.selectedSubCasteId = this.findIdByVmValue(this.subCastOptions, this.vm.subCast);
-    } else {
-      this.vm.subCast = '';
-      this.selectedSubCasteId = null;
-    }
+      if (preserveSelection) {
+        this.selectedSubCasteId = this.findIdByVmValue(this.subCastOptions, this.vm.subCast);
+      } else {
+        this.vm.subCast = '';
+        this.selectedSubCasteId = null;
+      }
 
-    if (this.selectedSubCasteId) {
-      this.setVmFieldFromSelection(this.subCastOptions, this.selectedSubCasteId, 'subCast');
-    }
+      if (this.selectedSubCasteId) {
+        this.setVmFieldFromSelection(this.subCastOptions, this.selectedSubCasteId, 'subCast');
+      }
 
-    this.cdr.detectChanges();
+      this.cdr.detectChanges();
+    });
   }
 
   private setVmFieldFromSelection(

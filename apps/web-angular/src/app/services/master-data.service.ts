@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 export interface MasterDataItem {
   masterDataId: number;
@@ -23,44 +24,46 @@ export class MasterDataService {
     this.lang = lang;
   }
 
-  async getOptions(category: string, lang?: string): Promise<MasterDataItem[]> {
+  getOptions(category: string, lang?: string): Observable<MasterDataItem[]> {
     const l = lang ?? this.lang;
     const key = `${category}:${l}`;
     const cached = this.cache.get(key);
-    if (cached) return cached;
+    if (cached) return of(cached);
 
     const params = new HttpParams().set('category', category).set('lang', l);
-    const data = await firstValueFrom(
-      this.http.get<MasterDataItem[]>(`${this.base}`, { params })
+    return this.http.get<MasterDataItem[]>(`${this.base}`, { params }).pipe(
+      tap((data) => this.cache.set(key, data))
     );
-    this.cache.set(key, data);
-    return data;
   }
 
   /** Fetch multiple categories in one HTTP call. */
-  async getMultiple(
+  getMultiple(
     categories: string[],
     lang?: string
-  ): Promise<Record<string, MasterDataItem[]>> {
+  ): Observable<Record<string, MasterDataItem[]>> {
     const l = lang ?? this.lang;
     const uncached = categories.filter((c) => !this.cache.has(`${c}:${l}`));
 
-    if (uncached.length > 0) {
-      const params = new HttpParams()
-        .set('category', uncached.join(','))
-        .set('lang', l);
-      const data = await firstValueFrom(
-        this.http.get<Record<string, MasterDataItem[]>>(`${this.base}`, { params })
-      );
-      for (const [cat, items] of Object.entries(data)) {
-        this.cache.set(`${cat}:${l}`, items);
-      }
-    }
+    const source$ = uncached.length > 0
+      ? this.http.get<Record<string, MasterDataItem[]>>(`${this.base}`, {
+        params: new HttpParams().set('category', uncached.join(',')).set('lang', l),
+      }).pipe(
+        tap((data) => {
+          for (const [cat, items] of Object.entries(data)) {
+            this.cache.set(`${cat}:${l}`, items);
+          }
+        })
+      )
+      : of({} as Record<string, MasterDataItem[]>);
 
-    const result: Record<string, MasterDataItem[]> = {};
-    for (const cat of categories) {
-      result[cat] = this.cache.get(`${cat}:${l}`) ?? [];
-    }
-    return result;
+    return source$.pipe(
+      map(() => {
+        const result: Record<string, MasterDataItem[]> = {};
+        for (const cat of categories) {
+          result[cat] = this.cache.get(`${cat}:${l}`) ?? [];
+        }
+        return result;
+      })
+    );
   }
 }

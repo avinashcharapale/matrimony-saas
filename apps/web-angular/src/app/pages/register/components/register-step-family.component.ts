@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GeoService, Taluka } from '../../../services/geo.service';
+import { finalize } from 'rxjs/operators';
 import {
   RegisterMasterDataService,
   RegisterStateOption,
@@ -27,28 +28,31 @@ export class RegisterStepFamilyComponent implements OnInit {
   nativeStateId: number | null = null;
   nativeDistrictId: number | null = null;
 
-  async ngOnInit(): Promise<void> {
-    try {
-      this.nativeStates = await this.registerMasterDataSvc.getStates();
-      await this.restoreNativeLocationFromDraft();
-    } finally {
+  ngOnInit(): void {
+    this.registerMasterDataSvc.getStates().subscribe((states) => {
+      this.nativeStates = states;
+      this.restoreNativeLocationFromDraft();
       this.cdr.detectChanges();
-    }
+    });
   }
 
-  async onNativeStateChange(stateId: number | null): Promise<void> {
+  onNativeStateChange(stateId: number | null): void {
     this.nativeDistricts = [];
     this.nativeTalukas = [];
     this.vm.nativeDistrict = '';
     this.vm.nativeTaluka = '';
     this.nativeDistrictId = null;
     if (stateId) {
-      this.nativeDistricts = await this.registerMasterDataSvc.getDistricts(stateId);
+      this.registerMasterDataSvc.getDistricts(stateId).subscribe((districts) => {
+        this.nativeDistricts = districts;
+        this.cdr.detectChanges();
+      });
+      return;
     }
     this.cdr.detectChanges();
   }
 
-  async onNativeDistrictChange(districtId: number | null, preserveTaluka = false): Promise<void> {
+  onNativeDistrictChange(districtId: number | null, preserveTaluka = false): void {
     this.nativeTalukas = [];
     if (!preserveTaluka) {
       this.vm.nativeTaluka = '';
@@ -56,39 +60,58 @@ export class RegisterStepFamilyComponent implements OnInit {
     const district = this.nativeDistricts.find((d) => d.districtId === districtId);
     this.vm.nativeDistrict = district?.name ?? '';
     if (districtId) {
-      this.nativeTalukas = await this.geoSvc.getTalukas(districtId);
-      if (preserveTaluka) {
-        const savedTalukaToken = (this.vm.nativeTaluka ?? '').toString().trim().toUpperCase();
-        if (!this.nativeTalukas.some((t) => t.name.toUpperCase() === savedTalukaToken)) {
-          this.vm.nativeTaluka = '';
+      this.geoSvc.getTalukas(districtId).subscribe((talukas) => {
+        this.nativeTalukas = talukas;
+        if (preserveTaluka) {
+          const savedTalukaToken = (this.vm.nativeTaluka ?? '').toString().trim().toUpperCase();
+          if (!this.nativeTalukas.some((t) => t.name.toUpperCase() === savedTalukaToken)) {
+            this.vm.nativeTaluka = '';
+          }
         }
-      }
+        this.cdr.detectChanges();
+      });
+      return;
     }
     this.cdr.detectChanges();
   }
 
-  private async restoreNativeLocationFromDraft(): Promise<void> {
+  private restoreNativeLocationFromDraft(): void {
     const savedDistrictToken = (this.vm.nativeDistrict ?? '').toString().trim().toUpperCase();
 
     if (savedDistrictToken) {
-      for (const state of this.nativeStates) {
-        const districts = await this.registerMasterDataSvc.getDistricts(state.stateId);
-        const matchedDistrict = districts.find((d) => d.name.toUpperCase() === savedDistrictToken);
-        if (matchedDistrict) {
-          this.nativeStateId = state.stateId;
-          this.nativeDistricts = districts;
-          this.nativeDistrictId = matchedDistrict.districtId;
-          this.vm.nativeDistrict = matchedDistrict.name;
-          await this.onNativeDistrictChange(matchedDistrict.districtId, true);
-          return;
-        }
-      }
+      this.findNativeDistrict(savedDistrictToken, 0);
+      return;
     }
 
     const mh = this.nativeStates.find((s) => s.code === 'MH');
     if (mh) {
       this.nativeStateId = mh.stateId;
-      this.nativeDistricts = await this.registerMasterDataSvc.getDistricts(mh.stateId);
+      this.registerMasterDataSvc.getDistricts(mh.stateId)
+        .pipe(finalize(() => this.cdr.detectChanges()))
+        .subscribe((districts) => {
+          this.nativeDistricts = districts;
+        });
     }
+  }
+
+  private findNativeDistrict(savedDistrictToken: string, index: number): void {
+    if (index >= this.nativeStates.length) {
+      return;
+    }
+
+    const state = this.nativeStates[index];
+    this.registerMasterDataSvc.getDistricts(state.stateId).subscribe((districts) => {
+      const matchedDistrict = districts.find((d) => d.name.toUpperCase() === savedDistrictToken);
+      if (matchedDistrict) {
+        this.nativeStateId = state.stateId;
+        this.nativeDistricts = districts;
+        this.nativeDistrictId = matchedDistrict.districtId;
+        this.vm.nativeDistrict = matchedDistrict.name;
+        this.onNativeDistrictChange(matchedDistrict.districtId, true);
+        return;
+      }
+
+      this.findNativeDistrict(savedDistrictToken, index + 1);
+    });
   }
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { RegisterFormDetails, createEmptyRegisterFormDetails } from '@org/models';
+import { finalize } from 'rxjs/operators';
 
 interface ProfileField {
   label: string;
@@ -116,6 +117,15 @@ interface DbPhotoSection {
 }
 
 interface MappedProfileDetail {
+  profileId?: number;
+  fullName?: string;
+  displayName?: string;
+  age?: number;
+  occupationText?: string;
+  locationText?: string;
+  city?: string;
+  bio?: string;
+  createdAt?: string;
   email?: string;
   personal?: DbPersonalSection;
   horoscope?: DbHoroscopeSection;
@@ -154,38 +164,42 @@ export class ProfileDetail implements OnInit {
     }
   }
 
-  private async loadProfile(profileId: string): Promise<void> {
+  private loadProfile(profileId: string): void {
     this.isLoading = true;
     this.error = null;
 
-    try {
-      // Extract numeric ID from profile ID
-      const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
-      if (isNaN(numericId)) {
-        this.error = 'Invalid profile ID.';
-        return;
-      }
-
-      const profileDetail = await this.memberService.getProfileById(numericId);
-      const registrationDetails = this.mapRegistrationDetails(profileDetail);
-      this.profile = {
-        id: `${profileDetail.profileId}`,
-        email: profileDetail.email,
-        name: profileDetail.fullName,
-        age: profileDetail.age,
-        occupation: profileDetail.occupationText,
-        location: profileDetail.locationText,
-        bio: profileDetail.bio,
-        password: '',
-        createdAt: profileDetail.createdAt,
-        registrationDetails,
-      };
-    } catch (error: unknown) {
-      console.error('Failed to load profile:', error);
-      this.error = 'Failed to load profile. Please try again.';
-    } finally {
+    const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
+    if (isNaN(numericId)) {
+      this.error = 'Invalid profile ID.';
       this.isLoading = false;
+      return;
     }
+
+    this.memberService.getProfileById(numericId).pipe(
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: (profileDetail: MappedProfileDetail) => {
+        const registrationDetails = this.mapRegistrationDetails(profileDetail);
+        this.profile = {
+          id: `${profileDetail.profileId ?? ''}`,
+          email: profileDetail.email ?? '',
+          name: profileDetail.fullName ?? profileDetail.displayName ?? '',
+          age: profileDetail.age,
+          occupation: profileDetail.occupationText,
+          location: profileDetail.locationText ?? profileDetail.city,
+          bio: profileDetail.bio,
+          password: '',
+          createdAt: profileDetail.createdAt ?? new Date().toISOString(),
+          registrationDetails,
+        };
+      },
+      error: (error: unknown) => {
+        console.error('Failed to load profile:', error);
+        this.error = 'Failed to load profile. Please try again.';
+      },
+    });
   }
 
   getProfilePhoto(secondary = false): string {

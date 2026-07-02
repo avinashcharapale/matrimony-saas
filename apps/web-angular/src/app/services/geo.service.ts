@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 export interface Country {
   countryId: number;
@@ -41,33 +42,30 @@ export class GeoService {
   private districtCache = new Map<number, District[]>();
   private talukaCache = new Map<number, Taluka[]>();
 
-  async getStates(): Promise<State[]> {
-    if (this.stateCache) return this.stateCache;
-    this.stateCache = await firstValueFrom(
-      this.http.get<State[]>(`${this.base}/states`)
+  getStates(): Observable<State[]> {
+    if (this.stateCache) return of(this.stateCache);
+    return this.http.get<State[]>(`${this.base}/states`).pipe(
+      tap((states) => {
+        this.stateCache = states;
+      })
     );
-    return this.stateCache ?? [];
   }
 
-  async getDistricts(stateId: number): Promise<District[]> {
+  getDistricts(stateId: number): Observable<District[]> {
     const cachedDistricts = this.districtCache.get(stateId);
-    if (cachedDistricts) return cachedDistricts;
+    if (cachedDistricts) return of(cachedDistricts);
     const params = new HttpParams().set('stateId', stateId);
-    const data = await firstValueFrom(
-      this.http.get<District[]>(`${this.base}/districts`, { params })
+    return this.http.get<District[]>(`${this.base}/districts`, { params }).pipe(
+      tap((data) => this.districtCache.set(stateId, data))
     );
-    this.districtCache.set(stateId, data);
-    return data;
   }
 
-  async getTalukas(districtId: number): Promise<Taluka[]> {
+  getTalukas(districtId: number): Observable<Taluka[]> {
     const cachedTalukas = this.talukaCache.get(districtId);
-    if (cachedTalukas) return cachedTalukas;
+    if (cachedTalukas) return of(cachedTalukas);
     const params = new HttpParams().set('districtId', districtId);
-    const data = await firstValueFrom(
-      this.http.get<Taluka[]>(`${this.base}/talukas`, { params })
+    return this.http.get<Taluka[]>(`${this.base}/talukas`, { params }).pipe(
+      tap((data) => this.talukaCache.set(districtId, data))
     );
-    this.talukaCache.set(districtId, data);
-    return data;
   }
 }

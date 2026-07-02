@@ -57,8 +57,10 @@ export class PhotoGallery implements OnInit {
   private readonly memberService = inject(MemberService);
   profiles: MemberRecord[] = [];
 
-  async ngOnInit(): Promise<void> {
-    this.profiles = (await this.memberService.searchProfiles({ name: '', location: '', occupation: '' })).slice(0, 12);
+  ngOnInit(): void {
+    this.memberService.searchProfiles({ name: '', location: '', occupation: '' }).subscribe((profiles) => {
+      this.profiles = profiles.slice(0, 12);
+    });
   }
 
   getPhoto(seedValue: string): string {

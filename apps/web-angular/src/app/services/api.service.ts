@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface LoginRequest {
@@ -32,38 +32,6 @@ export interface RegisterResponse {
   tenantId: number;
   role: string;
   expiresAt: string;
-}
-
-export interface ProfileSearchResult {
-  profileId: number;
-  userId: number;
-  profileCode: string;
-  fullName: string;
-  age?: number;
-  bio?: string;
-  locationText?: string;
-  occupationText?: string;
-  email: string;
-  createdAt: string;
-}
-
-export interface ProfileListResponse {
-  profiles: ProfileSearchResult[];
-  total: number;
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-}
-
-export interface ProfileDetail extends ProfileSearchResult {
-  personal?: any;
-  horoscope?: any;
-  professional?: any;
-  contact?: any;
-  family?: any;
-  expectations?: any;
-  verification?: any;
-  photos?: any[];
 }
 
 export interface ProfileUpsertRequest {
@@ -113,75 +81,7 @@ export class ApiService {
     return this.http.get<any>(`${this.apiUrl}/auth/me`);
   }
 
-  /**
-   * Profile Endpoints
-   */
-
-  getProfiles(filters?: {
-    name?: string;
-    location?: string;
-    occupation?: string;
-    ageMin?: number;
-    ageMax?: number;
-    pageNumber?: number;
-    pageSize?: number;
-  }): Observable<ProfileListResponse> {
-    let params = new HttpParams();
-
-    if (filters) {
-      if (filters.name) params = params.set('name', filters.name);
-      if (filters.location) params = params.set('location', filters.location);
-      if (filters.occupation) params = params.set('occupation', filters.occupation);
-      if (filters.ageMin !== undefined) params = params.set('ageMin', filters.ageMin.toString());
-      if (filters.ageMax !== undefined) params = params.set('ageMax', filters.ageMax.toString());
-      if (filters.pageNumber) params = params.set('pageNumber', filters.pageNumber.toString());
-      if (filters.pageSize) params = params.set('pageSize', filters.pageSize.toString());
-    }
-
-    return this.http.get<ProfileListResponse>(`${this.apiUrl}/profiles`, { params });
-  }
-
-  searchProfiles(filters?: {
-    name?: string;
-    location?: string;
-    occupation?: string;
-    ageMin?: number;
-    ageMax?: number;
-    religion?: string;
-    caste?: string;
-    education?: string;
-    maritalStatus?: string;
-    pageNumber?: number;
-    pageSize?: number;
-  }): Observable<ProfileListResponse> {
-    let params = new HttpParams();
-
-    if (filters) {
-      if (filters.name) params = params.set('name', filters.name);
-      if (filters.location) params = params.set('location', filters.location);
-      if (filters.occupation) params = params.set('occupation', filters.occupation);
-      if (filters.ageMin !== undefined) params = params.set('ageMin', filters.ageMin.toString());
-      if (filters.ageMax !== undefined) params = params.set('ageMax', filters.ageMax.toString());
-      if (filters.religion) params = params.set('religion', filters.religion);
-      if (filters.caste) params = params.set('caste', filters.caste);
-      if (filters.education) params = params.set('education', filters.education);
-      if (filters.maritalStatus) params = params.set('maritalStatus', filters.maritalStatus);
-      if (filters.pageNumber) params = params.set('pageNumber', filters.pageNumber.toString());
-      if (filters.pageSize) params = params.set('pageSize', filters.pageSize.toString());
-    }
-
-    return this.http.get<ProfileListResponse>(`${this.apiUrl}/profiles/search`, { params });
-  }
-
-  getProfileById(id: number): Observable<ProfileDetail> {
-    return this.http.get<ProfileDetail>(`${this.apiUrl}/profiles/${id}`);
-  }
-
-  getProfileByUserId(userId: number): Observable<ProfileDetail> {
-    return this.http.get<ProfileDetail>(`${this.apiUrl}/profiles/user/${userId}`);
-  }
-
-  createOrUpdateProfile(profile: ProfileUpsertRequest): Observable<ProfileDetail> {
-    return this.http.post<ProfileDetail>('/profile/UserProfiles', profile);
+  createOrUpdateProfile(profile: ProfileUpsertRequest): Observable<any> {
+    return this.http.post<any>('/profile/UserProfiles', profile);
   }
 }

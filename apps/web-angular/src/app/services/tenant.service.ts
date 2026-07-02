@@ -1,4 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { resolveTenant, TenantConfig, TENANT_CODE_MAP, TENANT_CONFIGS, THEME_PALETTES, ThemePalette } from './tenant-config';
 
@@ -31,6 +34,7 @@ export class TenantService {
   private static readonly THEME_STORAGE_KEY = 'tenant_theme_id';
   private static readonly AUTH_TENANT_STORAGE_KEY = 'auth_tenant_id';
   private currentTenant: TenantConfig;
+  private readonly http = inject(HttpClient);
   private selectedThemeId = 'warm-ivory';
   private resolvedTenantNumericId: number | null = null;
 
@@ -64,30 +68,19 @@ export class TenantService {
     return null;
   }
 
-  async initialize(): Promise<void> {
-    // Use a relative API path so dev requests go through the Angular proxy and
-    // production can stay same-origin behind the deployed gateway.
-    const path = encodeURIComponent(window.location.pathname);
-    const query = encodeURIComponent(window.location.search);
-    const host = encodeURIComponent(resolveTenantHost());
-    const url = `/api/gateway/tenant/resolve?host=${host}&path=${path}&query=${query}`;
+  initialize(): Observable<void> {
+    const params = new HttpParams()
+      .set('host', resolveTenantHost())
+      .set('path', window.location.pathname)
+      .set('query', window.location.search);
 
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'Accept': 'application/json',
-          'Accept-Encoding': 'identity',
-        },
-      });
-      if (response.ok) {
-        const resolved = (await response.json()) as TenantResolveResponse;
-
+    return this.http.get<TenantResolveResponse>('/api/gateway/tenant/resolve', { params }).pipe(
+      map((resolved) => {
         if (Number.isFinite(resolved.tenantId) && resolved.tenantId > 0) {
           this.resolvedTenantNumericId = resolved.tenantId;
         }
 
         if (resolved.resolved) {
-          // Look up by tenantCode first, then fall back to domain matching
           const mappedId = TENANT_CODE_MAP[resolved.tenantCode];
           const matched =
             (mappedId ? TENANT_CONFIGS.find((c) => c.id === mappedId) : undefined) ??
@@ -97,17 +90,16 @@ export class TenantService {
 
           if (matched) {
             this.currentTenant = matched;
-            this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
-            return;
           }
         }
-      }
-      // Non-2xx or unresolved: use local fallback silently.
-    } catch {
-      // Network error or JSON parse failure: use local fallback silently.
-    }
 
-    this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
+        this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
+      }),
+      catchError(() => {
+        this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
+        return of(void 0);
+      })
+    );
   }
 
   setTheme(themeId: string): void {

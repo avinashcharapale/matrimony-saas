@@ -1,7 +1,7 @@
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, from, switchMap, throwError } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
 import { ACCESS_TOKEN_KEY, AuthService } from '../services/auth.service';
 
 /** Paths that should never have a Bearer token attached */
@@ -33,7 +33,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
       }
 
       // Attempt a single token refresh, then retry the original request
-      return from(authService.refreshToken()).pipe(
+      return authService.refreshToken().pipe(
         switchMap((refreshed) => {
           if (!refreshed) {
             authService.clearSession();

@@ -7,9 +7,12 @@ import {
   createEmptyRegisterFormDetails,
 } from '@org/models';
 import { TenantService } from './tenant.service';
-import { ApiService, ProfileListResponse, ProfileSearchResult, ProfileUpsertRequest } from './api.service';
+import { ApiService, ProfileUpsertRequest } from './api.service';
 import { RegisterSyncService } from './register-sync.service';
-import { firstValueFrom } from 'rxjs';
+import { ACCESS_TOKEN_KEY, AuthService, REFRESH_TOKEN_KEY } from './auth.service';
+import { MemberProfileDto, PublicProfileDto, UserProfilesService } from '@org/api/profile';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
 
 export type { MemberRecord } from '@org/models';
 
@@ -33,10 +36,40 @@ export interface RegisterMemberResult {
   profileSynced: boolean;
 }
 
+export interface ProfileSearchResult {
+  profileId: number;
+  userId: number;
+  profileCode: string;
+  fullName: string;
+  age?: number;
+  bio?: string;
+  locationText?: string;
+  occupationText?: string;
+  email: string;
+  createdAt: string;
+}
+
+export interface ProfileListResponse {
+  profiles: ProfileSearchResult[];
+  total: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+interface ProfileDetail extends ProfileSearchResult {
+  personal?: Record<string, unknown>;
+  horoscope?: Record<string, unknown>;
+  professional?: Record<string, unknown>;
+  contact?: Record<string, unknown>;
+  family?: Record<string, unknown>;
+  expectations?: Record<string, unknown>;
+  verification?: Record<string, unknown>;
+  photos?: Array<Record<string, unknown>>;
+}
+
 const MEMBERS_KEY_PREFIX = 'matrimony_members';
 const SESSION_KEY_PREFIX = 'matrimony_session_user';
-const AUTH_TOKEN_KEY = 'auth_token';
-const REFRESH_TOKEN_KEY = 'refresh_token';
 const LEGACY_MEMBERS_KEY = 'matrimony_members';
 
 @Injectable({
@@ -45,6 +78,8 @@ const LEGACY_MEMBERS_KEY = 'matrimony_members';
 export class MemberService {
   private readonly tenantService = inject(TenantService);
   private readonly apiService = inject(ApiService);
+  private readonly authService = inject(AuthService);
+  private readonly userProfilesApi = inject(UserProfilesService);
   private readonly registerSyncService = inject(RegisterSyncService);
 
   private get tenantId(): string {
@@ -80,7 +115,7 @@ export class MemberService {
    * Check if user is authenticated
    */
   isAuthenticated(): boolean {
-    return !!localStorage.getItem(AUTH_TOKEN_KEY);
+    return this.authService.isAuthenticated();
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
@@ -220,82 +255,80 @@ export class MemberService {
   /**
    * Login via API
    */
-  async login(email: string, password: string): Promise<{ ok: boolean; message: string }> {
-    try {
-      const response = await firstValueFrom(
-        this.apiService.login({ email, password })
-      );
+  login(email: string, password: string): Observable<{ ok: boolean; message: string }> {
+    return this.authService.login(email, password).pipe(
+      concatMap((result) => {
+        if (!result.ok) {
+          return of(result);
+        }
 
-      // Store tokens
-      localStorage.setItem(AUTH_TOKEN_KEY, response.accessToken);
-      localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
-      localStorage.setItem(this.sessionKey, response.userId.toString());
+        const session = this.authService.getSession();
+        if (session?.userId) {
+          localStorage.setItem(this.sessionKey, String(session.userId));
+        }
 
-      const syncResult = await this.processPendingProfileSync();
-      if (syncResult.pendingCount > 0) {
-        return {
-          ok: true,
-          message: `Login successful. Profile sync pending for ${syncResult.pendingCount} item(s), retrying automatically.`,
-        };
-      }
-
-      return { ok: true, message: 'Login successful.' };
-    } catch (error: unknown) {
-      const message = this.getErrorMessage(error, 'Invalid email or password.');
-      return { ok: false, message };
-    }
+        return this.processPendingProfileSync().pipe(
+          map((syncResult) => {
+            if (syncResult.pendingCount > 0) {
+              return {
+                ok: true,
+                message: `Login successful. Profile sync pending for ${syncResult.pendingCount} item(s), retrying automatically.`,
+              };
+            }
+            return { ok: true, message: 'Login successful.' };
+          })
+        );
+      })
+    );
   }
 
   /**
    * Register via API
    */
-  async registerMember(payload: RegisterSubmissionPayload): Promise<RegisterMemberResult> {
+  registerMember(payload: RegisterSubmissionPayload): Observable<RegisterMemberResult> {
     const profilePayload = this.buildProfilePayload(payload);
 
-    try {
-      const tenantHeaderId = Number(this.tenantService.tenantHeaderId);
-      const tenantId = Number.isFinite(tenantHeaderId) && tenantHeaderId > 0 ? tenantHeaderId : undefined;
+    const tenantHeaderId = Number(this.tenantService.tenantHeaderId);
+    const tenantId = Number.isFinite(tenantHeaderId) && tenantHeaderId > 0 ? tenantHeaderId : undefined;
 
-      const response = await firstValueFrom(
-        this.apiService.register({
-          email: payload.email,
-          password: payload.password || '',
-          confirmPassword: payload.registrationDetails?.confirmPassword || payload.password || '',
-          tenantId,
-        })
-      );
+    return this.apiService.register({
+      email: payload.email,
+      password: payload.password || '',
+      confirmPassword: payload.registrationDetails?.confirmPassword || payload.password || '',
+      tenantId,
+    }).pipe(
+      concatMap((response) => {
+        localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
+        localStorage.setItem(this.sessionKey, response.userId.toString());
 
-      // Store tokens
-      localStorage.setItem(AUTH_TOKEN_KEY, response.accessToken);
-      localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
-      localStorage.setItem(this.sessionKey, response.userId.toString());
-
-      try {
-        await firstValueFrom(this.apiService.createOrUpdateProfile(profilePayload));
-        return {
-          ok: true,
-          message: 'Registration successful. Welcome!',
-          profileSynced: true,
-        };
-      } catch (profileSyncError: unknown) {
-        await this.registerSyncService.enqueuePendingProfileSync(
-          profilePayload,
-          this.getErrorMessage(profileSyncError, 'Profile sync failed.')
+        return this.apiService.createOrUpdateProfile(profilePayload).pipe(
+          map(() => ({ ok: true, message: 'Registration successful. Welcome!', profileSynced: true })),
+          catchError((profileSyncError: unknown) =>
+            this.registerSyncService.enqueuePendingProfileSync(
+              profilePayload,
+              this.getErrorMessage(profileSyncError, 'Profile sync failed.')
+            ).pipe(
+              map(() => ({
+                ok: true,
+                message: 'Account created, but profile sync to DB is pending. Please login; sync will retry automatically.',
+                profileSynced: false,
+              }))
+            )
+          )
         );
-
-        return {
-          ok: true,
-          message: 'Account created, but profile sync to DB is pending. Please login; sync will retry automatically.',
+      }),
+      catchError((error: unknown) =>
+        of({
+          ok: false,
+          message: this.getErrorMessage(error, 'Registration failed. Please try again.'),
           profileSynced: false,
-        };
-      }
-    } catch (error: unknown) {
-      const message = this.getErrorMessage(error, 'Registration failed. Please try again.');
-      return { ok: false, message, profileSynced: false };
-    }
+        })
+      )
+    );
   }
 
-  async processPendingProfileSync(): Promise<{ syncedCount: number; pendingCount: number }> {
+  processPendingProfileSync(): Observable<{ syncedCount: number; pendingCount: number }> {
     return this.registerSyncService.processPendingProfileSync((error, fallback) =>
       this.getErrorMessage(error, fallback)
     );
@@ -304,33 +337,25 @@ export class MemberService {
   /**
    * Logout via API
    */
-  async logout(): Promise<void> {
-    try {
-      const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-      if (refreshToken) {
-        await firstValueFrom(this.apiService.logout(refreshToken));
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Clear local tokens
-      localStorage.removeItem(AUTH_TOKEN_KEY);
-      localStorage.removeItem(REFRESH_TOKEN_KEY);
-      localStorage.removeItem(this.sessionKey);
-    }
+  logout(): Observable<void> {
+    return this.authService.logout().pipe(
+      map(() => {
+        localStorage.removeItem(this.sessionKey);
+        return void 0;
+      })
+    );
   }
 
   /**
    * Get current user info
    */
-  async getCurrentMember(): Promise<MemberRecord | null> {
+  getCurrentMember(): Observable<MemberRecord | null> {
     if (!this.isAuthenticated()) {
-      return null;
+      return of(null);
     }
 
-    try {
-      const user = await firstValueFrom(this.apiService.getCurrentUser());
-      return {
+    return this.apiService.getCurrentUser().pipe(
+      map((user) => ({
         id: `member-${user.id}`,
         email: user.email,
         name: user.name || user.email,
@@ -339,94 +364,98 @@ export class MemberService {
         location: undefined,
         createdAt: new Date().toISOString(),
         password: '',
-      };
-    } catch (error) {
-      console.error('Failed to get current user:', error);
-      return null;
-    }
+      })),
+      catchError((error) => {
+        console.error('Failed to get current user:', error);
+        return of(null);
+      })
+    );
   }
 
   /**
    * Search profiles via API
    */
-  async searchProfiles(filters: SearchFilters): Promise<MemberRecord[]> {
-    try {
-      if (!this.isAuthenticated()) {
-        // Fallback to sample profiles if not authenticated
-        return this.searchProfilesLocal(filters);
-      }
-
-      const response = await firstValueFrom(
-        this.apiService.searchProfiles({
-          name: filters.name,
-          location: filters.location,
-          occupation: filters.occupation,
-          ageMin: filters.ageMin,
-          ageMax: filters.ageMax,
-          religion: filters.religion,
-          caste: filters.caste,
-          education: filters.education,
-          maritalStatus: filters.maritalStatus,
-          pageNumber: 1,
-          pageSize: 20,
-        })
-      );
-
-      return response.profiles.map(p => this.convertToMemberRecord(p));
-    } catch (error) {
-      console.error('Search profiles error:', error);
-      // Fallback to sample profiles
-      return this.searchProfilesLocal(filters);
+  searchProfiles(filters: SearchFilters): Observable<MemberRecord[]> {
+    if (!this.isAuthenticated()) {
+      return of(this.searchProfilesLocal(filters));
     }
+
+    return this.userProfilesApi.apiUserProfilesPublicSearchGet(
+      undefined,
+      undefined,
+      filters.ageMin,
+      filters.ageMax,
+      filters.religion,
+      filters.caste,
+      filters.maritalStatus,
+      filters.location,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      filters.pageNumber ?? 1,
+      filters.pageSize ?? 20,
+      filters.name,
+      undefined,
+      undefined
+    ).pipe(
+      map((response) => (response.items ?? []).map((p) => this.convertToMemberRecord(this.mapPublicProfileToSearchResult(p)))),
+      catchError((error) => {
+        console.error('Search profiles error:', error);
+        return of(this.searchProfilesLocal(filters));
+      })
+    );
   }
 
   /**
    * Get all profiles (with pagination)
    */
-  async getProfiles(pageNumber = 1, pageSize = 10): Promise<ProfileListResponse> {
-    try {
-      if (!this.isAuthenticated()) {
-        // Fallback: return sample profiles
-        const profiles = SAMPLE_PROFILES.slice(0, pageSize).map(p => ({
-          profileId: parseInt(p.id.split('-')[1] || '0'),
-          userId: parseInt(p.id.split('-')[1] || '0'),
-          profileCode: p.id,
-          fullName: p.name,
-          age: p.age,
-          bio: p.bio,
-          locationText: p.location,
-          occupationText: p.occupation,
-          email: p.email,
-          createdAt: p.createdAt,
-        }));
-        return {
-          profiles,
-          total: SAMPLE_PROFILES.length,
-          pageNumber,
-          pageSize,
-          totalPages: Math.ceil(SAMPLE_PROFILES.length / pageSize),
-        };
-      }
-
-      return await firstValueFrom(
-        this.apiService.getProfiles({ pageNumber, pageSize })
-      );
-    } catch (error) {
-      console.error('Get profiles error:', error);
-      throw error;
+  getProfiles(pageNumber = 1, pageSize = 10): Observable<ProfileListResponse> {
+    if (!this.isAuthenticated()) {
+      const profiles = SAMPLE_PROFILES.slice(0, pageSize).map((p) => ({
+        profileId: parseInt(p.id.split('-')[1] || '0', 10),
+        userId: parseInt(p.id.split('-')[1] || '0', 10),
+        profileCode: p.id,
+        fullName: p.name,
+        age: p.age,
+        bio: p.bio,
+        locationText: p.location,
+        occupationText: p.occupation,
+        email: p.email,
+        createdAt: p.createdAt,
+      }));
+      return of({
+        profiles,
+        total: SAMPLE_PROFILES.length,
+        pageNumber,
+        pageSize,
+        totalPages: Math.ceil(SAMPLE_PROFILES.length / pageSize),
+      });
     }
+
+    return this.userProfilesApi.apiUserProfilesGet().pipe(
+      map((profiles) => this.mapMemberProfilesToListResponse(profiles ?? [], pageNumber, pageSize)),
+      catchError((error) => {
+        console.error('Get profiles error:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
    * Get profile by ID
    */
-  async getProfileById(profileId: number) {
-    try {
-      return await firstValueFrom(this.apiService.getProfileById(profileId));
-    } catch (error) {
-      console.error('Get profile by ID error:', error);
-      throw error;
-    }
+  getProfileById(profileId: number): Observable<any> {
+    return this.userProfilesApi.apiUserProfilesPublicIdGet(profileId).pipe(
+      map((profile) => this.mapPublicProfileToProfileDetail(profile)),
+      catchError((error) => {
+        console.error('Get profile by ID error:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -446,6 +475,58 @@ export class MemberService {
         !filters.occupation || (item.occupation ?? '').toLowerCase().includes(filters.occupation.toLowerCase());
       return nameMatch && locationMatch && occupationMatch;
     });
+  }
+
+  private mapMemberProfilesToListResponse(
+    profiles: MemberProfileDto[],
+    pageNumber: number,
+    pageSize: number
+  ): ProfileListResponse {
+    const mapped = profiles.map((profile) => ({
+      profileId: profile.profileId ?? 0,
+      userId: profile.profileId ?? 0,
+      profileCode: String(profile.profileId ?? ''),
+      fullName: profile.fullName ?? profile.displayName ?? '',
+      age: profile.age ?? undefined,
+      bio: profile.bio ?? undefined,
+      locationText: profile.city ?? undefined,
+      occupationText: profile.occupationText ?? undefined,
+      email: '',
+      createdAt: new Date().toISOString(),
+    }));
+
+    const start = (pageNumber - 1) * pageSize;
+    const paged = mapped.slice(start, start + pageSize);
+    const total = mapped.length;
+
+    return {
+      profiles: paged,
+      total,
+      pageNumber,
+      pageSize,
+      totalPages: Math.max(1, Math.ceil(total / pageSize || 1)),
+    };
+  }
+
+  private mapPublicProfileToSearchResult(profile: PublicProfileDto): ProfileSearchResult {
+    return {
+      profileId: profile.profileId ?? 0,
+      userId: profile.profileId ?? 0,
+      profileCode: String(profile.profileId ?? ''),
+      fullName: profile.displayName ?? '',
+      age: profile.age ?? undefined,
+      bio: profile.bio ?? undefined,
+      locationText: profile.city ?? undefined,
+      occupationText: undefined,
+      email: '',
+      createdAt: new Date().toISOString(),
+    };
+  }
+
+  private mapPublicProfileToProfileDetail(profile: PublicProfileDto): ProfileDetail {
+    return {
+      ...this.mapPublicProfileToSearchResult(profile),
+    };
   }
 
   /**

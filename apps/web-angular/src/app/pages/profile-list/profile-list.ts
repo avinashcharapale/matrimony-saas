@@ -3,6 +3,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { MasterDataService, MasterDataItem } from '../../services/master-data.service';
+import { finalize } from 'rxjs/operators';
 import { ProfileListSidebarComponent } from './components/profile-list-sidebar.component';
 import { ProfileListTitleComponent } from './components/profile-list-title.component';
 import { ProfileListSearchPanelComponent } from './components/profile-list-search-panel.component';
@@ -56,37 +57,43 @@ export class ProfileList {
     this.loadFilterOptions();
   }
 
-  async loadFilterOptions(): Promise<void> {
-    try {
-      const data = await this.masterDataSvc.getMultiple(['religion', 'caste']);
-      this.religionOptions = data['religion'] ?? [];
-      this.casteOptions = data['caste'] ?? [];
-    } catch {
-      // non-critical: filter dropdowns fall back to empty
-    }
+  loadFilterOptions(): void {
+    this.masterDataSvc.getMultiple(['religion', 'caste']).subscribe({
+      next: (data) => {
+        this.religionOptions = data['religion'] ?? [];
+        this.casteOptions = data['caste'] ?? [];
+      },
+      error: () => {
+        // non-critical: filter dropdowns fall back to empty
+      },
+    });
   }
 
-  async loadProfiles(): Promise<void> {
+  loadProfiles(): void {
     this.isLoading = true;
-    try {
-      const response = await this.memberService.getProfiles(this.currentPage, this.pageSize);
-      this.results = response.profiles.map(p => ({
-        id: `${p.profileId}`,
-        email: p.email,
-        name: p.fullName,
-        age: p.age,
-        occupation: p.occupationText,
-        location: p.locationText,
-        bio: p.bio,
-        password: '',
-        createdAt: p.createdAt,
-      }));
-    } catch (error) {
-      console.error('Failed to load profiles:', error);
-      this.error = 'Failed to load profiles. Please try again.';
-    } finally {
-      this.isLoading = false;
-    }
+    this.memberService.getProfiles(this.currentPage, this.pageSize)
+      .pipe(finalize(() => {
+        this.isLoading = false;
+      }))
+      .subscribe({
+        next: (response) => {
+          this.results = response.profiles.map((p) => ({
+            id: `${p.profileId}`,
+            email: p.email,
+            name: p.fullName,
+            age: p.age,
+            occupation: p.occupationText,
+            location: p.locationText,
+            bio: p.bio,
+            password: '',
+            createdAt: p.createdAt,
+          }));
+        },
+        error: (error) => {
+          console.error('Failed to load profiles:', error);
+          this.error = 'Failed to load profiles. Please try again.';
+        },
+      });
   }
 
   getProfilePhotoUrl(profile: MemberRecord): string {
@@ -185,31 +192,32 @@ export class ProfileList {
     this.performSearch();
   }
 
-  private async performSearch(): Promise<void> {
+  private performSearch(): void {
     this.isLoading = true;
     this.error = '';
 
-    try {
-      const response = await this.memberService.searchProfiles({
-        name: this.filters.name,
-        location: this.filters.location,
-        occupation: this.filters.occupation,
-        ageMin: this.filters.ageMin,
-        ageMax: this.filters.ageMax,
-        religion: this.filters.religion || undefined,
-        caste: this.filters.caste || undefined,
-        education: this.filters.education || undefined,
-        maritalStatus: this.filters.maritalStatus || undefined,
-        pageNumber: this.currentPage,
-        pageSize: this.pageSize,
-      });
-
-      this.results = response;
-    } catch (error) {
-      console.error('Search failed:', error);
-      this.error = 'Search failed. Please try again.';
-    } finally {
+    this.memberService.searchProfiles({
+      name: this.filters.name,
+      location: this.filters.location,
+      occupation: this.filters.occupation,
+      ageMin: this.filters.ageMin,
+      ageMax: this.filters.ageMax,
+      religion: this.filters.religion || undefined,
+      caste: this.filters.caste || undefined,
+      education: this.filters.education || undefined,
+      maritalStatus: this.filters.maritalStatus || undefined,
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize,
+    }).pipe(finalize(() => {
       this.isLoading = false;
-    }
+    })).subscribe({
+      next: (response) => {
+        this.results = response;
+      },
+      error: (error) => {
+        console.error('Search failed:', error);
+        this.error = 'Search failed. Please try again.';
+      },
+    });
   }
 }

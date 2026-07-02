@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import {
   RegisterMasterDataService,
   RegisterLookupOption,
@@ -29,35 +30,38 @@ export class RegisterStepHoroscopeComponent implements OnInit {
   nadiOptions: RegisterLookupOption[] = [];
   ganOptions: RegisterLookupOption[] = [];
 
-  async ngOnInit(): Promise<void> {
-    try {
-      const [rashis, nakshatras, charans, nadis, gans, states] = await Promise.all([
-        this.registerMasterDataSvc.getRashis(),
-        this.registerMasterDataSvc.getNakshatras(),
-        this.registerMasterDataSvc.getCharans(),
-        this.registerMasterDataSvc.getNadis(),
-        this.registerMasterDataSvc.getGans(),
-        this.registerMasterDataSvc.getStates(),
-      ]);
-
-      this.rashiOptions = rashis;
-      this.nakshatraOptions = nakshatras;
-      this.charanOptions = charans;
-      this.nadiOptions = nadis;
-      this.ganOptions = gans;
-      this.birthStates = states;
-
-      await this.restoreBirthStateFromDraft();
-    } finally {
-      this.cdr.detectChanges();
-    }
+  ngOnInit(): void {
+    forkJoin({
+      rashis: this.registerMasterDataSvc.getRashis(),
+      nakshatras: this.registerMasterDataSvc.getNakshatras(),
+      charans: this.registerMasterDataSvc.getCharans(),
+      nadis: this.registerMasterDataSvc.getNadis(),
+      gans: this.registerMasterDataSvc.getGans(),
+      states: this.registerMasterDataSvc.getStates(),
+    }).subscribe({
+      next: ({ rashis, nakshatras, charans, nadis, gans, states }) => {
+        this.rashiOptions = rashis;
+        this.nakshatraOptions = nakshatras;
+        this.charanOptions = charans;
+        this.nadiOptions = nadis;
+        this.ganOptions = gans;
+        this.birthStates = states;
+        this.restoreBirthStateFromDraft();
+      },
+      complete: () => this.cdr.detectChanges(),
+      error: () => this.cdr.detectChanges(),
+    });
   }
 
-  async onBirthStateChange(stateId: number | null): Promise<void> {
+  onBirthStateChange(stateId: number | null): void {
     this.birthDistricts = [];
     this.vm.birthDistrict = '';
     if (stateId) {
-      this.birthDistricts = await this.registerMasterDataSvc.getDistricts(stateId);
+      this.registerMasterDataSvc.getDistricts(stateId).subscribe((districts) => {
+        this.birthDistricts = districts;
+        this.cdr.detectChanges();
+      });
+      return;
     }
     this.cdr.detectChanges();
   }
@@ -83,25 +87,40 @@ export class RegisterStepHoroscopeComponent implements OnInit {
     return found?.id ?? null;
   }
 
-  private async restoreBirthStateFromDraft(): Promise<void> {
+  private restoreBirthStateFromDraft(): void {
     const savedDistrictToken = (this.vm.birthDistrict ?? '').toString().trim().toUpperCase();
 
     if (savedDistrictToken) {
-      for (const state of this.birthStates) {
-        const districts = await this.registerMasterDataSvc.getDistricts(state.stateId);
-        if (districts.some((district) => district.name.toUpperCase() === savedDistrictToken)) {
-          this.birthStateId = state.stateId;
-          this.birthDistricts = districts;
-          return;
-        }
-      }
+      this.findBirthStateForDistrict(savedDistrictToken, 0);
+      return;
     }
 
     // Default for new draft when no district/state has been selected yet.
     const mh = this.birthStates.find((s) => s.code === 'MH');
     if (mh) {
       this.birthStateId = mh.stateId;
-      this.birthDistricts = await this.registerMasterDataSvc.getDistricts(mh.stateId);
+      this.registerMasterDataSvc.getDistricts(mh.stateId).subscribe((districts) => {
+        this.birthDistricts = districts;
+        this.cdr.detectChanges();
+      });
     }
+  }
+
+  private findBirthStateForDistrict(savedDistrictToken: string, index: number): void {
+    if (index >= this.birthStates.length) {
+      return;
+    }
+
+    const state = this.birthStates[index];
+    this.registerMasterDataSvc.getDistricts(state.stateId).subscribe((districts) => {
+      if (districts.some((district) => district.name.toUpperCase() === savedDistrictToken)) {
+        this.birthStateId = state.stateId;
+        this.birthDistricts = districts;
+        this.cdr.detectChanges();
+        return;
+      }
+
+      this.findBirthStateForDistrict(savedDistrictToken, index + 1);
+    });
   }
 }

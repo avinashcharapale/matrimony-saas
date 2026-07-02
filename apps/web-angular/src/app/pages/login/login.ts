@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { TenantService } from '../../services/tenant.service';
 import { AuthService } from '../../services/auth.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +25,7 @@ export class Login {
   message = '';
   isLoading = false;
 
-  async submit(form: NgForm): Promise<void> {
+  submit(form: NgForm): void {
     this.message = '';
     this.isLoading = true;
     this.cdr.detectChanges();
@@ -46,20 +47,24 @@ export class Login {
       return;
     }
 
-    try {
-      const result = await this.authService.login(email, password);
+    this.authService.login(email, password)
+      .pipe(finalize(() => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (result) => {
       if (result.ok) {
         this.router.navigateByUrl('/home');
       } else {
         this.message = result.message;
         this.cdr.detectChanges();
       }
-    } catch {
-      this.message = 'Login failed. Please try again.';
-      this.cdr.detectChanges();
-    } finally {
-      this.isLoading = false;
-      this.cdr.detectChanges();
-    }
+        },
+        error: () => {
+          this.message = 'Login failed. Please try again.';
+          this.cdr.detectChanges();
+        },
+      });
   }
 }

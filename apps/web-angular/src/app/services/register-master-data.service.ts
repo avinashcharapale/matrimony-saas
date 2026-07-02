@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { MasterDataOptionDto, ProfileServiceClient } from '../../../../../libs/shared/clients/profile-client';
+import { TenantService } from './tenant.service';
 
 export interface RegisterLookupOption {
   id: number;
@@ -23,217 +25,211 @@ export interface RegisterDistrictOption {
 
 @Injectable({ providedIn: 'root' })
 export class RegisterMasterDataService {
-  private readonly http = inject(HttpClient);
-  private readonly base = '/profile/master-data';
+  private readonly tenantService = inject(TenantService);
+  private readonly profileClient = new ProfileServiceClient('/profile', {
+    fetch: (input, init) => this.fetchWithTenantContext(input, init),
+  });
 
   private readonly optionCache = new Map<string, RegisterLookupOption[]>();
   private readonly districtCache = new Map<number, RegisterDistrictOption[]>();
   private stateCache: RegisterStateOption[] | null = null;
 
-  getGenders(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('genders');
-  }
+  private fetchWithTenantContext(input: RequestInfo, init?: RequestInit): Promise<Response> {
+    const sourceRequest = new Request(input, init);
+    const tenantId = this.tenantService.tenantHeaderId;
+    let requestUrl = sourceRequest.url;
 
-  getReligions(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('religions');
-  }
+    // Gateway route is /profile/{**catch-all} -> /api/{**catch-all},
+    // so callers must send /profile/master-data/* (not /profile/api/master-data/*).
+    requestUrl = requestUrl.replace('/profile/api/master-data/', '/profile/master-data/');
 
-  getCastes(religionId: number): Promise<RegisterLookupOption[]> {
-    return this.getOptions('castes', { religionId });
-  }
-
-  getSubCastes(casteId: number): Promise<RegisterLookupOption[]> {
-    return this.getOptions('sub-castes', { casteId });
-  }
-
-  getMaritalStatuses(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('marital-statuses');
-  }
-
-  getBloodGroups(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('blood-groups');
-  }
-
-  getComplexions(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('complexions');
-  }
-
-  getDiets(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('diets');
-  }
-
-  getPersonalities(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('personalities');
-  }
-
-  getRashis(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('rashis');
-  }
-
-  getNakshatras(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('nakshatras');
-  }
-
-  getCharans(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('charans');
-  }
-
-  getNadis(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('nadis');
-  }
-
-  getGans(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('gans');
-  }
-
-  getEducations(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('educations');
-  }
-
-  getEducationAreas(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('education-areas');
-  }
-
-  getOccupations(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('occupations');
-  }
-
-  getIncomePeriods(): Promise<RegisterLookupOption[]> {
-    return this.getOptions('income-periods');
-  }
-
-  async getStates(): Promise<RegisterStateOption[]> {
-    if (this.stateCache) {
-      return this.stateCache;
+    if (tenantId && requestUrl.includes('/master-data/')) {
+      const url = new URL(requestUrl, window.location.origin);
+      if (!url.searchParams.has('tenantId')) {
+        url.searchParams.set('tenantId', tenantId);
+      }
+      requestUrl = url.toString();
     }
-    const rows = await this.safeGetRows(`${this.base}/states`);
-    const normalized = rows
-      .map<RegisterStateOption | null>((row) => {
-        const stateId = this.resolveNumber(row, ['stateId', 'id']);
-        const name = this.resolveString(row, ['name', 'label', 'valueCode']);
-        if (stateId === null || !name) {
-          return null;
-        }
-        const code = this.resolveString(row, ['code']) ?? undefined;
-        const countryId = this.resolveNumber(row, ['countryId']) ?? undefined;
-        return { stateId, name, code, countryId };
-      })
-      .filter((row): row is RegisterStateOption => row !== null);
 
-    this.stateCache = normalized;
-    return normalized;
+    const headers = new Headers(sourceRequest.headers);
+    if (tenantId && !headers.has('x-tenant-id')) {
+      headers.set('x-tenant-id', tenantId);
+      headers.set('x-tenant-host', window.location.hostname);
+    }
+
+    const requestWithUrl = new Request(requestUrl, sourceRequest);
+    const requestWithTenant = new Request(requestWithUrl, { headers });
+
+    return fetch(requestWithTenant);
   }
 
-  async getDistricts(stateId: number): Promise<RegisterDistrictOption[]> {
+  getGenders(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('genders', () => from(this.profileClient.genders()));
+  }
+
+  getReligions(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('religions', () => from(this.profileClient.religions()));
+  }
+
+  getCastes(religionId: number): Observable<RegisterLookupOption[]> {
+    return this.getOptions(`castes?religionId=${religionId}`, () => from(this.profileClient.castes(religionId)));
+  }
+
+  getSubCastes(casteId: number): Observable<RegisterLookupOption[]> {
+    return this.getOptions(`sub-castes?casteId=${casteId}`, () => from(this.profileClient.subCastes(casteId)));
+  }
+
+  getMaritalStatuses(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('marital-statuses', () => from(this.profileClient.maritalStatuses()));
+  }
+
+  getBloodGroups(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('blood-groups', () => from(this.profileClient.bloodGroups()));
+  }
+
+  getComplexions(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('complexions', () => from(this.profileClient.complexions()));
+  }
+
+  getDiets(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('diets', () => from(this.profileClient.diets()));
+  }
+
+  getPersonalities(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('personalities', () => from(this.profileClient.personalities()));
+  }
+
+  getRashis(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('rashis', () => from(this.profileClient.rashis()));
+  }
+
+  getNakshatras(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('nakshatras', () => from(this.profileClient.nakshatras()));
+  }
+
+  getCharans(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('charans', () => from(this.profileClient.charans()));
+  }
+
+  getNadis(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('nadis', () => from(this.profileClient.nadis()));
+  }
+
+  getGans(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('gans', () => from(this.profileClient.gans()));
+  }
+
+  getEducations(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('educations', () => from(this.profileClient.educations()));
+  }
+
+  getEducationAreas(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('education-areas', () => from(this.profileClient.educationAreas()));
+  }
+
+  getOccupations(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('occupations', () => from(this.profileClient.occupations()));
+  }
+
+  getIncomePeriods(): Observable<RegisterLookupOption[]> {
+    return this.getOptions('income-periods', () => from(this.profileClient.incomePeriods()));
+  }
+
+  getStates(): Observable<RegisterStateOption[]> {
+    if (this.stateCache) {
+      return of(this.stateCache);
+    }
+
+    return from(this.profileClient.states()).pipe(
+      map((rows) => this.mapStates(rows ?? [])),
+      tap((normalized) => {
+        this.stateCache = normalized;
+      }),
+      catchError((error) => {
+        console.error('Register master-data states lookup failed:', error);
+        return of([]);
+      })
+    );
+  }
+
+  getDistricts(stateId: number): Observable<RegisterDistrictOption[]> {
     const cached = this.districtCache.get(stateId);
     if (cached) {
-      return cached;
+      return of(cached);
     }
 
-    const params = new HttpParams().set('stateId', stateId);
-    const rows = await this.safeGetRows(`${this.base}/districts`, params);
-
-    const normalized = rows
-      .map((row) => {
-        const districtId = this.resolveNumber(row, ['districtId', 'id']);
-        const districtStateId = this.resolveNumber(row, ['stateId']) ?? stateId;
-        const name = this.resolveString(row, ['name', 'label', 'valueCode']);
-        if (districtId === null || !name) {
-          return null;
-        }
-        return { districtId, stateId: districtStateId, name } satisfies RegisterDistrictOption;
+    return from(this.profileClient.districts(stateId)).pipe(
+      map((rows) => this.mapDistricts(rows ?? [], stateId)),
+      tap((normalized) => {
+        this.districtCache.set(stateId, normalized);
+      }),
+      catchError((error) => {
+        console.error('Register master-data districts lookup failed:', error);
+        return of([]);
       })
-      .filter((row): row is RegisterDistrictOption => row !== null);
-
-    this.districtCache.set(stateId, normalized);
-    return normalized;
+    );
   }
 
-  private async getOptions(
-    endpoint: string,
-    query?: Record<string, number | string>
-  ): Promise<RegisterLookupOption[]> {
-    const querySuffix = this.buildQueryCacheKey(query);
-    const cacheKey = querySuffix ? `${endpoint}?${querySuffix}` : endpoint;
+  private getOptions(
+    cacheKey: string,
+    loader: () => Observable<MasterDataOptionDto[]>
+  ): Observable<RegisterLookupOption[]> {
     const cached = this.optionCache.get(cacheKey);
     if (cached) {
-      return cached;
+      return of(cached);
     }
 
-    let params = new HttpParams();
-    if (query) {
-      for (const [key, value] of Object.entries(query)) {
-        params = params.set(key, value);
-      }
-    }
+    return loader().pipe(
+      map((rows) => rows
+        .map((row, index) => {
+          const id = row.id ?? index + 1;
+          const name = (row.name ?? '').trim();
+          if (!name) {
+            return null;
+          }
+          return { id, label: name, value: name } satisfies RegisterLookupOption;
+        })
+        .filter((row): row is RegisterLookupOption => row !== null)),
+      tap((options) => {
+        this.optionCache.set(cacheKey, options);
+      }),
+      catchError((error) => {
+        console.error('Register master-data lookup failed:', cacheKey, error);
+        return of([]);
+      })
+    );
+  }
 
-    const rows = await this.safeGetRows(`${this.base}/${endpoint}`, params);
-
-    const options = rows
-      .map((row, index) => {
-        const id = this.resolveNumber(row, ['masterDataId', 'id']) ?? index + 1;
-        const label = this.resolveString(row, ['label', 'name', 'valueCode']) ?? '';
-        const value = this.resolveString(row, ['valueCode', 'code', 'name', 'label']) ?? '';
-        if (!label || !value) {
+  private mapStates(rows: MasterDataOptionDto[]): RegisterStateOption[] {
+    return rows
+      .map((row) => {
+        const stateId = row.id;
+        const name = (row.name ?? '').trim();
+        if (!stateId || !name) {
           return null;
         }
-        return { id, label, value } satisfies RegisterLookupOption;
+        return {
+          stateId,
+          name,
+        } satisfies RegisterStateOption;
       })
-      .filter((row): row is RegisterLookupOption => row !== null);
-
-    this.optionCache.set(cacheKey, options);
-    return options;
+      .filter((row): row is RegisterStateOption => row !== null);
   }
 
-  private async safeGetRows(url: string, params?: HttpParams): Promise<Record<string, unknown>[]> {
-    try {
-      return await firstValueFrom(this.http.get<Record<string, unknown>[]>(url, { params }));
-    } catch (error) {
-      // Keep registration usable even when lookup gateway/services are temporarily unavailable.
-      console.error('Register master-data lookup failed:', url, error);
-      return [];
-    }
-  }
-
-  private buildQueryCacheKey(query?: Record<string, number | string>): string {
-    if (!query) {
-      return '';
-    }
-    return Object.entries(query)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&');
-  }
-
-  private resolveNumber(
-    row: Record<string, unknown>,
-    keys: string[]
-  ): number | null {
-    for (const key of keys) {
-      const value = row[key];
-      if (typeof value === 'number' && Number.isFinite(value)) {
-        return value;
-      }
-      if (typeof value === 'string' && value.trim() !== '') {
-        const parsed = Number(value);
-        if (!Number.isNaN(parsed)) {
-          return parsed;
+  private mapDistricts(rows: MasterDataOptionDto[], stateId: number): RegisterDistrictOption[] {
+    return rows
+      .map((row) => {
+        const districtId = row.id;
+        const name = (row.name ?? '').trim();
+        if (!districtId || !name) {
+          return null;
         }
-      }
-    }
-    return null;
-  }
-
-  private resolveString(
-    row: Record<string, unknown>,
-    keys: string[]
-  ): string | null {
-    for (const key of keys) {
-      const value = row[key];
-      if (typeof value === 'string' && value.trim() !== '') {
-        return value.trim();
-      }
-    }
-    return null;
+        return {
+          districtId,
+          stateId,
+          name,
+        } satisfies RegisterDistrictOption;
+      })
+      .filter((row): row is RegisterDistrictOption => row !== null);
   }
 }

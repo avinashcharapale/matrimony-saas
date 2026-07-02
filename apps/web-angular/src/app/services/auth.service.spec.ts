@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import {
   AuthService,
   ACCESS_TOKEN_KEY,
@@ -59,7 +60,7 @@ describe('AuthService', () => {
 
   describe('login()', () => {
     it('should POST /api/auth/login and store tokens on success', async () => {
-      const promise = service.login('admin@demo.matrimony.local', 'Admin@123');
+      const promise = firstValueFrom(service.login('admin@demo.matrimony.local', 'Admin@123'));
 
       const req = httpMock.expectOne('/api/auth/login');
       expect(req.request.method).toBe('POST');
@@ -74,7 +75,7 @@ describe('AuthService', () => {
     });
 
     it('should return ok:false on 401', async () => {
-      const promise = service.login('bad@user.com', 'wrong');
+      const promise = firstValueFrom(service.login('bad@user.com', 'wrong'));
 
       const req = httpMock.expectOne('/api/auth/login');
       req.flush({ error: 'Invalid credentials' }, { status: 401, statusText: 'Unauthorized' });
@@ -85,7 +86,7 @@ describe('AuthService', () => {
     });
 
     it('should return error message when backend sends a plain string', async () => {
-      const promise = service.login('bad@user.com', 'wrong');
+      const promise = firstValueFrom(service.login('bad@user.com', 'wrong'));
 
       const req = httpMock.expectOne('/api/auth/login');
       req.flush('Invalid credentials', { status: 401, statusText: 'Unauthorized' });
@@ -96,7 +97,7 @@ describe('AuthService', () => {
     });
 
     it('should store tenant and user from nested login payload shape', async () => {
-      const promise = service.login('nested@demo.matrimony.local', 'Password@123');
+      const promise = firstValueFrom(service.login('nested@demo.matrimony.local', 'Password@123'));
 
       const req = httpMock.expectOne('/api/auth/login');
       req.flush(nestedMockResponse);
@@ -114,7 +115,7 @@ describe('AuthService', () => {
     it('should POST /api/auth/refresh with stored refresh token', async () => {
       localStorage.setItem(REFRESH_TOKEN_KEY, 'old-refresh');
 
-      const promise = service.refreshToken();
+      const promise = firstValueFrom(service.refreshToken());
 
       const req = httpMock.expectOne('/api/auth/refresh');
       expect(req.request.method).toBe('POST');
@@ -127,7 +128,7 @@ describe('AuthService', () => {
     });
 
     it('should return false when no refresh token is stored', async () => {
-      const result = await service.refreshToken();
+      const result = await firstValueFrom(service.refreshToken());
       expect(result).toBeFalse();
       httpMock.expectNone('/api/auth/refresh');
     });
@@ -135,7 +136,7 @@ describe('AuthService', () => {
     it('should return false when refresh endpoint returns 401', async () => {
       localStorage.setItem(REFRESH_TOKEN_KEY, 'expired-token');
 
-      const promise = service.refreshToken();
+      const promise = firstValueFrom(service.refreshToken());
 
       const req = httpMock.expectOne('/api/auth/refresh');
       req.flush({}, { status: 401, statusText: 'Unauthorized' });
@@ -151,7 +152,7 @@ describe('AuthService', () => {
       localStorage.setItem(ROLE_KEY, 'member');
       localStorage.setItem(EXPIRES_AT_KEY, new Date(Date.now() + 1000).toISOString());
 
-      const promise = service.refreshToken();
+      const promise = firstValueFrom(service.refreshToken());
 
       const req = httpMock.expectOne('/api/auth/refresh');
       req.flush({
@@ -175,7 +176,7 @@ describe('AuthService', () => {
       localStorage.setItem(ACCESS_TOKEN_KEY, 'access-token');
       localStorage.setItem(REFRESH_TOKEN_KEY, 'refresh-token');
 
-      const promise = service.logout();
+      const promise = firstValueFrom(service.logout());
 
       const req = httpMock.expectOne('/api/auth/logout');
       expect(req.request.method).toBe('POST');
@@ -190,7 +191,7 @@ describe('AuthService', () => {
       localStorage.setItem(ACCESS_TOKEN_KEY, 'access-token');
       localStorage.setItem(REFRESH_TOKEN_KEY, 'refresh-token');
 
-      const promise = service.logout();
+      const promise = firstValueFrom(service.logout());
 
       const req = httpMock.expectOne('/api/auth/logout');
       req.flush({}, { status: 500, statusText: 'Server Error' });

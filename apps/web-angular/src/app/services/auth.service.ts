@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService, LoginResponse } from './api.service';
 
 export const ACCESS_TOKEN_KEY = 'auth_token';
@@ -92,53 +93,52 @@ export class AuthService {
   /**
    * POST /api/auth/login
    */
-  async login(email: string, password: string): Promise<{ ok: boolean; message: string }> {
-    try {
-      const response = await firstValueFrom(
-        this.apiService.login({ email, password })
-      );
+  login(email: string, password: string): Observable<{ ok: boolean; message: string }> {
+    return this.apiService.login({ email, password }).pipe(
+      map((response) => {
       const normalized = this.normalizeAuthPayload(response);
       this.storeSession(normalized);
       return { ok: true, message: 'Login successful.' };
-    } catch (error: unknown) {
-      return { ok: false, message: this.extractErrorMessage(error, 'Invalid email or password.') };
-    }
+      }),
+      catchError((error: unknown) =>
+        of({ ok: false, message: this.extractErrorMessage(error, 'Invalid email or password.') })
+      )
+    );
   }
 
   /**
    * POST /api/auth/refresh
    * Returns true if refresh succeeded, false otherwise.
    */
-  async refreshToken(): Promise<boolean> {
+  refreshToken(): Observable<boolean> {
     const token = this.getRefreshToken();
-    if (!token) return false;
-    try {
-      const response = await firstValueFrom(
-        this.apiService.refreshToken(token)
-      );
-      const normalized = this.normalizeAuthPayload(response, this.getSession());
-      this.storeSession(normalized);
-      return true;
-    } catch {
-      return false;
-    }
+    if (!token) return of(false);
+
+    return this.apiService.refreshToken(token).pipe(
+      map((response) => {
+        const normalized = this.normalizeAuthPayload(response, this.getSession());
+        this.storeSession(normalized);
+        return true;
+      }),
+      catchError(() => of(false))
+    );
   }
 
   /**
    * POST /api/auth/logout then clears session and redirects to /login.
    */
-  async logout(): Promise<void> {
-    try {
-      const refreshToken = this.getRefreshToken();
-      if (refreshToken) {
-        await firstValueFrom(this.apiService.logout(refreshToken));
-      }
-    } catch {
-      // ignore server errors – clear locally regardless
-    } finally {
-      this.clearSession();
-      this.router.navigateByUrl('/login');
-    }
+  logout(): Observable<void> {
+    const refreshToken = this.getRefreshToken();
+    const request$ = refreshToken ? this.apiService.logout(refreshToken) : of({ message: 'Logged out.' });
+
+    return request$.pipe(
+      catchError(() => of({ message: 'Logged out.' })),
+      tap(() => {
+        this.clearSession();
+        this.router.navigateByUrl('/login');
+      }),
+      map(() => void 0)
+    );
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────────

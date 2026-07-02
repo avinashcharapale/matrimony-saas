@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
+import { catchError, concatMap, map, reduce } from 'rxjs/operators';
 import { ApiService, ProfileUpsertRequest } from './api.service';
 import { TenantService } from './tenant.service';
 
@@ -29,7 +30,7 @@ export class RegisterSyncService {
     return `${PROFILE_SYNC_QUEUE_KEY_PREFIX}_${this.tenantId}`;
   }
 
-  async enqueuePendingProfileSync(payload: ProfileUpsertRequest, errorMessage: string): Promise<void> {
+  enqueuePendingProfileSync(payload: ProfileUpsertRequest, errorMessage: string): Observable<void> {
     const queue = this.getPendingProfileSyncQueue();
     const signature = this.getProfilePayloadSignature(payload);
     const now = new Date().toISOString();
@@ -51,35 +52,50 @@ export class RegisterSyncService {
     }
 
     this.savePendingProfileSyncQueue(queue);
+    return of(void 0);
   }
 
-  async processPendingProfileSync(
+  processPendingProfileSync(
     getErrorMessage: (error: unknown, fallback: string) => string
-  ): Promise<{ syncedCount: number; pendingCount: number }> {
+  ): Observable<{ syncedCount: number; pendingCount: number }> {
     const queue = this.getPendingProfileSyncQueue();
     if (queue.length === 0) {
-      return { syncedCount: 0, pendingCount: 0 };
+      return of({ syncedCount: 0, pendingCount: 0 });
     }
 
-    const remaining: PendingProfileSyncItem[] = [];
-    let syncedCount = 0;
-
-    for (const item of queue) {
-      try {
-        await firstValueFrom(this.apiService.createOrUpdateProfile(item.payload));
-        syncedCount += 1;
-      } catch (error: unknown) {
-        remaining.push({
-          ...item,
-          attempts: item.attempts + 1,
-          updatedAt: new Date().toISOString(),
-          lastError: getErrorMessage(error, 'Profile sync failed.'),
-        });
-      }
-    }
-
-    this.savePendingProfileSyncQueue(remaining);
-    return { syncedCount, pendingCount: remaining.length };
+    return from(queue).pipe(
+      concatMap((item) =>
+        this.apiService.createOrUpdateProfile(item.payload).pipe(
+          map(() => ({ ok: true as const, item })),
+          catchError((error: unknown) =>
+            of({
+              ok: false as const,
+              item: {
+                ...item,
+                attempts: item.attempts + 1,
+                updatedAt: new Date().toISOString(),
+                lastError: getErrorMessage(error, 'Profile sync failed.'),
+              },
+            })
+          )
+        )
+      ),
+      reduce(
+        (acc, result) => {
+          if (result.ok) {
+            acc.syncedCount += 1;
+          } else {
+            acc.remaining.push(result.item);
+          }
+          return acc;
+        },
+        { syncedCount: 0, remaining: [] as PendingProfileSyncItem[] }
+      ),
+      map(({ syncedCount, remaining }) => {
+        this.savePendingProfileSyncQueue(remaining);
+        return { syncedCount, pendingCount: remaining.length };
+      })
+    );
   }
 
   private getPendingProfileSyncQueue(): PendingProfileSyncItem[] {

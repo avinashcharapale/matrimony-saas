@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import {
   RegisterMasterDataService,
   RegisterLookupOption,
@@ -28,33 +29,36 @@ export class RegisterStepEducationComponent implements OnInit {
   workingDistricts: RegisterDistrictOption[] = [];
   workingStateId: number | null = null;
 
-  async ngOnInit(): Promise<void> {
-    try {
-      const [educations, educationAreas, occupations, incomePeriods, states] = await Promise.all([
-        this.registerMasterDataSvc.getEducations(),
-        this.registerMasterDataSvc.getEducationAreas(),
-        this.registerMasterDataSvc.getOccupations(),
-        this.registerMasterDataSvc.getIncomePeriods(),
-        this.registerMasterDataSvc.getStates(),
-      ]);
-
-      this.educationOptions = educations;
-      this.educationAreaOptions = educationAreas;
-      this.occupationTypeOptions = occupations;
-      this.incomePeriodOptions = incomePeriods;
-      this.workingStates = states;
-
-      await this.restoreWorkingStateFromDraft();
-    } finally {
-      this.cdr.detectChanges();
-    }
+  ngOnInit(): void {
+    forkJoin({
+      educations: this.registerMasterDataSvc.getEducations(),
+      educationAreas: this.registerMasterDataSvc.getEducationAreas(),
+      occupations: this.registerMasterDataSvc.getOccupations(),
+      incomePeriods: this.registerMasterDataSvc.getIncomePeriods(),
+      states: this.registerMasterDataSvc.getStates(),
+    }).subscribe({
+      next: ({ educations, educationAreas, occupations, incomePeriods, states }) => {
+        this.educationOptions = educations;
+        this.educationAreaOptions = educationAreas;
+        this.occupationTypeOptions = occupations;
+        this.incomePeriodOptions = incomePeriods;
+        this.workingStates = states;
+        this.restoreWorkingStateFromDraft();
+      },
+      complete: () => this.cdr.detectChanges(),
+      error: () => this.cdr.detectChanges(),
+    });
   }
 
-  async onWorkingStateChange(stateId: number | null): Promise<void> {
+  onWorkingStateChange(stateId: number | null): void {
     this.workingDistricts = [];
     this.vm.workingCityCountry = '';
     if (stateId) {
-      this.workingDistricts = await this.registerMasterDataSvc.getDistricts(stateId);
+      this.registerMasterDataSvc.getDistricts(stateId).subscribe((districts) => {
+        this.workingDistricts = districts;
+        this.cdr.detectChanges();
+      });
+      return;
     }
     this.cdr.detectChanges();
   }
@@ -80,19 +84,30 @@ export class RegisterStepEducationComponent implements OnInit {
     return found?.id ?? null;
   }
 
-  private async restoreWorkingStateFromDraft(): Promise<void> {
+  private restoreWorkingStateFromDraft(): void {
     const savedDistrictToken = (this.vm.workingCityCountry ?? '').toString().trim().toUpperCase();
     if (!savedDistrictToken) {
       return;
     }
 
-    for (const state of this.workingStates) {
-      const districts = await this.registerMasterDataSvc.getDistricts(state.stateId);
+    this.findDistrictState(savedDistrictToken, 0);
+  }
+
+  private findDistrictState(savedDistrictToken: string, index: number): void {
+    if (index >= this.workingStates.length) {
+      return;
+    }
+
+    const state = this.workingStates[index];
+    this.registerMasterDataSvc.getDistricts(state.stateId).subscribe((districts) => {
       if (districts.some((district) => district.name.toUpperCase() === savedDistrictToken)) {
         this.workingStateId = state.stateId;
         this.workingDistricts = districts;
+        this.cdr.detectChanges();
         return;
       }
-    }
+
+      this.findDistrictState(savedDistrictToken, index + 1);
+    });
   }
 }
