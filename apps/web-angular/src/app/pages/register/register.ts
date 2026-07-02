@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MemberService } from '../../services/member.service';
 import { RegisterFormDetails } from '@org/models';
+import { RegisterDraftContext, RegisterDraftService } from '../../services/register-draft.service';
 import { RegisterStepperComponent } from './components/register-stepper.component';
 import { RegisterStepPersonalComponent } from './components/register-step-personal.component';
 import { RegisterStepHoroscopeComponent } from './components/register-step-horoscope.component';
@@ -38,9 +39,43 @@ const REGISTER_SECTION_IMPORTS = [
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
-export class Register {
+export class Register implements OnInit, OnDestroy {
   private readonly memberService = inject(MemberService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly registerDraftService = inject(RegisterDraftService);
+
+  private static readonly CAPTCHA_LENGTH = 6;
+  private static readonly CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  private static readonly STEP_FIELDS: Record<number, readonly string[]> = {
+    1: [
+      'firstName', 'middleName', 'lastName', 'dobDay', 'dobMonth', 'dobYear', 'gender', 'religion', 'caste', 'subCast',
+      'maritalStatus', 'heightFt', 'heightIn', 'weightKg', 'bloodGroup', 'complexion', 'physicalDisability',
+      'disabilityDetail', 'diet', 'spectacles', 'lens', 'personality',
+    ],
+    2: [
+      'manglik', 'rashi', 'nakshatra', 'charan', 'nadi', 'gan', 'birthHour', 'birthMinute', 'birthPeriod', 'birthDistrict', 'devak',
+    ],
+    3: [
+      'educationArea', 'education', 'occupationType', 'occupationDetails', 'workingCityCountry', 'incomeAmount', 'incomePeriod',
+    ],
+    4: [
+      'idProofNumber', 'residenceAddress', 'contactEmail', 'smsMobile', 'mobile2', 'phone1', 'phone2',
+    ],
+    5: [
+      'fatherStatus', 'motherStatus', 'brothers', 'marriedBrothers', 'sisters', 'marriedSisters', 'parentsFullName',
+      'parentsOccupation', 'parentsResidentCity', 'relativesSurnames', 'familyWealth', 'mamaSurnamePlace', 'nativeDistrict',
+      'nativeTaluka', 'intercastMarriage', 'intercastRelation',
+    ],
+    6: [
+      'preferredCities', 'expectedManglik', 'expectedCaste', 'maxAgeDifference', 'expectedHeightFt', 'expectedHeightIn',
+      'expectedEducation', 'expectedOccupationIncome', 'divorcee', 'verificationInput', 'uploadedPhotoName',
+      'uploadedPhoto2Name', 'password', 'confirmPassword',
+    ],
+  };
+
+  private draftContext: RegisterDraftContext | null = null;
+  private persistTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly steps: EnrollStep[] = [
     { title: 'Personal' },
@@ -130,7 +165,8 @@ export class Register {
   expectedEducation = '';
   expectedOccupationIncome = '';
   divorcee = 'No';
-  verificationCode = '58164';
+  verificationCode = '';
+  verificationImageDataUrl = '';
   verificationInput = '';
   uploadedPhotoName = '';
   uploadedPhoto2Name = '';
@@ -144,7 +180,6 @@ export class Register {
   isLoading = false;
   private readonly namePattern = /^[A-Za-z ]+$/;
   private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  private readonly phonePattern = /^\d{10}$/;
 
   readonly days = Array.from({ length: 31 }, (_, i) => `${i + 1}`);
   readonly months = [
@@ -152,13 +187,33 @@ export class Register {
   ];
   readonly years = Array.from({ length: 45 }, (_, i) => `${1980 + i}`);
 
+  ngOnInit(): void {
+    this.draftContext = this.registerDraftService.resolveContext(this.route.snapshot.queryParamMap);
+    this.restoreDraftFromStorage();
+    this.refreshCaptcha();
+  }
+
+  ngOnDestroy(): void {
+    this.persistCurrentStep();
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+  }
+
+  onFormInteraction(): void {
+    this.queueDraftPersist();
+  }
+
   previousStep(): void {
+    this.persistCurrentStep();
     if (this.currentStep > 1) {
       this.currentStep -= 1;
     }
   }
 
   nextStep(): void {
+    this.persistCurrentStep();
     const stepError = this.validateStep(this.currentStep);
     if (stepError) {
       this.isError = true;
@@ -170,6 +225,10 @@ export class Register {
     this.isError = false;
     if (this.currentStep < this.steps.length) {
       this.currentStep += 1;
+      if (this.currentStep === this.steps.length) {
+        this.refreshCaptcha();
+      }
+      this.queueDraftPersist();
     }
   }
 
@@ -185,6 +244,9 @@ export class Register {
     for (let step = 1; step <= this.steps.length; step += 1) {
       const stepError = this.validateStep(step);
       if (stepError) {
+        if (step === this.steps.length && stepError.includes('verification code')) {
+          this.refreshCaptcha();
+        }
         this.currentStep = step;
         this.isError = true;
         this.message = stepError;
@@ -232,14 +294,14 @@ export class Register {
       this.expectedOccupationIncome && `Expectation: ${this.normalizeText(this.expectedOccupationIncome)}`,
     ].filter(Boolean);
 
-    if (this.verificationInput !== this.verificationCode) {
-      this.isError = true;
-      this.message = 'Please enter correct verification code.';
-      this.isLoading = false;
-      return;
-    }
-
     this.registerAsync(name, accountEmail, accountPassword, bioParts.join(' | '), age);
+  }
+
+  refreshCaptcha(): void {
+    this.verificationCode = this.generateCaptchaCode();
+    this.verificationImageDataUrl = this.createCaptchaImage(this.verificationCode);
+    this.verificationInput = '';
+    this.queueDraftPersist();
   }
 
   private async registerAsync(
@@ -264,12 +326,13 @@ export class Register {
       this.isError = !result.ok;
       this.message = result.message;
 
-      if (result.ok) {
+      if (result.ok && result.profileSynced) {
+        this.clearDraftFromStorage();
         this.router.navigateByUrl('/login');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.isError = true;
-      this.message = error.message || 'Registration failed. Please try again.';
+      this.message = error instanceof Error ? error.message : 'Registration failed. Please try again.';
     } finally {
       this.isLoading = false;
     }
@@ -301,6 +364,74 @@ export class Register {
 
   private normalizeText(value: string): string {
     return value.trim().replace(/\s+/g, ' ');
+  }
+
+  private normalizePhone(value: string): string {
+    const digitsOnly = (value ?? '').toString().replace(/\D/g, '');
+    if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
+      return digitsOnly.slice(2);
+    }
+    if (digitsOnly.length === 11 && digitsOnly.startsWith('0')) {
+      return digitsOnly.slice(1);
+    }
+    return digitsOnly;
+  }
+
+  private isValidTenDigitPhone(value: string): boolean {
+    return /^\d{10}$/.test(this.normalizePhone(value));
+  }
+
+  private isCaptchaValid(): boolean {
+    return this.verificationInput.trim().toUpperCase() === this.verificationCode;
+  }
+
+  private generateCaptchaCode(): string {
+    let result = '';
+    for (let index = 0; index < Register.CAPTCHA_LENGTH; index += 1) {
+      const randomIndex = Math.floor(Math.random() * Register.CAPTCHA_CHARS.length);
+      result += Register.CAPTCHA_CHARS[randomIndex];
+    }
+    return result;
+  }
+
+  private createCaptchaImage(code: string): string {
+    const width = 280;
+    const height = 90;
+    const chars = code.split('');
+    const textNodes = chars
+      .map((char, index) => {
+        const x = 28 + index * 40;
+        const y = 54 + Math.floor(Math.random() * 14) - 7;
+        const rotate = Math.floor(Math.random() * 30) - 15;
+        return `<text x="${x}" y="${y}" transform="rotate(${rotate} ${x} ${y})" font-size="36" font-family="Georgia, serif" font-weight="700" fill="#1f2638">${char}</text>`;
+      })
+      .join('');
+
+    const noiseLines = Array.from({ length: 6 }, () => {
+      const x1 = Math.floor(Math.random() * width);
+      const y1 = Math.floor(Math.random() * height);
+      const x2 = Math.floor(Math.random() * width);
+      const y2 = Math.floor(Math.random() * height);
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#b88b66" stroke-width="1" opacity="0.45" />`;
+    }).join('');
+
+    const noiseDots = Array.from({ length: 24 }, () => {
+      const cx = Math.floor(Math.random() * width);
+      const cy = Math.floor(Math.random() * height);
+      const r = Math.floor(Math.random() * 2) + 1;
+      return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#8b6f47" opacity="0.25" />`;
+    }).join('');
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <rect width="${width}" height="${height}" rx="8" fill="#f9f5f0" />
+        ${noiseLines}
+        ${noiseDots}
+        ${textNodes}
+      </svg>
+    `;
+
+    return `data:image/svg+xml;base64,${btoa(svg)}`;
   }
 
   private isImageFile(fileName: string): boolean {
@@ -460,17 +591,29 @@ export class Register {
       if (!this.emailPattern.test(this.contactEmail.trim().toLowerCase())) {
         return 'Please enter a valid contact email.';
       }
-      if (!this.phonePattern.test(this.smsMobile.trim())) {
+      if (!this.isValidTenDigitPhone(this.smsMobile)) {
         return 'Mobile for SMS alert must be a 10-digit number.';
       }
-      if (this.mobile2 && !this.phonePattern.test(this.mobile2.trim())) {
+      if (this.mobile2 && !this.isValidTenDigitPhone(this.mobile2)) {
         return 'Mobile II must be a 10-digit number.';
       }
-      if (this.phone1 && !this.phonePattern.test(this.phone1.trim())) {
+      if (this.phone1 && !this.isValidTenDigitPhone(this.phone1)) {
         return 'Phone I must be a 10-digit number.';
       }
-      if (this.phone2 && !this.phonePattern.test(this.phone2.trim())) {
+      if (this.phone2 && !this.isValidTenDigitPhone(this.phone2)) {
         return 'Phone II must be a 10-digit number.';
+      }
+
+      // Persist normalized 10-digit values so later steps and submit use a clean format.
+      this.smsMobile = this.normalizePhone(this.smsMobile);
+      if (this.mobile2) {
+        this.mobile2 = this.normalizePhone(this.mobile2);
+      }
+      if (this.phone1) {
+        this.phone1 = this.normalizePhone(this.phone1);
+      }
+      if (this.phone2) {
+        this.phone2 = this.normalizePhone(this.phone2);
       }
     }
 
@@ -499,11 +642,79 @@ export class Register {
       if (this.password.trim() !== this.confirmPassword.trim()) {
         return 'Password and confirm password must match.';
       }
-      if (this.verificationInput.trim() !== this.verificationCode) {
+      if (!this.isCaptchaValid()) {
         return 'Please enter correct verification code.';
       }
     }
 
     return null;
+  }
+
+  private queueDraftPersist(): void {
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+    }
+
+    this.persistTimer = setTimeout(() => {
+      this.persistCurrentStep();
+      this.persistTimer = null;
+    }, 250);
+  }
+
+  private persistCurrentStep(): void {
+    if (!this.draftContext) {
+      return;
+    }
+
+    this.registerDraftService.saveStep(
+      this.draftContext,
+      this.currentStep,
+      this.captureStepValues(this.currentStep)
+    );
+  }
+
+  private restoreDraftFromStorage(): void {
+    if (!this.draftContext) {
+      return;
+    }
+
+    const state = this.registerDraftService.read(this.draftContext);
+    if (!state) {
+      return;
+    }
+
+    for (const [step, values] of Object.entries(state.steps)) {
+      const stepNumber = Number(step);
+      const fields = Register.STEP_FIELDS[stepNumber] ?? [];
+
+      for (const field of fields) {
+        if (Object.prototype.hasOwnProperty.call(values, field)) {
+          (this as unknown as Record<string, unknown>)[field] = values[field];
+        }
+      }
+    }
+
+    if (Number.isInteger(state.currentStep) && state.currentStep >= 1 && state.currentStep <= this.steps.length) {
+      this.currentStep = state.currentStep;
+    }
+  }
+
+  private captureStepValues(step: number): Record<string, unknown> {
+    const fields = Register.STEP_FIELDS[step] ?? [];
+    const source = this as unknown as Record<string, unknown>;
+    const output: Record<string, unknown> = {};
+
+    for (const field of fields) {
+      output[field] = source[field];
+    }
+
+    return output;
+  }
+
+  private clearDraftFromStorage(): void {
+    if (!this.draftContext) {
+      return;
+    }
+    this.registerDraftService.clear(this.draftContext);
   }
 }

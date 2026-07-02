@@ -14,6 +14,7 @@ import {
 import { createProfileRoutes } from './profiles';
 import { createGeoRoutes } from './geo';
 import { createMasterRoutes } from './master';
+import { createMasterDataRoutes } from './master/master-data.routes';
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3333;
@@ -159,6 +160,10 @@ function setupRoutes() {
   // Master data lookup routes (public read, admin write)
   const masterRoutes = createMasterRoutes(authServices.pool);
   app.use('/api/master', masterRoutes);
+
+  // Profile-service compatible master-data lookups used by registration flows
+  const masterDataRoutes = createMasterDataRoutes(authServices.pool);
+  app.use('/api/master-data', masterDataRoutes);
 
   // 404 handler
   app.use((req, res) => {

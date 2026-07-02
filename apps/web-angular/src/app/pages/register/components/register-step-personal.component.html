@@ -36,50 +36,64 @@
 
     <div class="form-field">
       <label for="gender">Gender</label>
-      <select id="gender" name="gender" [(ngModel)]="vm.gender" required>
-        <option value="">Select</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
+      <select id="gender" name="gender" required
+              [(ngModel)]="selectedGenderId"
+              (ngModelChange)="onGenderChange($event)"
+              [disabled]="lookupsLoading || genderOptions.length === 0">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of genderOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
 
     <div class="form-field">
       <label for="religion">Religion</label>
-      <select id="religion" name="religion" [(ngModel)]="vm.religion" required>
-        <option value="">Select</option>
-        @for (opt of religionOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
+      <select id="religion" name="religion" required
+              [(ngModel)]="selectedReligionId"
+              (ngModelChange)="onReligionChange($event)"
+              [disabled]="lookupsLoading || religionOptions.length === 0">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of religionOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
         }
       </select>
     </div>
 
     <div class="form-field">
       <label for="caste">Caste</label>
-      <select id="caste" name="caste" [(ngModel)]="vm.caste">
-        <option value="">Select</option>
-        @for (opt of casteOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
+      <select id="caste" name="caste"
+              [(ngModel)]="selectedCasteId"
+              (ngModelChange)="onCasteChange($event)">
+        <option [ngValue]="null">Select</option>
+        @for (opt of casteOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
         }
       </select>
     </div>
 
     <div class="form-field">
       <label for="subCast">Sub Cast</label>
-      <select id="subCast" name="subCast" [(ngModel)]="vm.subCast">
-        <option value="">Select</option>
-        @for (opt of subCastOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
+      <select id="subCast" name="subCast"
+              [(ngModel)]="selectedSubCasteId"
+              (ngModelChange)="onSubCasteChange($event)">
+        <option [ngValue]="null">Select</option>
+        @for (opt of subCastOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
         }
       </select>
     </div>
 
     <div class="form-field">
       <label for="maritalStatus">Marital Status</label>
-      <select id="maritalStatus" name="maritalStatus" [(ngModel)]="vm.maritalStatus">
-        <option value="Unmarried">Unmarried Boy</option>
-        <option value="Divorced">Divorced</option>
-        <option value="Widowed">Widowed</option>
+      <select id="maritalStatus" name="maritalStatus"
+              [(ngModel)]="selectedMaritalStatusId"
+              (ngModelChange)="onMaritalStatusChange($event)"
+              [disabled]="lookupsLoading || maritalStatusOptions.length === 0">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of maritalStatusOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
 
@@ -104,24 +118,27 @@
 
     <div class="form-field">
       <label for="bloodGroup">Blood Group</label>
-      <select id="bloodGroup" name="bloodGroup" [(ngModel)]="vm.bloodGroup">
-        <option value="A+">A+</option>
-        <option value="A-">A-</option>
-        <option value="B+">B+</option>
-        <option value="B-">B-</option>
-        <option value="O+">O+</option>
-        <option value="O-">O-</option>
-        <option value="AB+">AB+</option>
-        <option value="AB-">AB-</option>
+      <select id="bloodGroup" name="bloodGroup"
+              [(ngModel)]="selectedBloodGroupId"
+              (ngModelChange)="onBloodGroupChange($event)"
+              [disabled]="lookupsLoading || bloodGroupOptions.length === 0">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of bloodGroupOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
 
     <div class="form-field">
       <label for="complexion">Complexion</label>
-      <select id="complexion" name="complexion" [(ngModel)]="vm.complexion">
-        <option value="Fair">FAIR</option>
-        <option value="Wheatish">Wheatish</option>
-        <option value="Dusky">Dusky</option>
+      <select id="complexion" name="complexion"
+              [(ngModel)]="selectedComplexionId"
+              (ngModelChange)="onComplexionChange($event)"
+              [disabled]="lookupsLoading || complexionOptions.length === 0">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of complexionOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
 
@@ -140,10 +157,14 @@
 
     <div class="form-field">
       <label for="diet">Diet</label>
-      <select id="diet" name="diet" [(ngModel)]="vm.diet">
-        <option value="N/A">N/A</option>
-        <option value="Veg">Veg</option>
-        <option value="Non-Veg">Non-Veg</option>
+      <select id="diet" name="diet"
+              [(ngModel)]="selectedDietId"
+              (ngModelChange)="onDietChange($event)"
+              [disabled]="lookupsLoading || dietOptions.length === 0">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of dietOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
 
@@ -165,7 +186,15 @@
 
     <div class="form-field">
       <label for="personality">Personality</label>
-      <input type="text" id="personality" name="personality" [(ngModel)]="vm.personality" />
+      <select id="personality" name="personality"
+              [(ngModel)]="selectedPersonalityId"
+              (ngModelChange)="onPersonalityChange($event)"
+              [disabled]="lookupsLoading || personalityOptions.length === 0">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of personalityOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
+      </select>
     </div>
   </div>
 </section>

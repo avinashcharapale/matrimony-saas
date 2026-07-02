@@ -3,25 +3,36 @@
   <div class="field-grid compact">
     <div class="form-field">
       <label for="educationArea">Education Area (It's important)</label>
-      <select id="educationArea" name="educationArea" [(ngModel)]="vm.educationArea" required>
+      <select id="educationArea" name="educationArea" required
+              [ngModel]="findIdByVmValue(educationAreaOptions, vm.educationArea)"
+              (ngModelChange)="onOptionChange(educationAreaOptions, $event, 'educationArea')">
         <option value="">Select</option>
-        @for (opt of educationAreaOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        @for (opt of educationAreaOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
         }
       </select>
     </div>
 
     <div class="form-field">
       <label for="education">Education</label>
-      <input type="text" id="education" name="education" [(ngModel)]="vm.education" required maxlength="120" />
+      <select id="education" name="education" required
+              [ngModel]="findIdByVmValue(educationOptions, vm.education)"
+              (ngModelChange)="onOptionChange(educationOptions, $event, 'education')">
+        <option value="">Select</option>
+        @for (opt of educationOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
+      </select>
     </div>
 
     <div class="form-field">
       <label for="occupationType">Occupation Type (It's important)</label>
-      <select id="occupationType" name="occupationType" [(ngModel)]="vm.occupationType" required>
+      <select id="occupationType" name="occupationType" required
+              [ngModel]="findIdByVmValue(occupationTypeOptions, vm.occupationType)"
+              (ngModelChange)="onOptionChange(occupationTypeOptions, $event, 'occupationType')">
         <option value="">Select</option>
-        @for (opt of occupationTypeOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        @for (opt of occupationTypeOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
         }
       </select>
     </div>
@@ -36,9 +47,9 @@
       <select id="workingState" name="workingState"
               [(ngModel)]="workingStateId"
               (ngModelChange)="onWorkingStateChange($event)">
-        <option [value]="null">Select State</option>
+        <option [ngValue]="null">Select State</option>
         @for (s of workingStates; track s.stateId) {
-          <option [value]="s.stateId">{{ s.name }}</option>
+          <option [ngValue]="s.stateId">{{ s.name }}</option>
         }
       </select>
     </div>
@@ -62,9 +73,13 @@
 
     <div class="form-field">
       <label for="incomePeriod">Income Period</label>
-      <select id="incomePeriod" name="incomePeriod" [(ngModel)]="vm.incomePeriod">
-        <option value="Per Month">Per Month</option>
-        <option value="Per Year">Per Year</option>
+      <select id="incomePeriod" name="incomePeriod"
+              [ngModel]="findIdByVmValue(incomePeriodOptions, vm.incomePeriod)"
+              (ngModelChange)="onOptionChange(incomePeriodOptions, $event, 'incomePeriod')">
+        <option value="">Select</option>
+        @for (opt of incomePeriodOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
   </div>

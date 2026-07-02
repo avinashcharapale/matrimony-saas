@@ -3,8 +3,8 @@
 // explicitly supports and converts to Vite-compatible object format.
 module.exports = [
   {
-    context: ['/api'],
-    target: 'http://localhost:8000',
+    context: ['/api', '/identity', '/tenant', '/profile', '/subscription', '/match', '/chat'],
+    target: 'http://127.0.0.1:8000',
     secure: false,
     changeOrigin: true,
   },

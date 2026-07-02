@@ -18,22 +18,22 @@
 
     <div class="form-field">
       <label for="smsMobile"><span class="required">*</span>Mobile For SMS Alert (It's important)</label>
-      <input type="text" id="smsMobile" name="smsMobile" [(ngModel)]="vm.smsMobile" required pattern="[0-9]{10}" maxlength="10" />
+      <input type="tel" id="smsMobile" name="smsMobile" [(ngModel)]="vm.smsMobile" (input)="sanitizePhoneInput('smsMobile')" required inputmode="numeric" maxlength="16" />
     </div>
 
     <div class="form-field">
       <label for="mobile2">Mobile II</label>
-      <input type="text" id="mobile2" name="mobile2" [(ngModel)]="vm.mobile2" pattern="[0-9]{10}" maxlength="10" />
+      <input type="tel" id="mobile2" name="mobile2" [(ngModel)]="vm.mobile2" (input)="sanitizePhoneInput('mobile2')" inputmode="numeric" maxlength="16" />
     </div>
 
     <div class="form-field">
       <label for="phone1">Phone I</label>
-      <input type="text" id="phone1" name="phone1" [(ngModel)]="vm.phone1" pattern="[0-9]{10}" maxlength="10" />
+      <input type="tel" id="phone1" name="phone1" [(ngModel)]="vm.phone1" (input)="sanitizePhoneInput('phone1')" inputmode="numeric" maxlength="16" />
     </div>
 
     <div class="form-field">
       <label for="phone2">Phone II</label>
-      <input type="text" id="phone2" name="phone2" [(ngModel)]="vm.phone2" pattern="[0-9]{10}" maxlength="10" />
+      <input type="tel" id="phone2" name="phone2" [(ngModel)]="vm.phone2" (input)="sanitizePhoneInput('phone2')" inputmode="numeric" maxlength="16" />
     </div>
   </div>
 </section>

@@ -100,9 +100,9 @@
       <select id="nativeState" name="nativeState"
               [(ngModel)]="nativeStateId"
               (ngModelChange)="onNativeStateChange($event)">
-        <option [value]="null">Select State</option>
+        <option [ngValue]="null">Select State</option>
         @for (s of nativeStates; track s.stateId) {
-          <option [value]="s.stateId">{{ s.name }}</option>
+          <option [ngValue]="s.stateId">{{ s.name }}</option>
         }
       </select>
     </div>
@@ -114,9 +114,9 @@
               (ngModelChange)="onNativeDistrictChange($event)"
               required
               [disabled]="nativeDistricts.length === 0">
-        <option [value]="null">Select District</option>
+        <option [ngValue]="null">Select District</option>
         @for (d of nativeDistricts; track d.districtId) {
-          <option [value]="d.districtId">{{ d.name }}</option>
+          <option [ngValue]="d.districtId">{{ d.name }}</option>
         }
       </select>
     </div>

@@ -2,13 +2,36 @@ export interface MemberRecord {
   id: string;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   age?: number;
   location?: string;
   occupation?: string;
   bio?: string;
   registrationDetails?: RegisterFormDetails;
   createdAt: string;
+}
+
+export interface RegisterSubmissionPayload {
+  name: string;
+  email: string;
+  password: string;
+  age?: number;
+  location?: string;
+  occupation?: string;
+  bio?: string;
+  registrationDetails?: RegisterFormDetails;
+}
+
+export type RegisterDraftSyncStatus = 'local-only' | 'pending-sync' | 'synced' | 'sync-failed';
+
+export interface RegisterDraftState {
+  tenantId: string;
+  draftId: string;
+  currentStep: number;
+  updatedAt: number;
+  steps: Record<string, Record<string, unknown>>;
+  syncStatus?: RegisterDraftSyncStatus;
+  syncError?: string;
 }
 
 export interface RegisterPersonalDetails {

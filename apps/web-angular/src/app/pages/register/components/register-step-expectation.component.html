@@ -73,10 +73,13 @@
   </div>
 
   <div class="verification-section">
-    <div class="verification-code">{{ vm.verificationCode }}</div>
+    <div class="verification-code">
+      <img [src]="vm.verificationImageDataUrl" alt="Captcha verification" class="captcha-image" />
+    </div>
+    <button type="button" class="btn-secondary captcha-refresh-btn" (click)="vm.refreshCaptcha()">Refresh Captcha</button>
     <p>Please Enter Above Verification Code</p>
     <div class="form-field">
-      <input type="text" id="verificationInput" name="verificationInput" [(ngModel)]="vm.verificationInput" placeholder="Enter verification code" required maxlength="5" />
+      <input type="text" id="verificationInput" name="verificationInput" [(ngModel)]="vm.verificationInput" placeholder="Enter verification code" required maxlength="6" autocomplete="off" />
     </div>
     <p class="verification-hint">* Please enter verification code then click submit.</p>
   </div>

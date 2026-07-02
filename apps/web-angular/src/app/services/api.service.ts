@@ -182,6 +182,6 @@ export class ApiService {
   }
 
   createOrUpdateProfile(profile: ProfileUpsertRequest): Observable<ProfileDetail> {
-    return this.http.post<ProfileDetail>(`${this.apiUrl}/profiles`, profile);
+    return this.http.post<ProfileDetail>('/profile/UserProfiles', profile);
   }
 }

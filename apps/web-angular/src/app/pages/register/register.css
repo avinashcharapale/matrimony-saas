@@ -316,6 +316,19 @@ section {
   letter-spacing: 0.1em;
 }
 
+.captcha-image {
+  width: 280px;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #d6c8b6;
+  border-radius: 0.375rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.captcha-refresh-btn {
+  margin-top: 0.75rem;
+}
+
 .verification-section p {
   font-size: 0.95rem;
   color: #374151;

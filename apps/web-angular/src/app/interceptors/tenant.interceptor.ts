@@ -5,13 +5,22 @@ import { TenantService } from '../services/tenant.service';
 export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
   const tenantService = inject(TenantService);
   const tenantId = tenantService.tenantHeaderId;
+  const isProfileMasterDataRequest = req.url.includes('/profile/master-data');
 
   if (!tenantId) {
+    if (isProfileMasterDataRequest) {
+      console.debug('[tenant-interceptor] No tenant header id available for request:', req.url);
+    }
     return next(req);
   }
 
   const absoluteApiPrefix = `${window.location.origin}/api`;
-  const isApiRequest = req.url.startsWith('/api') || req.url.startsWith(absoluteApiPrefix);
+  const absoluteProfilePrefix = `${window.location.origin}/profile`;
+  const isApiRequest =
+    req.url.startsWith('/api') ||
+    req.url.startsWith('/profile') ||
+    req.url.startsWith(absoluteApiPrefix) ||
+    req.url.startsWith(absoluteProfilePrefix);
 
   if (!isApiRequest || req.headers.has('x-tenant-id')) {
     return next(req);
@@ -23,6 +32,14 @@ export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
       'x-tenant-host': window.location.hostname,
     },
   });
+
+  if (isProfileMasterDataRequest) {
+    console.debug('[tenant-interceptor] Added tenant headers for request:', {
+      url: req.url,
+      tenantId,
+      tenantHost: window.location.hostname,
+    });
+  }
 
   return next(requestWithTenant);
 };

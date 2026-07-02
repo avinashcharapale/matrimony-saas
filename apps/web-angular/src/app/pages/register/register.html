@@ -3,7 +3,7 @@
 
   <app-register-stepper [steps]="steps" [currentStep]="currentStep"></app-register-stepper>
 
-  <form class="enroll-form" (ngSubmit)="submit()" novalidate>
+  <form class="enroll-form" (ngSubmit)="submit()" (input)="onFormInteraction()" (change)="onFormInteraction()" novalidate>
     @if (currentStep === 1) {
     <app-register-step-personal [vm]="this"></app-register-step-personal>
     }

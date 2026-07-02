@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { MemberRecord, RegisterFormDetails, SAMPLE_PROFILES, createEmptyRegisterFormDetails } from '@org/models';
+import {
+  MemberRecord,
+  RegisterFormDetails,
+  RegisterSubmissionPayload,
+  SAMPLE_PROFILES,
+  createEmptyRegisterFormDetails,
+} from '@org/models';
 import { TenantService } from './tenant.service';
 import { ApiService, ProfileListResponse, ProfileSearchResult, ProfileUpsertRequest } from './api.service';
+import { RegisterSyncService } from './register-sync.service';
 import { firstValueFrom } from 'rxjs';
 
 export type { MemberRecord } from '@org/models';
@@ -20,6 +27,12 @@ export interface SearchFilters {
   pageSize?: number;
 }
 
+export interface RegisterMemberResult {
+  ok: boolean;
+  message: string;
+  profileSynced: boolean;
+}
+
 const MEMBERS_KEY_PREFIX = 'matrimony_members';
 const SESSION_KEY_PREFIX = 'matrimony_session_user';
 const AUTH_TOKEN_KEY = 'auth_token';
@@ -32,6 +45,7 @@ const LEGACY_MEMBERS_KEY = 'matrimony_members';
 export class MemberService {
   private readonly tenantService = inject(TenantService);
   private readonly apiService = inject(ApiService);
+  private readonly registerSyncService = inject(RegisterSyncService);
 
   private get tenantId(): string {
     return this.tenantService.tenant.id || 'default';
@@ -88,7 +102,7 @@ export class MemberService {
     return new Date().getFullYear() - birthYear;
   }
 
-  private buildProfilePayload(payload: Omit<MemberRecord, 'id' | 'createdAt'>): ProfileUpsertRequest {
+  private buildProfilePayload(payload: RegisterSubmissionPayload): ProfileUpsertRequest {
     const details = payload.registrationDetails ?? createEmptyRegisterFormDetails();
     const fullName = payload.name || [
       details.personal.firstName,
@@ -217,6 +231,14 @@ export class MemberService {
       localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
       localStorage.setItem(this.sessionKey, response.userId.toString());
 
+      const syncResult = await this.processPendingProfileSync();
+      if (syncResult.pendingCount > 0) {
+        return {
+          ok: true,
+          message: `Login successful. Profile sync pending for ${syncResult.pendingCount} item(s), retrying automatically.`,
+        };
+      }
+
       return { ok: true, message: 'Login successful.' };
     } catch (error: unknown) {
       const message = this.getErrorMessage(error, 'Invalid email or password.');
@@ -227,14 +249,19 @@ export class MemberService {
   /**
    * Register via API
    */
-  async registerMember(payload: Omit<MemberRecord, 'id' | 'createdAt'>): Promise<{ ok: boolean; message: string }> {
+  async registerMember(payload: RegisterSubmissionPayload): Promise<RegisterMemberResult> {
+    const profilePayload = this.buildProfilePayload(payload);
+
     try {
+      const tenantHeaderId = Number(this.tenantService.tenantHeaderId);
+      const tenantId = Number.isFinite(tenantHeaderId) && tenantHeaderId > 0 ? tenantHeaderId : undefined;
+
       const response = await firstValueFrom(
         this.apiService.register({
           email: payload.email,
           password: payload.password || '',
           confirmPassword: payload.registrationDetails?.confirmPassword || payload.password || '',
-          tenantId: 1,
+          tenantId,
         })
       );
 
@@ -243,13 +270,35 @@ export class MemberService {
       localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
       localStorage.setItem(this.sessionKey, response.userId.toString());
 
-      await firstValueFrom(this.apiService.createOrUpdateProfile(this.buildProfilePayload(payload)));
+      try {
+        await firstValueFrom(this.apiService.createOrUpdateProfile(profilePayload));
+        return {
+          ok: true,
+          message: 'Registration successful. Welcome!',
+          profileSynced: true,
+        };
+      } catch (profileSyncError: unknown) {
+        await this.registerSyncService.enqueuePendingProfileSync(
+          profilePayload,
+          this.getErrorMessage(profileSyncError, 'Profile sync failed.')
+        );
 
-      return { ok: true, message: 'Registration successful. Welcome!' };
+        return {
+          ok: true,
+          message: 'Account created, but profile sync to DB is pending. Please login; sync will retry automatically.',
+          profileSynced: false,
+        };
+      }
     } catch (error: unknown) {
       const message = this.getErrorMessage(error, 'Registration failed. Please try again.');
-      return { ok: false, message };
+      return { ok: false, message, profileSynced: false };
     }
+  }
+
+  async processPendingProfileSync(): Promise<{ syncedCount: number; pendingCount: number }> {
+    return this.registerSyncService.processPendingProfileSync((error, fallback) =>
+      this.getErrorMessage(error, fallback)
+    );
   }
 
   /**

@@ -3,52 +3,61 @@
   <div class="field-grid compact">
     <div class="form-field">
       <label for="rashi">Rashi</label>
-      <select id="rashi" name="rashi" [(ngModel)]="vm.rashi">
+      <select id="rashi" name="rashi"
+              [ngModel]="findIdByVmValue(rashiOptions, vm.rashi)"
+              (ngModelChange)="onOptionChange(rashiOptions, $event, 'rashi')">
         <option value="">Unspecified</option>
-        @for (opt of rashiOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        @for (opt of rashiOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
         }
       </select>
     </div>
 
     <div class="form-field">
       <label for="nakshatra">Nakshatra</label>
-      <select id="nakshatra" name="nakshatra" [(ngModel)]="vm.nakshatra">
+      <select id="nakshatra" name="nakshatra"
+              [ngModel]="findIdByVmValue(nakshatraOptions, vm.nakshatra)"
+              (ngModelChange)="onOptionChange(nakshatraOptions, $event, 'nakshatra')">
         <option value="">Unspecified</option>
-        @for (opt of nakshatraOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
+        @for (opt of nakshatraOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
         }
       </select>
     </div>
 
     <div class="form-field">
       <label for="charan">Charan</label>
-      <select id="charan" name="charan" [(ngModel)]="vm.charan">
-        <option value="Unspecified">Unspecified</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
+      <select id="charan" name="charan"
+              [ngModel]="findIdByVmValue(charanOptions, vm.charan)"
+              (ngModelChange)="onOptionChange(charanOptions, $event, 'charan')">
+        <option value="">Unspecified</option>
+        @for (opt of charanOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
 
     <div class="form-field">
       <label for="nadi">Nadi</label>
-      <select id="nadi" name="nadi" [(ngModel)]="vm.nadi">
-        <option value="Unspecified">Unspecified</option>
-        <option value="Aadi">Aadi</option>
-        <option value="Madhya">Madhya</option>
-        <option value="Antya">Antya</option>
+      <select id="nadi" name="nadi"
+              [ngModel]="findIdByVmValue(nadiOptions, vm.nadi)"
+              (ngModelChange)="onOptionChange(nadiOptions, $event, 'nadi')">
+        <option value="">Unspecified</option>
+        @for (opt of nadiOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
 
     <div class="form-field">
       <label for="gan">Gan</label>
-      <select id="gan" name="gan" [(ngModel)]="vm.gan">
-        <option value="Unspecified">Unspecified</option>
-        <option value="Dev">Dev</option>
-        <option value="Manushya">Manushya</option>
-        <option value="Rakshas">Rakshas</option>
+      <select id="gan" name="gan"
+              [ngModel]="findIdByVmValue(ganOptions, vm.gan)"
+              (ngModelChange)="onOptionChange(ganOptions, $event, 'gan')">
+        <option value="">Unspecified</option>
+        @for (opt of ganOptions; track opt.id) {
+          <option [ngValue]="opt.id">{{ opt.label }}</option>
+        }
       </select>
     </div>
 
@@ -82,9 +91,9 @@
       <select id="birthState" name="birthState"
               [(ngModel)]="birthStateId"
               (ngModelChange)="onBirthStateChange($event)">
-        <option [value]="null">Select State</option>
+        <option [ngValue]="null">Select State</option>
         @for (s of birthStates; track s.stateId) {
-          <option [value]="s.stateId">{{ s.name }}</option>
+          <option [ngValue]="s.stateId">{{ s.name }}</option>
         }
       </select>
     </div>
