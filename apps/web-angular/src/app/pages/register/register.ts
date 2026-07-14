@@ -1,41 +1,47 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MemberService } from '../../services/member.service';
-import { RegisterFormDetails } from '@org/models';
 import { RegisterDraftContext, RegisterDraftService } from '../../services/register-draft.service';
+import { normalizeText, normalizePhone, isValidTenDigitPhone, isValidEmail, isValidName } from '@org/shared-utils';
+import { TenantStore } from '@org/data-access-tenant';
+import { CreateProfileDto } from '@org/generated';
 import { RegisterStepperComponent } from './components/register-stepper.component';
-import { RegisterStepPersonalComponent } from './components/register-step-personal.component';
-import { RegisterStepHoroscopeComponent } from './components/register-step-horoscope.component';
-import { RegisterStepEducationComponent } from './components/register-step-education.component';
-import { RegisterStepAddressComponent } from './components/register-step-address.component';
-import { RegisterStepFamilyComponent } from './components/register-step-family.component';
-import { RegisterStepExpectationComponent } from './components/register-step-expectation.component';
+import { RegisterStepPersonalComponent } from './components/register-step-personal/register-step-personal.component';
+import { RegisterStepHoroscopeComponent } from './components/register-step-horoscope/register-step-horoscope.component';
+import { RegisterStepEducationComponent } from './components/register-step-education/register-step-education.component';
+import { RegisterStepAddressComponent } from './components/register-step-address/register-step-address.component';
+import { RegisterStepFamilyComponent } from './components/register-step-family/register-step-family.component';
+import { RegisterStepExpectationComponent } from './components/register-step-expectation/register-step-expectation.component';
 import { finalize } from 'rxjs/operators';
 
 interface EnrollStep {
   title: string;
 }
 
-const REGISTER_SECTION_IMPORTS = [
-  RegisterStepperComponent,
-  RegisterStepPersonalComponent,
-  RegisterStepHoroscopeComponent,
-  RegisterStepEducationComponent,
-  RegisterStepAddressComponent,
-  RegisterStepFamilyComponent,
-  RegisterStepExpectationComponent,
-];
+const STEP_GROUP_NAMES: Record<number, string> = {
+  1: 'personalDetails',
+  2: 'profileHoroscope',
+  3: 'careerDetails',
+  4: 'contactDetails',
+  5: 'familyDetails',
+  6: 'partnerPreference',
+};
 
 @Component({
   selector: 'app-register',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     RouterModule,
-    ...REGISTER_SECTION_IMPORTS,
+    RegisterStepperComponent,
+    RegisterStepPersonalComponent,
+    RegisterStepHoroscopeComponent,
+    RegisterStepEducationComponent,
+    RegisterStepAddressComponent,
+    RegisterStepFamilyComponent,
+    RegisterStepExpectationComponent,
   ],
   templateUrl: './register.html',
   styleUrl: './register.css',
@@ -45,38 +51,127 @@ export class Register implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly registerDraftService = inject(RegisterDraftService);
+  private readonly tenantStore = inject(TenantStore);
 
   private static readonly CAPTCHA_LENGTH = 6;
   private static readonly CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  private static readonly STEP_FIELDS: Record<number, readonly string[]> = {
-    1: [
-      'firstName', 'middleName', 'lastName', 'dobDay', 'dobMonth', 'dobYear', 'gender', 'religion', 'caste', 'subCast',
-      'maritalStatus', 'heightFt', 'heightIn', 'weightKg', 'bloodGroup', 'complexion', 'physicalDisability',
-      'disabilityDetail', 'diet', 'spectacles', 'lens', 'personality',
-    ],
-    2: [
-      'manglik', 'rashi', 'nakshatra', 'charan', 'nadi', 'gan', 'birthHour', 'birthMinute', 'birthPeriod', 'birthDistrict', 'devak',
-    ],
-    3: [
-      'educationArea', 'education', 'occupationType', 'occupationDetails', 'workingCityCountry', 'incomeAmount', 'incomePeriod',
-    ],
-    4: [
-      'idProofNumber', 'residenceAddress', 'contactEmail', 'smsMobile', 'mobile2', 'phone1', 'phone2',
-    ],
-    5: [
-      'fatherStatus', 'motherStatus', 'brothers', 'marriedBrothers', 'sisters', 'marriedSisters', 'parentsFullName',
-      'parentsOccupation', 'parentsResidentCity', 'relativesSurnames', 'familyWealth', 'mamaSurnamePlace', 'nativeDistrict',
-      'nativeTaluka', 'intercastMarriage', 'intercastRelation',
-    ],
-    6: [
-      'preferredCities', 'expectedManglik', 'expectedCaste', 'maxAgeDifference', 'expectedHeightFt', 'expectedHeightIn',
-      'expectedEducation', 'expectedOccupationIncome', 'divorcee', 'verificationInput', 'uploadedPhotoName',
-      'uploadedPhoto2Name', 'password', 'confirmPassword',
-    ],
-  };
 
   private draftContext: RegisterDraftContext | null = null;
   private persistTimer: ReturnType<typeof setTimeout> | null = null;
+
+  readonly profileForm = new FormGroup({
+    personalDetails: new FormGroup({
+      firstName: new FormControl(''),
+      middleName: new FormControl(''),
+      lastName: new FormControl(''),
+      dobDay: new FormControl<number | null>(null),
+      dobMonth: new FormControl(''),
+      dobYear: new FormControl<number | null>(null),
+      genderId: new FormControl<number | null>(null),
+      religionId: new FormControl<number | null>(null),
+      casteId: new FormControl<number | null>(null),
+      subCasteId: new FormControl<number | null>(null),
+      maritalStatusId: new FormControl<number | null>(null),
+      heightFt: new FormControl(5),
+      heightIn: new FormControl(4),
+      weightKg: new FormControl(40),
+      bloodGroupId: new FormControl<number | null>(null),
+      complexionId: new FormControl<number | null>(null),
+      physicalDisability: new FormControl(false),
+      disabilityDetail: new FormControl(''),
+      dietId: new FormControl<number | null>(null),
+      spectacles: new FormControl(false),
+      lens: new FormControl(false),
+      personalityId: new FormControl<number | null>(null),
+    }),
+    profileHoroscope: new FormGroup({
+      manglik: new FormControl(false),
+      rashiId: new FormControl<number | null>(null),
+      nakshatraId: new FormControl<number | null>(null),
+      charanId: new FormControl<number | null>(null),
+      nadiId: new FormControl<number | null>(null),
+      ganId: new FormControl<number | null>(null),
+      birthHour: new FormControl(1),
+      birthMinute: new FormControl(0),
+      birthPeriod: new FormControl(''),
+      birthDistrict: new FormControl(''),
+      devak: new FormControl(''),
+    }),
+    careerDetails: new FormGroup({
+      educationAreaId: new FormControl<number | null>(null),
+      educationId: new FormControl<number | null>(null),
+      occupationId: new FormControl<number | null>(null),
+      occupationDetails: new FormControl(''),
+      workingCityCountry: new FormControl(''),
+      incomeAmount: new FormControl<number | null>(null),
+      incomePeriodId: new FormControl<number | null>(null),
+    }),
+    contactDetails: new FormGroup({
+      residenceAddress: new FormControl(''),
+      contactEmail: new FormControl(''),
+      idProofNumber: new FormControl(''),
+      smsMobile: new FormControl(''),
+      mobile2: new FormControl(''),
+      phone1: new FormControl(''),
+      phone2: new FormControl(''),
+    }),
+    familyDetails: new FormGroup({
+      fatherStatus: new FormControl(false),
+      motherStatus: new FormControl(false),
+      brothers: new FormControl(0),
+      marriedBrothers: new FormControl(0),
+      sisters: new FormControl(0),
+      marriedSisters: new FormControl(0),
+      parentsFullName: new FormControl(''),
+      parentsOccupation: new FormControl(''),
+      parentsResidentCity: new FormControl(''),
+      familyWealth: new FormControl(''),
+      mamaSurnamePlace: new FormControl(''),
+      nativeDistrict: new FormControl(''),
+      nativeTaluka: new FormControl(''),
+      intercastMarriage: new FormControl(false),
+      intercastRelation: new FormControl(''),
+    }),
+    partnerPreference: new FormGroup({
+      expectedManglik: new FormControl(false),
+      expectedCaste: new FormControl(''),
+      maxAgeDifference: new FormControl(0),
+      expectedHeightFt: new FormControl(5),
+      expectedHeightIn: new FormControl(0),
+      expectedEducation: new FormControl(''),
+      expectedOccupationIncome: new FormControl(''),
+      divorcee: new FormControl(false),
+    }),
+    fullName: new FormControl<string | null>(null),
+    age: new FormControl<number | null>(null),
+    bio: new FormControl<string | null>(null),
+    locationText: new FormControl<string | null>(null),
+    occupationText: new FormControl<string | null>(null),
+    preferredCities: new FormControl(''),
+    relativesSurnames: new FormControl(''),
+    account: new FormGroup({
+      email: new FormControl(''),
+      password: new FormControl(''),
+      confirmPassword: new FormControl(''),
+    }),
+    verification: new FormGroup({
+      code: new FormControl(''),
+      input: new FormControl(''),
+      imageDataUrl: new FormControl(''),
+    }),
+    photos: new FormGroup({
+      photo1Name: new FormControl(''),
+      photo2Name: new FormControl(''),
+    }),
+  });
+
+  private readonly tenantRekeyEffect = effect(() => {
+    const headerId = this.tenantStore.tenantHeaderId();
+    if (headerId && this.draftContext && this.draftContext.tenantId !== headerId) {
+      this.draftContext = this.registerDraftService.rekeyContext(this.draftContext, headerId);
+      this.restoreDraftFromStorage();
+    }
+  });
 
   readonly steps: EnrollStep[] = [
     { title: 'Personal' },
@@ -87,106 +182,16 @@ export class Register implements OnInit, OnDestroy {
     { title: 'Expectation' },
   ];
 
-  currentStep = 1;
+  currentStep = signal(1);
+  message = signal('');
+  isError = signal(false);
+  isLoading = signal(false);
 
-  firstName = '';
-  middleName = '';
-  lastName = '';
-  dobDay = '';
-  dobMonth = '';
-  dobYear = '';
-  gender = '';
-  religion = '';
-  caste = 'MARATHA';
-  subCast = '96_KULI';
-  maritalStatus = 'Unmarried';
-  heightFt = '5';
-  heightIn = '4';
-  weightKg = '40';
-  bloodGroup = 'A+';
-  complexion = 'Fair';
-  physicalDisability = 'No';
-  disabilityDetail = '';
-  diet = 'N/A';
-  spectacles = 'No';
-  lens = 'No';
-  personality = '';
-
-  manglik = 'No';
-  rashi = 'Unspecified';
-  nakshatra = 'Unspecified';
-  charan = 'Unspecified';
-  nadi = 'Unspecified';
-  gan = 'Unspecified';
-  birthHour = '01';
-  birthMinute = '00';
-  birthPeriod = 'Select';
-  birthDistrict = 'Select';
-  devak = '';
-
-  educationArea = 'Select';
-  education = '';
-  occupationType = 'Select';
-  occupationDetails = '';
-  workingCityCountry = 'Select';
-  incomeAmount = '';
-  incomePeriod = 'Per Month';
-
-  idProofNumber = '';
-  residenceAddress = '';
-  contactEmail = '';
-  smsMobile = '';
-  mobile2 = '';
-  phone1 = '';
-  phone2 = '';
-
-  fatherStatus = 'Yes';
-  motherStatus = 'Yes';
-  brothers = '0';
-  marriedBrothers = '0';
-  sisters = '0';
-  marriedSisters = '0';
-  parentsFullName = '';
-  parentsOccupation = '';
-  parentsResidentCity = '';
-  relativesSurnames = '';
-  familyWealth = '';
-  mamaSurnamePlace = '';
-  nativeDistrict = 'Select';
-  nativeTaluka = '';
-  intercastMarriage = 'No';
-  intercastRelation = '';
-
-  preferredCities = '';
-  expectedManglik = 'No';
-  expectedCaste = 'Maratha';
-  maxAgeDifference = '0';
-  expectedHeightFt = '5';
-  expectedHeightIn = '0';
-  expectedEducation = '';
-  expectedOccupationIncome = '';
-  divorcee = 'No';
-  verificationCode = '';
-  verificationImageDataUrl = '';
-  verificationInput = '';
-  uploadedPhotoName = '';
-  uploadedPhoto2Name = '';
-
-  email = '';
-  password = '';
-  confirmPassword = '';
-
-  message = '';
-  isError = false;
-  isLoading = false;
-  private readonly namePattern = /^[A-Za-z ]+$/;
-  private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  readonly days = Array.from({ length: 31 }, (_, i) => `${i + 1}`);
+  readonly days = Array.from({ length: 31 }, (_, i) => i + 1);
   readonly months = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
-  readonly years = Array.from({ length: 45 }, (_, i) => `${1980 + i}`);
+  readonly years = Array.from({ length: 45 }, (_, i) => 1980 + i);
 
   ngOnInit(): void {
     this.draftContext = this.registerDraftService.resolveContext(this.route.snapshot.queryParamMap);
@@ -208,39 +213,36 @@ export class Register implements OnInit, OnDestroy {
 
   previousStep(): void {
     this.persistCurrentStep();
-    if (this.currentStep > 1) {
-      this.currentStep -= 1;
+    if (this.currentStep() > 1) {
+      this.currentStep.set(this.currentStep() - 1);
     }
   }
 
   nextStep(): void {
     this.persistCurrentStep();
-    const stepError = this.validateStep(this.currentStep);
+    const stepError = this.validateStep(this.currentStep());
     if (stepError) {
-      this.isError = true;
-      this.message = stepError;
+      this.isError.set(true);
+      this.message.set(stepError);
       return;
     }
-
-    this.message = '';
-    this.isError = false;
-    if (this.currentStep < this.steps.length) {
-      this.currentStep += 1;
-      if (this.currentStep === this.steps.length) {
+    this.message.set('');
+    this.isError.set(false);
+    if (this.currentStep() < this.steps.length) {
+      this.currentStep.set(this.currentStep() + 1);
+      if (this.currentStep() === this.steps.length) {
         this.refreshCaptcha();
       }
       this.queueDraftPersist();
     }
   }
 
-  get isLastStep(): boolean {
-    return this.currentStep === this.steps.length;
-  }
+  isLastStep = computed(() => this.currentStep() === this.steps.length);
 
   submit(): void {
-    this.message = '';
-    this.isError = false;
-    this.isLoading = true;
+    this.message.set('');
+    this.isError.set(false);
+    this.isLoading.set(true);
 
     for (let step = 1; step <= this.steps.length; step += 1) {
       const stepError = this.validateStep(step);
@@ -248,150 +250,359 @@ export class Register implements OnInit, OnDestroy {
         if (step === this.steps.length && stepError.includes('verification code')) {
           this.refreshCaptcha();
         }
-        this.currentStep = step;
-        this.isError = true;
-        this.message = stepError;
-        this.isLoading = false;
+        this.currentStep.set(step);
+        this.isError.set(true);
+        this.message.set(stepError);
+        this.isLoading.set(false);
         return;
       }
     }
 
-    const firstName = this.normalizeText(this.firstName);
-    const middleName = this.normalizeText(this.middleName);
-    const lastName = this.normalizeText(this.lastName);
-    const name = [firstName, middleName, lastName].filter(Boolean).join(' ');
+    const f = this.profileForm.value;
+    const account = this.profileForm.get('account')!.value;
+    const name = [f.personalDetails?.firstName, f.personalDetails?.middleName, f.personalDetails?.lastName]
+      .filter(Boolean).join(' ');
 
-    const accountEmail = this.contactEmail.trim().toLowerCase();
-    const accountPassword = this.password.trim();
-
-    if (!name || !accountEmail || !accountPassword || !this.confirmPassword.trim()) {
-      this.isError = true;
-      this.message = 'Please fill required fields including email and account password.';
-      this.isLoading = false;
+    if (!name || !account.email || !account.password) {
+      this.isError.set(true);
+      this.message.set('Please fill required fields including email and account password.');
+      this.isLoading.set(false);
       return;
     }
 
-    if (accountPassword.length < 8) {
-      this.isError = true;
-      this.message = 'Password must be at least 8 characters.';
-      this.isLoading = false;
+    if (account.password.length < 8) {
+      this.isError.set(true);
+      this.message.set('Password must be at least 8 characters.');
+      this.isLoading.set(false);
       return;
     }
 
-    if (accountPassword !== this.confirmPassword.trim()) {
-      this.isError = true;
-      this.message = 'Password and confirm password must match.';
-      this.isLoading = false;
+    if (account.password !== account.confirmPassword) {
+      this.isError.set(true);
+      this.message.set('Password and confirm password must match.');
+      this.isLoading.set(false);
       return;
     }
 
-    const birthYear = Number(this.dobYear);
-    const age = Number.isFinite(birthYear) && birthYear > 0 ? new Date().getFullYear() - birthYear : undefined;
+    const birthYear = f.personalDetails?.dobYear;
+    const age = birthYear && birthYear > 0 ? new Date().getFullYear() - birthYear : undefined;
+
+    const occupation = f.careerDetails?.occupationDetails || '';
+    const address = f.contactDetails?.residenceAddress || '';
+    const expectedOcc = f.partnerPreference?.expectedOccupationIncome || '';
+    const education = f.careerDetails?.educationId ? String(f.careerDetails.educationId) : '';
 
     const bioParts = [
-      this.education && `Education: ${this.normalizeText(this.education)}`,
-      this.occupationDetails && `Occupation: ${this.normalizeText(this.occupationDetails)}`,
-      this.residenceAddress && `Address: ${this.normalizeText(this.residenceAddress)}`,
-      this.expectedOccupationIncome && `Expectation: ${this.normalizeText(this.expectedOccupationIncome)}`,
+      education && `Education: ${education}`,
+      occupation && `Occupation: ${normalizeText(occupation)}`,
+      address && `Address: ${normalizeText(address)}`,
+      expectedOcc && `Expectation: ${normalizeText(expectedOcc)}`,
     ].filter(Boolean);
 
-    this.registerAsync(name, accountEmail, accountPassword, bioParts.join(' | '), age);
+    this.registerAsync(name, account.email.trim().toLowerCase(), account.password, bioParts.join(' | '), age);
   }
 
   refreshCaptcha(): void {
-    this.verificationCode = this.generateCaptchaCode();
-    this.verificationImageDataUrl = this.createCaptchaImage(this.verificationCode);
-    this.verificationInput = '';
-    this.queueDraftPersist();
-  }
-
-  private registerAsync(
-    name: string,
-    email: string,
-    password: string,
-    bio: string,
-    age?: number
-  ): void {
-    this.memberService.registerMember({
-      name,
-      email,
-      password,
-      location: this.normalizeText(this.residenceAddress) || this.workingCityCountry,
-      occupation: this.normalizeText(this.occupationDetails),
-      age,
-      bio,
-      registrationDetails: this.buildRegistrationDetails(),
-    }).pipe(finalize(() => {
-      this.isLoading = false;
-    })).subscribe({
-      next: (result) => {
-        this.isError = !result.ok;
-        this.message = result.message;
-
-        if (result.ok && result.profileSynced) {
-          this.clearDraftFromStorage();
-          this.router.navigateByUrl('/login');
-        }
-      },
-      error: (error: unknown) => {
-        this.isError = true;
-        this.message = error instanceof Error ? error.message : 'Registration failed. Please try again.';
-      },
+    const code = this.generateCaptchaCode();
+    this.profileForm.get('verification')!.patchValue({
+      code,
+      imageDataUrl: this.createCaptchaImage(code),
+      input: '',
     });
+    this.queueDraftPersist();
   }
 
   onPhotoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (file && !this.isImageFile(file.name)) {
-      this.isError = true;
-      this.message = 'Only JPG, JPEG, PNG, or WEBP files are allowed.';
+    if (file && !/\.(jpg|jpeg|png|webp)$/i.test(file.name)) {
+      this.isError.set(true);
+      this.message.set('Only JPG, JPEG, PNG, or WEBP files are allowed.');
       input.value = '';
       return;
     }
-    this.uploadedPhotoName = file?.name ?? '';
+    this.profileForm.get('photos')!.get('photo1Name')!.setValue(file?.name ?? '');
   }
 
   onPhoto2Selected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (file && !this.isImageFile(file.name)) {
-      this.isError = true;
-      this.message = 'Only JPG, JPEG, PNG, or WEBP files are allowed.';
+    if (file && !/\.(jpg|jpeg|png|webp)$/i.test(file.name)) {
+      this.isError.set(true);
+      this.message.set('Only JPG, JPEG, PNG, or WEBP files are allowed.');
       input.value = '';
       return;
     }
-    this.uploadedPhoto2Name = file?.name ?? '';
+    this.profileForm.get('photos')!.get('photo2Name')!.setValue(file?.name ?? '');
   }
 
-  private normalizeText(value: string): string {
-    return value.trim().replace(/\s+/g, ' ');
+  private registerAsync(name: string, email: string, password: string, bio: string, age?: number): void {
+    const dto = this.buildCreateProfileDto(age);
+    this.memberService.registerWithProfile({
+      email,
+      password,
+      confirmPassword: password,
+      profile: dto,
+      name,
+      age,
+      bio,
+    }).pipe(finalize(() => this.isLoading.set(false))).subscribe({
+      next: (result) => {
+        this.isError.set(!result.ok);
+        this.message.set(result.message);
+        if (result.ok) {
+          this.clearDraftFromStorage();
+          this.router.navigateByUrl('/login');
+        }
+      },
+      error: (error: unknown) => {
+        this.isError.set(true);
+        this.message.set(error instanceof Error ? error.message : 'Registration failed. Please try again.');
+      },
+    });
   }
 
-  private normalizePhone(value: string): string {
-    const digitsOnly = (value ?? '').toString().replace(/\D/g, '');
-    if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
-      return digitsOnly.slice(2);
+  private buildCreateProfileDto(age?: number): CreateProfileDto {
+    const f = this.profileForm.value;
+    const pd = f.personalDetails!;
+    const hd = f.profileHoroscope!;
+    const cd = f.careerDetails!;
+    const ct = f.contactDetails!;
+    const fd = f.familyDetails!;
+    const pp = f.partnerPreference!;
+
+    const phoneNumbers: Array<{ phoneType: string; phoneNumber: string }> = [];
+    if (ct.smsMobile) phoneNumbers.push({ phoneType: 'Mobile', phoneNumber: ct.smsMobile });
+    if (ct.mobile2) phoneNumbers.push({ phoneType: 'Mobile2', phoneNumber: ct.mobile2 });
+    if (ct.phone1) phoneNumbers.push({ phoneType: 'Phone', phoneNumber: ct.phone1 });
+    if (ct.phone2) phoneNumbers.push({ phoneType: 'Phone2', phoneNumber: ct.phone2 });
+
+    const relativeSurnames = f.relativesSurnames
+      ? f.relativesSurnames.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
+      : undefined;
+
+    const profilePhotos: Array<{ photoSlot: number; fileName: string; isPrimary: boolean }> = [];
+    const p1 = f.photos?.photo1Name;
+    const p2 = f.photos?.photo2Name;
+    if (p1) profilePhotos.push({ photoSlot: 1, fileName: p1, isPrimary: true });
+    if (p2) profilePhotos.push({ photoSlot: 2, fileName: p2, isPrimary: false });
+
+    return {
+      fullName: [pd.firstName, pd.middleName, pd.lastName].filter(Boolean).join(' '),
+      age: f.age ?? age,
+      bio: f.bio ?? undefined,
+      locationText: (f.locationText || ct.residenceAddress || cd.workingCityCountry) ?? undefined,
+      occupationText: (f.occupationText || cd.occupationDetails) ?? undefined,
+      personalDetails: {
+        firstName: pd.firstName ?? undefined,
+        middleName: pd.middleName ?? undefined,
+        lastName: pd.lastName ?? undefined,
+        dobDay: pd.dobDay ?? undefined,
+        dobMonth: pd.dobMonth ?? undefined,
+        dobYear: pd.dobYear ?? undefined,
+        genderId: pd.genderId ?? undefined,
+        religionId: pd.religionId ?? undefined,
+        casteId: pd.casteId ?? undefined,
+        subCasteId: pd.subCasteId ?? undefined,
+        maritalStatusId: pd.maritalStatusId ?? undefined,
+        heightFt: pd.heightFt ?? undefined,
+        heightIn: pd.heightIn ?? undefined,
+        weightKg: pd.weightKg ?? undefined,
+        bloodGroupId: pd.bloodGroupId ?? undefined,
+        complexionId: pd.complexionId ?? undefined,
+        physicalDisability: pd.physicalDisability ?? undefined,
+        disabilityDetail: pd.disabilityDetail ?? undefined,
+        dietId: pd.dietId ?? undefined,
+        spectacles: pd.spectacles ?? undefined,
+        lens: pd.lens ?? undefined,
+        personalityId: pd.personalityId ?? undefined,
+      },
+      contactDetails: {
+        residenceAddress: ct.residenceAddress ?? undefined,
+        contactEmail: ct.contactEmail ?? undefined,
+        idProofNumber: ct.idProofNumber ?? undefined,
+      },
+      phoneNumbers: phoneNumbers.length > 0 ? phoneNumbers : undefined,
+      careerDetails: {
+        educationAreaId: cd.educationAreaId ?? undefined,
+        educationId: cd.educationId ?? undefined,
+        occupationId: cd.occupationId ?? undefined,
+        occupationDetails: cd.occupationDetails ?? undefined,
+        workingCityCountry: cd.workingCityCountry ?? undefined,
+        incomeAmount: cd.incomeAmount ?? undefined,
+        incomePeriodId: cd.incomePeriodId ?? undefined,
+      },
+      familyDetails: {
+        fatherStatus: fd.fatherStatus ?? undefined,
+        motherStatus: fd.motherStatus ?? undefined,
+        brothers: fd.brothers ?? undefined,
+        marriedBrothers: fd.marriedBrothers ?? undefined,
+        sisters: fd.sisters ?? undefined,
+        marriedSisters: fd.marriedSisters ?? undefined,
+        parentsFullName: fd.parentsFullName ?? undefined,
+        parentsOccupation: fd.parentsOccupation ?? undefined,
+        parentsResidentCity: fd.parentsResidentCity ?? undefined,
+        familyWealth: fd.familyWealth ?? undefined,
+        mamaSurnamePlace: fd.mamaSurnamePlace ?? undefined,
+        nativeDistrict: fd.nativeDistrict ?? undefined,
+        nativeTaluka: fd.nativeTaluka ?? undefined,
+        intercastMarriage: fd.intercastMarriage ?? undefined,
+        intercastRelation: fd.intercastRelation ?? undefined,
+      },
+      relativeSurnames,
+      partnerPreference: {
+        expectedManglik: pp.expectedManglik ?? undefined,
+        expectedCaste: pp.expectedCaste ?? undefined,
+        maxAgeDifference: pp.maxAgeDifference ?? undefined,
+        expectedHeightFt: pp.expectedHeightFt ?? undefined,
+        expectedHeightIn: pp.expectedHeightIn ?? undefined,
+        expectedEducation: pp.expectedEducation ?? undefined,
+        expectedOccupationIncome: pp.expectedOccupationIncome ?? undefined,
+        divorcee: pp.divorcee ?? undefined,
+      },
+      profileHoroscope: {
+        manglik: hd.manglik ?? undefined,
+        birthHour: hd.birthHour ?? undefined,
+        birthMinute: hd.birthMinute ?? undefined,
+        birthPeriod: hd.birthPeriod ?? undefined,
+        birthDistrict: hd.birthDistrict ?? undefined,
+        devak: hd.devak ?? undefined,
+        rashiId: hd.rashiId ?? undefined,
+        nakshatraId: hd.nakshatraId ?? undefined,
+        charanId: hd.charanId ?? undefined,
+        nadiId: hd.nadiId ?? undefined,
+        ganId: hd.ganId ?? undefined,
+      },
+      profilePhotos: profilePhotos.length > 0 ? profilePhotos : undefined,
+    };
+  }
+
+  private validateStep(step: number): string | null {
+    const pd = this.profileForm.get('personalDetails')!.value!;
+    const hd = this.profileForm.get('profileHoroscope')!.value!;
+    const cd = this.profileForm.get('careerDetails')!.value!;
+    const ct = this.profileForm.get('contactDetails')!.value!;
+    const fd = this.profileForm.get('familyDetails')!.value!;
+    const pp = this.profileForm.get('partnerPreference')!.value!;
+    const verification = this.profileForm.get('verification')!.value!;
+    const account = this.profileForm.get('account')!.value!;
+
+    if (step === 1) {
+      if (!normalizeText(pd.firstName) || !normalizeText(pd.lastName)) {
+        return 'First name and last name are required.';
+      }
+      if (!isValidName(pd.firstName || '') || !isValidName(pd.lastName || '')) {
+        return 'Name fields can contain letters and spaces only.';
+      }
+      if (!pd.dobDay || !pd.dobMonth || !pd.dobYear) {
+        return 'Please select complete date of birth.';
+      }
+      if (!pd.genderId) {
+        return 'Please select gender.';
+      }
+      if (!pd.religionId) {
+        return 'Please select religion.';
+      }
+      const age = new Date().getFullYear() - (pd.dobYear || 0);
+      if (Number.isNaN(age) || age < 18 || age > 80) {
+        return 'Age must be between 18 and 80 years.';
+      }
+      if (pd.physicalDisability && !normalizeText(pd.disabilityDetail || '')) {
+        return 'Please specify disability details.';
+      }
     }
-    if (digitsOnly.length === 11 && digitsOnly.startsWith('0')) {
-      return digitsOnly.slice(1);
+
+    if (step === 2) {
+      if (!hd.birthPeriod || !hd.birthDistrict) {
+        return 'Please select birth time period and birth district.';
+      }
     }
-    return digitsOnly;
-  }
 
-  private isValidTenDigitPhone(value: string): boolean {
-    return /^\d{10}$/.test(this.normalizePhone(value));
-  }
+    if (step === 3) {
+      if (!cd.educationAreaId || !cd.educationId) {
+        return 'Please provide education details.';
+      }
+      if (!cd.occupationId || !normalizeText(cd.occupationDetails || '')) {
+        return 'Please provide occupation details.';
+      }
+      if (!cd.workingCityCountry) {
+        return 'Please select working city/country.';
+      }
+      if (cd.incomeAmount && !Number.isFinite(cd.incomeAmount)) {
+        return 'Income amount must be numeric.';
+      }
+    }
 
-  private isCaptchaValid(): boolean {
-    return this.verificationInput.trim().toUpperCase() === this.verificationCode;
+    if (step === 4) {
+      const address = normalizeText(ct.residenceAddress || '');
+      if (!address || address.length < 10) {
+        return 'Please enter a valid residence address.';
+      }
+      if (!isValidEmail(ct.contactEmail || '')) {
+        return 'Please enter a valid contact email.';
+      }
+      if (!isValidTenDigitPhone(ct.smsMobile || '')) {
+        return 'Mobile for SMS alert must be a 10-digit number.';
+      }
+      if (ct.mobile2 && !isValidTenDigitPhone(ct.mobile2)) {
+        return 'Mobile II must be a 10-digit number.';
+      }
+      if (ct.phone1 && !isValidTenDigitPhone(ct.phone1)) {
+        return 'Phone I must be a 10-digit number.';
+      }
+      if (ct.phone2 && !isValidTenDigitPhone(ct.phone2)) {
+        return 'Phone II must be a 10-digit number.';
+      }
+
+      const normalize = (v: string) => normalizePhone(v);
+      this.profileForm.get('contactDetails')!.patchValue({
+        smsMobile: normalize(ct.smsMobile || ''),
+        mobile2: ct.mobile2 ? normalize(ct.mobile2) : '',
+        phone1: ct.phone1 ? normalize(ct.phone1) : '',
+        phone2: ct.phone2 ? normalize(ct.phone2) : '',
+        residenceAddress: ct.residenceAddress,
+        contactEmail: ct.contactEmail,
+        idProofNumber: ct.idProofNumber,
+      });
+    }
+
+    if (step === 5) {
+      if (!normalizeText(fd.parentsFullName || '')) {
+        return 'Please enter parents full name.';
+      }
+      if (!fd.nativeDistrict) {
+        return 'Please select native district.';
+      }
+    }
+
+    if (step === 6) {
+      if (!normalizeText(this.profileForm.get('preferredCities')!.value || '')) {
+        return 'Please enter preferred cities.';
+      }
+      if (!normalizeText(pp.expectedEducation || '') || !normalizeText(pp.expectedOccupationIncome || '')) {
+        return 'Please fill expected education and occupation/income.';
+      }
+      if (!account.password || !account.confirmPassword) {
+        return 'Please set your account password and confirm it.';
+      }
+      if (account.password.length < 8) {
+        return 'Password must be at least 8 characters.';
+      }
+      if (account.password !== account.confirmPassword) {
+        return 'Password and confirm password must match.';
+      }
+      if ((verification.input || '').trim().toUpperCase() !== (verification.code || '')) {
+        return 'Please enter correct verification code.';
+      }
+    }
+
+    return null;
   }
 
   private generateCaptchaCode(): string {
     let result = '';
-    for (let index = 0; index < Register.CAPTCHA_LENGTH; index += 1) {
-      const randomIndex = Math.floor(Math.random() * Register.CAPTCHA_CHARS.length);
-      result += Register.CAPTCHA_CHARS[randomIndex];
+    for (let i = 0; i < Register.CAPTCHA_LENGTH; i++) {
+      result += Register.CAPTCHA_CHARS[Math.floor(Math.random() * Register.CAPTCHA_CHARS.length)];
     }
     return result;
   }
@@ -399,15 +610,12 @@ export class Register implements OnInit, OnDestroy {
   private createCaptchaImage(code: string): string {
     const width = 280;
     const height = 90;
-    const chars = code.split('');
-    const textNodes = chars
-      .map((char, index) => {
-        const x = 28 + index * 40;
-        const y = 54 + Math.floor(Math.random() * 14) - 7;
-        const rotate = Math.floor(Math.random() * 30) - 15;
-        return `<text x="${x}" y="${y}" transform="rotate(${rotate} ${x} ${y})" font-size="36" font-family="Georgia, serif" font-weight="700" fill="#1f2638">${char}</text>`;
-      })
-      .join('');
+    const textNodes = code.split('').map((char, i) => {
+      const x = 28 + i * 40;
+      const y = 54 + Math.floor(Math.random() * 14) - 7;
+      const rotate = Math.floor(Math.random() * 30) - 15;
+      return `<text x="${x}" y="${y}" transform="rotate(${rotate} ${x} ${y})" font-size="36" font-family="Georgia, serif" font-weight="700" fill="#1f2638">${char}</text>`;
+    }).join('');
 
     const noiseLines = Array.from({ length: 6 }, () => {
       const x1 = Math.floor(Math.random() * width);
@@ -424,239 +632,18 @@ export class Register implements OnInit, OnDestroy {
       return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#8b6f47" opacity="0.25" />`;
     }).join('');
 
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-        <rect width="${width}" height="${height}" rx="8" fill="#f9f5f0" />
-        ${noiseLines}
-        ${noiseDots}
-        ${textNodes}
-      </svg>
-    `;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <rect width="${width}" height="${height}" rx="8" fill="#f9f5f0" />
+      ${noiseLines}${noiseDots}${textNodes}
+    </svg>`;
 
     return `data:image/svg+xml;base64,${btoa(svg)}`;
-  }
-
-  private isImageFile(fileName: string): boolean {
-    return /\.(jpg|jpeg|png|webp)$/i.test(fileName);
-  }
-
-  private buildRegistrationDetails(): RegisterFormDetails {
-    return {
-      personal: {
-        firstName: this.firstName,
-        middleName: this.middleName,
-        lastName: this.lastName,
-        dobDay: this.dobDay,
-        dobMonth: this.dobMonth,
-        dobYear: this.dobYear,
-        gender: this.gender,
-        religion: this.religion,
-        caste: this.caste,
-        subCast: this.subCast,
-        maritalStatus: this.maritalStatus,
-        heightFt: this.heightFt,
-        heightIn: this.heightIn,
-        weightKg: this.weightKg,
-        bloodGroup: this.bloodGroup,
-        complexion: this.complexion,
-        physicalDisability: this.physicalDisability,
-        disabilityDetail: this.disabilityDetail,
-        diet: this.diet,
-        spectacles: this.spectacles,
-        lens: this.lens,
-        personality: this.personality,
-      },
-      horoscope: {
-        manglik: this.manglik,
-        rashi: this.rashi,
-        nakshatra: this.nakshatra,
-        charan: this.charan,
-        nadi: this.nadi,
-        gan: this.gan,
-        birthHour: this.birthHour,
-        birthMinute: this.birthMinute,
-        birthPeriod: this.birthPeriod,
-        birthDistrict: this.birthDistrict,
-        devak: this.devak,
-      },
-      professional: {
-        educationArea: this.educationArea,
-        education: this.education,
-        occupationType: this.occupationType,
-        occupationDetails: this.occupationDetails,
-        workingCityCountry: this.workingCityCountry,
-        incomeAmount: this.incomeAmount,
-        incomePeriod: this.incomePeriod,
-      },
-      contact: {
-        idProofNumber: this.idProofNumber,
-        residenceAddress: this.residenceAddress,
-        contactEmail: this.contactEmail,
-        smsMobile: this.smsMobile,
-        mobileSecondary: this.mobile2,
-        phonePrimary: this.phone1,
-        phoneSecondary: this.phone2,
-      },
-      family: {
-        fatherStatus: this.fatherStatus,
-        motherStatus: this.motherStatus,
-        brothers: this.brothers,
-        marriedBrothers: this.marriedBrothers,
-        sisters: this.sisters,
-        marriedSisters: this.marriedSisters,
-        parentsFullName: this.parentsFullName,
-        parentsOccupation: this.parentsOccupation,
-        parentsResidentCity: this.parentsResidentCity,
-        relativesSurnames: this.relativesSurnames,
-        familyWealth: this.familyWealth,
-        mamaSurnamePlace: this.mamaSurnamePlace,
-        nativeDistrict: this.nativeDistrict,
-        nativeTaluka: this.nativeTaluka,
-        intercastMarriage: this.intercastMarriage,
-        intercastRelation: this.intercastRelation,
-      },
-      expectations: {
-        preferredCities: this.preferredCities,
-        expectedManglik: this.expectedManglik,
-        expectedCaste: this.expectedCaste,
-        maxAgeDifference: this.maxAgeDifference,
-        expectedHeightFt: this.expectedHeightFt,
-        expectedHeightIn: this.expectedHeightIn,
-        expectedEducation: this.expectedEducation,
-        expectedOccupationIncome: this.expectedOccupationIncome,
-        divorcee: this.divorcee,
-      },
-      verification: {
-        verificationCode: this.verificationCode,
-        verificationInput: this.verificationInput,
-      },
-      photos: [
-        ...(this.uploadedPhotoName ? [{ photoSlot: 1, fileName: this.uploadedPhotoName, isPrimary: true }] : []),
-        ...(this.uploadedPhoto2Name ? [{ photoSlot: 2, fileName: this.uploadedPhoto2Name }] : []),
-      ],
-      accountPassword: this.password,
-      confirmPassword: this.confirmPassword,
-    };
-  }
-
-  private validateStep(step: number): string | null {
-    if (step === 1) {
-      if (!this.normalizeText(this.firstName) || !this.normalizeText(this.lastName)) {
-        return 'First name and last name are required.';
-      }
-      if (!this.namePattern.test(this.normalizeText(this.firstName)) || !this.namePattern.test(this.normalizeText(this.lastName))) {
-        return 'Name fields can contain letters and spaces only.';
-      }
-      if (!this.dobDay || !this.dobMonth || !this.dobYear) {
-        return 'Please select complete date of birth.';
-      }
-      if (!this.gender) {
-        return 'Please select gender.';
-      }
-      if (!this.religion) {
-        return 'Please select religion.';
-      }
-      const age = new Date().getFullYear() - Number(this.dobYear);
-      if (Number.isNaN(age) || age < 18 || age > 80) {
-        return 'Age must be between 18 and 80 years.';
-      }
-      if (this.physicalDisability === 'Yes' && !this.normalizeText(this.disabilityDetail)) {
-        return 'Please specify disability details.';
-      }
-    }
-
-    if (step === 2) {
-      if (this.birthPeriod === 'Select' || this.birthDistrict === 'Select') {
-        return 'Please select birth time period and birth district.';
-      }
-    }
-
-    if (step === 3) {
-      if (this.educationArea === 'Select' || !this.normalizeText(this.education)) {
-        return 'Please provide education details.';
-      }
-      if (this.occupationType === 'Select' || !this.normalizeText(this.occupationDetails)) {
-        return 'Please provide occupation details.';
-      }
-      if (this.workingCityCountry === 'Select') {
-        return 'Please select working city/country.';
-      }
-      if (this.incomeAmount && !/^\d+(\.\d+)?$/.test(this.incomeAmount.trim())) {
-        return 'Income amount must be numeric.';
-      }
-    }
-
-    if (step === 4) {
-      if (!this.normalizeText(this.residenceAddress) || this.normalizeText(this.residenceAddress).length < 10) {
-        return 'Please enter a valid residence address.';
-      }
-      if (!this.emailPattern.test(this.contactEmail.trim().toLowerCase())) {
-        return 'Please enter a valid contact email.';
-      }
-      if (!this.isValidTenDigitPhone(this.smsMobile)) {
-        return 'Mobile for SMS alert must be a 10-digit number.';
-      }
-      if (this.mobile2 && !this.isValidTenDigitPhone(this.mobile2)) {
-        return 'Mobile II must be a 10-digit number.';
-      }
-      if (this.phone1 && !this.isValidTenDigitPhone(this.phone1)) {
-        return 'Phone I must be a 10-digit number.';
-      }
-      if (this.phone2 && !this.isValidTenDigitPhone(this.phone2)) {
-        return 'Phone II must be a 10-digit number.';
-      }
-
-      // Persist normalized 10-digit values so later steps and submit use a clean format.
-      this.smsMobile = this.normalizePhone(this.smsMobile);
-      if (this.mobile2) {
-        this.mobile2 = this.normalizePhone(this.mobile2);
-      }
-      if (this.phone1) {
-        this.phone1 = this.normalizePhone(this.phone1);
-      }
-      if (this.phone2) {
-        this.phone2 = this.normalizePhone(this.phone2);
-      }
-    }
-
-    if (step === 5) {
-      if (!this.normalizeText(this.parentsFullName)) {
-        return 'Please enter parents full name.';
-      }
-      if (this.nativeDistrict === 'Select') {
-        return 'Please select native district.';
-      }
-    }
-
-    if (step === 6) {
-      if (!this.normalizeText(this.preferredCities)) {
-        return 'Please enter preferred cities.';
-      }
-      if (!this.normalizeText(this.expectedEducation) || !this.normalizeText(this.expectedOccupationIncome)) {
-        return 'Please fill expected education and occupation/income.';
-      }
-      if (!this.password.trim() || !this.confirmPassword.trim()) {
-        return 'Please set your account password and confirm it.';
-      }
-      if (this.password.trim().length < 8) {
-        return 'Password must be at least 8 characters.';
-      }
-      if (this.password.trim() !== this.confirmPassword.trim()) {
-        return 'Password and confirm password must match.';
-      }
-      if (!this.isCaptchaValid()) {
-        return 'Please enter correct verification code.';
-      }
-    }
-
-    return null;
   }
 
   private queueDraftPersist(): void {
     if (this.persistTimer) {
       clearTimeout(this.persistTimer);
     }
-
     this.persistTimer = setTimeout(() => {
       this.persistCurrentStep();
       this.persistTimer = null;
@@ -664,59 +651,57 @@ export class Register implements OnInit, OnDestroy {
   }
 
   private persistCurrentStep(): void {
-    if (!this.draftContext) {
-      return;
-    }
-
+    if (!this.draftContext) return;
     this.registerDraftService.saveStep(
       this.draftContext,
-      this.currentStep,
-      this.captureStepValues(this.currentStep)
+      this.currentStep(),
+      this.captureStepValues(this.currentStep()),
     );
   }
 
   private restoreDraftFromStorage(): void {
-    if (!this.draftContext) {
-      return;
-    }
-
+    if (!this.draftContext) return;
     const state = this.registerDraftService.read(this.draftContext);
-    if (!state) {
-      return;
-    }
+    if (!state) return;
 
     for (const [step, values] of Object.entries(state.steps)) {
-      const stepNumber = Number(step);
-      const fields = Register.STEP_FIELDS[stepNumber] ?? [];
-
-      for (const field of fields) {
-        if (Object.prototype.hasOwnProperty.call(values, field)) {
-          (this as unknown as Record<string, unknown>)[field] = values[field];
-        }
+      const groupName = STEP_GROUP_NAMES[Number(step)];
+      if (groupName) {
+        this.profileForm.get(groupName)?.patchValue(values, { emitEvent: false });
+      } else if (Number(step) === 6) {
+        const v = values as Record<string, unknown>;
+        if (v['preferredCities'] != null) this.profileForm.get('preferredCities')?.patchValue(v['preferredCities'] as string, { emitEvent: false });
+        if (v['relativesSurnames'] != null) this.profileForm.get('relativesSurnames')?.patchValue(v['relativesSurnames'] as string, { emitEvent: false });
+        if (v['account']) this.profileForm.get('account')?.patchValue(v['account'] as { email: string | null; password: string | null; confirmPassword: string | null }, { emitEvent: false });
+        if (v['verification']) this.profileForm.get('verification')?.patchValue(v['verification'] as { code: string | null; input: string | null; imageDataUrl: string | null }, { emitEvent: false });
+        if (v['photos']) this.profileForm.get('photos')?.patchValue(v['photos'] as { photo1Name: string | null; photo2Name: string | null }, { emitEvent: false });
       }
     }
 
     if (Number.isInteger(state.currentStep) && state.currentStep >= 1 && state.currentStep <= this.steps.length) {
-      this.currentStep = state.currentStep;
+      this.currentStep.set(state.currentStep);
     }
   }
 
   private captureStepValues(step: number): Record<string, unknown> {
-    const fields = Register.STEP_FIELDS[step] ?? [];
-    const source = this as unknown as Record<string, unknown>;
-    const output: Record<string, unknown> = {};
-
-    for (const field of fields) {
-      output[field] = source[field];
+    const groupName = STEP_GROUP_NAMES[step];
+    if (groupName) {
+      return this.profileForm.get(groupName)?.value ?? {};
     }
-
-    return output;
+    if (step === 6) {
+      return {
+        preferredCities: this.profileForm.get('preferredCities')?.value,
+        relativesSurnames: this.profileForm.get('relativesSurnames')?.value,
+        account: this.profileForm.get('account')?.value,
+        verification: this.profileForm.get('verification')?.value,
+        photos: this.profileForm.get('photos')?.value,
+      };
+    }
+    return {};
   }
 
   private clearDraftFromStorage(): void {
-    if (!this.draftContext) {
-      return;
-    }
+    if (!this.draftContext) return;
     this.registerDraftService.clear(this.draftContext);
   }
 }

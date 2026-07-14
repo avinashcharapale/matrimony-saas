@@ -7,20 +7,20 @@
       <app-profile-list-search-panel
         [filters]="filters"
         [sortBy]="sortBy"
-        [resultsCount]="sortedResults.length"
-        [error]="error"
-        [religionOptions]="religionOptions"
-        [casteOptions]="casteOptions"
+        [resultsCount]="sortedResults().length"
+        [error]="error()"
+        [religionOptions]="religionOptions()"
+        [casteOptions]="casteOptions()"
         (searchRequested)="search($event)"
         (sortByChange)="sortBy = $event">
       </app-profile-list-search-panel>
 
       <app-profile-list-results
-        [hasResults]="sortedResults.length > 0"
+        [hasResults]="sortedResults().length > 0"
         [currentPage]="currentPage"
-        [totalPages]="totalPages"
-        [pageNumbers]="pageNumbers"
-        [pageResults]="pageResults"
+        [totalPages]="totalPages()"
+        [pageNumbers]="pageNumbers()"
+        [pageResults]="pageResults()"
         [getProfilePhotoUrl]="getProfilePhotoUrl.bind(this)"
         [getHeight]="getHeight.bind(this)"
         [getReligion]="getReligion.bind(this)"

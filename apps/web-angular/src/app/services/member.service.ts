@@ -7,10 +7,10 @@ import {
   createEmptyRegisterFormDetails,
 } from '@org/models';
 import { TenantService } from './tenant.service';
-import { ApiService, ProfileUpsertRequest } from './api.service';
+import { ApiService } from './api.service';
 import { RegisterSyncService } from './register-sync.service';
 import { ACCESS_TOKEN_KEY, AuthService, REFRESH_TOKEN_KEY } from './auth.service';
-import { MemberProfileDto, PublicProfileDto, UserProfilesService } from '@org/api/profile';
+import { ProfileClient, ProfileListItemDto, ProfileDetailDto, ProfileListItemDtoPagedResult, CreateProfileDto } from '@org/generated';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 
@@ -79,11 +79,11 @@ export class MemberService {
   private readonly tenantService = inject(TenantService);
   private readonly apiService = inject(ApiService);
   private readonly authService = inject(AuthService);
-  private readonly userProfilesApi = inject(UserProfilesService);
+  private readonly profileClient = inject(ProfileClient);
   private readonly registerSyncService = inject(RegisterSyncService);
 
   private get tenantId(): string {
-    return this.tenantService.tenant.id || 'default';
+    return (this.tenantService.tenantHeaderId ?? this.tenantService.tenant.id ?? 'default') as string;
   }
 
   private get membersKey(): string {
@@ -94,9 +94,6 @@ export class MemberService {
     return `${SESSION_KEY_PREFIX}_${this.tenantId}`;
   }
 
-  /**
-   * Convert ProfileSearchResult to MemberRecord format for UI compatibility
-   */
   private convertToMemberRecord(profile: ProfileSearchResult): MemberRecord {
     return {
       id: `${profile.profileId}`,
@@ -107,24 +104,59 @@ export class MemberService {
       location: profile.locationText,
       bio: profile.bio,
       createdAt: profile.createdAt,
-      password: '', // Not available from API
+      password: '',
     };
   }
 
-  /**
-   * Check if user is authenticated
-   */
   isAuthenticated(): boolean {
     return this.authService.isAuthenticated();
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
-    if (error && typeof error === 'object' && 'error' in error) {
-      const apiError = (error as { error?: { error?: string } }).error?.error;
-      if (typeof apiError === 'string' && apiError.trim().length > 0) {
-        return apiError;
+    if (!error || typeof error !== 'object' || !('error' in error)) {
+      return fallback;
+    }
+
+    const payload = (error as { error?: unknown }).error;
+    if (!payload || typeof payload !== 'object') {
+      return fallback;
+    }
+
+    const apiError = (payload as { error?: unknown }).error;
+    if (typeof apiError === 'string' && apiError.trim().length > 0) {
+      return apiError;
+    }
+
+    const detail = (payload as { detail?: unknown }).detail;
+    if (typeof detail === 'string' && detail.trim().length > 0) {
+      return detail;
+    }
+
+    const errors = (payload as { errors?: unknown }).errors;
+    if (errors && typeof errors === 'object') {
+      const fieldErrors = Object.entries(errors as Record<string, unknown>)
+        .flatMap(([field, value]) => {
+          if (Array.isArray(value)) {
+            return value
+              .filter((entry): entry is string => typeof entry === 'string' && entry.trim().length > 0)
+              .map((entry) => `${field}: ${entry}`);
+          }
+          if (typeof value === 'string' && value.trim().length > 0) {
+            return [`${field}: ${value}`];
+          }
+          return [];
+        });
+
+      if (fieldErrors.length > 0) {
+        return fieldErrors.join(' | ');
       }
     }
+
+    const title = (payload as { title?: unknown }).title;
+    if (typeof title === 'string' && title.trim().length > 0) {
+      return title;
+    }
+
     return fallback;
   }
 
@@ -137,7 +169,31 @@ export class MemberService {
     return new Date().getFullYear() - birthYear;
   }
 
-  private buildProfilePayload(payload: RegisterSubmissionPayload): ProfileUpsertRequest {
+  private toOptionalNumber(value: unknown): number | undefined {
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+
+  private toOptionalBoolean(value: unknown): boolean | undefined {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (['true', '1', 'yes', 'y'].includes(normalized)) {
+        return true;
+      }
+      if (['false', '0', 'no', 'n'].includes(normalized)) {
+        return false;
+      }
+    }
+    return undefined;
+  }
+
+  private buildProfilePayload(payload: RegisterSubmissionPayload): CreateProfileDto {
     const details = payload.registrationDetails ?? createEmptyRegisterFormDetails();
     const fullName = payload.name || [
       details.personal.firstName,
@@ -145,104 +201,104 @@ export class MemberService {
       details.personal.lastName,
     ].filter(Boolean).join(' ');
 
+    const phoneNumbers = [
+      details.contact.smsMobile ? { phoneType: 'Mobile', phoneNumber: details.contact.smsMobile } : null,
+      details.contact.mobileSecondary ? { phoneType: 'Mobile2', phoneNumber: details.contact.mobileSecondary } : null,
+      details.contact.phonePrimary ? { phoneType: 'Phone', phoneNumber: details.contact.phonePrimary } : null,
+      details.contact.phoneSecondary ? { phoneType: 'Phone2', phoneNumber: details.contact.phoneSecondary } : null,
+    ].filter((p): p is { phoneType: string; phoneNumber: string } => p !== null);
+
+    const relativeSurnames = details.family.relativesSurnames
+      ? details.family.relativesSurnames.split(/[,\n]/).map((s) => s.trim()).filter(Boolean)
+      : undefined;
+
     return {
       fullName,
       age: payload.age ?? this.computeAge(details),
       bio: payload.bio,
       locationText: payload.location || details.contact.residenceAddress || details.professional.workingCityCountry,
       occupationText: payload.occupation || details.professional.occupationDetails,
-      personal: {
+      personalDetails: {
         firstName: details.personal.firstName,
         middleName: details.personal.middleName,
         lastName: details.personal.lastName,
-        dobDay: details.personal.dobDay,
+        dobDay: this.toOptionalNumber(details.personal.dobDay),
         dobMonth: details.personal.dobMonth,
-        dobYear: details.personal.dobYear,
-        gender: details.personal.gender,
-        religion: details.personal.religion,
-        caste: details.personal.caste,
-        subCast: details.personal.subCast,
-        maritalStatus: details.personal.maritalStatus,
-        heightFt: details.personal.heightFt,
-        heightIn: details.personal.heightIn,
-        weightKg: details.personal.weightKg,
-        bloodGroup: details.personal.bloodGroup,
-        complexion: details.personal.complexion,
-        physicalDisability: details.personal.physicalDisability,
+        dobYear: this.toOptionalNumber(details.personal.dobYear),
+        genderId: this.toOptionalNumber(details.personal.gender),
+        religionId: this.toOptionalNumber(details.personal.religion),
+        casteId: this.toOptionalNumber(details.personal.caste),
+        subCasteId: this.toOptionalNumber(details.personal.subCast),
+        maritalStatusId: this.toOptionalNumber(details.personal.maritalStatus),
+        heightFt: this.toOptionalNumber(details.personal.heightFt),
+        heightIn: this.toOptionalNumber(details.personal.heightIn),
+        weightKg: this.toOptionalNumber(details.personal.weightKg),
+        bloodGroupId: this.toOptionalNumber(details.personal.bloodGroup),
+        complexionId: this.toOptionalNumber(details.personal.complexion),
+        physicalDisability: this.toOptionalBoolean(details.personal.physicalDisability),
         disabilityDetail: details.personal.disabilityDetail,
-        diet: details.personal.diet,
-        spectacles: details.personal.spectacles,
-        lens: details.personal.lens,
-        personality: details.personal.personality,
+        dietId: this.toOptionalNumber(details.personal.diet),
+        spectacles: this.toOptionalBoolean(details.personal.spectacles),
+        lens: this.toOptionalBoolean(details.personal.lens),
+        personalityId: this.toOptionalNumber(details.personal.personality),
       },
-      horoscope: {
-        manglik: details.horoscope.manglik,
-        rashi: details.horoscope.rashi,
-        nakshatra: details.horoscope.nakshatra,
-        charan: details.horoscope.charan,
-        nadi: details.horoscope.nadi,
-        gan: details.horoscope.gan,
-        birthHour: details.horoscope.birthHour,
-        birthMinute: details.horoscope.birthMinute,
-        birthPeriod: details.horoscope.birthPeriod,
-        birthDistrict: details.horoscope.birthDistrict,
-        devak: details.horoscope.devak,
-      },
-      professional: {
-        educationArea: details.professional.educationArea,
-        education: details.professional.education,
-        occupationType: details.professional.occupationType,
+      careerDetails: {
+        educationAreaId: this.toOptionalNumber(details.professional.educationArea),
+        educationId: this.toOptionalNumber(details.professional.education),
+        occupationId: this.toOptionalNumber(details.professional.occupationType),
         occupationDetails: details.professional.occupationDetails,
         workingCityCountry: details.professional.workingCityCountry,
-        incomeAmount: details.professional.incomeAmount,
-        incomePeriod: details.professional.incomePeriod,
+        incomeAmount: this.toOptionalNumber(details.professional.incomeAmount),
+        incomePeriodId: this.toOptionalNumber(details.professional.incomePeriod),
       },
-      contact: {
+      contactDetails: {
         idProofNumber: details.contact.idProofNumber,
         residenceAddress: details.contact.residenceAddress,
         contactEmail: details.contact.contactEmail || payload.email,
-        smsMobile: details.contact.smsMobile,
-        mobileSecondary: details.contact.mobileSecondary,
-        phonePrimary: details.contact.phonePrimary,
-        phoneSecondary: details.contact.phoneSecondary,
       },
-      family: {
-        fatherStatus: details.family.fatherStatus,
-        motherStatus: details.family.motherStatus,
-        brothers: details.family.brothers,
-        marriedBrothers: details.family.marriedBrothers,
-        sisters: details.family.sisters,
-        marriedSisters: details.family.marriedSisters,
+      phoneNumbers: phoneNumbers.length > 0 ? phoneNumbers : undefined,
+      familyDetails: {
+        fatherStatus: this.toOptionalBoolean(details.family.fatherStatus),
+        motherStatus: this.toOptionalBoolean(details.family.motherStatus),
+        brothers: this.toOptionalNumber(details.family.brothers),
+        marriedBrothers: this.toOptionalNumber(details.family.marriedBrothers),
+        sisters: this.toOptionalNumber(details.family.sisters),
+        marriedSisters: this.toOptionalNumber(details.family.marriedSisters),
         parentsFullName: details.family.parentsFullName,
         parentsOccupation: details.family.parentsOccupation,
         parentsResidentCity: details.family.parentsResidentCity,
-        relativesSurnames: details.family.relativesSurnames,
         familyWealth: details.family.familyWealth,
         mamaSurnamePlace: details.family.mamaSurnamePlace,
         nativeDistrict: details.family.nativeDistrict,
         nativeTaluka: details.family.nativeTaluka,
-        intercastMarriage: details.family.intercastMarriage,
+        intercastMarriage: this.toOptionalBoolean(details.family.intercastMarriage),
         intercastRelation: details.family.intercastRelation,
       },
-      expectations: {
-        preferredCities: details.expectations.preferredCities,
-        expectedManglik: details.expectations.expectedManglik,
+      relativeSurnames,
+      partnerPreference: {
+        expectedManglik: this.toOptionalBoolean(details.expectations.expectedManglik),
         expectedCaste: details.expectations.expectedCaste,
-        maxAgeDifference: details.expectations.maxAgeDifference,
-        expectedHeightFt: details.expectations.expectedHeightFt,
-        expectedHeightIn: details.expectations.expectedHeightIn,
+        maxAgeDifference: this.toOptionalNumber(details.expectations.maxAgeDifference),
+        expectedHeightFt: this.toOptionalNumber(details.expectations.expectedHeightFt),
+        expectedHeightIn: this.toOptionalNumber(details.expectations.expectedHeightIn),
         expectedEducation: details.expectations.expectedEducation,
         expectedOccupationIncome: details.expectations.expectedOccupationIncome,
-        divorcee: details.expectations.divorcee,
+        divorcee: this.toOptionalBoolean(details.expectations.divorcee),
       },
-      verification: {
-        verificationCode: details.verification.verificationCode,
-        verificationInput: details.verification.verificationInput,
-        verificationPassed:
-          details.verification.verificationCode.length > 0 &&
-          details.verification.verificationCode === details.verification.verificationInput,
+      profileHoroscope: {
+        manglik: this.toOptionalBoolean(details.horoscope.manglik),
+        birthHour: this.toOptionalNumber(details.horoscope.birthHour),
+        birthMinute: this.toOptionalNumber(details.horoscope.birthMinute),
+        birthPeriod: details.horoscope.birthPeriod,
+        birthDistrict: details.horoscope.birthDistrict,
+        devak: details.horoscope.devak,
+        rashiId: this.toOptionalNumber(details.horoscope.rashi),
+        nakshatraId: this.toOptionalNumber(details.horoscope.nakshatra),
+        charanId: this.toOptionalNumber(details.horoscope.charan),
+        nadiId: this.toOptionalNumber(details.horoscope.nadi),
+        ganId: this.toOptionalNumber(details.horoscope.gan),
       },
-      photos: details.photos
+      profilePhotos: details.photos
         .filter((photo) => photo.fileName.trim().length > 0)
         .map((photo, index) => ({
           photoSlot: photo.photoSlot || index + 1,
@@ -252,9 +308,6 @@ export class MemberService {
     };
   }
 
-  /**
-   * Login via API
-   */
   login(email: string, password: string): Observable<{ ok: boolean; message: string }> {
     return this.authService.login(email, password).pipe(
       concatMap((result) => {
@@ -282,9 +335,55 @@ export class MemberService {
     );
   }
 
-  /**
-   * Register via API
-   */
+  registerWithProfile(payload: {
+    email: string;
+    password: string;
+    confirmPassword: string;
+    profile: CreateProfileDto;
+    name?: string;
+    age?: number;
+    bio?: string;
+  }): Observable<RegisterMemberResult> {
+    const tenantHeaderId = Number(this.tenantService.tenantHeaderId);
+    const tenantId = Number.isFinite(tenantHeaderId) && tenantHeaderId > 0 ? tenantHeaderId : undefined;
+
+    return this.apiService.register({
+      email: payload.email,
+      password: payload.password,
+      confirmPassword: payload.confirmPassword,
+      tenantId,
+    }).pipe(
+      concatMap((response) => {
+        localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
+        localStorage.setItem(this.sessionKey, response.userId.toString());
+
+        return this.apiService.createOrUpdateProfile(payload.profile).pipe(
+          map(() => ({ ok: true, message: 'Registration successful. Welcome!', profileSynced: true })),
+          catchError((profileSyncError: unknown) =>
+            this.registerSyncService.enqueuePendingProfileSync(
+              payload.profile,
+              this.getErrorMessage(profileSyncError, 'Profile sync failed.')
+            ).pipe(
+              map(() => ({
+                ok: true,
+                message: 'Account created, but profile sync to DB is pending. Please login; sync will retry automatically.',
+                profileSynced: false,
+              }))
+            )
+          )
+        );
+      }),
+      catchError((error: unknown) =>
+        of({
+          ok: false,
+          message: this.getErrorMessage(error, 'Registration failed. Please try again.'),
+          profileSynced: false,
+        })
+      )
+    );
+  }
+
   registerMember(payload: RegisterSubmissionPayload): Observable<RegisterMemberResult> {
     const profilePayload = this.buildProfilePayload(payload);
 
@@ -334,9 +433,6 @@ export class MemberService {
     );
   }
 
-  /**
-   * Logout via API
-   */
   logout(): Observable<void> {
     return this.authService.logout().pipe(
       map(() => {
@@ -346,16 +442,13 @@ export class MemberService {
     );
   }
 
-  /**
-   * Get current user info
-   */
   getCurrentMember(): Observable<MemberRecord | null> {
     if (!this.isAuthenticated()) {
       return of(null);
     }
 
     return this.apiService.getCurrentUser().pipe(
-      map((user) => ({
+      map((user: any) => ({
         id: `member-${user.id}`,
         email: user.email,
         name: user.name || user.email,
@@ -372,37 +465,23 @@ export class MemberService {
     );
   }
 
-  /**
-   * Search profiles via API
-   */
   searchProfiles(filters: SearchFilters): Observable<MemberRecord[]> {
     if (!this.isAuthenticated()) {
       return of(this.searchProfilesLocal(filters));
     }
 
-    return this.userProfilesApi.apiUserProfilesPublicSearchGet(
-      undefined,
-      undefined,
-      filters.ageMin,
-      filters.ageMax,
-      filters.religion,
-      filters.caste,
-      filters.maritalStatus,
-      filters.location,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      filters.pageNumber ?? 1,
-      filters.pageSize ?? 20,
-      filters.name,
-      undefined,
-      undefined
-    ).pipe(
-      map((response) => (response.items ?? []).map((p) => this.convertToMemberRecord(this.mapPublicProfileToSearchResult(p)))),
+    return this.profileClient.searchPublicProfiles({
+      ageFrom: filters.ageMin,
+      ageTo: filters.ageMax,
+      religionId: filters.religion ? undefined : undefined,
+      casteId: filters.caste ? undefined : undefined,
+      maritalStatusId: filters.maritalStatus ? undefined : undefined,
+      city: filters.location || undefined,
+      pageNumber: filters.pageNumber ?? 1,
+      pageSize: filters.pageSize ?? 20,
+      searchTerm: filters.name || undefined,
+    }).pipe(
+      map((response) => (response.items ?? []).map((p) => this.convertToMemberRecord(this.mapListItemToSearchResult(p)))),
       catchError((error) => {
         console.error('Search profiles error:', error);
         return of(this.searchProfilesLocal(filters));
@@ -410,9 +489,6 @@ export class MemberService {
     );
   }
 
-  /**
-   * Get all profiles (with pagination)
-   */
   getProfiles(pageNumber = 1, pageSize = 10): Observable<ProfileListResponse> {
     if (!this.isAuthenticated()) {
       const profiles = SAMPLE_PROFILES.slice(0, pageSize).map((p) => ({
@@ -436,8 +512,8 @@ export class MemberService {
       });
     }
 
-    return this.userProfilesApi.apiUserProfilesGet().pipe(
-      map((profiles) => this.mapMemberProfilesToListResponse(profiles ?? [], pageNumber, pageSize)),
+    return this.profileClient.getProfilesByTenant().pipe(
+      map((profiles) => this.mapListItemsToListResponse(profiles ?? [], pageNumber, pageSize)),
       catchError((error) => {
         console.error('Get profiles error:', error);
         return throwError(() => error);
@@ -445,12 +521,9 @@ export class MemberService {
     );
   }
 
-  /**
-   * Get profile by ID
-   */
-  getProfileById(profileId: number): Observable<any> {
-    return this.userProfilesApi.apiUserProfilesPublicIdGet(profileId).pipe(
-      map((profile) => this.mapPublicProfileToProfileDetail(profile)),
+  getProfileById(profileId: number): Observable<ProfileDetail> {
+    return this.profileClient.getPublicProfileById(profileId).pipe(
+      map((profile) => this.mapProfileDetailToProfileDetail(profile)),
       catchError((error) => {
         console.error('Get profile by ID error:', error);
         return throwError(() => error);
@@ -458,9 +531,6 @@ export class MemberService {
     );
   }
 
-  /**
-   * Local search (fallback)
-   */
   private searchProfilesLocal(filters: SearchFilters): MemberRecord[] {
     const source = [...this.getMembers(), ...SAMPLE_PROFILES];
     const unique = source.filter(
@@ -477,8 +547,8 @@ export class MemberService {
     });
   }
 
-  private mapMemberProfilesToListResponse(
-    profiles: MemberProfileDto[],
+  private mapListItemsToListResponse(
+    profiles: ProfileListItemDto[],
     pageNumber: number,
     pageSize: number
   ): ProfileListResponse {
@@ -486,10 +556,10 @@ export class MemberService {
       profileId: profile.profileId ?? 0,
       userId: profile.profileId ?? 0,
       profileCode: String(profile.profileId ?? ''),
-      fullName: profile.fullName ?? profile.displayName ?? '',
+      fullName: profile.fullName ?? '',
       age: profile.age ?? undefined,
-      bio: profile.bio ?? undefined,
-      locationText: profile.city ?? undefined,
+      bio: undefined,
+      locationText: profile.locationText ?? undefined,
       occupationText: profile.occupationText ?? undefined,
       email: '',
       createdAt: new Date().toISOString(),
@@ -508,30 +578,36 @@ export class MemberService {
     };
   }
 
-  private mapPublicProfileToSearchResult(profile: PublicProfileDto): ProfileSearchResult {
+  private mapListItemToSearchResult(profile: ProfileListItemDto): ProfileSearchResult {
     return {
       profileId: profile.profileId ?? 0,
       userId: profile.profileId ?? 0,
       profileCode: String(profile.profileId ?? ''),
-      fullName: profile.displayName ?? '',
+      fullName: profile.fullName ?? '',
       age: profile.age ?? undefined,
-      bio: profile.bio ?? undefined,
-      locationText: profile.city ?? undefined,
-      occupationText: undefined,
+      bio: undefined,
+      locationText: profile.locationText ?? undefined,
+      occupationText: profile.occupationText ?? undefined,
       email: '',
       createdAt: new Date().toISOString(),
     };
   }
 
-  private mapPublicProfileToProfileDetail(profile: PublicProfileDto): ProfileDetail {
+  private mapProfileDetailToProfileDetail(profile: ProfileDetailDto): ProfileDetail {
     return {
-      ...this.mapPublicProfileToSearchResult(profile),
+      profileId: profile.profileId ?? 0,
+      userId: profile.profileId ?? 0,
+      profileCode: String(profile.profileCode ?? profile.profileId ?? ''),
+      fullName: profile.fullName ?? '',
+      age: profile.age ?? undefined,
+      bio: profile.bio ?? undefined,
+      locationText: profile.locationText ?? undefined,
+      occupationText: profile.occupationText ?? undefined,
+      email: '',
+      createdAt: new Date().toISOString(),
     };
   }
 
-  /**
-   * Get members from localStorage (legacy)
-   */
   private getMembers(): MemberRecord[] {
     try {
       const scopedRaw = localStorage.getItem(this.membersKey);
@@ -539,7 +615,6 @@ export class MemberService {
         return JSON.parse(scopedRaw) as MemberRecord[];
       }
 
-      // One-time fallback to legacy non-tenant storage.
       const legacyRaw = localStorage.getItem(LEGACY_MEMBERS_KEY);
       if (legacyRaw) {
         localStorage.setItem(this.membersKey, legacyRaw);
@@ -552,9 +627,6 @@ export class MemberService {
     }
   }
 
-  /**
-   * Update current member (legacy)
-   */
   updateCurrentMember(partial: Partial<MemberRecord>): { ok: boolean; message: string } {
     const members = this.getMembers();
     const sessionId = localStorage.getItem(this.sessionKey);

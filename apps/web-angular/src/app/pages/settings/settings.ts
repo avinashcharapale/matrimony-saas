@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 interface UserSettings {
@@ -12,6 +12,7 @@ interface UserSettings {
 const SETTINGS_KEY = 'matrimony_user_settings';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-settings',
   standalone: true,
   imports: [CommonModule, FormsModule],
@@ -37,8 +38,8 @@ const SETTINGS_KEY = 'matrimony_user_settings';
         <label><input type="checkbox" [(ngModel)]="settings.eventReminders" name="eventReminders" /> Event reminders</label>
 
         <button type="submit">Save Settings</button>
-        @if (savedMessage) {
-        <p class="saved">{{ savedMessage }}</p>
+        @if (savedMessage()) {
+        <p class="saved">{{ savedMessage() }}</p>
         }
       </form>
     </section>
@@ -59,7 +60,7 @@ const SETTINGS_KEY = 'matrimony_user_settings';
   ],
 })
 export class Settings {
-  savedMessage = '';
+  readonly savedMessage = signal('');
   settings: UserSettings = {
     profileVisibility: 'verified',
     emailAlerts: true,
@@ -76,6 +77,6 @@ export class Settings {
 
   save(): void {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(this.settings));
-    this.savedMessage = 'Settings saved successfully.';
+    this.savedMessage.set('Settings saved successfully.');
   }
 }

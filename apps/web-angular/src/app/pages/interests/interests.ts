@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 interface InterestCard {
@@ -11,6 +11,7 @@ interface InterestCard {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-interests',
   standalone: true,
   imports: [CommonModule, RouterModule],
@@ -23,12 +24,12 @@ interface InterestCard {
       </header>
 
       <div class="tabs">
-        <button type="button" [class.active]="activeTab === 'received'" (click)="activeTab = 'received'">Received</button>
-        <button type="button" [class.active]="activeTab === 'sent'" (click)="activeTab = 'sent'">Sent</button>
+        <button type="button" [class.active]="activeTab() === 'received'" (click)="activeTab.set('received')">Received</button>
+        <button type="button" [class.active]="activeTab() === 'sent'" (click)="activeTab.set('sent')">Sent</button>
       </div>
 
       <section class="cards">
-        @for (item of visibleInterests; track item.id) {
+        @for (item of visibleInterests(); track item.id) {
         <article class="card">
           <div>
             <h2>{{ item.name }}</h2>
@@ -38,7 +39,7 @@ interface InterestCard {
             <span class="status" [class.accepted]="item.status === 'accepted'" [class.declined]="item.status === 'declined'">
               {{ item.status }}
             </span>
-            @if (activeTab === 'received' && item.status === 'pending') {
+            @if (activeTab() === 'received' && item.status === 'pending') {
             <button type="button" class="accept" (click)="updateStatus(item.id, 'accepted')">Accept</button>
             <button type="button" class="decline" (click)="updateStatus(item.id, 'declined')">Decline</button>
             }
@@ -74,20 +75,22 @@ interface InterestCard {
   ],
 })
 export class Interests {
-  activeTab: 'received' | 'sent' = 'received';
+  readonly activeTab = signal<'received' | 'sent'>('received');
 
-  interests: InterestCard[] = [
+  private readonly interests = signal<InterestCard[]>([
     { id: 'i1', name: 'Priya Shinde', detail: 'Viewed your profile and sent interest.', status: 'pending', type: 'received' },
     { id: 'i2', name: 'Snehal Deshmukh', detail: 'Family approved and waiting for your response.', status: 'pending', type: 'received' },
     { id: 'i3', name: 'Kavya Jadhav', detail: 'You sent interest 2 days ago.', status: 'accepted', type: 'sent' },
     { id: 'i4', name: 'Anita Patil', detail: 'You sent interest yesterday.', status: 'pending', type: 'sent' },
-  ];
+  ]);
 
-  get visibleInterests(): InterestCard[] {
-    return this.interests.filter((item) => item.type === this.activeTab);
-  }
+  readonly visibleInterests = computed(() =>
+    this.interests().filter((item) => item.type === this.activeTab())
+  );
 
   updateStatus(id: string, status: InterestCard['status']): void {
-    this.interests = this.interests.map((item) => (item.id === id ? { ...item, status } : item));
+    this.interests.update(items =>
+      items.map((item) => (item.id === id ? { ...item, status } : item))
+    );
   }
 }

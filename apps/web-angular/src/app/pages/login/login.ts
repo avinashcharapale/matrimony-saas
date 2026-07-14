@@ -1,13 +1,12 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { TenantService } from '../../services/tenant.service';
 import { AuthService } from '../../services/auth.service';
-import { finalize } from 'rxjs/operators';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
@@ -18,22 +17,17 @@ export class Login {
   readonly tenant = inject(TenantService).tenant;
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly cdr = inject(ChangeDetectorRef);
 
   email = '';
   password = '';
-  message = '';
-  isLoading = false;
+  message = signal('');
+  isLoading = signal(false);
 
   submit(form: NgForm): void {
-    this.message = '';
-    this.isLoading = true;
-    this.cdr.detectChanges();
+    this.message.set('');
 
     if (form.invalid) {
-      this.message = 'Please enter a valid email and password.';
-      this.isLoading = false;
-      this.cdr.detectChanges();
+      this.message.set('Please enter a valid email and password.');
       return;
     }
 
@@ -41,30 +35,25 @@ export class Login {
     const password = this.password.trim();
 
     if (password.length < 6) {
-      this.message = 'Password must be at least 6 characters.';
-      this.isLoading = false;
-      this.cdr.detectChanges();
+      this.message.set('Password must be at least 6 characters.');
       return;
     }
 
-    this.authService.login(email, password)
-      .pipe(finalize(() => {
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }))
-      .subscribe({
-        next: (result) => {
-      if (result.ok) {
-        this.router.navigateByUrl('/home');
-      } else {
-        this.message = result.message;
-        this.cdr.detectChanges();
-      }
-        },
-        error: () => {
-          this.message = 'Login failed. Please try again.';
-          this.cdr.detectChanges();
-        },
-      });
+    this.isLoading.set(true);
+
+    this.authService.login(email, password).subscribe({
+      next: (result) => {
+        this.isLoading.set(false);
+        if (result.ok) {
+          this.router.navigateByUrl('/home');
+        } else {
+          this.message.set(result.message);
+        }
+      },
+      error: () => {
+        this.isLoading.set(false);
+        this.message.set('Login failed. Please try again.');
+      },
+    });
   }
 }

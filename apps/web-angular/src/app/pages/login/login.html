@@ -44,7 +44,7 @@
         <button type="submit" class="btn-primary">{{ tenant.ctaLogin }}</button>
       </div>
 
-      @if (message) { <div class="form-message error">{{ message }}</div> }
+      @if (message()) { <div class="form-message error">{{ message() }}</div> }
 
       <p class="login-links">
         <a href="#">Forgot your password?</a>

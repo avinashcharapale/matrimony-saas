@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 
 interface Story {
   id: string;
@@ -10,6 +10,7 @@ interface Story {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-success-stories',
   standalone: true,
   imports: [CommonModule],
@@ -22,12 +23,12 @@ interface Story {
       </header>
 
       <section class="stories">
-        @for (story of stories; track story.id) {
+        @for (story of stories(); track story.id) {
         <article class="story-card">
           <h2>{{ story.couple }}</h2>
           <small>{{ story.location }}</small>
           <p>{{ story.expanded ? story.summary : (story.summary | slice:0:120) + '...' }}</p>
-          <button type="button" (click)="story.expanded = !story.expanded">
+          <button type="button" (click)="toggleExpand(story.id)">
             {{ story.expanded ? 'Show less' : 'Read more' }}
           </button>
         </article>
@@ -52,7 +53,7 @@ interface Story {
   ],
 })
 export class SuccessStories {
-  stories: Story[] = [
+  readonly stories = signal<Story[]>([
     {
       id: 's1',
       couple: 'Neha & Rahul',
@@ -71,5 +72,11 @@ export class SuccessStories {
       location: 'Mumbai',
       summary: 'The platform made it easy to filter by lifestyle and expectations. We met in a community event, stayed in touch, and finalized after both families were confident.',
     },
-  ];
+  ]);
+
+  toggleExpand(id: string): void {
+    this.stories.update(items =>
+      items.map((s) => (s.id === id ? { ...s, expanded: !s.expanded } : s))
+    );
+  }
 }

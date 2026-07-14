@@ -1,0 +1,139 @@
+<section>
+  <h2>Personal Details</h2>
+  <div class="field-grid" [formGroup]="personal">
+    <div class="form-field">
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" formControlName="firstName" maxlength="40" />
+    </div>
+    <div class="form-field">
+      <label for="middleName">Middle Name</label>
+      <input type="text" id="middleName" formControlName="middleName" maxlength="40" />
+    </div>
+    <div class="form-field">
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" formControlName="lastName" maxlength="40" />
+    </div>
+    <div class="form-field">
+      <label>Date of Birth</label>
+      <div class="date-group">
+        <select formControlName="dobDay">
+          <option [ngValue]="null">DD</option>
+          @for (d of days; track d) { <option [ngValue]="d">{{ d }}</option> }
+        </select>
+        <select formControlName="dobMonth">
+          <option value="">MM</option>
+          @for (m of months; track m) { <option [value]="m">{{ m }}</option> }
+        </select>
+        <select formControlName="dobYear">
+          <option [ngValue]="null">YYYY</option>
+          @for (y of years; track y) { <option [ngValue]="y">{{ y }}</option> }
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Gender</label>
+      <select formControlName="genderId" [disabled]="lookupsLoading">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of genderOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Religion</label>
+      <select formControlName="religionId" [disabled]="lookupsLoading">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of religionOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Caste</label>
+      <select formControlName="casteId">
+        <option [ngValue]="null">Select</option>
+        @for (opt of casteOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Sub Cast</label>
+      <select formControlName="subCasteId">
+        <option [ngValue]="null">Select</option>
+        @for (opt of subCastOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Marital Status</label>
+      <select formControlName="maritalStatusId" [disabled]="lookupsLoading">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of maritalStatusOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Height</label>
+      <div class="height-group">
+        <select formControlName="heightFt">
+          @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }}</option> }
+        </select>
+        <select formControlName="heightIn">
+          @for (inch of [0,1,2,3,4,5,6,7,8,9,10,11]; track inch) { <option [ngValue]="inch">{{ inch }}</option> }
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Weight</label>
+      <select formControlName="weightKg">
+        @for (w of [40,45,50,55,60,65,70,75,80]; track w) { <option [ngValue]="w">{{ w }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Blood Group</label>
+      <select formControlName="bloodGroupId" [disabled]="lookupsLoading">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of bloodGroupOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Complexion</label>
+      <select formControlName="complexionId" [disabled]="lookupsLoading">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of complexionOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Physical Disabilities</label>
+      <select formControlName="physicalDisability">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>If Yes, Please Specify</label>
+      <input type="text" formControlName="disabilityDetail" />
+    </div>
+    <div class="form-field">
+      <label>Diet</label>
+      <select formControlName="dietId" [disabled]="lookupsLoading">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of dietOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Spectacles</label>
+      <select formControlName="spectacles">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Lens</label>
+      <select formControlName="lens">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Personality</label>
+      <select formControlName="personalityId" [disabled]="lookupsLoading">
+        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        @for (opt of personalityOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+  </div>
+</section>

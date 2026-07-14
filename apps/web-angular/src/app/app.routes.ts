@@ -1,42 +1,87 @@
 import { Route } from '@angular/router';
-import { Layout } from './layout/layout';
-import { Home } from './pages/home/home';
-import { Landing } from './pages/landing/landing';
-import { MenuPage } from './pages/menu-page/menu-page';
-import { Login } from './pages/login/login';
-import { Register } from './pages/register/register';
-import { ProfileList } from './pages/profile-list/profile-list';
-import { ProfileDetail } from './pages/profile-detail/profile-detail';
-import { Interests } from './pages/interests/interests';
-import { Messages } from './pages/messages/messages';
-import { Events } from './pages/events/events';
-import { PhotoGallery } from './pages/photo-gallery/photo-gallery';
-import { Settings } from './pages/settings/settings';
-import { SuccessStories } from './pages/success-stories/success-stories';
-import { authGuard } from './guards/auth.guard';
+import { authGuard } from '@org/core';
 
 export const appRoutes: Route[] = [
   {
     path: '',
-    component: Layout,
+    loadComponent: () =>
+      import('./layout/layout').then((m) => m.Layout),
     children: [
-      { path: '', component: Landing },
-      { path: 'login', component: Login },
-      { path: 'register', component: Register },
-      { path: 'home', component: Home, canActivate: [authGuard] },
-      { path: 'profiles', component: ProfileList, canActivate: [authGuard] },
-      { path: 'profiles/:id', component: ProfileDetail, canActivate: [authGuard] },
-      { path: 'interests', component: Interests, canActivate: [authGuard] },
-      { path: 'messages', component: Messages, canActivate: [authGuard] },
-      { path: 'events', component: Events, canActivate: [authGuard] },
-      { path: 'gallery', component: PhotoGallery, canActivate: [authGuard] },
-      { path: 'settings', component: Settings, canActivate: [authGuard] },
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/landing/landing').then((m) => m.Landing),
+      },
+      {
+        path: 'login',
+        loadComponent: () =>
+          import('./pages/login/login').then((m) => m.Login),
+      },
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('./pages/register/register').then((m) => m.Register),
+      },
+      {
+        path: 'home',
+        loadComponent: () =>
+          import('./pages/home/home').then((m) => m.Home),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'profiles',
+        loadComponent: () =>
+          import('./pages/profile-list/profile-list').then((m) => m.ProfileList),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'profiles/:id',
+        loadComponent: () =>
+          import('./pages/profile-detail/profile-detail').then(
+            (m) => m.ProfileDetail,
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'interests',
+        loadComponent: () =>
+          import('./pages/interests/interests').then((m) => m.Interests),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'messages',
+        loadComponent: () =>
+          import('./pages/messages/messages').then((m) => m.Messages),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'events',
+        loadComponent: () =>
+          import('./pages/events/events').then((m) => m.Events),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'gallery',
+        loadComponent: () =>
+          import('./pages/photo-gallery/photo-gallery').then(
+            (m) => m.PhotoGallery,
+          ),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/settings/settings').then((m) => m.Settings),
+        canActivate: [authGuard],
+      },
       {
         path: 'rules',
-        component: MenuPage,
+        loadComponent: () =>
+          import('./pages/menu-page/menu-page').then((m) => m.MenuPage),
         data: {
           title: 'Rules & Guidelines',
-          description: 'Clear and simple membership rules to keep matchmaking safe and respectful for everyone.',
+          description:
+            'Clear and simple membership rules to keep matchmaking safe and respectful for everyone.',
           highlights: [
             'Profiles must contain genuine details and recent information.',
             'Contact details are shared only after account verification.',
@@ -44,14 +89,27 @@ export const appRoutes: Route[] = [
           ],
         },
       },
-      { path: 'search', component: ProfileList, canActivate: [authGuard] },
-      { path: 'success-stories', component: SuccessStories },
+      {
+        path: 'search',
+        loadComponent: () =>
+          import('./pages/profile-list/profile-list').then((m) => m.ProfileList),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'success-stories',
+        loadComponent: () =>
+          import('./pages/success-stories/success-stories').then(
+            (m) => m.SuccessStories,
+          ),
+      },
       {
         path: 'contact',
-        component: MenuPage,
+        loadComponent: () =>
+          import('./pages/menu-page/menu-page').then((m) => m.MenuPage),
         data: {
           title: 'Contact Us',
-          description: 'Reach our support team for registration help, profile updates, and matchmaking guidance.',
+          description:
+            'Reach our support team for registration help, profile updates, and matchmaking guidance.',
           highlights: [
             'Phone and email support for quick assistance.',
             'Guidance for profile creation and verification.',

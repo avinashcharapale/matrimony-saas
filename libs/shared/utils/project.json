@@ -1,0 +1,11 @@
+{
+  "name": "shared-utils",
+  "sourceRoot": "libs/shared/utils/src",
+  "projectType": "library",
+  "tags": ["scope:shared"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { TenantService } from '../../services/tenant.service';
 import { FeatureItem, ProfileItem, StatItem, TrustCardItem } from './landing.models';
 import { LandingSectionsComponent } from './components/landing-sections.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-landing',
   standalone: true,
   imports: [LandingSectionsComponent],

@@ -1,0 +1,55 @@
+<section>
+  <h2>Educational / Professional Details</h2>
+  <div class="field-grid compact" [formGroup]="career">
+    <div class="form-field">
+      <label>Education Area (It's important)</label>
+      <select formControlName="educationAreaId">
+        <option [ngValue]="null">Select</option>
+        @for (opt of educationAreaOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Education</label>
+      <select formControlName="educationId">
+        <option [ngValue]="null">Select</option>
+        @for (opt of educationOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Occupation Type (It's important)</label>
+      <select formControlName="occupationId">
+        <option [ngValue]="null">Select</option>
+        @for (opt of occupationTypeOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Occupation Details</label>
+      <input type="text" formControlName="occupationDetails" maxlength="120" />
+    </div>
+    <div class="form-field">
+      <label>Working State / Country</label>
+      <select [value]="workingStateId ?? ''" (change)="onWorkingStateChange($event)">
+        <option value="">Select State</option>
+        @for (s of workingStates; track s.stateId) { <option [value]="s.stateId">{{ s.name }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Working City / District</label>
+      <select formControlName="workingCityCountry" [disabled]="workingDistricts.length === 0">
+        <option value="">Select District</option>
+        @for (d of workingDistricts; track d.districtId) { <option [value]="d.name!">{{ d.name }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Income Amount</label>
+      <input type="text" formControlName="incomeAmount" maxlength="12" />
+    </div>
+    <div class="form-field">
+      <label>Income Period</label>
+      <select formControlName="incomePeriodId">
+        <option [ngValue]="null">Select</option>
+        @for (opt of incomePeriodOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+  </div>
+</section>

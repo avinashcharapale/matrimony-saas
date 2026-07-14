@@ -1,12 +1,14 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, computed, inject, signal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '@org/shared-services';
+import { AuthStore } from '@org/data-access-auth';
 import { RegisterFormDetails, createEmptyRegisterFormDetails } from '@org/models';
+import { isValidEmail } from '@org/shared-utils';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-register',
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule],
@@ -15,6 +17,9 @@ import { RegisterFormDetails, createEmptyRegisterFormDetails } from '@org/models
   styleUrl: './register.css',
 })
 export class Register {
+  private readonly authStore = inject(AuthStore);
+  private readonly router = inject(Router);
+
   email = '';
   password = '';
   confirmPassword = '';
@@ -25,19 +30,17 @@ export class Register {
       verificationInput: '',
     },
   };
-  message = '';
-  isError = false;
-  isLoading = false;
+  photos = signal(this.details.photos);
+  message = signal('');
+  isError = signal(false);
+  isLoading = signal(false);
 
-  constructor(
-    private readonly router: Router,
-    private readonly authService: AuthService
-  ) {}
+  constructor() {}
 
   submit(): void {
-    this.message = '';
-    this.isError = false;
-    this.isLoading = true;
+    this.message.set('');
+    this.isError.set(false);
+    this.isLoading.set(true);
 
     const fullName = [
       this.details.personal.firstName,
@@ -46,64 +49,64 @@ export class Register {
     ].filter((value) => value.trim().length > 0).join(' ');
 
     if (!this.details.personal.firstName.trim() || !this.details.personal.lastName.trim()) {
-      this.isError = true;
-      this.message = 'First name and last name are required.';
-      this.isLoading = false;
+      this.isError.set(true);
+      this.message.set('First name and last name are required.');
+      this.isLoading.set(false);
       return;
     }
 
     if (!this.details.personal.religion.trim()) {
-      this.isError = true;
-      this.message = 'Religion is required.';
-      this.isLoading = false;
+      this.isError.set(true);
+      this.message.set('Religion is required.');
+      this.isLoading.set(false);
       return;
     }
 
-    if (!this.email.trim() || !this.email.includes('@')) {
-      this.isError = true;
-      this.message = 'Enter a valid email address.';
-      this.isLoading = false;
+    if (!isValidEmail(this.email)) {
+      this.isError.set(true);
+      this.message.set('Enter a valid email address.');
+      this.isLoading.set(false);
       return;
     }
 
     if (this.password.trim().length < 8) {
-      this.isError = true;
-      this.message = 'Password must be at least 8 characters.';
-      this.isLoading = false;
+      this.isError.set(true);
+      this.message.set('Password must be at least 8 characters.');
+      this.isLoading.set(false);
       return;
     }
 
     if (this.password.trim() !== this.confirmPassword.trim()) {
-      this.isError = true;
-      this.message = 'Password and confirm password must match.';
-      this.isLoading = false;
+      this.isError.set(true);
+      this.message.set('Password and confirm password must match.');
+      this.isLoading.set(false);
       return;
     }
 
     if (this.details.verification.verificationInput.trim() !== this.details.verification.verificationCode) {
-      this.isError = true;
-      this.message = 'Enter the correct verification code.';
-      this.isLoading = false;
+      this.isError.set(true);
+      this.message.set('Enter the correct verification code.');
+      this.isLoading.set(false);
       return;
     }
 
-    this.authService
-      .register({
-        email: this.email.trim().toLowerCase(),
-        password: this.password.trim(),
-        confirmPassword: this.confirmPassword.trim(),
-        tenantId: 1,
-      })
+    this.authStore
+      .register(this.email.trim().toLowerCase(), this.password.trim(), this.confirmPassword.trim(), 1)
       .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.message = `Profile registered successfully for ${fullName}.`;
-          this.router.navigateByUrl('/home');
+        next: (result) => {
+          this.isLoading.set(false);
+          if (result.ok) {
+            this.message.set(`Profile registered successfully for ${fullName}.`);
+            this.router.navigateByUrl('/home');
+          } else {
+            this.isError.set(true);
+            this.message.set(result.message);
+          }
         },
         error: (error) => {
-          this.isLoading = false;
-          this.isError = true;
-          this.message = error?.error?.error || 'Registration failed. Please try again.';
+          this.isLoading.set(false);
+          this.isError.set(true);
+          this.message.set(error?.error?.error || 'Registration failed. Please try again.');
         },
       });
   }
@@ -111,26 +114,26 @@ export class Register {
   onPrimaryPhotoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    const next = this.details.photos.filter((photo) => photo.photoSlot !== 1);
-    this.details.photos = file
+    const next = this.photos().filter((photo) => photo.photoSlot !== 1);
+    const updated = file
       ? [{ photoSlot: 1, fileName: file.name, isPrimary: true }, ...next]
       : next;
+    this.details.photos = updated;
+    this.photos.set(updated);
   }
 
   onSecondaryPhotoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    const next = this.details.photos.filter((photo) => photo.photoSlot !== 2);
-    this.details.photos = file
+    const next = this.photos().filter((photo) => photo.photoSlot !== 2);
+    const updated = file
       ? [...next, { photoSlot: 2, fileName: file.name }].sort((a, b) => a.photoSlot - b.photoSlot)
       : next;
+    this.details.photos = updated;
+    this.photos.set(updated);
   }
 
-  get primaryPhotoName(): string {
-    return this.details.photos.find((photo) => photo.photoSlot === 1)?.fileName ?? '';
-  }
+  primaryPhotoName = computed(() => this.photos().find((photo) => photo.photoSlot === 1)?.fileName ?? '');
 
-  get secondaryPhotoName(): string {
-    return this.details.photos.find((photo) => photo.photoSlot === 2)?.fileName ?? '';
-  }
+  secondaryPhotoName = computed(() => this.photos().find((photo) => photo.photoSlot === 2)?.fileName ?? '');
 }

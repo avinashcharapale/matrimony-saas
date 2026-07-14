@@ -1,0 +1,494 @@
+// ─── Identity DTOs ────────────────────────────────────────────────────────────
+
+export interface RegisterRequestDto {
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  tenantId?: number;
+}
+
+export interface LoginRequestDto {
+  email?: string;
+  password?: string;
+}
+
+export interface AuthResponseDto {
+  accessToken: string;
+  refreshToken: string;
+  userId: number;
+  tenantId: number;
+  role: string;
+  expiresAt: string;
+}
+
+export interface RefreshTokenRequestDto {
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+export interface CreateUserRequestDto {
+  tenantId?: number;
+  email?: string;
+  password?: string;
+  isSuperAdmin?: boolean;
+  isActive?: boolean;
+}
+
+export interface UpdateUserRequestDto {
+  email?: string;
+  isActive?: boolean;
+  isSuperAdmin?: boolean;
+}
+
+export interface UserDetailDto {
+  id?: number;
+  tenantId?: number;
+  email?: string;
+  isSuperAdmin?: boolean;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  roles?: string[];
+  permissions?: string[];
+}
+
+export interface UserListDto {
+  id?: number;
+  tenantId?: number;
+  email?: string;
+  isSuperAdmin?: boolean;
+  isActive?: boolean;
+  createdAt?: string;
+}
+
+// ─── Profile DTOs ─────────────────────────────────────────────────────────────
+
+export interface MasterDataOptionDto {
+  id?: number;
+  name?: string;
+}
+
+export interface MasterDataItemDto {
+  masterDataId: number;
+  category: string;
+  valueCode: string;
+  sortOrder: number;
+  label: string;
+}
+
+export interface PersonalDetailsDto {
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  dobDay?: number;
+  dobMonth?: string;
+  dobYear?: number;
+  dateOfBirth?: string;
+  genderId?: number;
+  religionId?: number;
+  casteId?: number;
+  subCasteId?: number;
+  maritalStatusId?: number;
+  countryId?: number;
+  stateId?: number;
+  districtId?: number;
+  talukaId?: number;
+  heightFt?: number;
+  heightIn?: number;
+  weightKg?: number;
+  bloodGroupId?: number;
+  complexionId?: number;
+  dietId?: number;
+  personalityId?: number;
+  physicalDisability?: boolean;
+  disabilityDetail?: string;
+  spectacles?: boolean;
+  lens?: boolean;
+}
+
+export interface PersonalDetailsViewDto {
+  genderId?: number;
+  religionId?: number;
+  casteId?: number;
+  subCasteId?: number;
+  maritalStatusId?: number;
+  heightFt?: number;
+  heightIn?: number;
+  weightKg?: number;
+  bloodGroupId?: number;
+  complexionId?: number;
+  dietId?: number;
+  personalityId?: number;
+  physicalDisability?: boolean;
+  disabilityDetail?: string;
+}
+
+export interface ContactDetailsDto {
+  contactEmail?: string;
+  residenceAddress?: string;
+  idProofNumber?: string;
+}
+
+export interface ContactDetailsDtoCreate {
+  residenceAddress?: string;
+  contactEmail?: string;
+  idProofNumber?: string;
+}
+
+export interface PhoneNumberDto {
+  phoneType?: string;
+  phoneNumber?: string;
+}
+
+export interface FamilyDetailsDto {
+  fatherStatus?: boolean;
+  motherStatus?: boolean;
+  brothers?: number;
+  marriedBrothers?: number;
+  sisters?: number;
+  marriedSisters?: number;
+  parentsFullName?: string;
+  parentsOccupation?: string;
+  parentsResidentCity?: string;
+  familyWealth?: string;
+  mamaSurnamePlace?: string;
+  nativeDistrict?: string;
+  nativeTaluka?: string;
+  intercastMarriage?: boolean;
+  intercastRelation?: string;
+}
+
+export interface CareerDetailsDtoCreate {
+  educationId?: number;
+  educationAreaId?: number;
+  occupationId?: number;
+  occupationDetails?: string;
+  workingCityCountry?: string;
+  incomeAmount?: number;
+  incomePeriodId?: number;
+}
+
+export interface CareerDetailsViewDto {
+  educationId?: number;
+  educationAreaId?: number;
+  occupationId?: number;
+  occupationDetails?: string;
+  workingCityCountry?: string;
+  incomeAmount?: number;
+  incomePeriodId?: number;
+}
+
+export interface PartnerPreferenceDto {
+  expectedManglik?: boolean;
+  expectedCaste?: string;
+  maxAgeDifference?: number;
+  expectedHeightFt?: number;
+  expectedHeightIn?: number;
+  expectedEducation?: string;
+  expectedOccupationIncome?: string;
+  divorcee?: boolean;
+}
+
+export interface ProfilePhotoDto {
+  photoId?: number;
+  photoSlot?: number;
+  fileUrl?: string;
+  fileName?: string;
+  isPrimary?: boolean;
+  createdAt?: string;
+}
+
+export interface ProfilePhotoDtoCreate {
+  photoSlot?: number;
+  fileName?: string;
+  fileUrl?: string;
+  isPrimary?: boolean;
+}
+
+export interface ProfileHoroscopeDetailDto {
+  manglik?: boolean;
+  birthHour?: number;
+  birthMinute?: number;
+  birthPeriod?: string;
+  birthDistrict?: string;
+  devak?: string;
+  rashiId?: number;
+  nakshatraId?: number;
+  charanId?: number;
+  nadiId?: number;
+  ganId?: number;
+}
+
+export interface CreateProfileDto {
+  fullName?: string | null;
+  age?: number | null;
+  bio?: string | null;
+  locationText?: string | null;
+  occupationText?: string | null;
+  personalDetails?: PersonalDetailsDto;
+  contactDetails?: ContactDetailsDtoCreate;
+  phoneNumbers?: PhoneNumberDto[];
+  familyDetails?: FamilyDetailsDto;
+  relativeSurnames?: string[];
+  careerDetails?: CareerDetailsDtoCreate;
+  partnerPreference?: PartnerPreferenceDto;
+  profilePhotos?: ProfilePhotoDtoCreate[];
+  profileHoroscope?: ProfileHoroscopeDetailDto;
+}
+
+export interface ProfileDetailDto {
+  profileId?: number;
+  profileCode?: string;
+  fullName?: string;
+  age?: number;
+  bio?: string;
+  locationText?: string;
+  occupationText?: string;
+  isVerified?: boolean;
+  profileCompletionPercent?: number;
+  lastActiveAt?: string;
+  photos?: ProfilePhotoDto[];
+  personalDetails?: PersonalDetailsViewDto;
+  career?: CareerDetailsViewDto;
+  familyInfo?: FamilyDetailsDto;
+  relativeSurnames?: string[];
+  partnerPreference?: PartnerPreferenceDto;
+  horoscope?: ProfileHoroscopeDetailDto;
+  contact?: ContactDetailsDto;
+  phoneNumbers?: PhoneNumberDto[];
+  isContactUnlocked?: boolean;
+}
+
+export interface ProfileListItemDto {
+  profileId?: number;
+  profileCode?: string;
+  fullName?: string;
+  age?: number;
+  locationText?: string;
+  occupationText?: string;
+  genderId?: number;
+  maritalStatusId?: number;
+  religionId?: number;
+  casteId?: number;
+  subCasteId?: number;
+  stateId?: number;
+  districtId?: number;
+  manglik?: boolean;
+  educationId?: number;
+  occupationId?: number;
+  workingCityCountry?: string;
+  incomeAmount?: number;
+  thumbnailUrl?: string;
+  isVerified?: boolean;
+  isPremiumTenant?: boolean;
+}
+
+export interface ProfileListItemDtoPagedResult {
+  items?: ProfileListItemDto[];
+  totalCount?: number;
+  pageNumber?: number;
+  pageSize?: number;
+}
+
+// ─── Tenant DTOs ──────────────────────────────────────────────────────────────
+
+export interface TenantDto {
+  createdAt?: string;
+  updatedAt?: string;
+  tenantId?: number;
+  tenantName?: string;
+  domainName?: string;
+  trialEndDate?: string;
+  isActive?: boolean;
+  userCount?: number;
+}
+
+export interface TenantResolveResponse {
+  resolved: boolean;
+  host: string;
+  path: string;
+  query: string | null;
+  tenantId: number;
+  tenantCode: string;
+  domain: string;
+}
+
+// ─── Chat DTOs ────────────────────────────────────────────────────────────────
+
+export enum ConversationStatus {
+  Active = 0,
+  Archived = 1,
+  Deleted = 2,
+  Blocked = 3,
+}
+
+export enum ConversationType {
+  Direct = 0,
+  Group = 1,
+}
+
+export enum MessageStatus {
+  Sent = 0,
+  Delivered = 1,
+  Read = 2,
+  Edited = 3,
+  Deleted = 4,
+}
+
+export enum MessageType {
+  Text = 0,
+  Image = 1,
+  Video = 2,
+  Audio = 3,
+  File = 4,
+  System = 5,
+  Location = 6,
+}
+
+export interface ChatAttachmentDto {
+  attachmentId?: string;
+  messageId?: string;
+  fileName?: string;
+  contentType?: string;
+  fileSize?: number;
+  fileUrl?: string;
+}
+
+export interface ChatMessageDto {
+  id?: string;
+  conversationId?: string;
+  senderProfileId?: string;
+  senderUserId?: string;
+  tenantId?: string;
+  content?: string;
+  type?: MessageType;
+  status?: MessageStatus;
+  sentDate?: string;
+  deliveredDate?: string;
+  readDate?: string;
+  editedDate?: string;
+  isEdited?: boolean;
+  isDeleted?: boolean;
+  deletedDate?: string;
+  deletedByUserId?: string;
+  replyToMessageId?: string;
+  metadata?: string;
+  isEncrypted?: boolean;
+  createdAt?: string;
+  replyToMessage?: ChatMessageDto;
+  attachments?: ChatAttachmentDto[];
+  readStatuses?: MessageReadStatusDto[];
+  senderName?: string;
+  senderPhotoUrl?: string;
+}
+
+export interface ChatParticipantDto {}
+
+export interface MessageReadStatusDto {}
+
+export interface ChatConversationDto {
+  id?: string;
+  profileId1?: string;
+  profileId2?: string;
+  userId1?: string;
+  userId2?: string;
+  tenantId?: string;
+  conversationName?: string;
+  type?: ConversationType;
+  status?: ConversationStatus;
+  lastMessageDate?: string;
+  lastMessageId?: string;
+  lastMessagePreview?: string;
+  isArchived?: boolean;
+  isBlocked?: boolean;
+  blockedByUserId?: string;
+  blockedDate?: string;
+  blockReason?: string;
+  totalMessagesCount?: number;
+  unreadMessagesCount1?: number;
+  unreadMessagesCount2?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  lastMessage?: ChatMessageDto;
+  participants?: ChatParticipantDto[];
+}
+
+// ─── Subscription DTOs ────────────────────────────────────────────────────────
+
+export interface SubscriptionPlanDto {
+  id?: string;
+  name?: string;
+  description?: string;
+  code?: string;
+  price?: number;
+  currency?: string;
+  durationInDays?: number;
+  isActive?: boolean;
+  isPopular?: boolean;
+  maxProfiles?: number;
+  maxMatches?: number;
+  maxMessages?: number;
+  maxPhotos?: number;
+  hasPrioritySupport?: boolean;
+  hasAdvancedSearch?: boolean;
+  hasProfileVerification?: boolean;
+  hasMatchRecommendations?: boolean;
+  canViewContactDetails?: boolean;
+  canSendMessages?: boolean;
+  features?: string;
+  displayOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  subscriptionFeatures?: SubscriptionFeatureDto[];
+}
+
+export interface SubscriptionFeatureDto {
+  id?: string;
+  subscriptionPlanId?: string;
+  featureName?: string;
+  featureCode?: string;
+  description?: string;
+  isEnabled?: boolean;
+  limit?: number;
+  configuration?: string;
+  displayOrder?: number;
+}
+
+export interface SubscriptionStatusDto {
+  isActive?: boolean;
+  isExpired?: boolean;
+  planName?: string;
+  expiresAt?: string;
+  isTrial?: boolean;
+}
+
+// ─── Geo DTOs ─────────────────────────────────────────────────────────────────
+
+export interface GeoCountryDto {
+  countryId?: number;
+  code?: string;
+  name?: string;
+  nameMr?: string;
+}
+
+export interface GeoStateDto {
+  stateId?: number;
+  countryId?: number;
+  code?: string;
+  name?: string;
+  nameMr?: string;
+}
+
+export interface GeoDistrictDto {
+  districtId?: number;
+  stateId?: number;
+  name?: string;
+  nameMr?: string;
+}
+
+export interface GeoTalukaDto {
+  talukaId?: number;
+  districtId?: number;
+  name?: string;
+  nameMr?: string;
+}

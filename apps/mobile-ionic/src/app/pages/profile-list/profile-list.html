@@ -7,8 +7,8 @@
 
   <ion-content>
     <div class="profiles-container">
-      @if (profiles.length > 0) {
-      @for (profile of profiles; track profile.email ?? $index) {
+      @if (profiles().length > 0) {
+      @for (profile of profiles(); track profile.email ?? $index) {
       <ion-card class="profile-card" button (click)="openProfile(profile)">
         <img [src]="getProfilePhotoUrl(profile)" [alt]="profile.name" class="profile-photo" />
         <ion-card-header>

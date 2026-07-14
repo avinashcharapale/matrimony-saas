@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { TenantService } from '../../services/tenant.service';
 import { HomeSidebarComponent } from './components/home-sidebar.component';
 import { HomeHeaderComponent } from './components/home-header.component';
@@ -8,6 +8,7 @@ import { HomeBottomComponent } from './components/home-bottom.component';
 import { ActivityItem, EventItem, InterestItem, MatchItem, MessageItem, NotificationCard } from './home.models';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-home',
   standalone: true,
   imports: [

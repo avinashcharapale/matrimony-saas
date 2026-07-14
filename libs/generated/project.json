@@ -1,0 +1,11 @@
+{
+  "name": "generated",
+  "sourceRoot": "libs/generated/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:api-client"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

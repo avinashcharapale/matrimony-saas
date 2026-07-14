@@ -25,6 +25,14 @@ export default [
               onlyDependOnLibsWithTags: ['scope:shared'],
             },
             {
+              sourceTag: 'scope:core',
+              onlyDependOnLibsWithTags: ['scope:core', 'scope:shared', 'scope:data-access'],
+            },
+            {
+              sourceTag: 'scope:data-access',
+              onlyDependOnLibsWithTags: ['scope:shared'],
+            },
+            {
               sourceTag: 'scope:shop',
               onlyDependOnLibsWithTags: ['scope:shop', 'scope:shared'],
             },

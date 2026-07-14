@@ -8,10 +8,18 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/web-angular',
   plugins: [angular(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //   plugins: () => [ nxViteTsPaths() ],
-  // },
+  server: {
+    port: 4200,
+    proxy: {
+      '/identity': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
+      '/tenant': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
+      '/profile': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
+      '/subscription': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
+      '/match': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
+      '/chat': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
+      '/api': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
+    },
+  },
   test: {
     name: 'web-angular',
     watch: false,

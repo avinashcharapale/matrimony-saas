@@ -1,11 +1,39 @@
-// Proxy configuration for Angular dev server (Angular 21 / Vite-based)
-// Uses array format with `context` which Angular's normalizeProxyConfiguration
-// explicitly supports and converts to Vite-compatible object format.
-module.exports = [
-  {
-    context: ['/api', '/identity', '/tenant', '/profile', '/subscription', '/match', '/chat'],
+// Proxy configuration for Angular 21 / Vite-based dev server
+// All routes go through YARP gateway at port 8000
+module.exports = {
+  '/identity': {
     target: 'http://127.0.0.1:8000',
     secure: false,
     changeOrigin: true,
   },
-];
+  '/tenant': {
+    target: 'http://127.0.0.1:8000',
+    secure: false,
+    changeOrigin: true,
+  },
+  '/profile': {
+    target: 'http://127.0.0.1:8000',
+    secure: false,
+    changeOrigin: true,
+  },
+  '/subscription': {
+    target: 'http://127.0.0.1:8000',
+    secure: false,
+    changeOrigin: true,
+  },
+  '/match': {
+    target: 'http://127.0.0.1:8000',
+    secure: false,
+    changeOrigin: true,
+  },
+  '/chat': {
+    target: 'http://127.0.0.1:8000',
+    secure: false,
+    changeOrigin: true,
+  },
+  '/api': {
+    target: 'http://127.0.0.1:8000',
+    secure: false,
+    changeOrigin: true,
+  },
+};

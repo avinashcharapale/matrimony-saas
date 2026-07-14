@@ -1,0 +1,11 @@
+{
+  "name": "data-access-geo",
+  "sourceRoot": "libs/data-access/geo/src",
+  "projectType": "library",
+  "tags": ["scope:data-access"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

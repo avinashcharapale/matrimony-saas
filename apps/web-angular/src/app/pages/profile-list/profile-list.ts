@@ -1,15 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { MasterDataService, MasterDataItem } from '../../services/master-data.service';
-import { finalize } from 'rxjs/operators';
 import { ProfileListSidebarComponent } from './components/profile-list-sidebar.component';
 import { ProfileListTitleComponent } from './components/profile-list-title.component';
 import { ProfileListSearchPanelComponent } from './components/profile-list-search-panel.component';
 import { ProfileListResultsComponent } from './components/profile-list-results.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile-list',
   standalone: true,
   imports: [
@@ -27,8 +27,8 @@ export class ProfileList {
   private readonly masterDataSvc = inject(MasterDataService);
   private readonly heights = ["5'0\"", "5'2\"", "5'4\"", "5'6\"", "5'8\""];
 
-  religionOptions: MasterDataItem[] = [];
-  casteOptions: MasterDataItem[] = [];
+  religionOptions = signal<MasterDataItem[]>([]);
+  casteOptions = signal<MasterDataItem[]>([]);
   filters = {
     name: '',
     location: '',
@@ -48,9 +48,33 @@ export class ProfileList {
   currentPage = 1;
   readonly pageSize = 5;
 
-  results: MemberRecord[] = [];
-  error = '';
-  isLoading = false;
+  results = signal<MemberRecord[]>([]);
+  error = signal('');
+  isLoading = signal(false);
+
+  readonly sortedResults = computed(() => {
+    const items = [...this.results()];
+    if (this.sortBy === 'age-asc') {
+      return items.sort((a, b) => (a.age ?? 99) - (b.age ?? 99));
+    }
+    if (this.sortBy === 'age-desc') {
+      return items.sort((a, b) => (b.age ?? 0) - (a.age ?? 0));
+    }
+    return items.sort((a, b) => this.getMatchScore(b) - this.getMatchScore(a));
+  });
+
+  readonly totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.sortedResults().length / this.pageSize)),
+  );
+
+  readonly pageResults = computed(() => {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.sortedResults().slice(start, start + this.pageSize);
+  });
+
+  readonly pageNumbers = computed(() =>
+    Array.from({ length: this.totalPages() }, (_, idx) => idx + 1).slice(0, 5),
+  );
 
   constructor() {
     this.loadProfiles();
@@ -60,24 +84,20 @@ export class ProfileList {
   loadFilterOptions(): void {
     this.masterDataSvc.getMultiple(['religion', 'caste']).subscribe({
       next: (data) => {
-        this.religionOptions = data['religion'] ?? [];
-        this.casteOptions = data['caste'] ?? [];
+        this.religionOptions.set(data['religion'] ?? []);
+        this.casteOptions.set(data['caste'] ?? []);
       },
-      error: () => {
-        // non-critical: filter dropdowns fall back to empty
-      },
+      error: () => {},
     });
   }
 
   loadProfiles(): void {
-    this.isLoading = true;
-    this.memberService.getProfiles(this.currentPage, this.pageSize)
-      .pipe(finalize(() => {
-        this.isLoading = false;
-      }))
-      .subscribe({
-        next: (response) => {
-          this.results = response.profiles.map((p) => ({
+    this.isLoading.set(true);
+    this.memberService.getProfiles(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.isLoading.set(false);
+        this.results.set(
+          response.profiles.map((p) => ({
             id: `${p.profileId}`,
             email: p.email,
             name: p.fullName,
@@ -87,17 +107,21 @@ export class ProfileList {
             bio: p.bio,
             password: '',
             createdAt: p.createdAt,
-          }));
-        },
-        error: (error) => {
-          console.error('Failed to load profiles:', error);
-          this.error = 'Failed to load profiles. Please try again.';
-        },
-      });
+          })),
+        );
+      },
+      error: (error) => {
+        this.isLoading.set(false);
+        console.error('Failed to load profiles:', error);
+        this.error.set('Failed to load profiles. Please try again.');
+      },
+    });
   }
 
   getProfilePhotoUrl(profile: MemberRecord): string {
-    const seed = encodeURIComponent((profile.email || profile.id || profile.name).toLowerCase());
+    const seed = encodeURIComponent(
+      (profile.email || profile.id || profile.name).toLowerCase(),
+    );
     return `https://i.pravatar.cc/180?u=${seed}`;
   }
 
@@ -105,34 +129,6 @@ export class ProfileList {
     const image = event.target as HTMLImageElement;
     image.onerror = null;
     image.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=efe4d2&color=8f4228&size=180`;
-  }
-
-  get sortedResults(): MemberRecord[] {
-    const items = [...this.results];
-    if (this.sortBy === 'age-asc') {
-      return items.sort((a, b) => (a.age ?? 99) - (b.age ?? 99));
-    }
-    if (this.sortBy === 'age-desc') {
-      return items.sort((a, b) => (b.age ?? 0) - (a.age ?? 0));
-    }
-    return items.sort((a, b) => this.getMatchScore(b) - this.getMatchScore(a));
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.sortedResults.length / this.pageSize));
-  }
-
-  get pageResults(): MemberRecord[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.sortedResults.slice(start, start + this.pageSize);
-  }
-
-  get pageNumbers(): number[] {
-    return Array.from({ length: this.totalPages }, (_, idx) => idx + 1).slice(0, 5);
-  }
-
-  goToPage(page: number): void {
-    this.currentPage = Math.min(this.totalPages, Math.max(1, page));
   }
 
   getMatchScore(profile: MemberRecord): number {
@@ -149,17 +145,23 @@ export class ProfileList {
   }
 
   getReligion(profile: MemberRecord, index: number): string {
-    if (this.religionOptions.length === 0) return '';
-    return this.religionOptions[(this.hashSeed(profile) + index) % this.religionOptions.length].label;
+    const opts = this.religionOptions();
+    if (opts.length === 0) return '';
+    return opts[(this.hashSeed(profile) + index) % opts.length].label;
   }
 
   getCaste(profile: MemberRecord, index: number): string {
-    if (this.casteOptions.length === 0) return '';
-    return this.casteOptions[(this.hashSeed(profile) + index) % this.casteOptions.length].label;
+    const opts = this.casteOptions();
+    if (opts.length === 0) return '';
+    return opts[(this.hashSeed(profile) + index) % opts.length].label;
   }
 
   openProfile(profile: MemberRecord): void {
     this.router.navigate(['/profiles', profile.id]);
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = Math.min(this.totalPages(), Math.max(1, page));
   }
 
   private hashSeed(profile: MemberRecord): number {
@@ -173,10 +175,10 @@ export class ProfileList {
   }
 
   search(form?: NgForm): void {
-    this.error = '';
+    this.error.set('');
 
     if (form && form.invalid) {
-      this.error = 'Use letters, spaces, dot or hyphen only in filters.';
+      this.error.set('Use letters, spaces, dot or hyphen only in filters.');
       return;
     }
 
@@ -193,31 +195,33 @@ export class ProfileList {
   }
 
   private performSearch(): void {
-    this.isLoading = true;
-    this.error = '';
+    this.isLoading.set(true);
+    this.error.set('');
 
-    this.memberService.searchProfiles({
-      name: this.filters.name,
-      location: this.filters.location,
-      occupation: this.filters.occupation,
-      ageMin: this.filters.ageMin,
-      ageMax: this.filters.ageMax,
-      religion: this.filters.religion || undefined,
-      caste: this.filters.caste || undefined,
-      education: this.filters.education || undefined,
-      maritalStatus: this.filters.maritalStatus || undefined,
-      pageNumber: this.currentPage,
-      pageSize: this.pageSize,
-    }).pipe(finalize(() => {
-      this.isLoading = false;
-    })).subscribe({
-      next: (response) => {
-        this.results = response;
-      },
-      error: (error) => {
-        console.error('Search failed:', error);
-        this.error = 'Search failed. Please try again.';
-      },
-    });
+    this.memberService
+      .searchProfiles({
+        name: this.filters.name,
+        location: this.filters.location,
+        occupation: this.filters.occupation,
+        ageMin: this.filters.ageMin,
+        ageMax: this.filters.ageMax,
+        religion: this.filters.religion || undefined,
+        caste: this.filters.caste || undefined,
+        education: this.filters.education || undefined,
+        maritalStatus: this.filters.maritalStatus || undefined,
+        pageNumber: this.currentPage,
+        pageSize: this.pageSize,
+      })
+      .subscribe({
+        next: (response) => {
+          this.isLoading.set(false);
+          this.results.set(response);
+        },
+        error: (error) => {
+          this.isLoading.set(false);
+          console.error('Search failed:', error);
+          this.error.set('Search failed. Please try again.');
+        },
+      });
   }
 }

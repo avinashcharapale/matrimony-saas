@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/NSwag/NSwag/master/src/NSwag.Core/JsonSchemas/NJsonSchema.json",
+  "runtime": "Net100",
+  "command": "openapi2tsclient",
+  "input": "http://localhost:8000/swagger/v1/swagger.json",
+  "output": "libs/generated/src/clients.ts",
+  "typescriptGeneratorSettings": {
+    "template": "Angular",
+    "useBaseUrl": false,
+    "injectHttpClient": true,
+    "generateResponseClasses": false,
+    "useSingletonServices": true,
+    "exportTypes": true,
+    "typeStyle": "Interface",
+    "classStyle": "Class",
+    "operationNameGenerator": "OpenApi",
+    "generateDefaultValues": true,
+    "handleReferences": false,
+    "inlineNamedAnyTypes": false,
+    "inlineNamedDictionaries": false,
+    "inlineNamedEnums": false,
+    "markOptionalPropertiesAsNullable": false,
+    "useTranspiled": false
+  }
+}

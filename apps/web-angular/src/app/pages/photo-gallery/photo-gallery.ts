@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@angular/core';
 import { MemberRecord } from '../../services/member.service';
 import { MemberService } from '../../services/member.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-photo-gallery',
   standalone: true,
   imports: [CommonModule],
@@ -16,19 +16,19 @@ import { MemberService } from '../../services/member.service';
       </header>
 
       <section class="gallery-grid">
-        @for (profile of profiles; track profile.id) {
-        <button type="button" class="tile" (click)="selectedPhoto = getPhoto(profile.email)">
+        @for (profile of profiles(); track profile.id) {
+        <button type="button" class="tile" (click)="selectedPhoto.set(getPhoto(profile.email))">
           <img [src]="getPhoto(profile.email)" [alt]="profile.name" />
           <span>{{ profile.name }}</span>
         </button>
         }
       </section>
 
-      @if (selectedPhoto) {
-      <div class="overlay" (click)="selectedPhoto = ''">
+      @if (selectedPhoto()) {
+      <div class="overlay" (click)="selectedPhoto.set('')">
         <div class="modal" (click)="$event.stopPropagation()">
-          <button type="button" class="close" (click)="selectedPhoto = ''">Close</button>
-          <img [src]="selectedPhoto" alt="Selected profile photo" />
+          <button type="button" class="close" (click)="selectedPhoto.set('')">Close</button>
+          <img [src]="selectedPhoto()" alt="Selected profile photo" />
         </div>
       </div>
       }
@@ -52,14 +52,14 @@ import { MemberService } from '../../services/member.service';
   ],
 })
 export class PhotoGallery implements OnInit {
-  selectedPhoto = '';
+  readonly selectedPhoto = signal('');
 
   private readonly memberService = inject(MemberService);
-  profiles: MemberRecord[] = [];
+  readonly profiles = signal<MemberRecord[]>([]);
 
   ngOnInit(): void {
     this.memberService.searchProfiles({ name: '', location: '', occupation: '' }).subscribe((profiles) => {
-      this.profiles = profiles.slice(0, 12);
+      this.profiles.set(profiles.slice(0, 12));
     });
   }
 

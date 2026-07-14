@@ -16,14 +16,22 @@
     "baseUrl": ".",
     "paths": {
       "@org/models": ["libs/shared/models/src/index.ts"],
-      "@org/shared-services": ["libs/shared-services/src/index.ts"],
-      "@org/matrimony-models": ["libs/matrimony-models/src/index.ts"],
-      "@org/api/identity": ["src/app/api/identity/index.ts"],
-      "@org/api/tenant": ["src/app/api/tenant/index.ts"],
-      "@org/api/profile": ["src/app/api/profile/index.ts"],
-      "@org/api/subscription": ["src/app/api/subscription/index.ts"],
-      "@org/api/match": ["src/app/api/match/index.ts"],
-      "@org/api/chat": ["src/app/api/chat/index.ts"]
+      "@org/data-access-tenant": ["libs/data-access/tenant/src/index.ts"],
+      "@org/data-access-auth": ["libs/data-access/auth/src/index.ts"],
+      "@org/data-access-profile": ["libs/data-access/profile/src/index.ts"],
+      "@org/data-access-masterdata": [
+        "libs/data-access/masterdata/src/index.ts"
+      ],
+      "@org/data-access-chat": ["libs/data-access/chat/src/index.ts"],
+      "@org/data-access-subscription": [
+        "libs/data-access/subscription/src/index.ts"
+      ],
+      "@org/data-access-geo": ["libs/data-access/geo/src/index.ts"],
+      "@org/core": ["libs/core/src/index.ts"],
+      "@org/core-auth": ["libs/core/auth/src/index.ts"],
+      "@org/core-tenant": ["libs/core/tenant/src/index.ts"],
+      "@org/generated": ["libs/generated/src/index.ts"],
+      "@org/shared-utils": ["libs/shared/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

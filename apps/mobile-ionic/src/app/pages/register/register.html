@@ -303,22 +303,22 @@
         <label class="upload-field">
           <span>Primary Photo</span>
           <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPrimaryPhotoSelected($event)" />
-          @if (primaryPhotoName) {
-          <small>{{ primaryPhotoName }}</small>
+          @if (primaryPhotoName()) {
+          <small>{{ primaryPhotoName() }}</small>
           }
         </label>
         <label class="upload-field">
           <span>Secondary Photo</span>
           <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onSecondaryPhotoSelected($event)" />
-          @if (secondaryPhotoName) {
-          <small>{{ secondaryPhotoName }}</small>
+          @if (secondaryPhotoName()) {
+          <small>{{ secondaryPhotoName() }}</small>
           }
         </label>
       </section>
 
       <ion-button expand="block" (click)="submit()">Register</ion-button>
-      @if (message) {
-      <p class="msg" [class.error]="isError">{{ message }}</p>
+      @if (message()) {
+      <p class="msg" [class.error]="isError()">{{ message() }}</p>
       }
     </div>
   </ion-content>

@@ -1,0 +1,98 @@
+<section>
+  <h2>Expectation</h2>
+  <div class="field-grid" [formGroup]="partner">
+    <div class="form-field">
+      <label>Preferred Cities</label>
+      <input type="text" [formControl]="preferredCitiesCtrl" maxlength="120" />
+    </div>
+    <div class="form-field">
+      <label>Mangal</label>
+      <select formControlName="expectedManglik">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Expected Caste</label>
+      <select formControlName="expectedCaste">
+        <option value="Maratha">Maratha</option>
+        <option value="Kunbi Maratha">Kunbi Maratha</option>
+        <option value="Deshmukh Maratha">Deshmukh Maratha</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Max Age Difference</label>
+      <select formControlName="maxAgeDifference">
+        @for (n of [0,1,2,3,4,5]; track n) { <option [ngValue]="n">{{ n }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Expected Height</label>
+      <div class="height-group">
+        <select formControlName="expectedHeightFt">
+          @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }}</option> }
+        </select>
+        <select formControlName="expectedHeightIn">
+          @for (inch of [0,1,2,3,4,5,6,7,8,9,10,11]; track inch) { <option [ngValue]="inch">{{ inch }}</option> }
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Expected Education</label>
+      <textarea formControlName="expectedEducation" rows="3" maxlength="250"></textarea>
+    </div>
+    <div class="form-field">
+      <label>Expected Occupation & Income per Annum</label>
+      <textarea formControlName="expectedOccupationIncome" rows="3" maxlength="250"></textarea>
+    </div>
+    <div class="form-field">
+      <label>Divorcee</label>
+      <div class="radio-group">
+        <label><input type="radio" name="divorceeRadio" [checked]="partner.get('divorcee')?.value === true" (change)="partner.get('divorcee')!.setValue(true)" /> Yes</label>
+        <label><input type="radio" name="divorceeRadio" [checked]="partner.get('divorcee')?.value === false" (change)="partner.get('divorcee')!.setValue(false)" /> No</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="verification-section" [formGroup]="verification">
+    <div class="verification-code">
+      <img [src]="verification.get('imageDataUrl')?.value" alt="Captcha verification" class="captcha-image" />
+    </div>
+    <button type="button" class="btn-secondary captcha-refresh-btn" (click)="onRefreshCaptcha()">Refresh Captcha</button>
+    <p>Please Enter Above Verification Code</p>
+    <div class="form-field">
+      <input type="text" formControlName="input" placeholder="Enter verification code" maxlength="6" autocomplete="off" />
+    </div>
+    <p class="verification-hint">* Please enter verification code then click submit.</p>
+  </div>
+
+  <div class="profile-photos-section" [formGroup]="account">
+    <h3>Account Credentials</h3>
+    <div class="field-grid">
+      <div class="form-field">
+        <label>Password</label>
+        <input type="password" formControlName="password" minlength="8" />
+      </div>
+      <div class="form-field">
+        <label>Confirm Password</label>
+        <input type="password" formControlName="confirmPassword" minlength="8" />
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-photos-section" [formGroup]="photos">
+    <h3>Profile Photos</h3>
+    <p class="photo-hint">* Kindly bring cropping lines on photo at proper position and then click on submit.</p>
+    <div class="photo-upload">
+      <p>1) Upload your first profile picture (Close-up preferred)</p>
+      <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPhoto($event)" />
+      @if (photos.get('photo1Name')?.value) { <span>{{ photos.get('photo1Name')?.value }}</span> }
+    </div>
+    <div class="photo-upload">
+      <p>2) Upload your second profile picture, If interested</p>
+      <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPhoto2($event)" />
+      @if (photos.get('photo2Name')?.value) { <span>{{ photos.get('photo2Name')?.value }}</span> }
+    </div>
+    <p class="photo-note">You can also submit your photos after getting registration number through photo edit option.</p>
+  </div>
+</section>

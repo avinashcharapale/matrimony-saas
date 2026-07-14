@@ -118,7 +118,7 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     logoText: '24Petwatch',
     logoEmoji: '🐾',
     tagline: 'Pet Care Platform',
-    heroTitle: 'Your Pet’s Trusted Care Partner',
+    heroTitle: 'Your Pet\'s Trusted Care Partner',
     heroSubtitle: 'Protect your pet with fast claims and trusted coverage',
     heroDescription: 'Bring your pets into a comprehensive care network with easy enrollment and on-demand support.',
     heroImage: 'https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=1600&q=80',

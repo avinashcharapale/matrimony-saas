@@ -1,0 +1,102 @@
+<section>
+  <h2>Family Details</h2>
+  <div class="field-grid" [formGroup]="family">
+    <div class="form-field">
+      <label>Father Status</label>
+      <select formControlName="fatherStatus">
+        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">No</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Mother Status</label>
+      <select formControlName="motherStatus">
+        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">No</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Brothers</label>
+      <select formControlName="brothers">
+        @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Married Brothers</label>
+      <select formControlName="marriedBrothers">
+        @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Sisters</label>
+      <select formControlName="sisters">
+        @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Married Sisters</label>
+      <select formControlName="marriedSisters">
+        @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Parents Full Name</label>
+      <input type="text" formControlName="parentsFullName" maxlength="100" />
+    </div>
+    <div class="form-field">
+      <label>Parents Occupation</label>
+      <input type="text" formControlName="parentsOccupation" maxlength="100" />
+    </div>
+    <div class="form-field">
+      <label>Parents Resident City</label>
+      <input type="text" formControlName="parentsResidentCity" maxlength="60" />
+    </div>
+    <div class="form-field">
+      <label>Family Wealth</label>
+      <input type="text" formControlName="familyWealth" maxlength="60" />
+    </div>
+    <div class="form-field">
+      <label>Mama Surname &amp; Place</label>
+      <input type="text" formControlName="mamaSurnamePlace" maxlength="100" />
+    </div>
+    <div class="form-field">
+      <label>Native State</label>
+      <select [value]="nativeStateId ?? ''" (change)="onNativeStateChange($event)">
+        <option value="">Select State</option>
+        @for (s of nativeStates; track s.stateId) { <option [value]="s.stateId">{{ s.name }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Native District</label>
+      <select [value]="nativeDistrictId ?? ''" (change)="onNativeDistrictChange($event)" [disabled]="nativeDistricts.length === 0">
+        <option value="">Select District</option>
+        @for (d of nativeDistricts; track d.districtId) { <option [value]="d.districtId!">{{ d.name }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Native Taluka</label>
+      <select formControlName="nativeTaluka" [disabled]="nativeTalukas.length === 0">
+        <option value="">Select Taluka</option>
+        @for (t of nativeTalukas; track t.talukaId) { <option [value]="t.name!">{{ t.name }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Intercast Marriage</label>
+      <select formControlName="intercastMarriage">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>If Yes, Relation</label>
+      <input type="text" formControlName="intercastRelation" maxlength="60" />
+    </div>
+  </div>
+
+  <div class="field-grid">
+    <div class="form-field">
+      <label>Relatives Surnames</label>
+      <input type="text" [formControl]="relativesSurnamesCtrl" maxlength="200" />
+    </div>
+  </div>
+</section>

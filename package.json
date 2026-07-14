@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "generate:clients": "nswag run nswag.gateway.json",
+    "generate:clients:all": "pwsh -ExecutionPolicy Bypass -File scripts/generate-clients.ps1 -All",
+    "generate:clients:service": "pwsh -ExecutionPolicy Bypass -File scripts/generate-clients.ps1 -Service",
     "cap:init": "npx cap init matrimony-saas com.example.matrimony-saas --web-dir=dist/apps/mobile-ionic",
     "cap:sync": "npx cap sync",
     "cap:open:android": "npx cap open android",
@@ -28,6 +31,7 @@
     "@capacitor/ios": "^8.3.0",
     "@ionic/angular": "^8.8.3",
     "@ionic/core": "^8.8.3",
+    "@ngrx/signals": "^21.1.1",
     "@types/jsonwebtoken": "^9.0.10",
     "express": "^4.21.2",
     "ionicons": "^8.0.13",

@@ -9,21 +9,21 @@
   </ion-header>
 
   <ion-content>
-    @if (profile) {
+    @if (profile()) {
     <div class="profile-detail-container">
       <!-- Photo Section -->
       <div class="photo-section">
         <img 
-          [src]="currentPhotoIndex === 0 ? getProfilePhoto() : getProfilePhoto(true)" 
-          [alt]="profile.name" 
+          [src]="currentPhotoIndex() === 0 ? getProfilePhoto() : getProfilePhoto(true)" 
+          [alt]="profile()!.name" 
           class="profile-photo"
           (click)="openGallery()"
           title="Click to view gallery"
         />
-        @if ((profile.registrationDetails?.photos?.length || 0) > 1) {
+        @if ((profile()!.registrationDetails?.photos?.length || 0) > 1) {
         <div class="photo-nav">
           <button class="photo-btn prev" (click)="prevPhoto()">‹</button>
-          <span class="photo-indicator">{{ currentPhotoIndex + 1 }}/2</span>
+          <span class="photo-indicator">{{ currentPhotoIndex() + 1 }}/2</span>
           <button class="photo-btn next" (click)="nextPhoto()">›</button>
         </div>
         }
@@ -31,14 +31,14 @@
 
       <!-- Member Info Card -->
       <div class="member-card">
-        <h1>{{ profile.name }}</h1>
+        <h1>{{ profile()!.name }}</h1>
         <p class="member-id">{{ getMemberId() }}</p>
-        <p class="member-meta">{{ profile.age }} years • {{ profile.location }}</p>
+        <p class="member-meta">{{ profile()!.age }} years • {{ profile()!.location }}</p>
         <button class="connect-btn">Connect Now</button>
       </div>
 
       <!-- Sections -->
-      @for (section of sections; track section.title) {
+      @for (section of sections(); track section.title) {
       <div class="detail-section">
         <h2>{{ section.title }}</h2>
         <div class="fields-list">
@@ -54,31 +54,31 @@
     </div>
 
     <!-- Gallery Modal -->
-    @if (isGalleryOpen) {
+    @if (isGalleryOpen()) {
     <div class="mobile-gallery-overlay" (click)="closeGallery()">
       <div class="mobile-gallery-modal" (click)="$event.stopPropagation()">
         <button class="gallery-close-btn" (click)="closeGallery()">✕</button>
         
         <div class="mobile-gallery-container">
-          <button class="mobile-gallery-btn prev" (click)="prevGalleryPhoto()" [disabled]="galleryPhotos.length <= 1">‹</button>
+          <button class="mobile-gallery-btn prev" (click)="prevGalleryPhoto()" [disabled]="galleryPhotos().length <= 1">‹</button>
           
           <img 
-            [src]="galleryPhotos[currentGalleryIndex]" 
-            [alt]="profile.name + ' - photo ' + (currentGalleryIndex + 1)"
+            [src]="galleryPhotos()[currentGalleryIndex()]" 
+            [alt]="profile()!.name + ' - photo ' + (currentGalleryIndex() + 1)"
             class="mobile-gallery-image"
           />
           
-          <button class="mobile-gallery-btn next" (click)="nextGalleryPhoto()" [disabled]="galleryPhotos.length <= 1">›</button>
+          <button class="mobile-gallery-btn next" (click)="nextGalleryPhoto()" [disabled]="galleryPhotos().length <= 1">›</button>
         </div>
 
         <div class="mobile-gallery-footer">
-          <p class="gallery-counter">{{ currentGalleryIndex + 1 }} / {{ galleryPhotos.length }}</p>
+          <p class="gallery-counter">{{ currentGalleryIndex() + 1 }} / {{ galleryPhotos().length }}</p>
           <div class="gallery-dots">
-            @for (photo of galleryPhotos; track $index; let i = $index) {
+            @for (photo of galleryPhotos(); track $index; let i = $index) {
             <button 
               class="dot" 
-              [class.active]="i === currentGalleryIndex"
-              (click)="currentGalleryIndex = $index"
+              [class.active]="i === currentGalleryIndex()"
+              (click)="goToGalleryPhoto($index)"
             ></button>
             }
           </div>

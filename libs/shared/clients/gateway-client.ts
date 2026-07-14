@@ -7,7 +7,7 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-export class GatewayServiceClient {
+export class GatewayClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -24,7 +24,7 @@ export class GatewayServiceClient {
      * @return OK
      */
     resolve(host: string | undefined, path: string | undefined, query: string | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/gateway/tenant/resolve?";
+        let url_ = this.baseUrl + "/api/gateway/resolve?";
         if (host === null)
             throw new globalThis.Error("The parameter 'host' cannot be null.");
         else if (host !== undefined)

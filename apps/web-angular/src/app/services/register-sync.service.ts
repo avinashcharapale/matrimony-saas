@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
 import { catchError, concatMap, map, reduce } from 'rxjs/operators';
-import { ApiService, ProfileUpsertRequest } from './api.service';
+import { ApiService } from './api.service';
 import { TenantService } from './tenant.service';
+import { CreateProfileDto } from '@org/generated';
 
 interface PendingProfileSyncItem {
   id: string;
-  payload: ProfileUpsertRequest;
+  payload: CreateProfileDto;
   attempts: number;
   createdAt: string;
   updatedAt: string;
@@ -23,14 +24,14 @@ export class RegisterSyncService {
   private readonly apiService = inject(ApiService);
 
   private get tenantId(): string {
-    return this.tenantService.tenant.id || 'default';
+    return (this.tenantService.tenantHeaderId ?? this.tenantService.tenant.id ?? 'default') as string;
   }
 
   private get profileSyncQueueKey(): string {
     return `${PROFILE_SYNC_QUEUE_KEY_PREFIX}_${this.tenantId}`;
   }
 
-  enqueuePendingProfileSync(payload: ProfileUpsertRequest, errorMessage: string): Observable<void> {
+  enqueuePendingProfileSync(payload: CreateProfileDto, errorMessage: string): Observable<void> {
     const queue = this.getPendingProfileSyncQueue();
     const signature = this.getProfilePayloadSignature(payload);
     const now = new Date().toISOString();
@@ -119,8 +120,11 @@ export class RegisterSyncService {
     localStorage.setItem(this.profileSyncQueueKey, JSON.stringify(queue));
   }
 
-  private getProfilePayloadSignature(payload: ProfileUpsertRequest): string {
-    const contactEmail = (payload.contact?.['contactEmail'] ?? '').toString().trim().toLowerCase();
+  private getProfilePayloadSignature(payload: CreateProfileDto): string {
+    const contactEmail = (payload.contactDetails?.contactEmail ?? '')
+      .toString()
+      .trim()
+      .toLowerCase();
     const fullName = (payload.fullName ?? '').trim().toLowerCase();
     return `${contactEmail}::${fullName}`;
   }

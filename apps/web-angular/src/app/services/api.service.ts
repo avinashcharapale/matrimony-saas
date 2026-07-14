@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { IdentityClient, ProfileClient, CreateProfileDto } from '@org/generated';
 
 export interface LoginRequest {
   email: string;
@@ -34,54 +35,36 @@ export interface RegisterResponse {
   expiresAt: string;
 }
 
-export interface ProfileUpsertRequest {
-  fullName: string;
-  age?: number;
-  bio?: string;
-  locationText?: string;
-  occupationText?: string;
-  personal?: Record<string, unknown>;
-  horoscope?: Record<string, unknown>;
-  professional?: Record<string, unknown>;
-  contact?: Record<string, unknown>;
-  family?: Record<string, unknown>;
-  expectations?: Record<string, unknown>;
-  verification?: Record<string, unknown>;
-  photos?: Array<Record<string, unknown>>;
-}
-
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api';
-
-  /**
-   * Authentication Endpoints
-   */
+  private readonly identity = inject(IdentityClient);
+  private readonly profileClient = inject(ProfileClient);
 
   login(request: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, request);
+    return this.identity.login(request);
   }
 
   register(request: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.apiUrl}/auth/register`, request);
+    return this.identity.register(request);
   }
 
   logout(refreshToken: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/auth/logout`, { refreshToken });
+    return this.identity.logout({ refreshToken }).pipe(
+      map(() => ({ message: 'Logged out.' }))
+    );
   }
 
   refreshToken(refreshToken: string): Observable<RefreshResponse> {
-    return this.http.post<RefreshResponse>(`${this.apiUrl}/auth/refresh`, { refreshToken });
+    return this.identity.refresh({ refreshToken });
   }
 
-  getCurrentUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/auth/me`);
+  getCurrentUser(): Observable<unknown> {
+    return this.identity.getCurrentUser();
   }
 
-  createOrUpdateProfile(profile: ProfileUpsertRequest): Observable<any> {
-    return this.http.post<any>('/profile/UserProfiles', profile);
+  createOrUpdateProfile(profile: CreateProfileDto, photos: File[] = []): Observable<void> {
+    return this.profileClient.create(profile, photos);
   }
 }

@@ -7,7 +7,7 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-export class ProfileServiceClient {
+export class MasterDataClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -20,7 +20,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    genders(): Promise<MasterDataOptionDto[]> {
+    getGenders(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/genders";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -32,11 +32,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGenders(_response);
+            return this.processGetGenders(_response);
         });
     }
 
-    protected processGenders(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetGenders(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -64,7 +64,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    religions(): Promise<MasterDataOptionDto[]> {
+    getReligions(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/religions";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -76,11 +76,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processReligions(_response);
+            return this.processGetReligions(_response);
         });
     }
 
-    protected processReligions(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetReligions(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -109,7 +109,7 @@ export class ProfileServiceClient {
      * @param religionId (optional) 
      * @return OK
      */
-    castes(religionId: number | undefined): Promise<MasterDataOptionDto[]> {
+    getCastes(religionId: number | undefined): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/castes?";
         if (religionId === null)
             throw new globalThis.Error("The parameter 'religionId' cannot be null.");
@@ -125,11 +125,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCastes(_response);
+            return this.processGetCastes(_response);
         });
     }
 
-    protected processCastes(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetCastes(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -158,7 +158,7 @@ export class ProfileServiceClient {
      * @param casteId (optional) 
      * @return OK
      */
-    subCastes(casteId: number | undefined): Promise<MasterDataOptionDto[]> {
+    getSubCastes(casteId: number | undefined): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/sub-castes?";
         if (casteId === null)
             throw new globalThis.Error("The parameter 'casteId' cannot be null.");
@@ -174,11 +174,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSubCastes(_response);
+            return this.processGetSubCastes(_response);
         });
     }
 
-    protected processSubCastes(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetSubCastes(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -206,7 +206,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    maritalStatuses(): Promise<MasterDataOptionDto[]> {
+    getMaritalStatuses(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/marital-statuses";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -218,11 +218,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processMaritalStatuses(_response);
+            return this.processGetMaritalStatuses(_response);
         });
     }
 
-    protected processMaritalStatuses(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetMaritalStatuses(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -250,7 +250,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    bloodGroups(): Promise<MasterDataOptionDto[]> {
+    getBloodGroups(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/blood-groups";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -262,11 +262,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processBloodGroups(_response);
+            return this.processGetBloodGroups(_response);
         });
     }
 
-    protected processBloodGroups(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetBloodGroups(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -294,7 +294,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    complexions(): Promise<MasterDataOptionDto[]> {
+    getComplexions(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/complexions";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -306,11 +306,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processComplexions(_response);
+            return this.processGetComplexions(_response);
         });
     }
 
-    protected processComplexions(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetComplexions(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -338,7 +338,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    diets(): Promise<MasterDataOptionDto[]> {
+    getDiets(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/diets";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -350,11 +350,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDiets(_response);
+            return this.processGetDiets(_response);
         });
     }
 
-    protected processDiets(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetDiets(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -382,7 +382,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    personalities(): Promise<MasterDataOptionDto[]> {
+    getPersonalities(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/personalities";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -394,11 +394,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPersonalities(_response);
+            return this.processGetPersonalities(_response);
         });
     }
 
-    protected processPersonalities(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetPersonalities(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -426,7 +426,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    rashis(): Promise<MasterDataOptionDto[]> {
+    getRashis(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/rashis";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -438,11 +438,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processRashis(_response);
+            return this.processGetRashis(_response);
         });
     }
 
-    protected processRashis(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetRashis(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -470,7 +470,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    nakshatras(): Promise<MasterDataOptionDto[]> {
+    getNakshatras(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/nakshatras";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -482,11 +482,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processNakshatras(_response);
+            return this.processGetNakshatras(_response);
         });
     }
 
-    protected processNakshatras(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetNakshatras(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -514,7 +514,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    charans(): Promise<MasterDataOptionDto[]> {
+    getCharans(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/charans";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -526,11 +526,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCharans(_response);
+            return this.processGetCharans(_response);
         });
     }
 
-    protected processCharans(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetCharans(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -558,7 +558,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    nadis(): Promise<MasterDataOptionDto[]> {
+    getNadis(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/nadis";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -570,11 +570,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processNadis(_response);
+            return this.processGetNadis(_response);
         });
     }
 
-    protected processNadis(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetNadis(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -602,7 +602,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    gans(): Promise<MasterDataOptionDto[]> {
+    getGans(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/gans";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -614,11 +614,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGans(_response);
+            return this.processGetGans(_response);
         });
     }
 
-    protected processGans(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetGans(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -646,7 +646,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    educations(): Promise<MasterDataOptionDto[]> {
+    getEducations(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/educations";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -658,11 +658,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processEducations(_response);
+            return this.processGetEducations(_response);
         });
     }
 
-    protected processEducations(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetEducations(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -690,7 +690,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    educationAreas(): Promise<MasterDataOptionDto[]> {
+    getEducationAreas(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/education-areas";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -702,11 +702,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processEducationAreas(_response);
+            return this.processGetEducationAreas(_response);
         });
     }
 
-    protected processEducationAreas(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetEducationAreas(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -734,7 +734,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    occupations(): Promise<MasterDataOptionDto[]> {
+    getOccupations(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/occupations";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -746,11 +746,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processOccupations(_response);
+            return this.processGetOccupations(_response);
         });
     }
 
-    protected processOccupations(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetOccupations(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -778,7 +778,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    incomePeriods(): Promise<MasterDataOptionDto[]> {
+    getIncomePeriods(): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/income-periods";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -790,11 +790,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processIncomePeriods(_response);
+            return this.processGetIncomePeriods(_response);
         });
     }
 
-    protected processIncomePeriods(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetIncomePeriods(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -820,10 +820,15 @@ export class ProfileServiceClient {
     }
 
     /**
+     * @param countryId (optional) 
      * @return OK
      */
-    states(): Promise<MasterDataOptionDto[]> {
-        let url_ = this.baseUrl + "/api/master-data/states";
+    getStates(countryId: number | undefined): Promise<MasterDataOptionDto[]> {
+        let url_ = this.baseUrl + "/api/master-data/states?";
+        if (countryId === null)
+            throw new globalThis.Error("The parameter 'countryId' cannot be null.");
+        else if (countryId !== undefined)
+            url_ += "countryId=" + encodeURIComponent("" + countryId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -834,11 +839,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processStates(_response);
+            return this.processGetStates(_response);
         });
     }
 
-    protected processStates(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetStates(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -867,7 +872,7 @@ export class ProfileServiceClient {
      * @param stateId (optional) 
      * @return OK
      */
-    districts(stateId: number | undefined): Promise<MasterDataOptionDto[]> {
+    getDistricts(stateId: number | undefined): Promise<MasterDataOptionDto[]> {
         let url_ = this.baseUrl + "/api/master-data/districts?";
         if (stateId === null)
             throw new globalThis.Error("The parameter 'stateId' cannot be null.");
@@ -883,11 +888,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDistricts(_response);
+            return this.processGetDistricts(_response);
         });
     }
 
-    protected processDistricts(response: Response): Promise<MasterDataOptionDto[]> {
+    protected processGetDistricts(response: Response): Promise<MasterDataOptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -913,18 +918,78 @@ export class ProfileServiceClient {
     }
 
     /**
+     * @param districtId (optional) 
+     * @return OK
+     */
+    getTalukas(districtId: number | undefined): Promise<MasterDataOptionDto[]> {
+        let url_ = this.baseUrl + "/api/master-data/talukas?";
+        if (districtId === null)
+            throw new globalThis.Error("The parameter 'districtId' cannot be null.");
+        else if (districtId !== undefined)
+            url_ += "districtId=" + encodeURIComponent("" + districtId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetTalukas(_response);
+        });
+    }
+
+    protected processGetTalukas(response: Response): Promise<MasterDataOptionDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(MasterDataOptionDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<MasterDataOptionDto[]>(null as any);
+    }
+}
+
+export class UserProfilesClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
      * @param tenantId (optional) 
-     * @param gender (optional) 
+     * @param genderId (optional) 
      * @param ageFrom (optional) 
      * @param ageTo (optional) 
-     * @param religion (optional) 
-     * @param caste (optional) 
-     * @param maritalStatus (optional) 
+     * @param religionId (optional) 
+     * @param casteId (optional) 
+     * @param maritalStatusId (optional) 
      * @param city (optional) 
-     * @param state (optional) 
-     * @param country (optional) 
-     * @param heightFrom (optional) 
-     * @param heightTo (optional) 
+     * @param stateId (optional) 
+     * @param countryId (optional) 
+     * @param heightFromFt (optional) 
+     * @param heightToFt (optional) 
      * @param annualIncomeFrom (optional) 
      * @param annualIncomeTo (optional) 
      * @param isVerified (optional) 
@@ -935,16 +1000,16 @@ export class ProfileServiceClient {
      * @param sortDescending (optional) 
      * @return OK
      */
-    search(tenantId: number | undefined, gender: string | undefined, ageFrom: number | undefined, ageTo: number | undefined, religion: string | undefined, caste: string | undefined, maritalStatus: string | undefined, city: string | undefined, state: string | undefined, country: string | undefined, heightFrom: number | undefined, heightTo: number | undefined, annualIncomeFrom: number | undefined, annualIncomeTo: number | undefined, isVerified: boolean | undefined, pageNumber: number | undefined, pageSize: number | undefined, searchTerm: string | undefined, sortBy: string | undefined, sortDescending: boolean | undefined): Promise<PublicProfileDtoPagedResult> {
+    searchPublic(tenantId: number | undefined, genderId: number | undefined, ageFrom: number | undefined, ageTo: number | undefined, religionId: number | undefined, casteId: number | undefined, maritalStatusId: number | undefined, city: string | undefined, stateId: number | undefined, countryId: number | undefined, heightFromFt: number | undefined, heightToFt: number | undefined, annualIncomeFrom: number | undefined, annualIncomeTo: number | undefined, isVerified: boolean | undefined, pageNumber: number | undefined, pageSize: number | undefined, searchTerm: string | undefined, sortBy: string | undefined, sortDescending: boolean | undefined): Promise<ProfileListItemDtoPagedResult> {
         let url_ = this.baseUrl + "/api/UserProfiles/public/search?";
         if (tenantId === null)
             throw new globalThis.Error("The parameter 'tenantId' cannot be null.");
         else if (tenantId !== undefined)
             url_ += "TenantId=" + encodeURIComponent("" + tenantId) + "&";
-        if (gender === null)
-            throw new globalThis.Error("The parameter 'gender' cannot be null.");
-        else if (gender !== undefined)
-            url_ += "Gender=" + encodeURIComponent("" + gender) + "&";
+        if (genderId === null)
+            throw new globalThis.Error("The parameter 'genderId' cannot be null.");
+        else if (genderId !== undefined)
+            url_ += "GenderId=" + encodeURIComponent("" + genderId) + "&";
         if (ageFrom === null)
             throw new globalThis.Error("The parameter 'ageFrom' cannot be null.");
         else if (ageFrom !== undefined)
@@ -953,38 +1018,38 @@ export class ProfileServiceClient {
             throw new globalThis.Error("The parameter 'ageTo' cannot be null.");
         else if (ageTo !== undefined)
             url_ += "AgeTo=" + encodeURIComponent("" + ageTo) + "&";
-        if (religion === null)
-            throw new globalThis.Error("The parameter 'religion' cannot be null.");
-        else if (religion !== undefined)
-            url_ += "Religion=" + encodeURIComponent("" + religion) + "&";
-        if (caste === null)
-            throw new globalThis.Error("The parameter 'caste' cannot be null.");
-        else if (caste !== undefined)
-            url_ += "Caste=" + encodeURIComponent("" + caste) + "&";
-        if (maritalStatus === null)
-            throw new globalThis.Error("The parameter 'maritalStatus' cannot be null.");
-        else if (maritalStatus !== undefined)
-            url_ += "MaritalStatus=" + encodeURIComponent("" + maritalStatus) + "&";
+        if (religionId === null)
+            throw new globalThis.Error("The parameter 'religionId' cannot be null.");
+        else if (religionId !== undefined)
+            url_ += "ReligionId=" + encodeURIComponent("" + religionId) + "&";
+        if (casteId === null)
+            throw new globalThis.Error("The parameter 'casteId' cannot be null.");
+        else if (casteId !== undefined)
+            url_ += "CasteId=" + encodeURIComponent("" + casteId) + "&";
+        if (maritalStatusId === null)
+            throw new globalThis.Error("The parameter 'maritalStatusId' cannot be null.");
+        else if (maritalStatusId !== undefined)
+            url_ += "MaritalStatusId=" + encodeURIComponent("" + maritalStatusId) + "&";
         if (city === null)
             throw new globalThis.Error("The parameter 'city' cannot be null.");
         else if (city !== undefined)
             url_ += "City=" + encodeURIComponent("" + city) + "&";
-        if (state === null)
-            throw new globalThis.Error("The parameter 'state' cannot be null.");
-        else if (state !== undefined)
-            url_ += "State=" + encodeURIComponent("" + state) + "&";
-        if (country === null)
-            throw new globalThis.Error("The parameter 'country' cannot be null.");
-        else if (country !== undefined)
-            url_ += "Country=" + encodeURIComponent("" + country) + "&";
-        if (heightFrom === null)
-            throw new globalThis.Error("The parameter 'heightFrom' cannot be null.");
-        else if (heightFrom !== undefined)
-            url_ += "HeightFrom=" + encodeURIComponent("" + heightFrom) + "&";
-        if (heightTo === null)
-            throw new globalThis.Error("The parameter 'heightTo' cannot be null.");
-        else if (heightTo !== undefined)
-            url_ += "HeightTo=" + encodeURIComponent("" + heightTo) + "&";
+        if (stateId === null)
+            throw new globalThis.Error("The parameter 'stateId' cannot be null.");
+        else if (stateId !== undefined)
+            url_ += "StateId=" + encodeURIComponent("" + stateId) + "&";
+        if (countryId === null)
+            throw new globalThis.Error("The parameter 'countryId' cannot be null.");
+        else if (countryId !== undefined)
+            url_ += "CountryId=" + encodeURIComponent("" + countryId) + "&";
+        if (heightFromFt === null)
+            throw new globalThis.Error("The parameter 'heightFromFt' cannot be null.");
+        else if (heightFromFt !== undefined)
+            url_ += "HeightFromFt=" + encodeURIComponent("" + heightFromFt) + "&";
+        if (heightToFt === null)
+            throw new globalThis.Error("The parameter 'heightToFt' cannot be null.");
+        else if (heightToFt !== undefined)
+            url_ += "HeightToFt=" + encodeURIComponent("" + heightToFt) + "&";
         if (annualIncomeFrom === null)
             throw new globalThis.Error("The parameter 'annualIncomeFrom' cannot be null.");
         else if (annualIncomeFrom !== undefined)
@@ -1027,18 +1092,18 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSearch(_response);
+            return this.processSearchPublic(_response);
         });
     }
 
-    protected processSearch(response: Response): Promise<PublicProfileDtoPagedResult> {
+    protected processSearchPublic(response: Response): Promise<ProfileListItemDtoPagedResult> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PublicProfileDtoPagedResult.fromJS(resultData200);
+            result200 = ProfileListItemDtoPagedResult.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -1046,13 +1111,13 @@ export class ProfileServiceClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<PublicProfileDtoPagedResult>(null as any);
+        return Promise.resolve<ProfileListItemDtoPagedResult>(null as any);
     }
 
     /**
      * @return OK
      */
-    public(id: number): Promise<PublicProfileDto> {
+    getPublicById(id: number): Promise<ProfileDetailDto> {
         let url_ = this.baseUrl + "/api/UserProfiles/public/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -1067,18 +1132,18 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPublic(_response);
+            return this.processGetPublicById(_response);
         });
     }
 
-    protected processPublic(response: Response): Promise<PublicProfileDto> {
+    protected processGetPublicById(response: Response): Promise<ProfileDetailDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PublicProfileDto.fromJS(resultData200);
+            result200 = ProfileDetailDto.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -1086,13 +1151,13 @@ export class ProfileServiceClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<PublicProfileDto>(null as any);
+        return Promise.resolve<ProfileDetailDto>(null as any);
     }
 
     /**
      * @return OK
      */
-    userProfilesGET(id: number): Promise<void> {
+    getById(id: number): Promise<ProfileDetailDto> {
         let url_ = this.baseUrl + "/api/UserProfiles/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -1102,34 +1167,38 @@ export class ProfileServiceClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUserProfilesGET(_response);
+            return this.processGetById(_response);
         });
     }
 
-    protected processUserProfilesGET(response: Response): Promise<void> {
+    protected processGetById(response: Response): Promise<ProfileDetailDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ProfileDetailDto.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ProfileDetailDto>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    userProfilesPUT(id: number, body: UserProfile | undefined): Promise<void> {
+    update(id: number, body: CreateProfileDto | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/UserProfiles/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -1147,11 +1216,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUserProfilesPUT(_response);
+            return this.processUpdate(_response);
         });
     }
 
-    protected processUserProfilesPUT(response: Response): Promise<void> {
+    protected processUpdate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1169,7 +1238,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    userProfilesDELETE(id: number): Promise<void> {
+    delete(id: number): Promise<void> {
         let url_ = this.baseUrl + "/api/UserProfiles/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -1183,11 +1252,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUserProfilesDELETE(_response);
+            return this.processDelete(_response);
         });
     }
 
-    protected processUserProfilesDELETE(response: Response): Promise<void> {
+    protected processDelete(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1205,7 +1274,7 @@ export class ProfileServiceClient {
     /**
      * @return OK
      */
-    userProfilesAll(): Promise<MemberProfileDto[]> {
+    getByTenant(): Promise<ProfileListItemDto[]> {
         let url_ = this.baseUrl + "/api/UserProfiles";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1217,11 +1286,11 @@ export class ProfileServiceClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUserProfilesAll(_response);
+            return this.processGetByTenant(_response);
         });
     }
 
-    protected processUserProfilesAll(response: Response): Promise<MemberProfileDto[]> {
+    protected processGetByTenant(response: Response): Promise<ProfileListItemDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1231,7 +1300,7 @@ export class ProfileServiceClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(MemberProfileDto.fromJS(item));
+                    result200!.push(ProfileListItemDto.fromJS(item));
             }
             else {
                 result200 = null as any;
@@ -1243,33 +1312,41 @@ export class ProfileServiceClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<MemberProfileDto[]>(null as any);
+        return Promise.resolve<ProfileListItemDto[]>(null as any);
     }
 
     /**
-     * @param body (optional) 
+     * @param profileJson (optional) 
+     * @param photos (optional) 
      * @return OK
      */
-    userProfilesPOST(body: UserProfile | undefined): Promise<void> {
+    create(profileJson: string | undefined, photos: FileParameter[] | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/UserProfiles";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
+        const content_ = new FormData();
+        if (profileJson === null || profileJson === undefined)
+            throw new globalThis.Error("The parameter 'profileJson' cannot be null.");
+        else
+            content_.append("ProfileJson", profileJson.toString());
+        if (photos === null || photos === undefined)
+            throw new globalThis.Error("The parameter 'photos' cannot be null.");
+        else
+            photos.forEach(item_ => content_.append("Photos", item_.data, item_.fileName ? item_.fileName : "Photos") );
 
         let options_: RequestInit = {
             body: content_,
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUserProfilesPOST(_response);
+            return this.processCreate(_response);
         });
     }
 
-    protected processUserProfilesPOST(response: Response): Promise<void> {
+    protected processCreate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1285,457 +1362,20 @@ export class ProfileServiceClient {
     }
 }
 
-export class ApiKey implements IApiKey {
-    apiKeyId?: number;
-    tenantId?: number;
-    userId?: number;
-    keyName?: string | undefined;
-    keyHash?: string | undefined;
-    keyPrefix?: string | undefined;
-    scope?: string | undefined;
-    isActive?: boolean;
-    lastUsedAt?: Date | undefined;
-    rateLimit?: number | undefined;
-    expiresAt?: Date | undefined;
-    createdAt?: Date;
-    revokedAt?: Date | undefined;
-    tenant?: Tenant;
-    user?: User;
-
-    constructor(data?: IApiKey) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.apiKeyId = _data["apiKeyId"];
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.keyName = _data["keyName"];
-            this.keyHash = _data["keyHash"];
-            this.keyPrefix = _data["keyPrefix"];
-            this.scope = _data["scope"];
-            this.isActive = _data["isActive"];
-            this.lastUsedAt = _data["lastUsedAt"] ? new Date(_data["lastUsedAt"].toString()) : undefined as any;
-            this.rateLimit = _data["rateLimit"];
-            this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.revokedAt = _data["revokedAt"] ? new Date(_data["revokedAt"].toString()) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ApiKey {
-        data = typeof data === 'object' ? data : {};
-        let result = new ApiKey();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["apiKeyId"] = this.apiKeyId;
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["keyName"] = this.keyName;
-        data["keyHash"] = this.keyHash;
-        data["keyPrefix"] = this.keyPrefix;
-        data["scope"] = this.scope;
-        data["isActive"] = this.isActive;
-        data["lastUsedAt"] = this.lastUsedAt ? this.lastUsedAt.toISOString() : undefined as any;
-        data["rateLimit"] = this.rateLimit;
-        data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["revokedAt"] = this.revokedAt ? this.revokedAt.toISOString() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IApiKey {
-    apiKeyId?: number;
-    tenantId?: number;
-    userId?: number;
-    keyName?: string | undefined;
-    keyHash?: string | undefined;
-    keyPrefix?: string | undefined;
-    scope?: string | undefined;
-    isActive?: boolean;
-    lastUsedAt?: Date | undefined;
-    rateLimit?: number | undefined;
-    expiresAt?: Date | undefined;
-    createdAt?: Date;
-    revokedAt?: Date | undefined;
-    tenant?: Tenant;
-    user?: User;
-}
-
-export class AuditLog implements IAuditLog {
-    auditId?: number;
-    tenantId?: number | undefined;
-    userId?: number | undefined;
-    action?: string | undefined;
-    details?: string | undefined;
-    createdAt?: Date;
-    tenant?: Tenant;
-    user?: User;
-
-    constructor(data?: IAuditLog) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.auditId = _data["auditId"];
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.action = _data["action"];
-            this.details = _data["details"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): AuditLog {
-        data = typeof data === 'object' ? data : {};
-        let result = new AuditLog();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["auditId"] = this.auditId;
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["action"] = this.action;
-        data["details"] = this.details;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IAuditLog {
-    auditId?: number;
-    tenantId?: number | undefined;
-    userId?: number | undefined;
-    action?: string | undefined;
-    details?: string | undefined;
-    createdAt?: Date;
-    tenant?: Tenant;
-    user?: User;
-}
-
-export class AuthenticationMethod implements IAuthenticationMethod {
-    authMethodId?: number;
-    userId?: number;
-    methodType?: string | undefined;
-    isEnabled?: boolean;
-    isPrimary?: boolean;
-    configuration?: string | undefined;
-    lastUsedAt?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    user?: User;
-
-    constructor(data?: IAuthenticationMethod) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.authMethodId = _data["authMethodId"];
-            this.userId = _data["userId"];
-            this.methodType = _data["methodType"];
-            this.isEnabled = _data["isEnabled"];
-            this.isPrimary = _data["isPrimary"];
-            this.configuration = _data["configuration"];
-            this.lastUsedAt = _data["lastUsedAt"] ? new Date(_data["lastUsedAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): AuthenticationMethod {
-        data = typeof data === 'object' ? data : {};
-        let result = new AuthenticationMethod();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["authMethodId"] = this.authMethodId;
-        data["userId"] = this.userId;
-        data["methodType"] = this.methodType;
-        data["isEnabled"] = this.isEnabled;
-        data["isPrimary"] = this.isPrimary;
-        data["configuration"] = this.configuration;
-        data["lastUsedAt"] = this.lastUsedAt ? this.lastUsedAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IAuthenticationMethod {
-    authMethodId?: number;
-    userId?: number;
-    methodType?: string | undefined;
-    isEnabled?: boolean;
-    isPrimary?: boolean;
-    configuration?: string | undefined;
-    lastUsedAt?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    user?: User;
-}
-
-export class BlockedChatUser implements IBlockedChatUser {
-    blockId?: number;
-    blockerUserId?: number;
-    blockerProfileId?: number;
-    blockedUserId?: number;
-    blockedProfileId?: number;
-    tenantId?: number;
-    reason?: string | undefined;
-    description?: string | undefined;
-    blockedDate?: Date;
-    isActive?: boolean;
-    unblockedDate?: Date | undefined;
-    unblockReason?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-    user?: User;
-    userNavigation?: User;
-
-    constructor(data?: IBlockedChatUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.blockId = _data["blockId"];
-            this.blockerUserId = _data["blockerUserId"];
-            this.blockerProfileId = _data["blockerProfileId"];
-            this.blockedUserId = _data["blockedUserId"];
-            this.blockedProfileId = _data["blockedProfileId"];
-            this.tenantId = _data["tenantId"];
-            this.reason = _data["reason"];
-            this.description = _data["description"];
-            this.blockedDate = _data["blockedDate"] ? new Date(_data["blockedDate"].toString()) : undefined as any;
-            this.isActive = _data["isActive"];
-            this.unblockedDate = _data["unblockedDate"] ? new Date(_data["unblockedDate"].toString()) : undefined as any;
-            this.unblockReason = _data["unblockReason"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-            this.userNavigation = _data["userNavigation"] ? User.fromJS(_data["userNavigation"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): BlockedChatUser {
-        data = typeof data === 'object' ? data : {};
-        let result = new BlockedChatUser();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["blockId"] = this.blockId;
-        data["blockerUserId"] = this.blockerUserId;
-        data["blockerProfileId"] = this.blockerProfileId;
-        data["blockedUserId"] = this.blockedUserId;
-        data["blockedProfileId"] = this.blockedProfileId;
-        data["tenantId"] = this.tenantId;
-        data["reason"] = this.reason;
-        data["description"] = this.description;
-        data["blockedDate"] = this.blockedDate ? this.blockedDate.toISOString() : undefined as any;
-        data["isActive"] = this.isActive;
-        data["unblockedDate"] = this.unblockedDate ? this.unblockedDate.toISOString() : undefined as any;
-        data["unblockReason"] = this.unblockReason;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        data["userNavigation"] = this.userNavigation ? this.userNavigation.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IBlockedChatUser {
-    blockId?: number;
-    blockerUserId?: number;
-    blockerProfileId?: number;
-    blockedUserId?: number;
-    blockedProfileId?: number;
-    tenantId?: number;
-    reason?: string | undefined;
-    description?: string | undefined;
-    blockedDate?: Date;
-    isActive?: boolean;
-    unblockedDate?: Date | undefined;
-    unblockReason?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-    user?: User;
-    userNavigation?: User;
-}
-
-export class BloodGroup implements IBloodGroup {
-    bloodGroupId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-
-    constructor(data?: IBloodGroup) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.bloodGroupId = _data["bloodGroupId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): BloodGroup {
-        data = typeof data === 'object' ? data : {};
-        let result = new BloodGroup();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["bloodGroupId"] = this.bloodGroupId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IBloodGroup {
-    bloodGroupId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-}
-
-export class CareerDetails implements ICareerDetails {
-    profileId?: number;
-    tenantId?: number;
-    educationArea?: string | undefined;
-    education?: string | undefined;
-    occupationType?: string | undefined;
+export class CareerDetailsDtoCreate implements ICareerDetailsDtoCreate {
+    educationId?: number | undefined;
+    educationAreaId?: number | undefined;
+    occupationId?: number | undefined;
     occupationDetails?: string | undefined;
-    workingCityCountry?: string | undefined;
+    workingCity?: string | undefined;
+    workingStateId?: number | undefined;
+    workingStateOther?: string | undefined;
+    workingCountryId?: number | undefined;
+    workingCountryOther?: string | undefined;
     incomeAmount?: number | undefined;
-    incomePeriod?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
+    incomePeriodId?: number | undefined;
 
-    constructor(data?: ICareerDetails) {
+    constructor(data?: ICareerDetailsDtoCreate) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1746,79 +1386,72 @@ export class CareerDetails implements ICareerDetails {
 
     init(_data?: any) {
         if (_data) {
-            this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
-            this.educationArea = _data["educationArea"];
-            this.education = _data["education"];
-            this.occupationType = _data["occupationType"];
+            this.educationId = _data["educationId"];
+            this.educationAreaId = _data["educationAreaId"];
+            this.occupationId = _data["occupationId"];
             this.occupationDetails = _data["occupationDetails"];
-            this.workingCityCountry = _data["workingCityCountry"];
+            this.workingCity = _data["workingCity"];
+            this.workingStateId = _data["workingStateId"];
+            this.workingStateOther = _data["workingStateOther"];
+            this.workingCountryId = _data["workingCountryId"];
+            this.workingCountryOther = _data["workingCountryOther"];
             this.incomeAmount = _data["incomeAmount"];
-            this.incomePeriod = _data["incomePeriod"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? UserProfile.fromJS(_data["profile"]) : undefined as any;
+            this.incomePeriodId = _data["incomePeriodId"];
         }
     }
 
-    static fromJS(data: any): CareerDetails {
+    static fromJS(data: any): CareerDetailsDtoCreate {
         data = typeof data === 'object' ? data : {};
-        let result = new CareerDetails();
+        let result = new CareerDetailsDtoCreate();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
-        data["educationArea"] = this.educationArea;
-        data["education"] = this.education;
-        data["occupationType"] = this.occupationType;
+        data["educationId"] = this.educationId;
+        data["educationAreaId"] = this.educationAreaId;
+        data["occupationId"] = this.occupationId;
         data["occupationDetails"] = this.occupationDetails;
-        data["workingCityCountry"] = this.workingCityCountry;
+        data["workingCity"] = this.workingCity;
+        data["workingStateId"] = this.workingStateId;
+        data["workingStateOther"] = this.workingStateOther;
+        data["workingCountryId"] = this.workingCountryId;
+        data["workingCountryOther"] = this.workingCountryOther;
         data["incomeAmount"] = this.incomeAmount;
-        data["incomePeriod"] = this.incomePeriod;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
+        data["incomePeriodId"] = this.incomePeriodId;
         return data;
     }
 }
 
-export interface ICareerDetails {
-    profileId?: number;
-    tenantId?: number;
-    educationArea?: string | undefined;
-    education?: string | undefined;
-    occupationType?: string | undefined;
+export interface ICareerDetailsDtoCreate {
+    educationId?: number | undefined;
+    educationAreaId?: number | undefined;
+    occupationId?: number | undefined;
     occupationDetails?: string | undefined;
-    workingCityCountry?: string | undefined;
+    workingCity?: string | undefined;
+    workingStateId?: number | undefined;
+    workingStateOther?: string | undefined;
+    workingCountryId?: number | undefined;
+    workingCountryOther?: string | undefined;
     incomeAmount?: number | undefined;
-    incomePeriod?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
+    incomePeriodId?: number | undefined;
 }
 
-export class Caste implements ICaste {
-    casteId?: number;
-    tenantId?: number;
-    religionId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    religion?: Religion;
-    subCastes?: SubCaste[] | undefined;
-    tenant?: Tenant;
+export class CareerDetailsViewDto implements ICareerDetailsViewDto {
+    educationId?: number | undefined;
+    educationAreaId?: number | undefined;
+    occupationId?: number | undefined;
+    occupationDetails?: string | undefined;
+    workingCity?: string | undefined;
+    workingStateId?: number | undefined;
+    workingStateOther?: string | undefined;
+    workingCountryId?: number | undefined;
+    workingCountryOther?: string | undefined;
+    incomeAmount?: number | undefined;
+    incomePeriodId?: number | undefined;
 
-    constructor(data?: ICaste) {
+    constructor(data?: ICareerDetailsViewDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1829,785 +1462,108 @@ export class Caste implements ICaste {
 
     init(_data?: any) {
         if (_data) {
-            this.casteId = _data["casteId"];
-            this.tenantId = _data["tenantId"];
-            this.religionId = _data["religionId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-            this.religion = _data["religion"] ? Religion.fromJS(_data["religion"]) : undefined as any;
-            if (Array.isArray(_data["subCastes"])) {
-                this.subCastes = [] as any;
-                for (let item of _data["subCastes"])
-                    this.subCastes!.push(SubCaste.fromJS(item));
-            }
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
+            this.educationId = _data["educationId"];
+            this.educationAreaId = _data["educationAreaId"];
+            this.occupationId = _data["occupationId"];
+            this.occupationDetails = _data["occupationDetails"];
+            this.workingCity = _data["workingCity"];
+            this.workingStateId = _data["workingStateId"];
+            this.workingStateOther = _data["workingStateOther"];
+            this.workingCountryId = _data["workingCountryId"];
+            this.workingCountryOther = _data["workingCountryOther"];
+            this.incomeAmount = _data["incomeAmount"];
+            this.incomePeriodId = _data["incomePeriodId"];
         }
     }
 
-    static fromJS(data: any): Caste {
+    static fromJS(data: any): CareerDetailsViewDto {
         data = typeof data === 'object' ? data : {};
-        let result = new Caste();
+        let result = new CareerDetailsViewDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["casteId"] = this.casteId;
-        data["tenantId"] = this.tenantId;
-        data["religionId"] = this.religionId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["religion"] = this.religion ? this.religion.toJSON() : undefined as any;
-        if (Array.isArray(this.subCastes)) {
-            data["subCastes"] = [];
-            for (let item of this.subCastes)
-                data["subCastes"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
+        data["educationId"] = this.educationId;
+        data["educationAreaId"] = this.educationAreaId;
+        data["occupationId"] = this.occupationId;
+        data["occupationDetails"] = this.occupationDetails;
+        data["workingCity"] = this.workingCity;
+        data["workingStateId"] = this.workingStateId;
+        data["workingStateOther"] = this.workingStateOther;
+        data["workingCountryId"] = this.workingCountryId;
+        data["workingCountryOther"] = this.workingCountryOther;
+        data["incomeAmount"] = this.incomeAmount;
+        data["incomePeriodId"] = this.incomePeriodId;
         return data;
     }
 }
 
-export interface ICaste {
-    casteId?: number;
-    tenantId?: number;
-    religionId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    religion?: Religion;
-    subCastes?: SubCaste[] | undefined;
-    tenant?: Tenant;
+export interface ICareerDetailsViewDto {
+    educationId?: number | undefined;
+    educationAreaId?: number | undefined;
+    occupationId?: number | undefined;
+    occupationDetails?: string | undefined;
+    workingCity?: string | undefined;
+    workingStateId?: number | undefined;
+    workingStateOther?: string | undefined;
+    workingCountryId?: number | undefined;
+    workingCountryOther?: string | undefined;
+    incomeAmount?: number | undefined;
+    incomePeriodId?: number | undefined;
 }
 
-export class Charan implements ICharan {
-    charanId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
-
-    constructor(data?: ICharan) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.charanId = _data["charanId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profileHoroscopeDetails"])) {
-                this.profileHoroscopeDetails = [] as any;
-                for (let item of _data["profileHoroscopeDetails"])
-                    this.profileHoroscopeDetails!.push(ProfileHoroscopeDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Charan {
-        data = typeof data === 'object' ? data : {};
-        let result = new Charan();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["charanId"] = this.charanId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profileHoroscopeDetails)) {
-            data["profileHoroscopeDetails"] = [];
-            for (let item of this.profileHoroscopeDetails)
-                data["profileHoroscopeDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ICharan {
-    charanId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
-}
-
-export class ChatConversation implements IChatConversation {
-    conversationId?: number;
-    profileId1?: number;
-    profileId2?: number;
-    userId1?: number;
-    userId2?: number;
-    tenantId?: number;
-    conversationName?: string | undefined;
-    type?: string | undefined;
-    status?: string | undefined;
-    lastMessageDate?: Date | undefined;
-    lastMessageId?: number | undefined;
-    lastMessagePreview?: string | undefined;
-    isArchived?: boolean;
-    isBlocked?: boolean;
-    blockedByUserId?: number | undefined;
-    blockedDate?: Date | undefined;
-    blockReason?: string | undefined;
-    totalMessagesCount?: number;
-    unreadMessagesCount1?: number;
-    unreadMessagesCount2?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    chatMessages?: ChatMessage[] | undefined;
-    chatParticipants?: ChatParticipant[] | undefined;
-    lastMessage?: ChatMessage;
-    messageReadStatuses?: MessageReadStatus[] | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-    user?: User;
-    userNavigation?: User;
-
-    constructor(data?: IChatConversation) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.conversationId = _data["conversationId"];
-            this.profileId1 = _data["profileId1"];
-            this.profileId2 = _data["profileId2"];
-            this.userId1 = _data["userId1"];
-            this.userId2 = _data["userId2"];
-            this.tenantId = _data["tenantId"];
-            this.conversationName = _data["conversationName"];
-            this.type = _data["type"];
-            this.status = _data["status"];
-            this.lastMessageDate = _data["lastMessageDate"] ? new Date(_data["lastMessageDate"].toString()) : undefined as any;
-            this.lastMessageId = _data["lastMessageId"];
-            this.lastMessagePreview = _data["lastMessagePreview"];
-            this.isArchived = _data["isArchived"];
-            this.isBlocked = _data["isBlocked"];
-            this.blockedByUserId = _data["blockedByUserId"];
-            this.blockedDate = _data["blockedDate"] ? new Date(_data["blockedDate"].toString()) : undefined as any;
-            this.blockReason = _data["blockReason"];
-            this.totalMessagesCount = _data["totalMessagesCount"];
-            this.unreadMessagesCount1 = _data["unreadMessagesCount1"];
-            this.unreadMessagesCount2 = _data["unreadMessagesCount2"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["chatMessages"])) {
-                this.chatMessages = [] as any;
-                for (let item of _data["chatMessages"])
-                    this.chatMessages!.push(ChatMessage.fromJS(item));
-            }
-            if (Array.isArray(_data["chatParticipants"])) {
-                this.chatParticipants = [] as any;
-                for (let item of _data["chatParticipants"])
-                    this.chatParticipants!.push(ChatParticipant.fromJS(item));
-            }
-            this.lastMessage = _data["lastMessage"] ? ChatMessage.fromJS(_data["lastMessage"]) : undefined as any;
-            if (Array.isArray(_data["messageReadStatuses"])) {
-                this.messageReadStatuses = [] as any;
-                for (let item of _data["messageReadStatuses"])
-                    this.messageReadStatuses!.push(MessageReadStatus.fromJS(item));
-            }
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-            this.userNavigation = _data["userNavigation"] ? User.fromJS(_data["userNavigation"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ChatConversation {
-        data = typeof data === 'object' ? data : {};
-        let result = new ChatConversation();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["conversationId"] = this.conversationId;
-        data["profileId1"] = this.profileId1;
-        data["profileId2"] = this.profileId2;
-        data["userId1"] = this.userId1;
-        data["userId2"] = this.userId2;
-        data["tenantId"] = this.tenantId;
-        data["conversationName"] = this.conversationName;
-        data["type"] = this.type;
-        data["status"] = this.status;
-        data["lastMessageDate"] = this.lastMessageDate ? this.lastMessageDate.toISOString() : undefined as any;
-        data["lastMessageId"] = this.lastMessageId;
-        data["lastMessagePreview"] = this.lastMessagePreview;
-        data["isArchived"] = this.isArchived;
-        data["isBlocked"] = this.isBlocked;
-        data["blockedByUserId"] = this.blockedByUserId;
-        data["blockedDate"] = this.blockedDate ? this.blockedDate.toISOString() : undefined as any;
-        data["blockReason"] = this.blockReason;
-        data["totalMessagesCount"] = this.totalMessagesCount;
-        data["unreadMessagesCount1"] = this.unreadMessagesCount1;
-        data["unreadMessagesCount2"] = this.unreadMessagesCount2;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.chatMessages)) {
-            data["chatMessages"] = [];
-            for (let item of this.chatMessages)
-                data["chatMessages"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatParticipants)) {
-            data["chatParticipants"] = [];
-            for (let item of this.chatParticipants)
-                data["chatParticipants"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["lastMessage"] = this.lastMessage ? this.lastMessage.toJSON() : undefined as any;
-        if (Array.isArray(this.messageReadStatuses)) {
-            data["messageReadStatuses"] = [];
-            for (let item of this.messageReadStatuses)
-                data["messageReadStatuses"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        data["userNavigation"] = this.userNavigation ? this.userNavigation.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IChatConversation {
-    conversationId?: number;
-    profileId1?: number;
-    profileId2?: number;
-    userId1?: number;
-    userId2?: number;
-    tenantId?: number;
-    conversationName?: string | undefined;
-    type?: string | undefined;
-    status?: string | undefined;
-    lastMessageDate?: Date | undefined;
-    lastMessageId?: number | undefined;
-    lastMessagePreview?: string | undefined;
-    isArchived?: boolean;
-    isBlocked?: boolean;
-    blockedByUserId?: number | undefined;
-    blockedDate?: Date | undefined;
-    blockReason?: string | undefined;
-    totalMessagesCount?: number;
-    unreadMessagesCount1?: number;
-    unreadMessagesCount2?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    chatMessages?: ChatMessage[] | undefined;
-    chatParticipants?: ChatParticipant[] | undefined;
-    lastMessage?: ChatMessage;
-    messageReadStatuses?: MessageReadStatus[] | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-    user?: User;
-    userNavigation?: User;
-}
-
-export class ChatMessage implements IChatMessage {
-    messageId?: number;
-    conversationId?: number;
-    senderProfileId?: number;
-    senderUserId?: number;
-    tenantId?: number;
-    content?: string | undefined;
-    type?: string | undefined;
-    status?: string | undefined;
-    sentDate?: Date;
-    deliveredDate?: Date | undefined;
-    readDate?: Date | undefined;
-    editedDate?: Date | undefined;
-    isEdited?: boolean;
-    deletedDate?: Date | undefined;
-    deletedByUserId?: number | undefined;
-    replyToMessageId?: number | undefined;
-    metadata?: string | undefined;
-    isEncrypted?: boolean;
-    encryptionKey?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    chatConversations?: ChatConversation[] | undefined;
-    conversation?: ChatConversation;
-    deletedByUser?: User;
-    inverseReplyToMessage?: ChatMessage[] | undefined;
-    messageReadStatuses?: MessageReadStatus[] | undefined;
-    profile?: Profile;
-    replyToMessage?: ChatMessage;
-    user?: User;
-
-    constructor(data?: IChatMessage) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.messageId = _data["messageId"];
-            this.conversationId = _data["conversationId"];
-            this.senderProfileId = _data["senderProfileId"];
-            this.senderUserId = _data["senderUserId"];
-            this.tenantId = _data["tenantId"];
-            this.content = _data["content"];
-            this.type = _data["type"];
-            this.status = _data["status"];
-            this.sentDate = _data["sentDate"] ? new Date(_data["sentDate"].toString()) : undefined as any;
-            this.deliveredDate = _data["deliveredDate"] ? new Date(_data["deliveredDate"].toString()) : undefined as any;
-            this.readDate = _data["readDate"] ? new Date(_data["readDate"].toString()) : undefined as any;
-            this.editedDate = _data["editedDate"] ? new Date(_data["editedDate"].toString()) : undefined as any;
-            this.isEdited = _data["isEdited"];
-            this.deletedDate = _data["deletedDate"] ? new Date(_data["deletedDate"].toString()) : undefined as any;
-            this.deletedByUserId = _data["deletedByUserId"];
-            this.replyToMessageId = _data["replyToMessageId"];
-            this.metadata = _data["metadata"];
-            this.isEncrypted = _data["isEncrypted"];
-            this.encryptionKey = _data["encryptionKey"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["chatConversations"])) {
-                this.chatConversations = [] as any;
-                for (let item of _data["chatConversations"])
-                    this.chatConversations!.push(ChatConversation.fromJS(item));
-            }
-            this.conversation = _data["conversation"] ? ChatConversation.fromJS(_data["conversation"]) : undefined as any;
-            this.deletedByUser = _data["deletedByUser"] ? User.fromJS(_data["deletedByUser"]) : undefined as any;
-            if (Array.isArray(_data["inverseReplyToMessage"])) {
-                this.inverseReplyToMessage = [] as any;
-                for (let item of _data["inverseReplyToMessage"])
-                    this.inverseReplyToMessage!.push(ChatMessage.fromJS(item));
-            }
-            if (Array.isArray(_data["messageReadStatuses"])) {
-                this.messageReadStatuses = [] as any;
-                for (let item of _data["messageReadStatuses"])
-                    this.messageReadStatuses!.push(MessageReadStatus.fromJS(item));
-            }
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.replyToMessage = _data["replyToMessage"] ? ChatMessage.fromJS(_data["replyToMessage"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ChatMessage {
-        data = typeof data === 'object' ? data : {};
-        let result = new ChatMessage();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["messageId"] = this.messageId;
-        data["conversationId"] = this.conversationId;
-        data["senderProfileId"] = this.senderProfileId;
-        data["senderUserId"] = this.senderUserId;
-        data["tenantId"] = this.tenantId;
-        data["content"] = this.content;
-        data["type"] = this.type;
-        data["status"] = this.status;
-        data["sentDate"] = this.sentDate ? this.sentDate.toISOString() : undefined as any;
-        data["deliveredDate"] = this.deliveredDate ? this.deliveredDate.toISOString() : undefined as any;
-        data["readDate"] = this.readDate ? this.readDate.toISOString() : undefined as any;
-        data["editedDate"] = this.editedDate ? this.editedDate.toISOString() : undefined as any;
-        data["isEdited"] = this.isEdited;
-        data["deletedDate"] = this.deletedDate ? this.deletedDate.toISOString() : undefined as any;
-        data["deletedByUserId"] = this.deletedByUserId;
-        data["replyToMessageId"] = this.replyToMessageId;
-        data["metadata"] = this.metadata;
-        data["isEncrypted"] = this.isEncrypted;
-        data["encryptionKey"] = this.encryptionKey;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.chatConversations)) {
-            data["chatConversations"] = [];
-            for (let item of this.chatConversations)
-                data["chatConversations"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["conversation"] = this.conversation ? this.conversation.toJSON() : undefined as any;
-        data["deletedByUser"] = this.deletedByUser ? this.deletedByUser.toJSON() : undefined as any;
-        if (Array.isArray(this.inverseReplyToMessage)) {
-            data["inverseReplyToMessage"] = [];
-            for (let item of this.inverseReplyToMessage)
-                data["inverseReplyToMessage"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.messageReadStatuses)) {
-            data["messageReadStatuses"] = [];
-            for (let item of this.messageReadStatuses)
-                data["messageReadStatuses"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["replyToMessage"] = this.replyToMessage ? this.replyToMessage.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IChatMessage {
-    messageId?: number;
-    conversationId?: number;
-    senderProfileId?: number;
-    senderUserId?: number;
-    tenantId?: number;
-    content?: string | undefined;
-    type?: string | undefined;
-    status?: string | undefined;
-    sentDate?: Date;
-    deliveredDate?: Date | undefined;
-    readDate?: Date | undefined;
-    editedDate?: Date | undefined;
-    isEdited?: boolean;
-    deletedDate?: Date | undefined;
-    deletedByUserId?: number | undefined;
-    replyToMessageId?: number | undefined;
-    metadata?: string | undefined;
-    isEncrypted?: boolean;
-    encryptionKey?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    chatConversations?: ChatConversation[] | undefined;
-    conversation?: ChatConversation;
-    deletedByUser?: User;
-    inverseReplyToMessage?: ChatMessage[] | undefined;
-    messageReadStatuses?: MessageReadStatus[] | undefined;
-    profile?: Profile;
-    replyToMessage?: ChatMessage;
-    user?: User;
-}
-
-export class ChatParticipant implements IChatParticipant {
-    participantId?: number;
-    conversationId?: number;
-    profileId?: number;
-    userId?: number;
-    tenantId?: number;
-    role?: string | undefined;
-    status?: string | undefined;
-    joinedDate?: Date;
-    leftDate?: Date | undefined;
-    lastSeenDate?: Date | undefined;
-    isOnline?: boolean;
-    receiveNotifications?: boolean;
-    isTyping?: boolean;
-    typingStarted?: Date | undefined;
-    displayName?: string | undefined;
-    profilePhotoUrl?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    conversation?: ChatConversation;
-    profile?: Profile;
-    user?: User;
-
-    constructor(data?: IChatParticipant) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.participantId = _data["participantId"];
-            this.conversationId = _data["conversationId"];
-            this.profileId = _data["profileId"];
-            this.userId = _data["userId"];
-            this.tenantId = _data["tenantId"];
-            this.role = _data["role"];
-            this.status = _data["status"];
-            this.joinedDate = _data["joinedDate"] ? new Date(_data["joinedDate"].toString()) : undefined as any;
-            this.leftDate = _data["leftDate"] ? new Date(_data["leftDate"].toString()) : undefined as any;
-            this.lastSeenDate = _data["lastSeenDate"] ? new Date(_data["lastSeenDate"].toString()) : undefined as any;
-            this.isOnline = _data["isOnline"];
-            this.receiveNotifications = _data["receiveNotifications"];
-            this.isTyping = _data["isTyping"];
-            this.typingStarted = _data["typingStarted"] ? new Date(_data["typingStarted"].toString()) : undefined as any;
-            this.displayName = _data["displayName"];
-            this.profilePhotoUrl = _data["profilePhotoUrl"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.conversation = _data["conversation"] ? ChatConversation.fromJS(_data["conversation"]) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ChatParticipant {
-        data = typeof data === 'object' ? data : {};
-        let result = new ChatParticipant();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["participantId"] = this.participantId;
-        data["conversationId"] = this.conversationId;
-        data["profileId"] = this.profileId;
-        data["userId"] = this.userId;
-        data["tenantId"] = this.tenantId;
-        data["role"] = this.role;
-        data["status"] = this.status;
-        data["joinedDate"] = this.joinedDate ? this.joinedDate.toISOString() : undefined as any;
-        data["leftDate"] = this.leftDate ? this.leftDate.toISOString() : undefined as any;
-        data["lastSeenDate"] = this.lastSeenDate ? this.lastSeenDate.toISOString() : undefined as any;
-        data["isOnline"] = this.isOnline;
-        data["receiveNotifications"] = this.receiveNotifications;
-        data["isTyping"] = this.isTyping;
-        data["typingStarted"] = this.typingStarted ? this.typingStarted.toISOString() : undefined as any;
-        data["displayName"] = this.displayName;
-        data["profilePhotoUrl"] = this.profilePhotoUrl;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["conversation"] = this.conversation ? this.conversation.toJSON() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IChatParticipant {
-    participantId?: number;
-    conversationId?: number;
-    profileId?: number;
-    userId?: number;
-    tenantId?: number;
-    role?: string | undefined;
-    status?: string | undefined;
-    joinedDate?: Date;
-    leftDate?: Date | undefined;
-    lastSeenDate?: Date | undefined;
-    isOnline?: boolean;
-    receiveNotifications?: boolean;
-    isTyping?: boolean;
-    typingStarted?: Date | undefined;
-    displayName?: string | undefined;
-    profilePhotoUrl?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    conversation?: ChatConversation;
-    profile?: Profile;
-    user?: User;
-}
-
-export class Complexion implements IComplexion {
-    complexionId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-
-    constructor(data?: IComplexion) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.complexionId = _data["complexionId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Complexion {
-        data = typeof data === 'object' ? data : {};
-        let result = new Complexion();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["complexionId"] = this.complexionId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IComplexion {
-    complexionId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-}
-
-export class ContactDetails implements IContactDetails {
-    profileId?: number;
-    tenantId?: number;
+export class ContactDetailsDto implements IContactDetailsDto {
+    contactEmail?: string | undefined;
+    residenceAddress?: string | undefined;
     idProofNumber?: string | undefined;
+
+    constructor(data?: IContactDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.contactEmail = _data["contactEmail"];
+            this.residenceAddress = _data["residenceAddress"];
+            this.idProofNumber = _data["idProofNumber"];
+        }
+    }
+
+    static fromJS(data: any): ContactDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ContactDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["contactEmail"] = this.contactEmail;
+        data["residenceAddress"] = this.residenceAddress;
+        data["idProofNumber"] = this.idProofNumber;
+        return data;
+    }
+}
+
+export interface IContactDetailsDto {
+    contactEmail?: string | undefined;
+    residenceAddress?: string | undefined;
+    idProofNumber?: string | undefined;
+}
+
+export class ContactDetailsDtoCreate implements IContactDetailsDtoCreate {
     residenceAddress?: string | undefined;
     contactEmail?: string | undefined;
-    smsMobile?: string | undefined;
-    mobileSecondary?: string | undefined;
-    phonePrimary?: string | undefined;
-    phoneSecondary?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
+    idProofNumber?: string | undefined;
 
-    constructor(data?: IContactDetails) {
+    constructor(data?: IContactDetailsDtoCreate) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2618,75 +1574,56 @@ export class ContactDetails implements IContactDetails {
 
     init(_data?: any) {
         if (_data) {
-            this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
-            this.idProofNumber = _data["idProofNumber"];
             this.residenceAddress = _data["residenceAddress"];
             this.contactEmail = _data["contactEmail"];
-            this.smsMobile = _data["smsMobile"];
-            this.mobileSecondary = _data["mobileSecondary"];
-            this.phonePrimary = _data["phonePrimary"];
-            this.phoneSecondary = _data["phoneSecondary"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? UserProfile.fromJS(_data["profile"]) : undefined as any;
+            this.idProofNumber = _data["idProofNumber"];
         }
     }
 
-    static fromJS(data: any): ContactDetails {
+    static fromJS(data: any): ContactDetailsDtoCreate {
         data = typeof data === 'object' ? data : {};
-        let result = new ContactDetails();
+        let result = new ContactDetailsDtoCreate();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
-        data["idProofNumber"] = this.idProofNumber;
         data["residenceAddress"] = this.residenceAddress;
         data["contactEmail"] = this.contactEmail;
-        data["smsMobile"] = this.smsMobile;
-        data["mobileSecondary"] = this.mobileSecondary;
-        data["phonePrimary"] = this.phonePrimary;
-        data["phoneSecondary"] = this.phoneSecondary;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
+        data["idProofNumber"] = this.idProofNumber;
         return data;
     }
 }
 
-export interface IContactDetails {
-    profileId?: number;
-    tenantId?: number;
-    idProofNumber?: string | undefined;
+export interface IContactDetailsDtoCreate {
     residenceAddress?: string | undefined;
     contactEmail?: string | undefined;
-    smsMobile?: string | undefined;
-    mobileSecondary?: string | undefined;
-    phonePrimary?: string | undefined;
-    phoneSecondary?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
+    idProofNumber?: string | undefined;
 }
 
-export class Country implements ICountry {
-    countryId?: number;
-    code?: string | undefined;
-    name?: string | undefined;
-    nameMr?: string | undefined;
-    isDefault?: boolean;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    states?: State[] | undefined;
+export class CreateProfileDto implements ICreateProfileDto {
+    fullName?: string | undefined;
+    age?: number | undefined;
+    bio?: string | undefined;
+    locationText?: string | undefined;
+    occupationText?: string | undefined;
+    personalDetails?: PersonalDetailsDto;
+    contactDetails?: ContactDetailsDtoCreate;
+    phoneNumbers?: PhoneNumberDtoCreate[] | undefined;
+    familyDetails?: FamilyDetailsDto;
+    relativeSurnames?: string[] | undefined;
+    careerDetails?: CareerDetailsDtoCreate;
+    partnerPreference?: PartnerPreferenceDto;
+    profilePhotos?: ProfilePhotoDtoCreate[] | undefined;
+    profileHoroscope?: ProfileHoroscopeDetailDto;
+    interests?: string[] | undefined;
+    preferredCities?: string[] | undefined;
+    expectedCasteIds?: number[] | undefined;
+    expectedEducationIds?: number[] | undefined;
+    expectedOccupationIds?: number[] | undefined;
 
-    constructor(data?: ICountry) {
+    constructor(data?: ICreateProfileDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2697,609 +1634,147 @@ export class Country implements ICountry {
 
     init(_data?: any) {
         if (_data) {
-            this.countryId = _data["countryId"];
-            this.code = _data["code"];
-            this.name = _data["name"];
-            this.nameMr = _data["nameMr"];
-            this.isDefault = _data["isDefault"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
+            this.fullName = _data["fullName"];
+            this.age = _data["age"];
+            this.bio = _data["bio"];
+            this.locationText = _data["locationText"];
+            this.occupationText = _data["occupationText"];
+            this.personalDetails = _data["personalDetails"] ? PersonalDetailsDto.fromJS(_data["personalDetails"]) : undefined as any;
+            this.contactDetails = _data["contactDetails"] ? ContactDetailsDtoCreate.fromJS(_data["contactDetails"]) : undefined as any;
+            if (Array.isArray(_data["phoneNumbers"])) {
+                this.phoneNumbers = [] as any;
+                for (let item of _data["phoneNumbers"])
+                    this.phoneNumbers!.push(PhoneNumberDtoCreate.fromJS(item));
             }
-            if (Array.isArray(_data["states"])) {
-                this.states = [] as any;
-                for (let item of _data["states"])
-                    this.states!.push(State.fromJS(item));
+            this.familyDetails = _data["familyDetails"] ? FamilyDetailsDto.fromJS(_data["familyDetails"]) : undefined as any;
+            if (Array.isArray(_data["relativeSurnames"])) {
+                this.relativeSurnames = [] as any;
+                for (let item of _data["relativeSurnames"])
+                    this.relativeSurnames!.push(item);
+            }
+            this.careerDetails = _data["careerDetails"] ? CareerDetailsDtoCreate.fromJS(_data["careerDetails"]) : undefined as any;
+            this.partnerPreference = _data["partnerPreference"] ? PartnerPreferenceDto.fromJS(_data["partnerPreference"]) : undefined as any;
+            if (Array.isArray(_data["profilePhotos"])) {
+                this.profilePhotos = [] as any;
+                for (let item of _data["profilePhotos"])
+                    this.profilePhotos!.push(ProfilePhotoDtoCreate.fromJS(item));
+            }
+            this.profileHoroscope = _data["profileHoroscope"] ? ProfileHoroscopeDetailDto.fromJS(_data["profileHoroscope"]) : undefined as any;
+            if (Array.isArray(_data["interests"])) {
+                this.interests = [] as any;
+                for (let item of _data["interests"])
+                    this.interests!.push(item);
+            }
+            if (Array.isArray(_data["preferredCities"])) {
+                this.preferredCities = [] as any;
+                for (let item of _data["preferredCities"])
+                    this.preferredCities!.push(item);
+            }
+            if (Array.isArray(_data["expectedCasteIds"])) {
+                this.expectedCasteIds = [] as any;
+                for (let item of _data["expectedCasteIds"])
+                    this.expectedCasteIds!.push(item);
+            }
+            if (Array.isArray(_data["expectedEducationIds"])) {
+                this.expectedEducationIds = [] as any;
+                for (let item of _data["expectedEducationIds"])
+                    this.expectedEducationIds!.push(item);
+            }
+            if (Array.isArray(_data["expectedOccupationIds"])) {
+                this.expectedOccupationIds = [] as any;
+                for (let item of _data["expectedOccupationIds"])
+                    this.expectedOccupationIds!.push(item);
             }
         }
     }
 
-    static fromJS(data: any): Country {
+    static fromJS(data: any): CreateProfileDto {
         data = typeof data === 'object' ? data : {};
-        let result = new Country();
+        let result = new CreateProfileDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["countryId"] = this.countryId;
-        data["code"] = this.code;
-        data["name"] = this.name;
-        data["nameMr"] = this.nameMr;
-        data["isDefault"] = this.isDefault;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
+        data["fullName"] = this.fullName;
+        data["age"] = this.age;
+        data["bio"] = this.bio;
+        data["locationText"] = this.locationText;
+        data["occupationText"] = this.occupationText;
+        data["personalDetails"] = this.personalDetails ? this.personalDetails.toJSON() : undefined as any;
+        data["contactDetails"] = this.contactDetails ? this.contactDetails.toJSON() : undefined as any;
+        if (Array.isArray(this.phoneNumbers)) {
+            data["phoneNumbers"] = [];
+            for (let item of this.phoneNumbers)
+                data["phoneNumbers"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.states)) {
-            data["states"] = [];
-            for (let item of this.states)
-                data["states"].push(item ? item.toJSON() : undefined as any);
+        data["familyDetails"] = this.familyDetails ? this.familyDetails.toJSON() : undefined as any;
+        if (Array.isArray(this.relativeSurnames)) {
+            data["relativeSurnames"] = [];
+            for (let item of this.relativeSurnames)
+                data["relativeSurnames"].push(item);
         }
-        return data;
-    }
-}
-
-export interface ICountry {
-    countryId?: number;
-    code?: string | undefined;
-    name?: string | undefined;
-    nameMr?: string | undefined;
-    isDefault?: boolean;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    states?: State[] | undefined;
-}
-
-export class Diet implements IDiet {
-    dietId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-
-    constructor(data?: IDiet) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
+        data["careerDetails"] = this.careerDetails ? this.careerDetails.toJSON() : undefined as any;
+        data["partnerPreference"] = this.partnerPreference ? this.partnerPreference.toJSON() : undefined as any;
+        if (Array.isArray(this.profilePhotos)) {
+            data["profilePhotos"] = [];
+            for (let item of this.profilePhotos)
+                data["profilePhotos"].push(item ? item.toJSON() : undefined as any);
         }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.dietId = _data["dietId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
+        data["profileHoroscope"] = this.profileHoroscope ? this.profileHoroscope.toJSON() : undefined as any;
+        if (Array.isArray(this.interests)) {
+            data["interests"] = [];
+            for (let item of this.interests)
+                data["interests"].push(item);
         }
-    }
-
-    static fromJS(data: any): Diet {
-        data = typeof data === 'object' ? data : {};
-        let result = new Diet();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["dietId"] = this.dietId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
+        if (Array.isArray(this.preferredCities)) {
+            data["preferredCities"] = [];
+            for (let item of this.preferredCities)
+                data["preferredCities"].push(item);
+        }
+        if (Array.isArray(this.expectedCasteIds)) {
+            data["expectedCasteIds"] = [];
+            for (let item of this.expectedCasteIds)
+                data["expectedCasteIds"].push(item);
+        }
+        if (Array.isArray(this.expectedEducationIds)) {
+            data["expectedEducationIds"] = [];
+            for (let item of this.expectedEducationIds)
+                data["expectedEducationIds"].push(item);
+        }
+        if (Array.isArray(this.expectedOccupationIds)) {
+            data["expectedOccupationIds"] = [];
+            for (let item of this.expectedOccupationIds)
+                data["expectedOccupationIds"].push(item);
         }
         return data;
     }
 }
 
-export interface IDiet {
-    dietId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
+export interface ICreateProfileDto {
+    fullName?: string | undefined;
+    age?: number | undefined;
+    bio?: string | undefined;
+    locationText?: string | undefined;
+    occupationText?: string | undefined;
+    personalDetails?: PersonalDetailsDto;
+    contactDetails?: ContactDetailsDtoCreate;
+    phoneNumbers?: PhoneNumberDtoCreate[] | undefined;
+    familyDetails?: FamilyDetailsDto;
+    relativeSurnames?: string[] | undefined;
+    careerDetails?: CareerDetailsDtoCreate;
+    partnerPreference?: PartnerPreferenceDto;
+    profilePhotos?: ProfilePhotoDtoCreate[] | undefined;
+    profileHoroscope?: ProfileHoroscopeDetailDto;
+    interests?: string[] | undefined;
+    preferredCities?: string[] | undefined;
+    expectedCasteIds?: number[] | undefined;
+    expectedEducationIds?: number[] | undefined;
+    expectedOccupationIds?: number[] | undefined;
 }
 
-export class District implements IDistrict {
-    districtId?: number;
-    stateId?: number;
-    name?: string | undefined;
-    nameMr?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    state?: State;
-    talukas?: Taluka[] | undefined;
-
-    constructor(data?: IDistrict) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.districtId = _data["districtId"];
-            this.stateId = _data["stateId"];
-            this.name = _data["name"];
-            this.nameMr = _data["nameMr"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-            this.state = _data["state"] ? State.fromJS(_data["state"]) : undefined as any;
-            if (Array.isArray(_data["talukas"])) {
-                this.talukas = [] as any;
-                for (let item of _data["talukas"])
-                    this.talukas!.push(Taluka.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): District {
-        data = typeof data === 'object' ? data : {};
-        let result = new District();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["districtId"] = this.districtId;
-        data["stateId"] = this.stateId;
-        data["name"] = this.name;
-        data["nameMr"] = this.nameMr;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["state"] = this.state ? this.state.toJSON() : undefined as any;
-        if (Array.isArray(this.talukas)) {
-            data["talukas"] = [];
-            for (let item of this.talukas)
-                data["talukas"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IDistrict {
-    districtId?: number;
-    stateId?: number;
-    name?: string | undefined;
-    nameMr?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    state?: State;
-    talukas?: Taluka[] | undefined;
-}
-
-export class Education implements IEducation {
-    educationId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    educationAreas?: EducationArea[] | undefined;
-    profileProfessionalDetails?: ProfileProfessionalDetail[] | undefined;
-
-    constructor(data?: IEducation) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.educationId = _data["educationId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["educationAreas"])) {
-                this.educationAreas = [] as any;
-                for (let item of _data["educationAreas"])
-                    this.educationAreas!.push(EducationArea.fromJS(item));
-            }
-            if (Array.isArray(_data["profileProfessionalDetails"])) {
-                this.profileProfessionalDetails = [] as any;
-                for (let item of _data["profileProfessionalDetails"])
-                    this.profileProfessionalDetails!.push(ProfileProfessionalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Education {
-        data = typeof data === 'object' ? data : {};
-        let result = new Education();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["educationId"] = this.educationId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.educationAreas)) {
-            data["educationAreas"] = [];
-            for (let item of this.educationAreas)
-                data["educationAreas"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileProfessionalDetails)) {
-            data["profileProfessionalDetails"] = [];
-            for (let item of this.profileProfessionalDetails)
-                data["profileProfessionalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IEducation {
-    educationId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    educationAreas?: EducationArea[] | undefined;
-    profileProfessionalDetails?: ProfileProfessionalDetail[] | undefined;
-}
-
-export class EducationArea implements IEducationArea {
-    educationAreaId?: number;
-    tenantId?: number;
-    educationId?: number | undefined;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    education?: Education;
-    profileProfessionalDetails?: ProfileProfessionalDetail[] | undefined;
-
-    constructor(data?: IEducationArea) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.educationAreaId = _data["educationAreaId"];
-            this.tenantId = _data["tenantId"];
-            this.educationId = _data["educationId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            this.education = _data["education"] ? Education.fromJS(_data["education"]) : undefined as any;
-            if (Array.isArray(_data["profileProfessionalDetails"])) {
-                this.profileProfessionalDetails = [] as any;
-                for (let item of _data["profileProfessionalDetails"])
-                    this.profileProfessionalDetails!.push(ProfileProfessionalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): EducationArea {
-        data = typeof data === 'object' ? data : {};
-        let result = new EducationArea();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["educationAreaId"] = this.educationAreaId;
-        data["tenantId"] = this.tenantId;
-        data["educationId"] = this.educationId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        data["education"] = this.education ? this.education.toJSON() : undefined as any;
-        if (Array.isArray(this.profileProfessionalDetails)) {
-            data["profileProfessionalDetails"] = [];
-            for (let item of this.profileProfessionalDetails)
-                data["profileProfessionalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IEducationArea {
-    educationAreaId?: number;
-    tenantId?: number;
-    educationId?: number | undefined;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    education?: Education;
-    profileProfessionalDetails?: ProfileProfessionalDetail[] | undefined;
-}
-
-export class Event implements IEvent {
-    eventId?: number;
-    tenantId?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    venue?: string | undefined;
-    eventDate?: Date;
-    eventTime?: string | undefined;
-    isVirtual?: boolean;
-    meetingLink?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    eventRsvps?: EventRsvp[] | undefined;
-    tenant?: Tenant;
-
-    constructor(data?: IEvent) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.eventId = _data["eventId"];
-            this.tenantId = _data["tenantId"];
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.venue = _data["venue"];
-            this.eventDate = _data["eventDate"] ? new Date(_data["eventDate"].toString()) : undefined as any;
-            this.eventTime = _data["eventTime"];
-            this.isVirtual = _data["isVirtual"];
-            this.meetingLink = _data["meetingLink"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            if (Array.isArray(_data["eventRsvps"])) {
-                this.eventRsvps = [] as any;
-                for (let item of _data["eventRsvps"])
-                    this.eventRsvps!.push(EventRsvp.fromJS(item));
-            }
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Event {
-        data = typeof data === 'object' ? data : {};
-        let result = new Event();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["eventId"] = this.eventId;
-        data["tenantId"] = this.tenantId;
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["venue"] = this.venue;
-        data["eventDate"] = this.eventDate ? formatDate(this.eventDate) : undefined as any;
-        data["eventTime"] = this.eventTime;
-        data["isVirtual"] = this.isVirtual;
-        data["meetingLink"] = this.meetingLink;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        if (Array.isArray(this.eventRsvps)) {
-            data["eventRsvps"] = [];
-            for (let item of this.eventRsvps)
-                data["eventRsvps"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IEvent {
-    eventId?: number;
-    tenantId?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    venue?: string | undefined;
-    eventDate?: Date;
-    eventTime?: string | undefined;
-    isVirtual?: boolean;
-    meetingLink?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    eventRsvps?: EventRsvp[] | undefined;
-    tenant?: Tenant;
-}
-
-export class EventRsvp implements IEventRsvp {
-    eventRsvpId?: number;
-    eventId?: number;
-    profileId?: number;
-    rsvpStatus?: string | undefined;
-    createdAt?: Date;
-    event?: Event;
-    profile?: Profile;
-
-    constructor(data?: IEventRsvp) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.eventRsvpId = _data["eventRsvpId"];
-            this.eventId = _data["eventId"];
-            this.profileId = _data["profileId"];
-            this.rsvpStatus = _data["rsvpStatus"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.event = _data["event"] ? Event.fromJS(_data["event"]) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): EventRsvp {
-        data = typeof data === 'object' ? data : {};
-        let result = new EventRsvp();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["eventRsvpId"] = this.eventRsvpId;
-        data["eventId"] = this.eventId;
-        data["profileId"] = this.profileId;
-        data["rsvpStatus"] = this.rsvpStatus;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["event"] = this.event ? this.event.toJSON() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IEventRsvp {
-    eventRsvpId?: number;
-    eventId?: number;
-    profileId?: number;
-    rsvpStatus?: string | undefined;
-    createdAt?: Date;
-    event?: Event;
-    profile?: Profile;
-}
-
-export class FamilyDetails implements IFamilyDetails {
-    profileId?: number;
-    tenantId?: number;
+export class FamilyDetailsDto implements IFamilyDetailsDto {
     fatherStatus?: boolean | undefined;
     motherStatus?: boolean | undefined;
     brothers?: number;
@@ -3311,16 +1786,14 @@ export class FamilyDetails implements IFamilyDetails {
     parentsResidentCity?: string | undefined;
     familyWealth?: string | undefined;
     mamaSurnamePlace?: string | undefined;
-    nativeDistrict?: string | undefined;
-    nativeTaluka?: string | undefined;
+    nativeDistrictId?: number | undefined;
+    nativeDistrictOther?: string | undefined;
+    nativeTalukaId?: number | undefined;
+    nativeTalukaOther?: string | undefined;
     intercastMarriage?: boolean | undefined;
     intercastRelation?: string | undefined;
-    relativesSurnames?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
 
-    constructor(data?: IFamilyDetails) {
+    constructor(data?: IFamilyDetailsDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3331,8 +1804,6 @@ export class FamilyDetails implements IFamilyDetails {
 
     init(_data?: any) {
         if (_data) {
-            this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
             this.fatherStatus = _data["fatherStatus"];
             this.motherStatus = _data["motherStatus"];
             this.brothers = _data["brothers"];
@@ -3344,28 +1815,24 @@ export class FamilyDetails implements IFamilyDetails {
             this.parentsResidentCity = _data["parentsResidentCity"];
             this.familyWealth = _data["familyWealth"];
             this.mamaSurnamePlace = _data["mamaSurnamePlace"];
-            this.nativeDistrict = _data["nativeDistrict"];
-            this.nativeTaluka = _data["nativeTaluka"];
+            this.nativeDistrictId = _data["nativeDistrictId"];
+            this.nativeDistrictOther = _data["nativeDistrictOther"];
+            this.nativeTalukaId = _data["nativeTalukaId"];
+            this.nativeTalukaOther = _data["nativeTalukaOther"];
             this.intercastMarriage = _data["intercastMarriage"];
             this.intercastRelation = _data["intercastRelation"];
-            this.relativesSurnames = _data["relativesSurnames"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? UserProfile.fromJS(_data["profile"]) : undefined as any;
         }
     }
 
-    static fromJS(data: any): FamilyDetails {
+    static fromJS(data: any): FamilyDetailsDto {
         data = typeof data === 'object' ? data : {};
-        let result = new FamilyDetails();
+        let result = new FamilyDetailsDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
         data["fatherStatus"] = this.fatherStatus;
         data["motherStatus"] = this.motherStatus;
         data["brothers"] = this.brothers;
@@ -3377,21 +1844,17 @@ export class FamilyDetails implements IFamilyDetails {
         data["parentsResidentCity"] = this.parentsResidentCity;
         data["familyWealth"] = this.familyWealth;
         data["mamaSurnamePlace"] = this.mamaSurnamePlace;
-        data["nativeDistrict"] = this.nativeDistrict;
-        data["nativeTaluka"] = this.nativeTaluka;
+        data["nativeDistrictId"] = this.nativeDistrictId;
+        data["nativeDistrictOther"] = this.nativeDistrictOther;
+        data["nativeTalukaId"] = this.nativeTalukaId;
+        data["nativeTalukaOther"] = this.nativeTalukaOther;
         data["intercastMarriage"] = this.intercastMarriage;
         data["intercastRelation"] = this.intercastRelation;
-        data["relativesSurnames"] = this.relativesSurnames;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
         return data;
     }
 }
 
-export interface IFamilyDetails {
-    profileId?: number;
-    tenantId?: number;
+export interface IFamilyDetailsDto {
     fatherStatus?: boolean | undefined;
     motherStatus?: boolean | undefined;
     brothers?: number;
@@ -3403,554 +1866,12 @@ export interface IFamilyDetails {
     parentsResidentCity?: string | undefined;
     familyWealth?: string | undefined;
     mamaSurnamePlace?: string | undefined;
-    nativeDistrict?: string | undefined;
-    nativeTaluka?: string | undefined;
+    nativeDistrictId?: number | undefined;
+    nativeDistrictOther?: string | undefined;
+    nativeTalukaId?: number | undefined;
+    nativeTalukaOther?: string | undefined;
     intercastMarriage?: boolean | undefined;
     intercastRelation?: string | undefined;
-    relativesSurnames?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
-}
-
-export class Gan implements IGan {
-    ganId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
-
-    constructor(data?: IGan) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.ganId = _data["ganId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profileHoroscopeDetails"])) {
-                this.profileHoroscopeDetails = [] as any;
-                for (let item of _data["profileHoroscopeDetails"])
-                    this.profileHoroscopeDetails!.push(ProfileHoroscopeDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Gan {
-        data = typeof data === 'object' ? data : {};
-        let result = new Gan();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["ganId"] = this.ganId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profileHoroscopeDetails)) {
-            data["profileHoroscopeDetails"] = [];
-            for (let item of this.profileHoroscopeDetails)
-                data["profileHoroscopeDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IGan {
-    ganId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
-}
-
-export class Gender implements IGender {
-    genderId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-
-    constructor(data?: IGender) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.genderId = _data["genderId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Gender {
-        data = typeof data === 'object' ? data : {};
-        let result = new Gender();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["genderId"] = this.genderId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IGender {
-    genderId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-}
-
-export class IncomePeriod implements IIncomePeriod {
-    incomePeriodId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileProfessionalDetails?: ProfileProfessionalDetail[] | undefined;
-
-    constructor(data?: IIncomePeriod) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.incomePeriodId = _data["incomePeriodId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profileProfessionalDetails"])) {
-                this.profileProfessionalDetails = [] as any;
-                for (let item of _data["profileProfessionalDetails"])
-                    this.profileProfessionalDetails!.push(ProfileProfessionalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): IncomePeriod {
-        data = typeof data === 'object' ? data : {};
-        let result = new IncomePeriod();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["incomePeriodId"] = this.incomePeriodId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profileProfessionalDetails)) {
-            data["profileProfessionalDetails"] = [];
-            for (let item of this.profileProfessionalDetails)
-                data["profileProfessionalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IIncomePeriod {
-    incomePeriodId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileProfessionalDetails?: ProfileProfessionalDetail[] | undefined;
-}
-
-export class Interest implements IInterest {
-    interestId?: number;
-    profileId?: number;
-    interestText?: string | undefined;
-    createdAt?: Date | undefined;
-    profile?: Profile;
-
-    constructor(data?: IInterest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.interestId = _data["interestId"];
-            this.profileId = _data["profileId"];
-            this.interestText = _data["interestText"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Interest {
-        data = typeof data === 'object' ? data : {};
-        let result = new Interest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["interestId"] = this.interestId;
-        data["profileId"] = this.profileId;
-        data["interestText"] = this.interestText;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IInterest {
-    interestId?: number;
-    profileId?: number;
-    interestText?: string | undefined;
-    createdAt?: Date | undefined;
-    profile?: Profile;
-}
-
-export class InterestRequest implements IInterestRequest {
-    interestRequestId?: number;
-    requesterProfileId?: number;
-    targetProfileId?: number;
-    status?: string | undefined;
-    message?: string | undefined;
-    respondedAt?: Date | undefined;
-    createdAt?: Date;
-    tenantId?: number;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: IInterestRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.interestRequestId = _data["interestRequestId"];
-            this.requesterProfileId = _data["requesterProfileId"];
-            this.targetProfileId = _data["targetProfileId"];
-            this.status = _data["status"];
-            this.message = _data["message"];
-            this.respondedAt = _data["respondedAt"] ? new Date(_data["respondedAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): InterestRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new InterestRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["interestRequestId"] = this.interestRequestId;
-        data["requesterProfileId"] = this.requesterProfileId;
-        data["targetProfileId"] = this.targetProfileId;
-        data["status"] = this.status;
-        data["message"] = this.message;
-        data["respondedAt"] = this.respondedAt ? this.respondedAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IInterestRequest {
-    interestRequestId?: number;
-    requesterProfileId?: number;
-    targetProfileId?: number;
-    status?: string | undefined;
-    message?: string | undefined;
-    respondedAt?: Date | undefined;
-    createdAt?: Date;
-    tenantId?: number;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-}
-
-export class LoginHistory implements ILoginHistory {
-    loginId?: number;
-    userId?: number;
-    loginTime?: Date;
-    ipAddress?: string | undefined;
-    userAgent?: string | undefined;
-    tenantId?: number;
-    user?: User;
-
-    constructor(data?: ILoginHistory) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.loginId = _data["loginId"];
-            this.userId = _data["userId"];
-            this.loginTime = _data["loginTime"] ? new Date(_data["loginTime"].toString()) : undefined as any;
-            this.ipAddress = _data["ipAddress"];
-            this.userAgent = _data["userAgent"];
-            this.tenantId = _data["tenantId"];
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): LoginHistory {
-        data = typeof data === 'object' ? data : {};
-        let result = new LoginHistory();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["loginId"] = this.loginId;
-        data["userId"] = this.userId;
-        data["loginTime"] = this.loginTime ? this.loginTime.toISOString() : undefined as any;
-        data["ipAddress"] = this.ipAddress;
-        data["userAgent"] = this.userAgent;
-        data["tenantId"] = this.tenantId;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ILoginHistory {
-    loginId?: number;
-    userId?: number;
-    loginTime?: Date;
-    ipAddress?: string | undefined;
-    userAgent?: string | undefined;
-    tenantId?: number;
-    user?: User;
-}
-
-export class MaritalStatus implements IMaritalStatus {
-    maritalStatusId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-
-    constructor(data?: IMaritalStatus) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.maritalStatusId = _data["maritalStatusId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): MaritalStatus {
-        data = typeof data === 'object' ? data : {};
-        let result = new MaritalStatus();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["maritalStatusId"] = this.maritalStatusId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IMaritalStatus {
-    maritalStatusId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
 }
 
 export class MasterDataOptionDto implements IMasterDataOptionDto {
@@ -3993,839 +1914,18 @@ export interface IMasterDataOptionDto {
     name?: string | undefined;
 }
 
-export class MemberProfileDto implements IMemberProfileDto {
-    profileId?: number;
-    displayName?: string | undefined;
-    age?: number | undefined;
-    city?: string | undefined;
-    religion?: string | undefined;
-    caste?: string | undefined;
-    profilePicture?: string | undefined;
-    bio?: string | undefined;
-    isVerified?: boolean;
-    fullName?: string | undefined;
-    occupationText?: string | undefined;
-    maritalStatus?: string | undefined;
-    photos?: ProfilePhotoDto[] | undefined;
-
-    constructor(data?: IMemberProfileDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profileId = _data["profileId"];
-            this.displayName = _data["displayName"];
-            this.age = _data["age"];
-            this.city = _data["city"];
-            this.religion = _data["religion"];
-            this.caste = _data["caste"];
-            this.profilePicture = _data["profilePicture"];
-            this.bio = _data["bio"];
-            this.isVerified = _data["isVerified"];
-            this.fullName = _data["fullName"];
-            this.occupationText = _data["occupationText"];
-            this.maritalStatus = _data["maritalStatus"];
-            if (Array.isArray(_data["photos"])) {
-                this.photos = [] as any;
-                for (let item of _data["photos"])
-                    this.photos!.push(ProfilePhotoDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): MemberProfileDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new MemberProfileDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["displayName"] = this.displayName;
-        data["age"] = this.age;
-        data["city"] = this.city;
-        data["religion"] = this.religion;
-        data["caste"] = this.caste;
-        data["profilePicture"] = this.profilePicture;
-        data["bio"] = this.bio;
-        data["isVerified"] = this.isVerified;
-        data["fullName"] = this.fullName;
-        data["occupationText"] = this.occupationText;
-        data["maritalStatus"] = this.maritalStatus;
-        if (Array.isArray(this.photos)) {
-            data["photos"] = [];
-            for (let item of this.photos)
-                data["photos"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IMemberProfileDto {
-    profileId?: number;
-    displayName?: string | undefined;
-    age?: number | undefined;
-    city?: string | undefined;
-    religion?: string | undefined;
-    caste?: string | undefined;
-    profilePicture?: string | undefined;
-    bio?: string | undefined;
-    isVerified?: boolean;
-    fullName?: string | undefined;
-    occupationText?: string | undefined;
-    maritalStatus?: string | undefined;
-    photos?: ProfilePhotoDto[] | undefined;
-}
-
-export class Message implements IMessage {
-    messageId?: number;
-    senderProfileId?: number;
-    receiverProfileId?: number;
-    messageText?: string | undefined;
-    isRead?: boolean;
-    sentAt?: Date;
-    tenantId?: number;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: IMessage) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.messageId = _data["messageId"];
-            this.senderProfileId = _data["senderProfileId"];
-            this.receiverProfileId = _data["receiverProfileId"];
-            this.messageText = _data["messageText"];
-            this.isRead = _data["isRead"];
-            this.sentAt = _data["sentAt"] ? new Date(_data["sentAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Message {
-        data = typeof data === 'object' ? data : {};
-        let result = new Message();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["messageId"] = this.messageId;
-        data["senderProfileId"] = this.senderProfileId;
-        data["receiverProfileId"] = this.receiverProfileId;
-        data["messageText"] = this.messageText;
-        data["isRead"] = this.isRead;
-        data["sentAt"] = this.sentAt ? this.sentAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IMessage {
-    messageId?: number;
-    senderProfileId?: number;
-    receiverProfileId?: number;
-    messageText?: string | undefined;
-    isRead?: boolean;
-    sentAt?: Date;
-    tenantId?: number;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-}
-
-export class MessageReadStatus implements IMessageReadStatus {
-    readStatusId?: number;
-    messageId?: number;
-    conversationId?: number;
-    profileId?: number;
-    userId?: number;
-    tenantId?: number;
-    isRead?: boolean;
-    readDate?: Date | undefined;
-    isDelivered?: boolean;
-    deliveredDate?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    conversation?: ChatConversation;
-    message?: ChatMessage;
-    profile?: Profile;
-    user?: User;
-
-    constructor(data?: IMessageReadStatus) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.readStatusId = _data["readStatusId"];
-            this.messageId = _data["messageId"];
-            this.conversationId = _data["conversationId"];
-            this.profileId = _data["profileId"];
-            this.userId = _data["userId"];
-            this.tenantId = _data["tenantId"];
-            this.isRead = _data["isRead"];
-            this.readDate = _data["readDate"] ? new Date(_data["readDate"].toString()) : undefined as any;
-            this.isDelivered = _data["isDelivered"];
-            this.deliveredDate = _data["deliveredDate"] ? new Date(_data["deliveredDate"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.conversation = _data["conversation"] ? ChatConversation.fromJS(_data["conversation"]) : undefined as any;
-            this.message = _data["message"] ? ChatMessage.fromJS(_data["message"]) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): MessageReadStatus {
-        data = typeof data === 'object' ? data : {};
-        let result = new MessageReadStatus();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["readStatusId"] = this.readStatusId;
-        data["messageId"] = this.messageId;
-        data["conversationId"] = this.conversationId;
-        data["profileId"] = this.profileId;
-        data["userId"] = this.userId;
-        data["tenantId"] = this.tenantId;
-        data["isRead"] = this.isRead;
-        data["readDate"] = this.readDate ? this.readDate.toISOString() : undefined as any;
-        data["isDelivered"] = this.isDelivered;
-        data["deliveredDate"] = this.deliveredDate ? this.deliveredDate.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["conversation"] = this.conversation ? this.conversation.toJSON() : undefined as any;
-        data["message"] = this.message ? this.message.toJSON() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IMessageReadStatus {
-    readStatusId?: number;
-    messageId?: number;
-    conversationId?: number;
-    profileId?: number;
-    userId?: number;
-    tenantId?: number;
-    isRead?: boolean;
-    readDate?: Date | undefined;
-    isDelivered?: boolean;
-    deliveredDate?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    conversation?: ChatConversation;
-    message?: ChatMessage;
-    profile?: Profile;
-    user?: User;
-}
-
-export class Nadi implements INadi {
-    nadiId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
-
-    constructor(data?: INadi) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.nadiId = _data["nadiId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profileHoroscopeDetails"])) {
-                this.profileHoroscopeDetails = [] as any;
-                for (let item of _data["profileHoroscopeDetails"])
-                    this.profileHoroscopeDetails!.push(ProfileHoroscopeDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Nadi {
-        data = typeof data === 'object' ? data : {};
-        let result = new Nadi();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["nadiId"] = this.nadiId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profileHoroscopeDetails)) {
-            data["profileHoroscopeDetails"] = [];
-            for (let item of this.profileHoroscopeDetails)
-                data["profileHoroscopeDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface INadi {
-    nadiId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
-}
-
-export class Nakshatra implements INakshatra {
-    nakshatraId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
-
-    constructor(data?: INakshatra) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.nakshatraId = _data["nakshatraId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profileHoroscopeDetails"])) {
-                this.profileHoroscopeDetails = [] as any;
-                for (let item of _data["profileHoroscopeDetails"])
-                    this.profileHoroscopeDetails!.push(ProfileHoroscopeDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Nakshatra {
-        data = typeof data === 'object' ? data : {};
-        let result = new Nakshatra();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["nakshatraId"] = this.nakshatraId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profileHoroscopeDetails)) {
-            data["profileHoroscopeDetails"] = [];
-            for (let item of this.profileHoroscopeDetails)
-                data["profileHoroscopeDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface INakshatra {
-    nakshatraId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
-}
-
-export class Notification implements INotification {
-    notificationId?: number;
-    userId?: number;
-    notificationText?: string | undefined;
-    isRead?: boolean;
-    createdAt?: Date;
-    tenantId?: number;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    user?: User;
-
-    constructor(data?: INotification) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.notificationId = _data["notificationId"];
-            this.userId = _data["userId"];
-            this.notificationText = _data["notificationText"];
-            this.isRead = _data["isRead"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Notification {
-        data = typeof data === 'object' ? data : {};
-        let result = new Notification();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["notificationId"] = this.notificationId;
-        data["userId"] = this.userId;
-        data["notificationText"] = this.notificationText;
-        data["isRead"] = this.isRead;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface INotification {
-    notificationId?: number;
-    userId?: number;
-    notificationText?: string | undefined;
-    isRead?: boolean;
-    createdAt?: Date;
-    tenantId?: number;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    user?: User;
-}
-
-export class Oauth2Provider implements IOauth2Provider {
-    providerId?: number;
-    tenantId?: number;
-    providerName?: string | undefined;
-    clientId?: string | undefined;
-    clientSecret?: string | undefined;
-    authorizationUrl?: string | undefined;
-    tokenUrl?: string | undefined;
-    userInfoUrl?: string | undefined;
-    redirectUrl?: string | undefined;
-    scope?: string | undefined;
-    isEnabled?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    oauth2Tokens?: Oauth2Token[] | undefined;
-    tenant?: Tenant;
-
-    constructor(data?: IOauth2Provider) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.providerId = _data["providerId"];
-            this.tenantId = _data["tenantId"];
-            this.providerName = _data["providerName"];
-            this.clientId = _data["clientId"];
-            this.clientSecret = _data["clientSecret"];
-            this.authorizationUrl = _data["authorizationUrl"];
-            this.tokenUrl = _data["tokenUrl"];
-            this.userInfoUrl = _data["userInfoUrl"];
-            this.redirectUrl = _data["redirectUrl"];
-            this.scope = _data["scope"];
-            this.isEnabled = _data["isEnabled"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            if (Array.isArray(_data["oauth2Tokens"])) {
-                this.oauth2Tokens = [] as any;
-                for (let item of _data["oauth2Tokens"])
-                    this.oauth2Tokens!.push(Oauth2Token.fromJS(item));
-            }
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Oauth2Provider {
-        data = typeof data === 'object' ? data : {};
-        let result = new Oauth2Provider();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["providerId"] = this.providerId;
-        data["tenantId"] = this.tenantId;
-        data["providerName"] = this.providerName;
-        data["clientId"] = this.clientId;
-        data["clientSecret"] = this.clientSecret;
-        data["authorizationUrl"] = this.authorizationUrl;
-        data["tokenUrl"] = this.tokenUrl;
-        data["userInfoUrl"] = this.userInfoUrl;
-        data["redirectUrl"] = this.redirectUrl;
-        data["scope"] = this.scope;
-        data["isEnabled"] = this.isEnabled;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        if (Array.isArray(this.oauth2Tokens)) {
-            data["oauth2Tokens"] = [];
-            for (let item of this.oauth2Tokens)
-                data["oauth2Tokens"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IOauth2Provider {
-    providerId?: number;
-    tenantId?: number;
-    providerName?: string | undefined;
-    clientId?: string | undefined;
-    clientSecret?: string | undefined;
-    authorizationUrl?: string | undefined;
-    tokenUrl?: string | undefined;
-    userInfoUrl?: string | undefined;
-    redirectUrl?: string | undefined;
-    scope?: string | undefined;
-    isEnabled?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    oauth2Tokens?: Oauth2Token[] | undefined;
-    tenant?: Tenant;
-}
-
-export class Oauth2Token implements IOauth2Token {
-    oauth2TokenId?: number;
-    userId?: number;
-    providerId?: number;
-    accessTokenHash?: string | undefined;
-    refreshTokenHash?: string | undefined;
-    accessTokenExpiresAt?: Date;
-    refreshTokenExpiresAt?: Date | undefined;
-    tokenType?: string | undefined;
-    scope?: string | undefined;
-    providerUserId?: string | undefined;
-    isRevoked?: boolean;
-    revokedAt?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    provider?: Oauth2Provider;
-    user?: User;
-
-    constructor(data?: IOauth2Token) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.oauth2TokenId = _data["oauth2TokenId"];
-            this.userId = _data["userId"];
-            this.providerId = _data["providerId"];
-            this.accessTokenHash = _data["accessTokenHash"];
-            this.refreshTokenHash = _data["refreshTokenHash"];
-            this.accessTokenExpiresAt = _data["accessTokenExpiresAt"] ? new Date(_data["accessTokenExpiresAt"].toString()) : undefined as any;
-            this.refreshTokenExpiresAt = _data["refreshTokenExpiresAt"] ? new Date(_data["refreshTokenExpiresAt"].toString()) : undefined as any;
-            this.tokenType = _data["tokenType"];
-            this.scope = _data["scope"];
-            this.providerUserId = _data["providerUserId"];
-            this.isRevoked = _data["isRevoked"];
-            this.revokedAt = _data["revokedAt"] ? new Date(_data["revokedAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.provider = _data["provider"] ? Oauth2Provider.fromJS(_data["provider"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Oauth2Token {
-        data = typeof data === 'object' ? data : {};
-        let result = new Oauth2Token();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["oauth2TokenId"] = this.oauth2TokenId;
-        data["userId"] = this.userId;
-        data["providerId"] = this.providerId;
-        data["accessTokenHash"] = this.accessTokenHash;
-        data["refreshTokenHash"] = this.refreshTokenHash;
-        data["accessTokenExpiresAt"] = this.accessTokenExpiresAt ? this.accessTokenExpiresAt.toISOString() : undefined as any;
-        data["refreshTokenExpiresAt"] = this.refreshTokenExpiresAt ? this.refreshTokenExpiresAt.toISOString() : undefined as any;
-        data["tokenType"] = this.tokenType;
-        data["scope"] = this.scope;
-        data["providerUserId"] = this.providerUserId;
-        data["isRevoked"] = this.isRevoked;
-        data["revokedAt"] = this.revokedAt ? this.revokedAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["provider"] = this.provider ? this.provider.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IOauth2Token {
-    oauth2TokenId?: number;
-    userId?: number;
-    providerId?: number;
-    accessTokenHash?: string | undefined;
-    refreshTokenHash?: string | undefined;
-    accessTokenExpiresAt?: Date;
-    refreshTokenExpiresAt?: Date | undefined;
-    tokenType?: string | undefined;
-    scope?: string | undefined;
-    providerUserId?: string | undefined;
-    isRevoked?: boolean;
-    revokedAt?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    provider?: Oauth2Provider;
-    user?: User;
-}
-
-export class Occupation implements IOccupation {
-    occupationId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileProfessionalDetails?: ProfileProfessionalDetail[] | undefined;
-
-    constructor(data?: IOccupation) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.occupationId = _data["occupationId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profileProfessionalDetails"])) {
-                this.profileProfessionalDetails = [] as any;
-                for (let item of _data["profileProfessionalDetails"])
-                    this.profileProfessionalDetails!.push(ProfileProfessionalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Occupation {
-        data = typeof data === 'object' ? data : {};
-        let result = new Occupation();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["occupationId"] = this.occupationId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profileProfessionalDetails)) {
-            data["profileProfessionalDetails"] = [];
-            for (let item of this.profileProfessionalDetails)
-                data["profileProfessionalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IOccupation {
-    occupationId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileProfessionalDetails?: ProfileProfessionalDetail[] | undefined;
-}
-
-export class PartnerPreference implements IPartnerPreference {
-    profileId?: number;
-    tenantId?: number;
+export class PartnerPreferenceDto implements IPartnerPreferenceDto {
     expectedManglik?: boolean | undefined;
-    expectedCaste?: string | undefined;
     maxAgeDifference?: number | undefined;
     expectedHeightFt?: number | undefined;
     expectedHeightIn?: number | undefined;
-    expectedEducation?: string | undefined;
-    expectedOccupationIncome?: string | undefined;
     divorcee?: boolean | undefined;
-    preferredCities?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
+    expectedCasteNoBar?: boolean;
+    expectedEducationNoBar?: boolean;
+    expectedOccupationNoBar?: boolean;
+    expectedIncomeRangeId?: number | undefined;
 
-    constructor(data?: IPartnerPreference) {
+    constructor(data?: IPartnerPreferenceDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4836,330 +1936,82 @@ export class PartnerPreference implements IPartnerPreference {
 
     init(_data?: any) {
         if (_data) {
-            this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
             this.expectedManglik = _data["expectedManglik"];
-            this.expectedCaste = _data["expectedCaste"];
             this.maxAgeDifference = _data["maxAgeDifference"];
             this.expectedHeightFt = _data["expectedHeightFt"];
             this.expectedHeightIn = _data["expectedHeightIn"];
-            this.expectedEducation = _data["expectedEducation"];
-            this.expectedOccupationIncome = _data["expectedOccupationIncome"];
             this.divorcee = _data["divorcee"];
-            this.preferredCities = _data["preferredCities"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? UserProfile.fromJS(_data["profile"]) : undefined as any;
+            this.expectedCasteNoBar = _data["expectedCasteNoBar"];
+            this.expectedEducationNoBar = _data["expectedEducationNoBar"];
+            this.expectedOccupationNoBar = _data["expectedOccupationNoBar"];
+            this.expectedIncomeRangeId = _data["expectedIncomeRangeId"];
         }
     }
 
-    static fromJS(data: any): PartnerPreference {
+    static fromJS(data: any): PartnerPreferenceDto {
         data = typeof data === 'object' ? data : {};
-        let result = new PartnerPreference();
+        let result = new PartnerPreferenceDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
         data["expectedManglik"] = this.expectedManglik;
-        data["expectedCaste"] = this.expectedCaste;
         data["maxAgeDifference"] = this.maxAgeDifference;
         data["expectedHeightFt"] = this.expectedHeightFt;
         data["expectedHeightIn"] = this.expectedHeightIn;
-        data["expectedEducation"] = this.expectedEducation;
-        data["expectedOccupationIncome"] = this.expectedOccupationIncome;
         data["divorcee"] = this.divorcee;
-        data["preferredCities"] = this.preferredCities;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
+        data["expectedCasteNoBar"] = this.expectedCasteNoBar;
+        data["expectedEducationNoBar"] = this.expectedEducationNoBar;
+        data["expectedOccupationNoBar"] = this.expectedOccupationNoBar;
+        data["expectedIncomeRangeId"] = this.expectedIncomeRangeId;
         return data;
     }
 }
 
-export interface IPartnerPreference {
-    profileId?: number;
-    tenantId?: number;
+export interface IPartnerPreferenceDto {
     expectedManglik?: boolean | undefined;
-    expectedCaste?: string | undefined;
     maxAgeDifference?: number | undefined;
     expectedHeightFt?: number | undefined;
     expectedHeightIn?: number | undefined;
-    expectedEducation?: string | undefined;
-    expectedOccupationIncome?: string | undefined;
     divorcee?: boolean | undefined;
-    preferredCities?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
+    expectedCasteNoBar?: boolean;
+    expectedEducationNoBar?: boolean;
+    expectedOccupationNoBar?: boolean;
+    expectedIncomeRangeId?: number | undefined;
 }
 
-export class Payment implements IPayment {
-    paymentId?: number;
-    tenantId?: number;
-    userId?: number | undefined;
-    subscriptionId?: number | undefined;
-    userSubscriptionId?: number | undefined;
-    amount?: number;
-    paymentGateway?: string | undefined;
-    transactionReference?: string | undefined;
-    status?: string | undefined;
-    verifiedBy?: string | undefined;
-    notes?: string | undefined;
-    createdAt?: Date;
-    rowVersion?: string | undefined;
-    currencyCode?: string | undefined;
-    paymentIntentId?: string | undefined;
-    idempotencyKey?: string | undefined;
-    gatewayResponseCode?: string | undefined;
-    gatewayResponseJson?: string | undefined;
-    succeededAt?: Date | undefined;
-    failedAt?: Date | undefined;
-    refundedAt?: Date | undefined;
-    tenant?: Tenant;
-    tenantSubscription?: TenantSubscription;
-    user?: User;
-    userSubscription?: UserSubscription;
-
-    constructor(data?: IPayment) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.paymentId = _data["paymentId"];
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.subscriptionId = _data["subscriptionId"];
-            this.userSubscriptionId = _data["userSubscriptionId"];
-            this.amount = _data["amount"];
-            this.paymentGateway = _data["paymentGateway"];
-            this.transactionReference = _data["transactionReference"];
-            this.status = _data["status"];
-            this.verifiedBy = _data["verifiedBy"];
-            this.notes = _data["notes"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.rowVersion = _data["rowVersion"];
-            this.currencyCode = _data["currencyCode"];
-            this.paymentIntentId = _data["paymentIntentId"];
-            this.idempotencyKey = _data["idempotencyKey"];
-            this.gatewayResponseCode = _data["gatewayResponseCode"];
-            this.gatewayResponseJson = _data["gatewayResponseJson"];
-            this.succeededAt = _data["succeededAt"] ? new Date(_data["succeededAt"].toString()) : undefined as any;
-            this.failedAt = _data["failedAt"] ? new Date(_data["failedAt"].toString()) : undefined as any;
-            this.refundedAt = _data["refundedAt"] ? new Date(_data["refundedAt"].toString()) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.tenantSubscription = _data["tenantSubscription"] ? TenantSubscription.fromJS(_data["tenantSubscription"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-            this.userSubscription = _data["userSubscription"] ? UserSubscription.fromJS(_data["userSubscription"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Payment {
-        data = typeof data === 'object' ? data : {};
-        let result = new Payment();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["paymentId"] = this.paymentId;
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["subscriptionId"] = this.subscriptionId;
-        data["userSubscriptionId"] = this.userSubscriptionId;
-        data["amount"] = this.amount;
-        data["paymentGateway"] = this.paymentGateway;
-        data["transactionReference"] = this.transactionReference;
-        data["status"] = this.status;
-        data["verifiedBy"] = this.verifiedBy;
-        data["notes"] = this.notes;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["rowVersion"] = this.rowVersion;
-        data["currencyCode"] = this.currencyCode;
-        data["paymentIntentId"] = this.paymentIntentId;
-        data["idempotencyKey"] = this.idempotencyKey;
-        data["gatewayResponseCode"] = this.gatewayResponseCode;
-        data["gatewayResponseJson"] = this.gatewayResponseJson;
-        data["succeededAt"] = this.succeededAt ? this.succeededAt.toISOString() : undefined as any;
-        data["failedAt"] = this.failedAt ? this.failedAt.toISOString() : undefined as any;
-        data["refundedAt"] = this.refundedAt ? this.refundedAt.toISOString() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["tenantSubscription"] = this.tenantSubscription ? this.tenantSubscription.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        data["userSubscription"] = this.userSubscription ? this.userSubscription.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IPayment {
-    paymentId?: number;
-    tenantId?: number;
-    userId?: number | undefined;
-    subscriptionId?: number | undefined;
-    userSubscriptionId?: number | undefined;
-    amount?: number;
-    paymentGateway?: string | undefined;
-    transactionReference?: string | undefined;
-    status?: string | undefined;
-    verifiedBy?: string | undefined;
-    notes?: string | undefined;
-    createdAt?: Date;
-    rowVersion?: string | undefined;
-    currencyCode?: string | undefined;
-    paymentIntentId?: string | undefined;
-    idempotencyKey?: string | undefined;
-    gatewayResponseCode?: string | undefined;
-    gatewayResponseJson?: string | undefined;
-    succeededAt?: Date | undefined;
-    failedAt?: Date | undefined;
-    refundedAt?: Date | undefined;
-    tenant?: Tenant;
-    tenantSubscription?: TenantSubscription;
-    user?: User;
-    userSubscription?: UserSubscription;
-}
-
-export class Permission implements IPermission {
-    permissionId?: number;
-    tenantId?: number;
-    permissionCode?: string | undefined;
-    displayName?: string | undefined;
-    description?: string | undefined;
-    resourceType?: string | undefined;
-    action?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    tenant?: Tenant;
-    userPermissions?: UserPermission[] | undefined;
-
-    constructor(data?: IPermission) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.permissionId = _data["permissionId"];
-            this.tenantId = _data["tenantId"];
-            this.permissionCode = _data["permissionCode"];
-            this.displayName = _data["displayName"];
-            this.description = _data["description"];
-            this.resourceType = _data["resourceType"];
-            this.action = _data["action"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            if (Array.isArray(_data["userPermissions"])) {
-                this.userPermissions = [] as any;
-                for (let item of _data["userPermissions"])
-                    this.userPermissions!.push(UserPermission.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Permission {
-        data = typeof data === 'object' ? data : {};
-        let result = new Permission();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["permissionId"] = this.permissionId;
-        data["tenantId"] = this.tenantId;
-        data["permissionCode"] = this.permissionCode;
-        data["displayName"] = this.displayName;
-        data["description"] = this.description;
-        data["resourceType"] = this.resourceType;
-        data["action"] = this.action;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        if (Array.isArray(this.userPermissions)) {
-            data["userPermissions"] = [];
-            for (let item of this.userPermissions)
-                data["userPermissions"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IPermission {
-    permissionId?: number;
-    tenantId?: number;
-    permissionCode?: string | undefined;
-    displayName?: string | undefined;
-    description?: string | undefined;
-    resourceType?: string | undefined;
-    action?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    tenant?: Tenant;
-    userPermissions?: UserPermission[] | undefined;
-}
-
-export class PersonalDetails implements IPersonalDetails {
-    profileId?: number;
-    tenantId?: number;
+export class PersonalDetailsDto implements IPersonalDetailsDto {
     firstName?: string | undefined;
     middleName?: string | undefined;
     lastName?: string | undefined;
     dobDay?: number;
     dobMonth?: string | undefined;
     dobYear?: number;
-    gender?: string | undefined;
-    religion?: string | undefined;
-    caste?: string | undefined;
-    subCaste?: string | undefined;
-    maritalStatus?: string | undefined;
+    dateOfBirth?: Date | undefined;
+    genderId?: number | undefined;
+    religionId?: number | undefined;
+    casteId?: number | undefined;
+    subCasteId?: number | undefined;
+    maritalStatusId?: number | undefined;
+    countryId?: number | undefined;
+    stateId?: number | undefined;
+    districtId?: number | undefined;
+    talukaId?: number | undefined;
     heightFt?: number | undefined;
     heightIn?: number | undefined;
     weightKg?: number | undefined;
-    bloodGroup?: string | undefined;
-    complexion?: string | undefined;
+    bloodGroupId?: number | undefined;
+    complexionId?: number | undefined;
+    dietId?: number | undefined;
+    personalityId?: number | undefined;
     physicalDisability?: boolean;
     disabilityDetail?: string | undefined;
-    diet?: string | undefined;
     spectacles?: boolean | undefined;
     lens?: boolean | undefined;
-    personality?: string | undefined;
-    dateOfBirth?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
 
-    constructor(data?: IPersonalDetails) {
+    constructor(data?: IPersonalDetailsDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5170,123 +2022,123 @@ export class PersonalDetails implements IPersonalDetails {
 
     init(_data?: any) {
         if (_data) {
-            this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
             this.firstName = _data["firstName"];
             this.middleName = _data["middleName"];
             this.lastName = _data["lastName"];
             this.dobDay = _data["dobDay"];
             this.dobMonth = _data["dobMonth"];
             this.dobYear = _data["dobYear"];
-            this.gender = _data["gender"];
-            this.religion = _data["religion"];
-            this.caste = _data["caste"];
-            this.subCaste = _data["subCaste"];
-            this.maritalStatus = _data["maritalStatus"];
+            this.dateOfBirth = _data["dateOfBirth"] ? new Date(_data["dateOfBirth"].toString()) : undefined as any;
+            this.genderId = _data["genderId"];
+            this.religionId = _data["religionId"];
+            this.casteId = _data["casteId"];
+            this.subCasteId = _data["subCasteId"];
+            this.maritalStatusId = _data["maritalStatusId"];
+            this.countryId = _data["countryId"];
+            this.stateId = _data["stateId"];
+            this.districtId = _data["districtId"];
+            this.talukaId = _data["talukaId"];
             this.heightFt = _data["heightFt"];
             this.heightIn = _data["heightIn"];
             this.weightKg = _data["weightKg"];
-            this.bloodGroup = _data["bloodGroup"];
-            this.complexion = _data["complexion"];
+            this.bloodGroupId = _data["bloodGroupId"];
+            this.complexionId = _data["complexionId"];
+            this.dietId = _data["dietId"];
+            this.personalityId = _data["personalityId"];
             this.physicalDisability = _data["physicalDisability"];
             this.disabilityDetail = _data["disabilityDetail"];
-            this.diet = _data["diet"];
             this.spectacles = _data["spectacles"];
             this.lens = _data["lens"];
-            this.personality = _data["personality"];
-            this.dateOfBirth = _data["dateOfBirth"] ? new Date(_data["dateOfBirth"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? UserProfile.fromJS(_data["profile"]) : undefined as any;
         }
     }
 
-    static fromJS(data: any): PersonalDetails {
+    static fromJS(data: any): PersonalDetailsDto {
         data = typeof data === 'object' ? data : {};
-        let result = new PersonalDetails();
+        let result = new PersonalDetailsDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
         data["firstName"] = this.firstName;
         data["middleName"] = this.middleName;
         data["lastName"] = this.lastName;
         data["dobDay"] = this.dobDay;
         data["dobMonth"] = this.dobMonth;
         data["dobYear"] = this.dobYear;
-        data["gender"] = this.gender;
-        data["religion"] = this.religion;
-        data["caste"] = this.caste;
-        data["subCaste"] = this.subCaste;
-        data["maritalStatus"] = this.maritalStatus;
+        data["dateOfBirth"] = this.dateOfBirth ? formatDate(this.dateOfBirth) : undefined as any;
+        data["genderId"] = this.genderId;
+        data["religionId"] = this.religionId;
+        data["casteId"] = this.casteId;
+        data["subCasteId"] = this.subCasteId;
+        data["maritalStatusId"] = this.maritalStatusId;
+        data["countryId"] = this.countryId;
+        data["stateId"] = this.stateId;
+        data["districtId"] = this.districtId;
+        data["talukaId"] = this.talukaId;
         data["heightFt"] = this.heightFt;
         data["heightIn"] = this.heightIn;
         data["weightKg"] = this.weightKg;
-        data["bloodGroup"] = this.bloodGroup;
-        data["complexion"] = this.complexion;
+        data["bloodGroupId"] = this.bloodGroupId;
+        data["complexionId"] = this.complexionId;
+        data["dietId"] = this.dietId;
+        data["personalityId"] = this.personalityId;
         data["physicalDisability"] = this.physicalDisability;
         data["disabilityDetail"] = this.disabilityDetail;
-        data["diet"] = this.diet;
         data["spectacles"] = this.spectacles;
         data["lens"] = this.lens;
-        data["personality"] = this.personality;
-        data["dateOfBirth"] = this.dateOfBirth ? this.dateOfBirth.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
         return data;
     }
 }
 
-export interface IPersonalDetails {
-    profileId?: number;
-    tenantId?: number;
+export interface IPersonalDetailsDto {
     firstName?: string | undefined;
     middleName?: string | undefined;
     lastName?: string | undefined;
     dobDay?: number;
     dobMonth?: string | undefined;
     dobYear?: number;
-    gender?: string | undefined;
-    religion?: string | undefined;
-    caste?: string | undefined;
-    subCaste?: string | undefined;
-    maritalStatus?: string | undefined;
+    dateOfBirth?: Date | undefined;
+    genderId?: number | undefined;
+    religionId?: number | undefined;
+    casteId?: number | undefined;
+    subCasteId?: number | undefined;
+    maritalStatusId?: number | undefined;
+    countryId?: number | undefined;
+    stateId?: number | undefined;
+    districtId?: number | undefined;
+    talukaId?: number | undefined;
     heightFt?: number | undefined;
     heightIn?: number | undefined;
     weightKg?: number | undefined;
-    bloodGroup?: string | undefined;
-    complexion?: string | undefined;
+    bloodGroupId?: number | undefined;
+    complexionId?: number | undefined;
+    dietId?: number | undefined;
+    personalityId?: number | undefined;
     physicalDisability?: boolean;
     disabilityDetail?: string | undefined;
-    diet?: string | undefined;
     spectacles?: boolean | undefined;
     lens?: boolean | undefined;
-    personality?: string | undefined;
-    dateOfBirth?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: UserProfile;
 }
 
-export class Personality implements IPersonality {
-    personalityId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
+export class PersonalDetailsViewDto implements IPersonalDetailsViewDto {
+    genderId?: number | undefined;
+    religionId?: number | undefined;
+    casteId?: number | undefined;
+    subCasteId?: number | undefined;
+    maritalStatusId?: number | undefined;
+    heightFt?: number | undefined;
+    heightIn?: number | undefined;
+    weightKg?: number | undefined;
+    bloodGroupId?: number | undefined;
+    complexionId?: number | undefined;
+    dietId?: number | undefined;
+    personalityId?: number | undefined;
+    physicalDisability?: boolean;
+    disabilityDetail?: string | undefined;
 
-    constructor(data?: IPersonality) {
+    constructor(data?: IPersonalDetailsViewDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5297,80 +2149,72 @@ export class Personality implements IPersonality {
 
     init(_data?: any) {
         if (_data) {
+            this.genderId = _data["genderId"];
+            this.religionId = _data["religionId"];
+            this.casteId = _data["casteId"];
+            this.subCasteId = _data["subCasteId"];
+            this.maritalStatusId = _data["maritalStatusId"];
+            this.heightFt = _data["heightFt"];
+            this.heightIn = _data["heightIn"];
+            this.weightKg = _data["weightKg"];
+            this.bloodGroupId = _data["bloodGroupId"];
+            this.complexionId = _data["complexionId"];
+            this.dietId = _data["dietId"];
             this.personalityId = _data["personalityId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
+            this.physicalDisability = _data["physicalDisability"];
+            this.disabilityDetail = _data["disabilityDetail"];
         }
     }
 
-    static fromJS(data: any): Personality {
+    static fromJS(data: any): PersonalDetailsViewDto {
         data = typeof data === 'object' ? data : {};
-        let result = new Personality();
+        let result = new PersonalDetailsViewDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["genderId"] = this.genderId;
+        data["religionId"] = this.religionId;
+        data["casteId"] = this.casteId;
+        data["subCasteId"] = this.subCasteId;
+        data["maritalStatusId"] = this.maritalStatusId;
+        data["heightFt"] = this.heightFt;
+        data["heightIn"] = this.heightIn;
+        data["weightKg"] = this.weightKg;
+        data["bloodGroupId"] = this.bloodGroupId;
+        data["complexionId"] = this.complexionId;
+        data["dietId"] = this.dietId;
         data["personalityId"] = this.personalityId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
+        data["physicalDisability"] = this.physicalDisability;
+        data["disabilityDetail"] = this.disabilityDetail;
         return data;
     }
 }
 
-export interface IPersonality {
-    personalityId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
+export interface IPersonalDetailsViewDto {
+    genderId?: number | undefined;
+    religionId?: number | undefined;
+    casteId?: number | undefined;
+    subCasteId?: number | undefined;
+    maritalStatusId?: number | undefined;
+    heightFt?: number | undefined;
+    heightIn?: number | undefined;
+    weightKg?: number | undefined;
+    bloodGroupId?: number | undefined;
+    complexionId?: number | undefined;
+    dietId?: number | undefined;
+    personalityId?: number | undefined;
+    physicalDisability?: boolean;
+    disabilityDetail?: string | undefined;
 }
 
-export class Plan implements IPlan {
-    planId?: number;
-    planName?: string | undefined;
-    price?: number;
-    durationMonths?: number;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    tenantSubscriptions?: TenantSubscription[] | undefined;
+export class PhoneNumberDto implements IPhoneNumberDto {
+    phoneType?: string | undefined;
+    phoneNumber?: string | undefined;
 
-    constructor(data?: IPlan) {
+    constructor(data?: IPhoneNumberDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5381,122 +2225,99 @@ export class Plan implements IPlan {
 
     init(_data?: any) {
         if (_data) {
-            this.planId = _data["planId"];
-            this.planName = _data["planName"];
-            this.price = _data["price"];
-            this.durationMonths = _data["durationMonths"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            if (Array.isArray(_data["tenantSubscriptions"])) {
-                this.tenantSubscriptions = [] as any;
-                for (let item of _data["tenantSubscriptions"])
-                    this.tenantSubscriptions!.push(TenantSubscription.fromJS(item));
-            }
+            this.phoneType = _data["phoneType"];
+            this.phoneNumber = _data["phoneNumber"];
         }
     }
 
-    static fromJS(data: any): Plan {
+    static fromJS(data: any): PhoneNumberDto {
         data = typeof data === 'object' ? data : {};
-        let result = new Plan();
+        let result = new PhoneNumberDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["planId"] = this.planId;
-        data["planName"] = this.planName;
-        data["price"] = this.price;
-        data["durationMonths"] = this.durationMonths;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        if (Array.isArray(this.tenantSubscriptions)) {
-            data["tenantSubscriptions"] = [];
-            for (let item of this.tenantSubscriptions)
-                data["tenantSubscriptions"].push(item ? item.toJSON() : undefined as any);
-        }
+        data["phoneType"] = this.phoneType;
+        data["phoneNumber"] = this.phoneNumber;
         return data;
     }
 }
 
-export interface IPlan {
-    planId?: number;
-    planName?: string | undefined;
-    price?: number;
-    durationMonths?: number;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    tenantSubscriptions?: TenantSubscription[] | undefined;
+export interface IPhoneNumberDto {
+    phoneType?: string | undefined;
+    phoneNumber?: string | undefined;
 }
 
-export class Profile implements IProfile {
+export class PhoneNumberDtoCreate implements IPhoneNumberDtoCreate {
+    phoneType?: string | undefined;
+    phoneNumber?: string | undefined;
+
+    constructor(data?: IPhoneNumberDtoCreate) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.phoneType = _data["phoneType"];
+            this.phoneNumber = _data["phoneNumber"];
+        }
+    }
+
+    static fromJS(data: any): PhoneNumberDtoCreate {
+        data = typeof data === 'object' ? data : {};
+        let result = new PhoneNumberDtoCreate();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["phoneType"] = this.phoneType;
+        data["phoneNumber"] = this.phoneNumber;
+        return data;
+    }
+}
+
+export interface IPhoneNumberDtoCreate {
+    phoneType?: string | undefined;
+    phoneNumber?: string | undefined;
+}
+
+export class ProfileDetailDto implements IProfileDetailDto {
     profileId?: number;
-    tenantId?: number;
-    userId?: number;
     profileCode?: string | undefined;
     fullName?: string | undefined;
     age?: number | undefined;
     bio?: string | undefined;
     locationText?: string | undefined;
     occupationText?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
     isVerified?: boolean;
     profileCompletionPercent?: number;
     lastActiveAt?: Date | undefined;
-    searchScore?: number | undefined;
-    blockedChatUserProfileNavigations?: BlockedChatUser[] | undefined;
-    blockedChatUserProfiles?: BlockedChatUser[] | undefined;
-    chatConversationProfileNavigations?: ChatConversation[] | undefined;
-    chatConversationProfiles?: ChatConversation[] | undefined;
-    chatMessages?: ChatMessage[] | undefined;
-    chatParticipants?: ChatParticipant[] | undefined;
-    eventRsvps?: EventRsvp[] | undefined;
-    interestRequestProfileNavigations?: InterestRequest[] | undefined;
-    interestRequestProfiles?: InterestRequest[] | undefined;
-    interests?: Interest[] | undefined;
-    messageProfileNavigations?: Message[] | undefined;
-    messageProfiles?: Message[] | undefined;
-    messageReadStatuses?: MessageReadStatus[] | undefined;
-    profileBlockProfileNavigations?: ProfileBlock[] | undefined;
-    profileBlockProfiles?: ProfileBlock[] | undefined;
-    profileContactDetail?: ProfileContactDetail;
-    profileExpectation?: ProfileExpectation;
-    profileFamilyDetail?: ProfileFamilyDetail;
-    profileFavoriteProfileNavigations?: ProfileFavorite[] | undefined;
-    profileFavoriteProfiles?: ProfileFavorite[] | undefined;
-    profileHoroscopeDetail?: ProfileHoroscopeDetail;
-    profilePersonalDetail?: ProfilePersonalDetail;
-    profilePhoneNumbers?: ProfilePhoneNumber[] | undefined;
-    profilePhoto?: ProfilePhoto;
-    profilePreferredCities?: ProfilePreferredCity[] | undefined;
-    profileProfessionalDetail?: ProfileProfessionalDetail;
-    profileRelatives?: ProfileRelative[] | undefined;
-    profileReportProfileNavigations?: ProfileReport[] | undefined;
-    profileReportProfiles?: ProfileReport[] | undefined;
-    profileVerification?: ProfileVerification;
-    profileViewViewedProfiles?: ProfileView[] | undefined;
-    profileViewViewerProfiles?: ProfileView[] | undefined;
-    successStoryProfileNavigations?: SuccessStory[] | undefined;
-    successStoryProfiles?: SuccessStory[] | undefined;
-    tenant?: Tenant;
-    user?: User;
-    userOnlineStatuses?: UserOnlineStatus[] | undefined;
+    photos?: ProfilePhotoDto[] | undefined;
+    personalDetails?: PersonalDetailsViewDto;
+    career?: CareerDetailsViewDto;
+    familyInfo?: FamilyDetailsDto;
+    relativeSurnames?: string[] | undefined;
+    partnerPreference?: PartnerPreferenceDto;
+    horoscope?: ProfileHoroscopeDetailDto;
+    interests?: string[] | undefined;
+    preferredCities?: string[] | undefined;
+    expectedCasteIds?: number[] | undefined;
+    expectedEducationIds?: number[] | undefined;
+    expectedOccupationIds?: number[] | undefined;
+    contact?: ContactDetailsDto;
+    phoneNumbers?: PhoneNumberDto[] | undefined;
+    isContactUnlocked?: boolean;
 
-    constructor(data?: IProfile) {
+    constructor(data?: IProfileDetailDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5508,172 +2329,68 @@ export class Profile implements IProfile {
     init(_data?: any) {
         if (_data) {
             this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
             this.profileCode = _data["profileCode"];
             this.fullName = _data["fullName"];
             this.age = _data["age"];
             this.bio = _data["bio"];
             this.locationText = _data["locationText"];
             this.occupationText = _data["occupationText"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
             this.isVerified = _data["isVerified"];
             this.profileCompletionPercent = _data["profileCompletionPercent"];
             this.lastActiveAt = _data["lastActiveAt"] ? new Date(_data["lastActiveAt"].toString()) : undefined as any;
-            this.searchScore = _data["searchScore"];
-            if (Array.isArray(_data["blockedChatUserProfileNavigations"])) {
-                this.blockedChatUserProfileNavigations = [] as any;
-                for (let item of _data["blockedChatUserProfileNavigations"])
-                    this.blockedChatUserProfileNavigations!.push(BlockedChatUser.fromJS(item));
+            if (Array.isArray(_data["photos"])) {
+                this.photos = [] as any;
+                for (let item of _data["photos"])
+                    this.photos!.push(ProfilePhotoDto.fromJS(item));
             }
-            if (Array.isArray(_data["blockedChatUserProfiles"])) {
-                this.blockedChatUserProfiles = [] as any;
-                for (let item of _data["blockedChatUserProfiles"])
-                    this.blockedChatUserProfiles!.push(BlockedChatUser.fromJS(item));
+            this.personalDetails = _data["personalDetails"] ? PersonalDetailsViewDto.fromJS(_data["personalDetails"]) : undefined as any;
+            this.career = _data["career"] ? CareerDetailsViewDto.fromJS(_data["career"]) : undefined as any;
+            this.familyInfo = _data["familyInfo"] ? FamilyDetailsDto.fromJS(_data["familyInfo"]) : undefined as any;
+            if (Array.isArray(_data["relativeSurnames"])) {
+                this.relativeSurnames = [] as any;
+                for (let item of _data["relativeSurnames"])
+                    this.relativeSurnames!.push(item);
             }
-            if (Array.isArray(_data["chatConversationProfileNavigations"])) {
-                this.chatConversationProfileNavigations = [] as any;
-                for (let item of _data["chatConversationProfileNavigations"])
-                    this.chatConversationProfileNavigations!.push(ChatConversation.fromJS(item));
-            }
-            if (Array.isArray(_data["chatConversationProfiles"])) {
-                this.chatConversationProfiles = [] as any;
-                for (let item of _data["chatConversationProfiles"])
-                    this.chatConversationProfiles!.push(ChatConversation.fromJS(item));
-            }
-            if (Array.isArray(_data["chatMessages"])) {
-                this.chatMessages = [] as any;
-                for (let item of _data["chatMessages"])
-                    this.chatMessages!.push(ChatMessage.fromJS(item));
-            }
-            if (Array.isArray(_data["chatParticipants"])) {
-                this.chatParticipants = [] as any;
-                for (let item of _data["chatParticipants"])
-                    this.chatParticipants!.push(ChatParticipant.fromJS(item));
-            }
-            if (Array.isArray(_data["eventRsvps"])) {
-                this.eventRsvps = [] as any;
-                for (let item of _data["eventRsvps"])
-                    this.eventRsvps!.push(EventRsvp.fromJS(item));
-            }
-            if (Array.isArray(_data["interestRequestProfileNavigations"])) {
-                this.interestRequestProfileNavigations = [] as any;
-                for (let item of _data["interestRequestProfileNavigations"])
-                    this.interestRequestProfileNavigations!.push(InterestRequest.fromJS(item));
-            }
-            if (Array.isArray(_data["interestRequestProfiles"])) {
-                this.interestRequestProfiles = [] as any;
-                for (let item of _data["interestRequestProfiles"])
-                    this.interestRequestProfiles!.push(InterestRequest.fromJS(item));
-            }
+            this.partnerPreference = _data["partnerPreference"] ? PartnerPreferenceDto.fromJS(_data["partnerPreference"]) : undefined as any;
+            this.horoscope = _data["horoscope"] ? ProfileHoroscopeDetailDto.fromJS(_data["horoscope"]) : undefined as any;
             if (Array.isArray(_data["interests"])) {
                 this.interests = [] as any;
                 for (let item of _data["interests"])
-                    this.interests!.push(Interest.fromJS(item));
+                    this.interests!.push(item);
             }
-            if (Array.isArray(_data["messageProfileNavigations"])) {
-                this.messageProfileNavigations = [] as any;
-                for (let item of _data["messageProfileNavigations"])
-                    this.messageProfileNavigations!.push(Message.fromJS(item));
+            if (Array.isArray(_data["preferredCities"])) {
+                this.preferredCities = [] as any;
+                for (let item of _data["preferredCities"])
+                    this.preferredCities!.push(item);
             }
-            if (Array.isArray(_data["messageProfiles"])) {
-                this.messageProfiles = [] as any;
-                for (let item of _data["messageProfiles"])
-                    this.messageProfiles!.push(Message.fromJS(item));
+            if (Array.isArray(_data["expectedCasteIds"])) {
+                this.expectedCasteIds = [] as any;
+                for (let item of _data["expectedCasteIds"])
+                    this.expectedCasteIds!.push(item);
             }
-            if (Array.isArray(_data["messageReadStatuses"])) {
-                this.messageReadStatuses = [] as any;
-                for (let item of _data["messageReadStatuses"])
-                    this.messageReadStatuses!.push(MessageReadStatus.fromJS(item));
+            if (Array.isArray(_data["expectedEducationIds"])) {
+                this.expectedEducationIds = [] as any;
+                for (let item of _data["expectedEducationIds"])
+                    this.expectedEducationIds!.push(item);
             }
-            if (Array.isArray(_data["profileBlockProfileNavigations"])) {
-                this.profileBlockProfileNavigations = [] as any;
-                for (let item of _data["profileBlockProfileNavigations"])
-                    this.profileBlockProfileNavigations!.push(ProfileBlock.fromJS(item));
+            if (Array.isArray(_data["expectedOccupationIds"])) {
+                this.expectedOccupationIds = [] as any;
+                for (let item of _data["expectedOccupationIds"])
+                    this.expectedOccupationIds!.push(item);
             }
-            if (Array.isArray(_data["profileBlockProfiles"])) {
-                this.profileBlockProfiles = [] as any;
-                for (let item of _data["profileBlockProfiles"])
-                    this.profileBlockProfiles!.push(ProfileBlock.fromJS(item));
+            this.contact = _data["contact"] ? ContactDetailsDto.fromJS(_data["contact"]) : undefined as any;
+            if (Array.isArray(_data["phoneNumbers"])) {
+                this.phoneNumbers = [] as any;
+                for (let item of _data["phoneNumbers"])
+                    this.phoneNumbers!.push(PhoneNumberDto.fromJS(item));
             }
-            this.profileContactDetail = _data["profileContactDetail"] ? ProfileContactDetail.fromJS(_data["profileContactDetail"]) : undefined as any;
-            this.profileExpectation = _data["profileExpectation"] ? ProfileExpectation.fromJS(_data["profileExpectation"]) : undefined as any;
-            this.profileFamilyDetail = _data["profileFamilyDetail"] ? ProfileFamilyDetail.fromJS(_data["profileFamilyDetail"]) : undefined as any;
-            if (Array.isArray(_data["profileFavoriteProfileNavigations"])) {
-                this.profileFavoriteProfileNavigations = [] as any;
-                for (let item of _data["profileFavoriteProfileNavigations"])
-                    this.profileFavoriteProfileNavigations!.push(ProfileFavorite.fromJS(item));
-            }
-            if (Array.isArray(_data["profileFavoriteProfiles"])) {
-                this.profileFavoriteProfiles = [] as any;
-                for (let item of _data["profileFavoriteProfiles"])
-                    this.profileFavoriteProfiles!.push(ProfileFavorite.fromJS(item));
-            }
-            this.profileHoroscopeDetail = _data["profileHoroscopeDetail"] ? ProfileHoroscopeDetail.fromJS(_data["profileHoroscopeDetail"]) : undefined as any;
-            this.profilePersonalDetail = _data["profilePersonalDetail"] ? ProfilePersonalDetail.fromJS(_data["profilePersonalDetail"]) : undefined as any;
-            if (Array.isArray(_data["profilePhoneNumbers"])) {
-                this.profilePhoneNumbers = [] as any;
-                for (let item of _data["profilePhoneNumbers"])
-                    this.profilePhoneNumbers!.push(ProfilePhoneNumber.fromJS(item));
-            }
-            this.profilePhoto = _data["profilePhoto"] ? ProfilePhoto.fromJS(_data["profilePhoto"]) : undefined as any;
-            if (Array.isArray(_data["profilePreferredCities"])) {
-                this.profilePreferredCities = [] as any;
-                for (let item of _data["profilePreferredCities"])
-                    this.profilePreferredCities!.push(ProfilePreferredCity.fromJS(item));
-            }
-            this.profileProfessionalDetail = _data["profileProfessionalDetail"] ? ProfileProfessionalDetail.fromJS(_data["profileProfessionalDetail"]) : undefined as any;
-            if (Array.isArray(_data["profileRelatives"])) {
-                this.profileRelatives = [] as any;
-                for (let item of _data["profileRelatives"])
-                    this.profileRelatives!.push(ProfileRelative.fromJS(item));
-            }
-            if (Array.isArray(_data["profileReportProfileNavigations"])) {
-                this.profileReportProfileNavigations = [] as any;
-                for (let item of _data["profileReportProfileNavigations"])
-                    this.profileReportProfileNavigations!.push(ProfileReport.fromJS(item));
-            }
-            if (Array.isArray(_data["profileReportProfiles"])) {
-                this.profileReportProfiles = [] as any;
-                for (let item of _data["profileReportProfiles"])
-                    this.profileReportProfiles!.push(ProfileReport.fromJS(item));
-            }
-            this.profileVerification = _data["profileVerification"] ? ProfileVerification.fromJS(_data["profileVerification"]) : undefined as any;
-            if (Array.isArray(_data["profileViewViewedProfiles"])) {
-                this.profileViewViewedProfiles = [] as any;
-                for (let item of _data["profileViewViewedProfiles"])
-                    this.profileViewViewedProfiles!.push(ProfileView.fromJS(item));
-            }
-            if (Array.isArray(_data["profileViewViewerProfiles"])) {
-                this.profileViewViewerProfiles = [] as any;
-                for (let item of _data["profileViewViewerProfiles"])
-                    this.profileViewViewerProfiles!.push(ProfileView.fromJS(item));
-            }
-            if (Array.isArray(_data["successStoryProfileNavigations"])) {
-                this.successStoryProfileNavigations = [] as any;
-                for (let item of _data["successStoryProfileNavigations"])
-                    this.successStoryProfileNavigations!.push(SuccessStory.fromJS(item));
-            }
-            if (Array.isArray(_data["successStoryProfiles"])) {
-                this.successStoryProfiles = [] as any;
-                for (let item of _data["successStoryProfiles"])
-                    this.successStoryProfiles!.push(SuccessStory.fromJS(item));
-            }
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-            if (Array.isArray(_data["userOnlineStatuses"])) {
-                this.userOnlineStatuses = [] as any;
-                for (let item of _data["userOnlineStatuses"])
-                    this.userOnlineStatuses!.push(UserOnlineStatus.fromJS(item));
-            }
+            this.isContactUnlocked = _data["isContactUnlocked"];
         }
     }
 
-    static fromJS(data: any): Profile {
+    static fromJS(data: any): ProfileDetailDto {
         data = typeof data === 'object' ? data : {};
-        let result = new Profile();
+        let result = new ProfileDetailDto();
         result.init(data);
         return result;
     }
@@ -5681,625 +2398,111 @@ export class Profile implements IProfile {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
         data["profileCode"] = this.profileCode;
         data["fullName"] = this.fullName;
         data["age"] = this.age;
         data["bio"] = this.bio;
         data["locationText"] = this.locationText;
         data["occupationText"] = this.occupationText;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
         data["isVerified"] = this.isVerified;
         data["profileCompletionPercent"] = this.profileCompletionPercent;
         data["lastActiveAt"] = this.lastActiveAt ? this.lastActiveAt.toISOString() : undefined as any;
-        data["searchScore"] = this.searchScore;
-        if (Array.isArray(this.blockedChatUserProfileNavigations)) {
-            data["blockedChatUserProfileNavigations"] = [];
-            for (let item of this.blockedChatUserProfileNavigations)
-                data["blockedChatUserProfileNavigations"].push(item ? item.toJSON() : undefined as any);
+        if (Array.isArray(this.photos)) {
+            data["photos"] = [];
+            for (let item of this.photos)
+                data["photos"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.blockedChatUserProfiles)) {
-            data["blockedChatUserProfiles"] = [];
-            for (let item of this.blockedChatUserProfiles)
-                data["blockedChatUserProfiles"].push(item ? item.toJSON() : undefined as any);
+        data["personalDetails"] = this.personalDetails ? this.personalDetails.toJSON() : undefined as any;
+        data["career"] = this.career ? this.career.toJSON() : undefined as any;
+        data["familyInfo"] = this.familyInfo ? this.familyInfo.toJSON() : undefined as any;
+        if (Array.isArray(this.relativeSurnames)) {
+            data["relativeSurnames"] = [];
+            for (let item of this.relativeSurnames)
+                data["relativeSurnames"].push(item);
         }
-        if (Array.isArray(this.chatConversationProfileNavigations)) {
-            data["chatConversationProfileNavigations"] = [];
-            for (let item of this.chatConversationProfileNavigations)
-                data["chatConversationProfileNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatConversationProfiles)) {
-            data["chatConversationProfiles"] = [];
-            for (let item of this.chatConversationProfiles)
-                data["chatConversationProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatMessages)) {
-            data["chatMessages"] = [];
-            for (let item of this.chatMessages)
-                data["chatMessages"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatParticipants)) {
-            data["chatParticipants"] = [];
-            for (let item of this.chatParticipants)
-                data["chatParticipants"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.eventRsvps)) {
-            data["eventRsvps"] = [];
-            for (let item of this.eventRsvps)
-                data["eventRsvps"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.interestRequestProfileNavigations)) {
-            data["interestRequestProfileNavigations"] = [];
-            for (let item of this.interestRequestProfileNavigations)
-                data["interestRequestProfileNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.interestRequestProfiles)) {
-            data["interestRequestProfiles"] = [];
-            for (let item of this.interestRequestProfiles)
-                data["interestRequestProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
+        data["partnerPreference"] = this.partnerPreference ? this.partnerPreference.toJSON() : undefined as any;
+        data["horoscope"] = this.horoscope ? this.horoscope.toJSON() : undefined as any;
         if (Array.isArray(this.interests)) {
             data["interests"] = [];
             for (let item of this.interests)
-                data["interests"].push(item ? item.toJSON() : undefined as any);
+                data["interests"].push(item);
         }
-        if (Array.isArray(this.messageProfileNavigations)) {
-            data["messageProfileNavigations"] = [];
-            for (let item of this.messageProfileNavigations)
-                data["messageProfileNavigations"].push(item ? item.toJSON() : undefined as any);
+        if (Array.isArray(this.preferredCities)) {
+            data["preferredCities"] = [];
+            for (let item of this.preferredCities)
+                data["preferredCities"].push(item);
         }
-        if (Array.isArray(this.messageProfiles)) {
-            data["messageProfiles"] = [];
-            for (let item of this.messageProfiles)
-                data["messageProfiles"].push(item ? item.toJSON() : undefined as any);
+        if (Array.isArray(this.expectedCasteIds)) {
+            data["expectedCasteIds"] = [];
+            for (let item of this.expectedCasteIds)
+                data["expectedCasteIds"].push(item);
         }
-        if (Array.isArray(this.messageReadStatuses)) {
-            data["messageReadStatuses"] = [];
-            for (let item of this.messageReadStatuses)
-                data["messageReadStatuses"].push(item ? item.toJSON() : undefined as any);
+        if (Array.isArray(this.expectedEducationIds)) {
+            data["expectedEducationIds"] = [];
+            for (let item of this.expectedEducationIds)
+                data["expectedEducationIds"].push(item);
         }
-        if (Array.isArray(this.profileBlockProfileNavigations)) {
-            data["profileBlockProfileNavigations"] = [];
-            for (let item of this.profileBlockProfileNavigations)
-                data["profileBlockProfileNavigations"].push(item ? item.toJSON() : undefined as any);
+        if (Array.isArray(this.expectedOccupationIds)) {
+            data["expectedOccupationIds"] = [];
+            for (let item of this.expectedOccupationIds)
+                data["expectedOccupationIds"].push(item);
         }
-        if (Array.isArray(this.profileBlockProfiles)) {
-            data["profileBlockProfiles"] = [];
-            for (let item of this.profileBlockProfiles)
-                data["profileBlockProfiles"].push(item ? item.toJSON() : undefined as any);
+        data["contact"] = this.contact ? this.contact.toJSON() : undefined as any;
+        if (Array.isArray(this.phoneNumbers)) {
+            data["phoneNumbers"] = [];
+            for (let item of this.phoneNumbers)
+                data["phoneNumbers"].push(item ? item.toJSON() : undefined as any);
         }
-        data["profileContactDetail"] = this.profileContactDetail ? this.profileContactDetail.toJSON() : undefined as any;
-        data["profileExpectation"] = this.profileExpectation ? this.profileExpectation.toJSON() : undefined as any;
-        data["profileFamilyDetail"] = this.profileFamilyDetail ? this.profileFamilyDetail.toJSON() : undefined as any;
-        if (Array.isArray(this.profileFavoriteProfileNavigations)) {
-            data["profileFavoriteProfileNavigations"] = [];
-            for (let item of this.profileFavoriteProfileNavigations)
-                data["profileFavoriteProfileNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileFavoriteProfiles)) {
-            data["profileFavoriteProfiles"] = [];
-            for (let item of this.profileFavoriteProfiles)
-                data["profileFavoriteProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["profileHoroscopeDetail"] = this.profileHoroscopeDetail ? this.profileHoroscopeDetail.toJSON() : undefined as any;
-        data["profilePersonalDetail"] = this.profilePersonalDetail ? this.profilePersonalDetail.toJSON() : undefined as any;
-        if (Array.isArray(this.profilePhoneNumbers)) {
-            data["profilePhoneNumbers"] = [];
-            for (let item of this.profilePhoneNumbers)
-                data["profilePhoneNumbers"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["profilePhoto"] = this.profilePhoto ? this.profilePhoto.toJSON() : undefined as any;
-        if (Array.isArray(this.profilePreferredCities)) {
-            data["profilePreferredCities"] = [];
-            for (let item of this.profilePreferredCities)
-                data["profilePreferredCities"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["profileProfessionalDetail"] = this.profileProfessionalDetail ? this.profileProfessionalDetail.toJSON() : undefined as any;
-        if (Array.isArray(this.profileRelatives)) {
-            data["profileRelatives"] = [];
-            for (let item of this.profileRelatives)
-                data["profileRelatives"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileReportProfileNavigations)) {
-            data["profileReportProfileNavigations"] = [];
-            for (let item of this.profileReportProfileNavigations)
-                data["profileReportProfileNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileReportProfiles)) {
-            data["profileReportProfiles"] = [];
-            for (let item of this.profileReportProfiles)
-                data["profileReportProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["profileVerification"] = this.profileVerification ? this.profileVerification.toJSON() : undefined as any;
-        if (Array.isArray(this.profileViewViewedProfiles)) {
-            data["profileViewViewedProfiles"] = [];
-            for (let item of this.profileViewViewedProfiles)
-                data["profileViewViewedProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileViewViewerProfiles)) {
-            data["profileViewViewerProfiles"] = [];
-            for (let item of this.profileViewViewerProfiles)
-                data["profileViewViewerProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.successStoryProfileNavigations)) {
-            data["successStoryProfileNavigations"] = [];
-            for (let item of this.successStoryProfileNavigations)
-                data["successStoryProfileNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.successStoryProfiles)) {
-            data["successStoryProfiles"] = [];
-            for (let item of this.successStoryProfiles)
-                data["successStoryProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        if (Array.isArray(this.userOnlineStatuses)) {
-            data["userOnlineStatuses"] = [];
-            for (let item of this.userOnlineStatuses)
-                data["userOnlineStatuses"].push(item ? item.toJSON() : undefined as any);
-        }
+        data["isContactUnlocked"] = this.isContactUnlocked;
         return data;
     }
 }
 
-export interface IProfile {
+export interface IProfileDetailDto {
     profileId?: number;
-    tenantId?: number;
-    userId?: number;
     profileCode?: string | undefined;
     fullName?: string | undefined;
     age?: number | undefined;
     bio?: string | undefined;
     locationText?: string | undefined;
     occupationText?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
     isVerified?: boolean;
     profileCompletionPercent?: number;
     lastActiveAt?: Date | undefined;
-    searchScore?: number | undefined;
-    blockedChatUserProfileNavigations?: BlockedChatUser[] | undefined;
-    blockedChatUserProfiles?: BlockedChatUser[] | undefined;
-    chatConversationProfileNavigations?: ChatConversation[] | undefined;
-    chatConversationProfiles?: ChatConversation[] | undefined;
-    chatMessages?: ChatMessage[] | undefined;
-    chatParticipants?: ChatParticipant[] | undefined;
-    eventRsvps?: EventRsvp[] | undefined;
-    interestRequestProfileNavigations?: InterestRequest[] | undefined;
-    interestRequestProfiles?: InterestRequest[] | undefined;
-    interests?: Interest[] | undefined;
-    messageProfileNavigations?: Message[] | undefined;
-    messageProfiles?: Message[] | undefined;
-    messageReadStatuses?: MessageReadStatus[] | undefined;
-    profileBlockProfileNavigations?: ProfileBlock[] | undefined;
-    profileBlockProfiles?: ProfileBlock[] | undefined;
-    profileContactDetail?: ProfileContactDetail;
-    profileExpectation?: ProfileExpectation;
-    profileFamilyDetail?: ProfileFamilyDetail;
-    profileFavoriteProfileNavigations?: ProfileFavorite[] | undefined;
-    profileFavoriteProfiles?: ProfileFavorite[] | undefined;
-    profileHoroscopeDetail?: ProfileHoroscopeDetail;
-    profilePersonalDetail?: ProfilePersonalDetail;
-    profilePhoneNumbers?: ProfilePhoneNumber[] | undefined;
-    profilePhoto?: ProfilePhoto;
-    profilePreferredCities?: ProfilePreferredCity[] | undefined;
-    profileProfessionalDetail?: ProfileProfessionalDetail;
-    profileRelatives?: ProfileRelative[] | undefined;
-    profileReportProfileNavigations?: ProfileReport[] | undefined;
-    profileReportProfiles?: ProfileReport[] | undefined;
-    profileVerification?: ProfileVerification;
-    profileViewViewedProfiles?: ProfileView[] | undefined;
-    profileViewViewerProfiles?: ProfileView[] | undefined;
-    successStoryProfileNavigations?: SuccessStory[] | undefined;
-    successStoryProfiles?: SuccessStory[] | undefined;
-    tenant?: Tenant;
-    user?: User;
-    userOnlineStatuses?: UserOnlineStatus[] | undefined;
+    photos?: ProfilePhotoDto[] | undefined;
+    personalDetails?: PersonalDetailsViewDto;
+    career?: CareerDetailsViewDto;
+    familyInfo?: FamilyDetailsDto;
+    relativeSurnames?: string[] | undefined;
+    partnerPreference?: PartnerPreferenceDto;
+    horoscope?: ProfileHoroscopeDetailDto;
+    interests?: string[] | undefined;
+    preferredCities?: string[] | undefined;
+    expectedCasteIds?: number[] | undefined;
+    expectedEducationIds?: number[] | undefined;
+    expectedOccupationIds?: number[] | undefined;
+    contact?: ContactDetailsDto;
+    phoneNumbers?: PhoneNumberDto[] | undefined;
+    isContactUnlocked?: boolean;
 }
 
-export class ProfileBlock implements IProfileBlock {
-    tenantId?: number;
-    blockerProfileId?: number;
-    blockedProfileId?: number;
-    createdAt?: Date | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: IProfileBlock) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.blockerProfileId = _data["blockerProfileId"];
-            this.blockedProfileId = _data["blockedProfileId"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileBlock {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileBlock();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["blockerProfileId"] = this.blockerProfileId;
-        data["blockedProfileId"] = this.blockedProfileId;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileBlock {
-    tenantId?: number;
-    blockerProfileId?: number;
-    blockedProfileId?: number;
-    createdAt?: Date | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-}
-
-export class ProfileContactDetail implements IProfileContactDetail {
-    profileId?: number;
-    idProofNumber?: string | undefined;
-    residenceAddress?: string | undefined;
-    contactEmail?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenantId?: number;
-    profile?: Profile;
-
-    constructor(data?: IProfileContactDetail) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profileId = _data["profileId"];
-            this.idProofNumber = _data["idProofNumber"];
-            this.residenceAddress = _data["residenceAddress"];
-            this.contactEmail = _data["contactEmail"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileContactDetail {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileContactDetail();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["idProofNumber"] = this.idProofNumber;
-        data["residenceAddress"] = this.residenceAddress;
-        data["contactEmail"] = this.contactEmail;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileContactDetail {
-    profileId?: number;
-    idProofNumber?: string | undefined;
-    residenceAddress?: string | undefined;
-    contactEmail?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenantId?: number;
-    profile?: Profile;
-}
-
-export class ProfileExpectation implements IProfileExpectation {
-    profileId?: number;
-    expectedManglik?: boolean | undefined;
-    expectedCaste?: string | undefined;
-    maxAgeDifference?: number | undefined;
-    expectedHeightFt?: number | undefined;
-    expectedHeightIn?: number | undefined;
-    expectedEducation?: string | undefined;
-    expectedOccupationIncome?: string | undefined;
-    divorcee?: boolean | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: Profile;
-
-    constructor(data?: IProfileExpectation) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profileId = _data["profileId"];
-            this.expectedManglik = _data["expectedManglik"];
-            this.expectedCaste = _data["expectedCaste"];
-            this.maxAgeDifference = _data["maxAgeDifference"];
-            this.expectedHeightFt = _data["expectedHeightFt"];
-            this.expectedHeightIn = _data["expectedHeightIn"];
-            this.expectedEducation = _data["expectedEducation"];
-            this.expectedOccupationIncome = _data["expectedOccupationIncome"];
-            this.divorcee = _data["divorcee"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileExpectation {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileExpectation();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["expectedManglik"] = this.expectedManglik;
-        data["expectedCaste"] = this.expectedCaste;
-        data["maxAgeDifference"] = this.maxAgeDifference;
-        data["expectedHeightFt"] = this.expectedHeightFt;
-        data["expectedHeightIn"] = this.expectedHeightIn;
-        data["expectedEducation"] = this.expectedEducation;
-        data["expectedOccupationIncome"] = this.expectedOccupationIncome;
-        data["divorcee"] = this.divorcee;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileExpectation {
-    profileId?: number;
-    expectedManglik?: boolean | undefined;
-    expectedCaste?: string | undefined;
-    maxAgeDifference?: number | undefined;
-    expectedHeightFt?: number | undefined;
-    expectedHeightIn?: number | undefined;
-    expectedEducation?: string | undefined;
-    expectedOccupationIncome?: string | undefined;
-    divorcee?: boolean | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: Profile;
-}
-
-export class ProfileFamilyDetail implements IProfileFamilyDetail {
-    profileId?: number;
-    fatherStatus?: boolean | undefined;
-    motherStatus?: boolean | undefined;
-    brothers?: number;
-    marriedBrothers?: number;
-    sisters?: number;
-    marriedSisters?: number;
-    parentsFullName?: string | undefined;
-    parentsOccupation?: string | undefined;
-    parentsResidentCity?: string | undefined;
-    familyWealth?: string | undefined;
-    mamaSurnamePlace?: string | undefined;
-    nativeDistrict?: string | undefined;
-    nativeTaluka?: string | undefined;
-    intercastMarriage?: boolean | undefined;
-    intercastRelation?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenantId?: number;
-    profile?: Profile;
-
-    constructor(data?: IProfileFamilyDetail) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profileId = _data["profileId"];
-            this.fatherStatus = _data["fatherStatus"];
-            this.motherStatus = _data["motherStatus"];
-            this.brothers = _data["brothers"];
-            this.marriedBrothers = _data["marriedBrothers"];
-            this.sisters = _data["sisters"];
-            this.marriedSisters = _data["marriedSisters"];
-            this.parentsFullName = _data["parentsFullName"];
-            this.parentsOccupation = _data["parentsOccupation"];
-            this.parentsResidentCity = _data["parentsResidentCity"];
-            this.familyWealth = _data["familyWealth"];
-            this.mamaSurnamePlace = _data["mamaSurnamePlace"];
-            this.nativeDistrict = _data["nativeDistrict"];
-            this.nativeTaluka = _data["nativeTaluka"];
-            this.intercastMarriage = _data["intercastMarriage"];
-            this.intercastRelation = _data["intercastRelation"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileFamilyDetail {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileFamilyDetail();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["fatherStatus"] = this.fatherStatus;
-        data["motherStatus"] = this.motherStatus;
-        data["brothers"] = this.brothers;
-        data["marriedBrothers"] = this.marriedBrothers;
-        data["sisters"] = this.sisters;
-        data["marriedSisters"] = this.marriedSisters;
-        data["parentsFullName"] = this.parentsFullName;
-        data["parentsOccupation"] = this.parentsOccupation;
-        data["parentsResidentCity"] = this.parentsResidentCity;
-        data["familyWealth"] = this.familyWealth;
-        data["mamaSurnamePlace"] = this.mamaSurnamePlace;
-        data["nativeDistrict"] = this.nativeDistrict;
-        data["nativeTaluka"] = this.nativeTaluka;
-        data["intercastMarriage"] = this.intercastMarriage;
-        data["intercastRelation"] = this.intercastRelation;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileFamilyDetail {
-    profileId?: number;
-    fatherStatus?: boolean | undefined;
-    motherStatus?: boolean | undefined;
-    brothers?: number;
-    marriedBrothers?: number;
-    sisters?: number;
-    marriedSisters?: number;
-    parentsFullName?: string | undefined;
-    parentsOccupation?: string | undefined;
-    parentsResidentCity?: string | undefined;
-    familyWealth?: string | undefined;
-    mamaSurnamePlace?: string | undefined;
-    nativeDistrict?: string | undefined;
-    nativeTaluka?: string | undefined;
-    intercastMarriage?: boolean | undefined;
-    intercastRelation?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenantId?: number;
-    profile?: Profile;
-}
-
-export class ProfileFavorite implements IProfileFavorite {
-    tenantId?: number;
-    profileId?: number;
-    favoriteProfileId?: number;
-    createdAt?: Date | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: IProfileFavorite) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.profileId = _data["profileId"];
-            this.favoriteProfileId = _data["favoriteProfileId"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileFavorite {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileFavorite();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["profileId"] = this.profileId;
-        data["favoriteProfileId"] = this.favoriteProfileId;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileFavorite {
-    tenantId?: number;
-    profileId?: number;
-    favoriteProfileId?: number;
-    createdAt?: Date | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-}
-
-export class ProfileHoroscopeDetail implements IProfileHoroscopeDetail {
-    profileId?: number;
+export class ProfileHoroscopeDetailDto implements IProfileHoroscopeDetailDto {
     manglik?: boolean;
     birthHour?: number | undefined;
     birthMinute?: number | undefined;
     birthPeriod?: string | undefined;
-    birthDistrict?: string | undefined;
     devak?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
     rashiId?: number | undefined;
     nakshatraId?: number | undefined;
     charanId?: number | undefined;
     nadiId?: number | undefined;
     ganId?: number | undefined;
-    charan?: Charan;
-    gan?: Gan;
-    nadi?: Nadi;
-    nakshatra?: Nakshatra;
-    profile?: Profile;
-    rashi?: Rashi;
+    birthStateId?: number | undefined;
+    birthStateOther?: string | undefined;
+    birthDistrictId?: number | undefined;
+    birthDistrictOther?: string | undefined;
 
-    constructor(data?: IProfileHoroscopeDetail) {
+    constructor(data?: IProfileHoroscopeDetailDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -6310,133 +2513,91 @@ export class ProfileHoroscopeDetail implements IProfileHoroscopeDetail {
 
     init(_data?: any) {
         if (_data) {
-            this.profileId = _data["profileId"];
             this.manglik = _data["manglik"];
             this.birthHour = _data["birthHour"];
             this.birthMinute = _data["birthMinute"];
             this.birthPeriod = _data["birthPeriod"];
-            this.birthDistrict = _data["birthDistrict"];
             this.devak = _data["devak"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.rashiId = _data["rashiId"];
             this.nakshatraId = _data["nakshatraId"];
             this.charanId = _data["charanId"];
             this.nadiId = _data["nadiId"];
             this.ganId = _data["ganId"];
-            this.charan = _data["charan"] ? Charan.fromJS(_data["charan"]) : undefined as any;
-            this.gan = _data["gan"] ? Gan.fromJS(_data["gan"]) : undefined as any;
-            this.nadi = _data["nadi"] ? Nadi.fromJS(_data["nadi"]) : undefined as any;
-            this.nakshatra = _data["nakshatra"] ? Nakshatra.fromJS(_data["nakshatra"]) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.rashi = _data["rashi"] ? Rashi.fromJS(_data["rashi"]) : undefined as any;
+            this.birthStateId = _data["birthStateId"];
+            this.birthStateOther = _data["birthStateOther"];
+            this.birthDistrictId = _data["birthDistrictId"];
+            this.birthDistrictOther = _data["birthDistrictOther"];
         }
     }
 
-    static fromJS(data: any): ProfileHoroscopeDetail {
+    static fromJS(data: any): ProfileHoroscopeDetailDto {
         data = typeof data === 'object' ? data : {};
-        let result = new ProfileHoroscopeDetail();
+        let result = new ProfileHoroscopeDetailDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
         data["manglik"] = this.manglik;
         data["birthHour"] = this.birthHour;
         data["birthMinute"] = this.birthMinute;
         data["birthPeriod"] = this.birthPeriod;
-        data["birthDistrict"] = this.birthDistrict;
         data["devak"] = this.devak;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["rashiId"] = this.rashiId;
         data["nakshatraId"] = this.nakshatraId;
         data["charanId"] = this.charanId;
         data["nadiId"] = this.nadiId;
         data["ganId"] = this.ganId;
-        data["charan"] = this.charan ? this.charan.toJSON() : undefined as any;
-        data["gan"] = this.gan ? this.gan.toJSON() : undefined as any;
-        data["nadi"] = this.nadi ? this.nadi.toJSON() : undefined as any;
-        data["nakshatra"] = this.nakshatra ? this.nakshatra.toJSON() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["rashi"] = this.rashi ? this.rashi.toJSON() : undefined as any;
+        data["birthStateId"] = this.birthStateId;
+        data["birthStateOther"] = this.birthStateOther;
+        data["birthDistrictId"] = this.birthDistrictId;
+        data["birthDistrictOther"] = this.birthDistrictOther;
         return data;
     }
 }
 
-export interface IProfileHoroscopeDetail {
-    profileId?: number;
+export interface IProfileHoroscopeDetailDto {
     manglik?: boolean;
     birthHour?: number | undefined;
     birthMinute?: number | undefined;
     birthPeriod?: string | undefined;
-    birthDistrict?: string | undefined;
     devak?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
     rashiId?: number | undefined;
     nakshatraId?: number | undefined;
     charanId?: number | undefined;
     nadiId?: number | undefined;
     ganId?: number | undefined;
-    charan?: Charan;
-    gan?: Gan;
-    nadi?: Nadi;
-    nakshatra?: Nakshatra;
-    profile?: Profile;
-    rashi?: Rashi;
+    birthStateId?: number | undefined;
+    birthStateOther?: string | undefined;
+    birthDistrictId?: number | undefined;
+    birthDistrictOther?: string | undefined;
 }
 
-export class ProfilePersonalDetail implements IProfilePersonalDetail {
+export class ProfileListItemDto implements IProfileListItemDto {
     profileId?: number;
-    firstName?: string | undefined;
-    middleName?: string | undefined;
-    lastName?: string | undefined;
-    dobDay?: number;
-    dobMonth?: string | undefined;
-    dobYear?: number;
-    heightFt?: number | undefined;
-    heightIn?: number | undefined;
-    weightKg?: number | undefined;
-    physicalDisability?: boolean;
-    disabilityDetail?: string | undefined;
-    spectacles?: boolean | undefined;
-    lens?: boolean | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenantId?: number;
-    dateOfBirth?: Date | undefined;
+    profileCode?: string | undefined;
+    fullName?: string | undefined;
+    age?: number | undefined;
+    locationText?: string | undefined;
+    occupationText?: string | undefined;
+    genderId?: number | undefined;
+    maritalStatusId?: number | undefined;
     religionId?: number | undefined;
     casteId?: number | undefined;
     subCasteId?: number | undefined;
-    countryId?: number | undefined;
     stateId?: number | undefined;
     districtId?: number | undefined;
-    talukaId?: number | undefined;
-    genderId?: number | undefined;
-    maritalStatusId?: number | undefined;
-    bloodGroupId?: number | undefined;
-    complexionId?: number | undefined;
-    dietId?: number | undefined;
-    personalityId?: number | undefined;
-    bloodGroup?: BloodGroup;
-    caste?: Caste;
-    complexion?: Complexion;
-    country?: Country;
-    diet?: Diet;
-    district?: District;
-    gender?: Gender;
-    maritalStatus?: MaritalStatus;
-    personality?: Personality;
-    profile?: Profile;
-    religion?: Religion;
-    state?: State;
-    subCaste?: SubCaste;
-    taluka?: Taluka;
+    manglik?: boolean;
+    educationId?: number | undefined;
+    occupationId?: number | undefined;
+    workingCity?: string | undefined;
+    incomeAmount?: number | undefined;
+    thumbnailUrl?: string | undefined;
+    isVerified?: boolean;
+    isPremiumTenant?: boolean;
 
-    constructor(data?: IProfilePersonalDetail) {
+    constructor(data?: IProfileListItemDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -6448,56 +2609,32 @@ export class ProfilePersonalDetail implements IProfilePersonalDetail {
     init(_data?: any) {
         if (_data) {
             this.profileId = _data["profileId"];
-            this.firstName = _data["firstName"];
-            this.middleName = _data["middleName"];
-            this.lastName = _data["lastName"];
-            this.dobDay = _data["dobDay"];
-            this.dobMonth = _data["dobMonth"];
-            this.dobYear = _data["dobYear"];
-            this.heightFt = _data["heightFt"];
-            this.heightIn = _data["heightIn"];
-            this.weightKg = _data["weightKg"];
-            this.physicalDisability = _data["physicalDisability"];
-            this.disabilityDetail = _data["disabilityDetail"];
-            this.spectacles = _data["spectacles"];
-            this.lens = _data["lens"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.dateOfBirth = _data["dateOfBirth"] ? new Date(_data["dateOfBirth"].toString()) : undefined as any;
+            this.profileCode = _data["profileCode"];
+            this.fullName = _data["fullName"];
+            this.age = _data["age"];
+            this.locationText = _data["locationText"];
+            this.occupationText = _data["occupationText"];
+            this.genderId = _data["genderId"];
+            this.maritalStatusId = _data["maritalStatusId"];
             this.religionId = _data["religionId"];
             this.casteId = _data["casteId"];
             this.subCasteId = _data["subCasteId"];
-            this.countryId = _data["countryId"];
             this.stateId = _data["stateId"];
             this.districtId = _data["districtId"];
-            this.talukaId = _data["talukaId"];
-            this.genderId = _data["genderId"];
-            this.maritalStatusId = _data["maritalStatusId"];
-            this.bloodGroupId = _data["bloodGroupId"];
-            this.complexionId = _data["complexionId"];
-            this.dietId = _data["dietId"];
-            this.personalityId = _data["personalityId"];
-            this.bloodGroup = _data["bloodGroup"] ? BloodGroup.fromJS(_data["bloodGroup"]) : undefined as any;
-            this.caste = _data["caste"] ? Caste.fromJS(_data["caste"]) : undefined as any;
-            this.complexion = _data["complexion"] ? Complexion.fromJS(_data["complexion"]) : undefined as any;
-            this.country = _data["country"] ? Country.fromJS(_data["country"]) : undefined as any;
-            this.diet = _data["diet"] ? Diet.fromJS(_data["diet"]) : undefined as any;
-            this.district = _data["district"] ? District.fromJS(_data["district"]) : undefined as any;
-            this.gender = _data["gender"] ? Gender.fromJS(_data["gender"]) : undefined as any;
-            this.maritalStatus = _data["maritalStatus"] ? MaritalStatus.fromJS(_data["maritalStatus"]) : undefined as any;
-            this.personality = _data["personality"] ? Personality.fromJS(_data["personality"]) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.religion = _data["religion"] ? Religion.fromJS(_data["religion"]) : undefined as any;
-            this.state = _data["state"] ? State.fromJS(_data["state"]) : undefined as any;
-            this.subCaste = _data["subCaste"] ? SubCaste.fromJS(_data["subCaste"]) : undefined as any;
-            this.taluka = _data["taluka"] ? Taluka.fromJS(_data["taluka"]) : undefined as any;
+            this.manglik = _data["manglik"];
+            this.educationId = _data["educationId"];
+            this.occupationId = _data["occupationId"];
+            this.workingCity = _data["workingCity"];
+            this.incomeAmount = _data["incomeAmount"];
+            this.thumbnailUrl = _data["thumbnailUrl"];
+            this.isVerified = _data["isVerified"];
+            this.isPremiumTenant = _data["isPremiumTenant"];
         }
     }
 
-    static fromJS(data: any): ProfilePersonalDetail {
+    static fromJS(data: any): ProfileListItemDto {
         data = typeof data === 'object' ? data : {};
-        let result = new ProfilePersonalDetail();
+        let result = new ProfileListItemDto();
         result.init(data);
         return result;
     }
@@ -6505,745 +2642,61 @@ export class ProfilePersonalDetail implements IProfilePersonalDetail {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["profileId"] = this.profileId;
-        data["firstName"] = this.firstName;
-        data["middleName"] = this.middleName;
-        data["lastName"] = this.lastName;
-        data["dobDay"] = this.dobDay;
-        data["dobMonth"] = this.dobMonth;
-        data["dobYear"] = this.dobYear;
-        data["heightFt"] = this.heightFt;
-        data["heightIn"] = this.heightIn;
-        data["weightKg"] = this.weightKg;
-        data["physicalDisability"] = this.physicalDisability;
-        data["disabilityDetail"] = this.disabilityDetail;
-        data["spectacles"] = this.spectacles;
-        data["lens"] = this.lens;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["dateOfBirth"] = this.dateOfBirth ? formatDate(this.dateOfBirth) : undefined as any;
+        data["profileCode"] = this.profileCode;
+        data["fullName"] = this.fullName;
+        data["age"] = this.age;
+        data["locationText"] = this.locationText;
+        data["occupationText"] = this.occupationText;
+        data["genderId"] = this.genderId;
+        data["maritalStatusId"] = this.maritalStatusId;
         data["religionId"] = this.religionId;
         data["casteId"] = this.casteId;
         data["subCasteId"] = this.subCasteId;
-        data["countryId"] = this.countryId;
         data["stateId"] = this.stateId;
         data["districtId"] = this.districtId;
-        data["talukaId"] = this.talukaId;
-        data["genderId"] = this.genderId;
-        data["maritalStatusId"] = this.maritalStatusId;
-        data["bloodGroupId"] = this.bloodGroupId;
-        data["complexionId"] = this.complexionId;
-        data["dietId"] = this.dietId;
-        data["personalityId"] = this.personalityId;
-        data["bloodGroup"] = this.bloodGroup ? this.bloodGroup.toJSON() : undefined as any;
-        data["caste"] = this.caste ? this.caste.toJSON() : undefined as any;
-        data["complexion"] = this.complexion ? this.complexion.toJSON() : undefined as any;
-        data["country"] = this.country ? this.country.toJSON() : undefined as any;
-        data["diet"] = this.diet ? this.diet.toJSON() : undefined as any;
-        data["district"] = this.district ? this.district.toJSON() : undefined as any;
-        data["gender"] = this.gender ? this.gender.toJSON() : undefined as any;
-        data["maritalStatus"] = this.maritalStatus ? this.maritalStatus.toJSON() : undefined as any;
-        data["personality"] = this.personality ? this.personality.toJSON() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["religion"] = this.religion ? this.religion.toJSON() : undefined as any;
-        data["state"] = this.state ? this.state.toJSON() : undefined as any;
-        data["subCaste"] = this.subCaste ? this.subCaste.toJSON() : undefined as any;
-        data["taluka"] = this.taluka ? this.taluka.toJSON() : undefined as any;
+        data["manglik"] = this.manglik;
+        data["educationId"] = this.educationId;
+        data["occupationId"] = this.occupationId;
+        data["workingCity"] = this.workingCity;
+        data["incomeAmount"] = this.incomeAmount;
+        data["thumbnailUrl"] = this.thumbnailUrl;
+        data["isVerified"] = this.isVerified;
+        data["isPremiumTenant"] = this.isPremiumTenant;
         return data;
     }
 }
 
-export interface IProfilePersonalDetail {
+export interface IProfileListItemDto {
     profileId?: number;
-    firstName?: string | undefined;
-    middleName?: string | undefined;
-    lastName?: string | undefined;
-    dobDay?: number;
-    dobMonth?: string | undefined;
-    dobYear?: number;
-    heightFt?: number | undefined;
-    heightIn?: number | undefined;
-    weightKg?: number | undefined;
-    physicalDisability?: boolean;
-    disabilityDetail?: string | undefined;
-    spectacles?: boolean | undefined;
-    lens?: boolean | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenantId?: number;
-    dateOfBirth?: Date | undefined;
+    profileCode?: string | undefined;
+    fullName?: string | undefined;
+    age?: number | undefined;
+    locationText?: string | undefined;
+    occupationText?: string | undefined;
+    genderId?: number | undefined;
+    maritalStatusId?: number | undefined;
     religionId?: number | undefined;
     casteId?: number | undefined;
     subCasteId?: number | undefined;
-    countryId?: number | undefined;
     stateId?: number | undefined;
     districtId?: number | undefined;
-    talukaId?: number | undefined;
-    genderId?: number | undefined;
-    maritalStatusId?: number | undefined;
-    bloodGroupId?: number | undefined;
-    complexionId?: number | undefined;
-    dietId?: number | undefined;
-    personalityId?: number | undefined;
-    bloodGroup?: BloodGroup;
-    caste?: Caste;
-    complexion?: Complexion;
-    country?: Country;
-    diet?: Diet;
-    district?: District;
-    gender?: Gender;
-    maritalStatus?: MaritalStatus;
-    personality?: Personality;
-    profile?: Profile;
-    religion?: Religion;
-    state?: State;
-    subCaste?: SubCaste;
-    taluka?: Taluka;
-}
-
-export class ProfilePhoneNumber implements IProfilePhoneNumber {
-    profilePhoneId?: number;
-    profileId?: number;
-    phoneType?: string | undefined;
-    phoneNumber?: string | undefined;
-    createdAt?: Date;
-    profile?: Profile;
-
-    constructor(data?: IProfilePhoneNumber) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profilePhoneId = _data["profilePhoneId"];
-            this.profileId = _data["profileId"];
-            this.phoneType = _data["phoneType"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfilePhoneNumber {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfilePhoneNumber();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profilePhoneId"] = this.profilePhoneId;
-        data["profileId"] = this.profileId;
-        data["phoneType"] = this.phoneType;
-        data["phoneNumber"] = this.phoneNumber;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfilePhoneNumber {
-    profilePhoneId?: number;
-    profileId?: number;
-    phoneType?: string | undefined;
-    phoneNumber?: string | undefined;
-    createdAt?: Date;
-    profile?: Profile;
-}
-
-export class ProfilePhoto implements IProfilePhoto {
-    photoId?: number;
-    profileId?: number;
-    photoSlot?: number;
-    fileName?: string | undefined;
-    fileUrl?: string | undefined;
-    isPrimary?: boolean;
-    createdAt?: Date;
-    profile?: Profile;
-
-    constructor(data?: IProfilePhoto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.photoId = _data["photoId"];
-            this.profileId = _data["profileId"];
-            this.photoSlot = _data["photoSlot"];
-            this.fileName = _data["fileName"];
-            this.fileUrl = _data["fileUrl"];
-            this.isPrimary = _data["isPrimary"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfilePhoto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfilePhoto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["photoId"] = this.photoId;
-        data["profileId"] = this.profileId;
-        data["photoSlot"] = this.photoSlot;
-        data["fileName"] = this.fileName;
-        data["fileUrl"] = this.fileUrl;
-        data["isPrimary"] = this.isPrimary;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfilePhoto {
-    photoId?: number;
-    profileId?: number;
-    photoSlot?: number;
-    fileName?: string | undefined;
-    fileUrl?: string | undefined;
-    isPrimary?: boolean;
-    createdAt?: Date;
-    profile?: Profile;
-}
-
-export class ProfilePhotoDto implements IProfilePhotoDto {
-    photoId?: number;
-    photoUrl?: string | undefined;
-    isProfilePicture?: boolean;
-    uploadedAt?: Date;
-
-    constructor(data?: IProfilePhotoDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.photoId = _data["photoId"];
-            this.photoUrl = _data["photoUrl"];
-            this.isProfilePicture = _data["isProfilePicture"];
-            this.uploadedAt = _data["uploadedAt"] ? new Date(_data["uploadedAt"].toString()) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfilePhotoDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfilePhotoDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["photoId"] = this.photoId;
-        data["photoUrl"] = this.photoUrl;
-        data["isProfilePicture"] = this.isProfilePicture;
-        data["uploadedAt"] = this.uploadedAt ? this.uploadedAt.toISOString() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfilePhotoDto {
-    photoId?: number;
-    photoUrl?: string | undefined;
-    isProfilePicture?: boolean;
-    uploadedAt?: Date;
-}
-
-export class ProfilePreferredCity implements IProfilePreferredCity {
-    preferredCityId?: number;
-    profileId?: number;
-    cityName?: string | undefined;
-    createdAt?: Date;
-    profile?: Profile;
-
-    constructor(data?: IProfilePreferredCity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.preferredCityId = _data["preferredCityId"];
-            this.profileId = _data["profileId"];
-            this.cityName = _data["cityName"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfilePreferredCity {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfilePreferredCity();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["preferredCityId"] = this.preferredCityId;
-        data["profileId"] = this.profileId;
-        data["cityName"] = this.cityName;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfilePreferredCity {
-    preferredCityId?: number;
-    profileId?: number;
-    cityName?: string | undefined;
-    createdAt?: Date;
-    profile?: Profile;
-}
-
-export class ProfileProfessionalDetail implements IProfileProfessionalDetail {
-    profileId?: number;
-    occupationDetails?: string | undefined;
-    workingCityCountry?: string | undefined;
-    incomeAmount?: number | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenantId?: number;
+    manglik?: boolean;
     educationId?: number | undefined;
-    educationAreaId?: number | undefined;
     occupationId?: number | undefined;
-    incomePeriodId?: number | undefined;
-    education?: Education;
-    educationArea?: EducationArea;
-    incomePeriod?: IncomePeriod;
-    occupation?: Occupation;
-    profile?: Profile;
-
-    constructor(data?: IProfileProfessionalDetail) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profileId = _data["profileId"];
-            this.occupationDetails = _data["occupationDetails"];
-            this.workingCityCountry = _data["workingCityCountry"];
-            this.incomeAmount = _data["incomeAmount"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.educationId = _data["educationId"];
-            this.educationAreaId = _data["educationAreaId"];
-            this.occupationId = _data["occupationId"];
-            this.incomePeriodId = _data["incomePeriodId"];
-            this.education = _data["education"] ? Education.fromJS(_data["education"]) : undefined as any;
-            this.educationArea = _data["educationArea"] ? EducationArea.fromJS(_data["educationArea"]) : undefined as any;
-            this.incomePeriod = _data["incomePeriod"] ? IncomePeriod.fromJS(_data["incomePeriod"]) : undefined as any;
-            this.occupation = _data["occupation"] ? Occupation.fromJS(_data["occupation"]) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileProfessionalDetail {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileProfessionalDetail();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["occupationDetails"] = this.occupationDetails;
-        data["workingCityCountry"] = this.workingCityCountry;
-        data["incomeAmount"] = this.incomeAmount;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["educationId"] = this.educationId;
-        data["educationAreaId"] = this.educationAreaId;
-        data["occupationId"] = this.occupationId;
-        data["incomePeriodId"] = this.incomePeriodId;
-        data["education"] = this.education ? this.education.toJSON() : undefined as any;
-        data["educationArea"] = this.educationArea ? this.educationArea.toJSON() : undefined as any;
-        data["incomePeriod"] = this.incomePeriod ? this.incomePeriod.toJSON() : undefined as any;
-        data["occupation"] = this.occupation ? this.occupation.toJSON() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileProfessionalDetail {
-    profileId?: number;
-    occupationDetails?: string | undefined;
-    workingCityCountry?: string | undefined;
+    workingCity?: string | undefined;
     incomeAmount?: number | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenantId?: number;
-    educationId?: number | undefined;
-    educationAreaId?: number | undefined;
-    occupationId?: number | undefined;
-    incomePeriodId?: number | undefined;
-    education?: Education;
-    educationArea?: EducationArea;
-    incomePeriod?: IncomePeriod;
-    occupation?: Occupation;
-    profile?: Profile;
-}
-
-export class ProfileRelative implements IProfileRelative {
-    relativeId?: number;
-    profileId?: number;
-    surname?: string | undefined;
-    createdAt?: Date;
-    profile?: Profile;
-
-    constructor(data?: IProfileRelative) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.relativeId = _data["relativeId"];
-            this.profileId = _data["profileId"];
-            this.surname = _data["surname"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileRelative {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileRelative();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["relativeId"] = this.relativeId;
-        data["profileId"] = this.profileId;
-        data["surname"] = this.surname;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileRelative {
-    relativeId?: number;
-    profileId?: number;
-    surname?: string | undefined;
-    createdAt?: Date;
-    profile?: Profile;
-}
-
-export class ProfileReport implements IProfileReport {
-    reportId?: number;
-    tenantId?: number;
-    reporterProfileId?: number | undefined;
-    reportedProfileId?: number | undefined;
-    reason?: string | undefined;
-    createdAt?: Date | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: IProfileReport) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.reportId = _data["reportId"];
-            this.tenantId = _data["tenantId"];
-            this.reporterProfileId = _data["reporterProfileId"];
-            this.reportedProfileId = _data["reportedProfileId"];
-            this.reason = _data["reason"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileReport {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileReport();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["reportId"] = this.reportId;
-        data["tenantId"] = this.tenantId;
-        data["reporterProfileId"] = this.reporterProfileId;
-        data["reportedProfileId"] = this.reportedProfileId;
-        data["reason"] = this.reason;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileReport {
-    reportId?: number;
-    tenantId?: number;
-    reporterProfileId?: number | undefined;
-    reportedProfileId?: number | undefined;
-    reason?: string | undefined;
-    createdAt?: Date | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-}
-
-export class ProfileVerification implements IProfileVerification {
-    profileId?: number;
-    verificationCode?: string | undefined;
-    verificationPassed?: boolean;
-    verifiedAt?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: Profile;
-
-    constructor(data?: IProfileVerification) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profileId = _data["profileId"];
-            this.verificationCode = _data["verificationCode"];
-            this.verificationPassed = _data["verificationPassed"];
-            this.verifiedAt = _data["verifiedAt"] ? new Date(_data["verifiedAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileVerification {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileVerification();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["verificationCode"] = this.verificationCode;
-        data["verificationPassed"] = this.verificationPassed;
-        data["verifiedAt"] = this.verifiedAt ? this.verifiedAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileVerification {
-    profileId?: number;
-    verificationCode?: string | undefined;
-    verificationPassed?: boolean;
-    verifiedAt?: Date | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    profile?: Profile;
-}
-
-export class ProfileView implements IProfileView {
-    viewId?: number;
-    viewerProfileId?: number;
-    viewedProfileId?: number;
-    viewedAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    viewedProfile?: Profile;
-    viewerProfile?: Profile;
-
-    constructor(data?: IProfileView) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.viewId = _data["viewId"];
-            this.viewerProfileId = _data["viewerProfileId"];
-            this.viewedProfileId = _data["viewedProfileId"];
-            this.viewedAt = _data["viewedAt"] ? new Date(_data["viewedAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.viewedProfile = _data["viewedProfile"] ? Profile.fromJS(_data["viewedProfile"]) : undefined as any;
-            this.viewerProfile = _data["viewerProfile"] ? Profile.fromJS(_data["viewerProfile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileView {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileView();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["viewId"] = this.viewId;
-        data["viewerProfileId"] = this.viewerProfileId;
-        data["viewedProfileId"] = this.viewedProfileId;
-        data["viewedAt"] = this.viewedAt ? this.viewedAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["viewedProfile"] = this.viewedProfile ? this.viewedProfile.toJSON() : undefined as any;
-        data["viewerProfile"] = this.viewerProfile ? this.viewerProfile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileView {
-    viewId?: number;
-    viewerProfileId?: number;
-    viewedProfileId?: number;
-    viewedAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    viewedProfile?: Profile;
-    viewerProfile?: Profile;
-}
-
-export class PublicProfileDto implements IPublicProfileDto {
-    profileId?: number;
-    displayName?: string | undefined;
-    age?: number | undefined;
-    city?: string | undefined;
-    religion?: string | undefined;
-    caste?: string | undefined;
-    profilePicture?: string | undefined;
-    bio?: string | undefined;
+    thumbnailUrl?: string | undefined;
     isVerified?: boolean;
-
-    constructor(data?: IPublicProfileDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profileId = _data["profileId"];
-            this.displayName = _data["displayName"];
-            this.age = _data["age"];
-            this.city = _data["city"];
-            this.religion = _data["religion"];
-            this.caste = _data["caste"];
-            this.profilePicture = _data["profilePicture"];
-            this.bio = _data["bio"];
-            this.isVerified = _data["isVerified"];
-        }
-    }
-
-    static fromJS(data: any): PublicProfileDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new PublicProfileDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["displayName"] = this.displayName;
-        data["age"] = this.age;
-        data["city"] = this.city;
-        data["religion"] = this.religion;
-        data["caste"] = this.caste;
-        data["profilePicture"] = this.profilePicture;
-        data["bio"] = this.bio;
-        data["isVerified"] = this.isVerified;
-        return data;
-    }
+    isPremiumTenant?: boolean;
 }
 
-export interface IPublicProfileDto {
-    profileId?: number;
-    displayName?: string | undefined;
-    age?: number | undefined;
-    city?: string | undefined;
-    religion?: string | undefined;
-    caste?: string | undefined;
-    profilePicture?: string | undefined;
-    bio?: string | undefined;
-    isVerified?: boolean;
-}
-
-export class PublicProfileDtoPagedResult implements IPublicProfileDtoPagedResult {
-    items?: PublicProfileDto[] | undefined;
+export class ProfileListItemDtoPagedResult implements IProfileListItemDtoPagedResult {
+    items?: ProfileListItemDto[] | undefined;
     totalCount?: number;
     pageNumber?: number;
     pageSize?: number;
 
-    constructor(data?: IPublicProfileDtoPagedResult) {
+    constructor(data?: IProfileListItemDtoPagedResult) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -7257,7 +2710,7 @@ export class PublicProfileDtoPagedResult implements IPublicProfileDtoPagedResult
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
-                    this.items!.push(PublicProfileDto.fromJS(item));
+                    this.items!.push(ProfileListItemDto.fromJS(item));
             }
             this.totalCount = _data["totalCount"];
             this.pageNumber = _data["pageNumber"];
@@ -7265,9 +2718,9 @@ export class PublicProfileDtoPagedResult implements IPublicProfileDtoPagedResult
         }
     }
 
-    static fromJS(data: any): PublicProfileDtoPagedResult {
+    static fromJS(data: any): ProfileListItemDtoPagedResult {
         data = typeof data === 'object' ? data : {};
-        let result = new PublicProfileDtoPagedResult();
+        let result = new ProfileListItemDtoPagedResult();
         result.init(data);
         return result;
     }
@@ -7286,27 +2739,22 @@ export class PublicProfileDtoPagedResult implements IPublicProfileDtoPagedResult
     }
 }
 
-export interface IPublicProfileDtoPagedResult {
-    items?: PublicProfileDto[] | undefined;
+export interface IProfileListItemDtoPagedResult {
+    items?: ProfileListItemDto[] | undefined;
     totalCount?: number;
     pageNumber?: number;
     pageSize?: number;
 }
 
-export class Rashi implements IRashi {
-    rashiId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
+export class ProfilePhotoDto implements IProfilePhotoDto {
+    photoId?: number;
+    photoSlot?: number;
+    fileUrl?: string | undefined;
+    fileName?: string | undefined;
+    isPrimary?: boolean;
     createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
 
-    constructor(data?: IRashi) {
+    constructor(data?: IProfilePhotoDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -7317,80 +2765,50 @@ export class Rashi implements IRashi {
 
     init(_data?: any) {
         if (_data) {
-            this.rashiId = _data["rashiId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
+            this.photoId = _data["photoId"];
+            this.photoSlot = _data["photoSlot"];
+            this.fileUrl = _data["fileUrl"];
+            this.fileName = _data["fileName"];
+            this.isPrimary = _data["isPrimary"];
             this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["profileHoroscopeDetails"])) {
-                this.profileHoroscopeDetails = [] as any;
-                for (let item of _data["profileHoroscopeDetails"])
-                    this.profileHoroscopeDetails!.push(ProfileHoroscopeDetail.fromJS(item));
-            }
         }
     }
 
-    static fromJS(data: any): Rashi {
+    static fromJS(data: any): ProfilePhotoDto {
         data = typeof data === 'object' ? data : {};
-        let result = new Rashi();
+        let result = new ProfilePhotoDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["rashiId"] = this.rashiId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
+        data["photoId"] = this.photoId;
+        data["photoSlot"] = this.photoSlot;
+        data["fileUrl"] = this.fileUrl;
+        data["fileName"] = this.fileName;
+        data["isPrimary"] = this.isPrimary;
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.profileHoroscopeDetails)) {
-            data["profileHoroscopeDetails"] = [];
-            for (let item of this.profileHoroscopeDetails)
-                data["profileHoroscopeDetails"].push(item ? item.toJSON() : undefined as any);
-        }
         return data;
     }
 }
 
-export interface IRashi {
-    rashiId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
+export interface IProfilePhotoDto {
+    photoId?: number;
+    photoSlot?: number;
+    fileUrl?: string | undefined;
+    fileName?: string | undefined;
+    isPrimary?: boolean;
     createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    profileHoroscopeDetails?: ProfileHoroscopeDetail[] | undefined;
 }
 
-export class RefreshToken implements IRefreshToken {
-    refreshTokenId?: number;
-    userId?: number;
-    tokenHash?: string | undefined;
-    expiresAt?: Date;
-    isRevoked?: boolean;
-    revokedAt?: Date | undefined;
-    ipAddress?: string | undefined;
-    userAgent?: string | undefined;
-    deviceId?: string | undefined;
-    createdAt?: Date;
-    user?: User;
+export class ProfilePhotoDtoCreate implements IProfilePhotoDtoCreate {
+    photoSlot?: number;
+    fileName?: string | undefined;
+    fileUrl?: string | undefined;
+    isPrimary?: boolean;
 
-    constructor(data?: IRefreshToken) {
+    constructor(data?: IProfilePhotoDtoCreate) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -7401,2202 +2819,46 @@ export class RefreshToken implements IRefreshToken {
 
     init(_data?: any) {
         if (_data) {
-            this.refreshTokenId = _data["refreshTokenId"];
-            this.userId = _data["userId"];
-            this.tokenHash = _data["tokenHash"];
-            this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
-            this.isRevoked = _data["isRevoked"];
-            this.revokedAt = _data["revokedAt"] ? new Date(_data["revokedAt"].toString()) : undefined as any;
-            this.ipAddress = _data["ipAddress"];
-            this.userAgent = _data["userAgent"];
-            this.deviceId = _data["deviceId"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
+            this.photoSlot = _data["photoSlot"];
+            this.fileName = _data["fileName"];
+            this.fileUrl = _data["fileUrl"];
+            this.isPrimary = _data["isPrimary"];
         }
     }
 
-    static fromJS(data: any): RefreshToken {
+    static fromJS(data: any): ProfilePhotoDtoCreate {
         data = typeof data === 'object' ? data : {};
-        let result = new RefreshToken();
+        let result = new ProfilePhotoDtoCreate();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["refreshTokenId"] = this.refreshTokenId;
-        data["userId"] = this.userId;
-        data["tokenHash"] = this.tokenHash;
-        data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
-        data["isRevoked"] = this.isRevoked;
-        data["revokedAt"] = this.revokedAt ? this.revokedAt.toISOString() : undefined as any;
-        data["ipAddress"] = this.ipAddress;
-        data["userAgent"] = this.userAgent;
-        data["deviceId"] = this.deviceId;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
+        data["photoSlot"] = this.photoSlot;
+        data["fileName"] = this.fileName;
+        data["fileUrl"] = this.fileUrl;
+        data["isPrimary"] = this.isPrimary;
         return data;
     }
 }
 
-export interface IRefreshToken {
-    refreshTokenId?: number;
-    userId?: number;
-    tokenHash?: string | undefined;
-    expiresAt?: Date;
-    isRevoked?: boolean;
-    revokedAt?: Date | undefined;
-    ipAddress?: string | undefined;
-    userAgent?: string | undefined;
-    deviceId?: string | undefined;
-    createdAt?: Date;
-    user?: User;
-}
-
-export class Religion implements IReligion {
-    religionId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    castes?: Caste[] | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    tenant?: Tenant;
-
-    constructor(data?: IReligion) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.religionId = _data["religionId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["castes"])) {
-                this.castes = [] as any;
-                for (let item of _data["castes"])
-                    this.castes!.push(Caste.fromJS(item));
-            }
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Religion {
-        data = typeof data === 'object' ? data : {};
-        let result = new Religion();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["religionId"] = this.religionId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.castes)) {
-            data["castes"] = [];
-            for (let item of this.castes)
-                data["castes"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IReligion {
-    religionId?: number;
-    tenantId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    castes?: Caste[] | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    tenant?: Tenant;
-}
-
-export class Role implements IRole {
-    roleId?: number;
-    tenantId?: number;
-    roleName?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    tenant?: Tenant;
-    userRoles?: UserRole[] | undefined;
-
-    constructor(data?: IRole) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.roleId = _data["roleId"];
-            this.tenantId = _data["tenantId"];
-            this.roleName = _data["roleName"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            if (Array.isArray(_data["userRoles"])) {
-                this.userRoles = [] as any;
-                for (let item of _data["userRoles"])
-                    this.userRoles!.push(UserRole.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Role {
-        data = typeof data === 'object' ? data : {};
-        let result = new Role();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["roleId"] = this.roleId;
-        data["tenantId"] = this.tenantId;
-        data["roleName"] = this.roleName;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        if (Array.isArray(this.userRoles)) {
-            data["userRoles"] = [];
-            for (let item of this.userRoles)
-                data["userRoles"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IRole {
-    roleId?: number;
-    tenantId?: number;
-    roleName?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    tenant?: Tenant;
-    userRoles?: UserRole[] | undefined;
-}
-
-export class State implements IState {
-    stateId?: number;
-    countryId?: number;
-    code?: string | undefined;
-    name?: string | undefined;
-    nameMr?: string | undefined;
-    isActive?: boolean;
-    country?: Country;
-    districts?: District[] | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-
-    constructor(data?: IState) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.stateId = _data["stateId"];
-            this.countryId = _data["countryId"];
-            this.code = _data["code"];
-            this.name = _data["name"];
-            this.nameMr = _data["nameMr"];
-            this.isActive = _data["isActive"];
-            this.country = _data["country"] ? Country.fromJS(_data["country"]) : undefined as any;
-            if (Array.isArray(_data["districts"])) {
-                this.districts = [] as any;
-                for (let item of _data["districts"])
-                    this.districts!.push(District.fromJS(item));
-            }
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): State {
-        data = typeof data === 'object' ? data : {};
-        let result = new State();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["stateId"] = this.stateId;
-        data["countryId"] = this.countryId;
-        data["code"] = this.code;
-        data["name"] = this.name;
-        data["nameMr"] = this.nameMr;
-        data["isActive"] = this.isActive;
-        data["country"] = this.country ? this.country.toJSON() : undefined as any;
-        if (Array.isArray(this.districts)) {
-            data["districts"] = [];
-            for (let item of this.districts)
-                data["districts"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IState {
-    stateId?: number;
-    countryId?: number;
-    code?: string | undefined;
-    name?: string | undefined;
-    nameMr?: string | undefined;
-    isActive?: boolean;
-    country?: Country;
-    districts?: District[] | undefined;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-}
-
-export class SubCaste implements ISubCaste {
-    subCasteId?: number;
-    tenantId?: number;
-    casteId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    caste?: Caste;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    tenant?: Tenant;
-
-    constructor(data?: ISubCaste) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.subCasteId = _data["subCasteId"];
-            this.tenantId = _data["tenantId"];
-            this.casteId = _data["casteId"];
-            this.name = _data["name"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            this.caste = _data["caste"] ? Caste.fromJS(_data["caste"]) : undefined as any;
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): SubCaste {
-        data = typeof data === 'object' ? data : {};
-        let result = new SubCaste();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["subCasteId"] = this.subCasteId;
-        data["tenantId"] = this.tenantId;
-        data["casteId"] = this.casteId;
-        data["name"] = this.name;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        data["caste"] = this.caste ? this.caste.toJSON() : undefined as any;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ISubCaste {
-    subCasteId?: number;
-    tenantId?: number;
-    casteId?: number;
-    name?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    caste?: Caste;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-    tenant?: Tenant;
-}
-
-export class SuccessStory implements ISuccessStory {
-    storyId?: number;
-    tenantId?: number;
-    brideProfileId?: number | undefined;
-    groomProfileId?: number | undefined;
-    title?: string | undefined;
-    storyText?: string | undefined;
-    coverImageUrl?: string | undefined;
-    publishedAt?: Date | undefined;
-    isPublished?: boolean;
-    createdAt?: Date;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: ISuccessStory) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.storyId = _data["storyId"];
-            this.tenantId = _data["tenantId"];
-            this.brideProfileId = _data["brideProfileId"];
-            this.groomProfileId = _data["groomProfileId"];
-            this.title = _data["title"];
-            this.storyText = _data["storyText"];
-            this.coverImageUrl = _data["coverImageUrl"];
-            this.publishedAt = _data["publishedAt"] ? new Date(_data["publishedAt"].toString()) : undefined as any;
-            this.isPublished = _data["isPublished"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): SuccessStory {
-        data = typeof data === 'object' ? data : {};
-        let result = new SuccessStory();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["storyId"] = this.storyId;
-        data["tenantId"] = this.tenantId;
-        data["brideProfileId"] = this.brideProfileId;
-        data["groomProfileId"] = this.groomProfileId;
-        data["title"] = this.title;
-        data["storyText"] = this.storyText;
-        data["coverImageUrl"] = this.coverImageUrl;
-        data["publishedAt"] = this.publishedAt ? this.publishedAt.toISOString() : undefined as any;
-        data["isPublished"] = this.isPublished;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ISuccessStory {
-    storyId?: number;
-    tenantId?: number;
-    brideProfileId?: number | undefined;
-    groomProfileId?: number | undefined;
-    title?: string | undefined;
-    storyText?: string | undefined;
-    coverImageUrl?: string | undefined;
-    publishedAt?: Date | undefined;
-    isPublished?: boolean;
-    createdAt?: Date;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-}
-
-export class Taluka implements ITaluka {
-    talukaId?: number;
-    districtId?: number;
-    name?: string | undefined;
-    nameMr?: string | undefined;
-    isActive?: boolean;
-    district?: District;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-
-    constructor(data?: ITaluka) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.talukaId = _data["talukaId"];
-            this.districtId = _data["districtId"];
-            this.name = _data["name"];
-            this.nameMr = _data["nameMr"];
-            this.isActive = _data["isActive"];
-            this.district = _data["district"] ? District.fromJS(_data["district"]) : undefined as any;
-            if (Array.isArray(_data["profilePersonalDetails"])) {
-                this.profilePersonalDetails = [] as any;
-                for (let item of _data["profilePersonalDetails"])
-                    this.profilePersonalDetails!.push(ProfilePersonalDetail.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Taluka {
-        data = typeof data === 'object' ? data : {};
-        let result = new Taluka();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["talukaId"] = this.talukaId;
-        data["districtId"] = this.districtId;
-        data["name"] = this.name;
-        data["nameMr"] = this.nameMr;
-        data["isActive"] = this.isActive;
-        data["district"] = this.district ? this.district.toJSON() : undefined as any;
-        if (Array.isArray(this.profilePersonalDetails)) {
-            data["profilePersonalDetails"] = [];
-            for (let item of this.profilePersonalDetails)
-                data["profilePersonalDetails"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ITaluka {
-    talukaId?: number;
-    districtId?: number;
-    name?: string | undefined;
-    nameMr?: string | undefined;
-    isActive?: boolean;
-    district?: District;
-    profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
-}
-
-export class Tenant implements ITenant {
-    tenantId?: number;
-    tenantCode?: string | undefined;
-    domain?: string | undefined;
-    subscriptionStatus?: string | undefined;
-    trialEndDate?: Date | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    apiKeys?: ApiKey[] | undefined;
-    auditLogs?: AuditLog[] | undefined;
-    blockedChatUsers?: BlockedChatUser[] | undefined;
-    castes?: Caste[] | undefined;
-    chatConversations?: ChatConversation[] | undefined;
-    events?: Event[] | undefined;
-    interestRequests?: InterestRequest[] | undefined;
-    messages?: Message[] | undefined;
-    oauth2Providers?: Oauth2Provider[] | undefined;
-    payments?: Payment[] | undefined;
-    permissions?: Permission[] | undefined;
-    profileBlocks?: ProfileBlock[] | undefined;
-    profileFavorites?: ProfileFavorite[] | undefined;
-    profileReports?: ProfileReport[] | undefined;
-    profiles?: Profile[] | undefined;
-    religions?: Religion[] | undefined;
-    roles?: Role[] | undefined;
-    subCastes?: SubCaste[] | undefined;
-    successStories?: SuccessStory[] | undefined;
-    tenantFeatures?: TenantFeature[] | undefined;
-    tenantSettings?: TenantSetting[] | undefined;
-    tenantSubscription?: TenantSubscription;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
-    users?: User[] | undefined;
-
-    constructor(data?: ITenant) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.tenantCode = _data["tenantCode"];
-            this.domain = _data["domain"];
-            this.subscriptionStatus = _data["subscriptionStatus"];
-            this.trialEndDate = _data["trialEndDate"] ? new Date(_data["trialEndDate"].toString()) : undefined as any;
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["apiKeys"])) {
-                this.apiKeys = [] as any;
-                for (let item of _data["apiKeys"])
-                    this.apiKeys!.push(ApiKey.fromJS(item));
-            }
-            if (Array.isArray(_data["auditLogs"])) {
-                this.auditLogs = [] as any;
-                for (let item of _data["auditLogs"])
-                    this.auditLogs!.push(AuditLog.fromJS(item));
-            }
-            if (Array.isArray(_data["blockedChatUsers"])) {
-                this.blockedChatUsers = [] as any;
-                for (let item of _data["blockedChatUsers"])
-                    this.blockedChatUsers!.push(BlockedChatUser.fromJS(item));
-            }
-            if (Array.isArray(_data["castes"])) {
-                this.castes = [] as any;
-                for (let item of _data["castes"])
-                    this.castes!.push(Caste.fromJS(item));
-            }
-            if (Array.isArray(_data["chatConversations"])) {
-                this.chatConversations = [] as any;
-                for (let item of _data["chatConversations"])
-                    this.chatConversations!.push(ChatConversation.fromJS(item));
-            }
-            if (Array.isArray(_data["events"])) {
-                this.events = [] as any;
-                for (let item of _data["events"])
-                    this.events!.push(Event.fromJS(item));
-            }
-            if (Array.isArray(_data["interestRequests"])) {
-                this.interestRequests = [] as any;
-                for (let item of _data["interestRequests"])
-                    this.interestRequests!.push(InterestRequest.fromJS(item));
-            }
-            if (Array.isArray(_data["messages"])) {
-                this.messages = [] as any;
-                for (let item of _data["messages"])
-                    this.messages!.push(Message.fromJS(item));
-            }
-            if (Array.isArray(_data["oauth2Providers"])) {
-                this.oauth2Providers = [] as any;
-                for (let item of _data["oauth2Providers"])
-                    this.oauth2Providers!.push(Oauth2Provider.fromJS(item));
-            }
-            if (Array.isArray(_data["payments"])) {
-                this.payments = [] as any;
-                for (let item of _data["payments"])
-                    this.payments!.push(Payment.fromJS(item));
-            }
-            if (Array.isArray(_data["permissions"])) {
-                this.permissions = [] as any;
-                for (let item of _data["permissions"])
-                    this.permissions!.push(Permission.fromJS(item));
-            }
-            if (Array.isArray(_data["profileBlocks"])) {
-                this.profileBlocks = [] as any;
-                for (let item of _data["profileBlocks"])
-                    this.profileBlocks!.push(ProfileBlock.fromJS(item));
-            }
-            if (Array.isArray(_data["profileFavorites"])) {
-                this.profileFavorites = [] as any;
-                for (let item of _data["profileFavorites"])
-                    this.profileFavorites!.push(ProfileFavorite.fromJS(item));
-            }
-            if (Array.isArray(_data["profileReports"])) {
-                this.profileReports = [] as any;
-                for (let item of _data["profileReports"])
-                    this.profileReports!.push(ProfileReport.fromJS(item));
-            }
-            if (Array.isArray(_data["profiles"])) {
-                this.profiles = [] as any;
-                for (let item of _data["profiles"])
-                    this.profiles!.push(Profile.fromJS(item));
-            }
-            if (Array.isArray(_data["religions"])) {
-                this.religions = [] as any;
-                for (let item of _data["religions"])
-                    this.religions!.push(Religion.fromJS(item));
-            }
-            if (Array.isArray(_data["roles"])) {
-                this.roles = [] as any;
-                for (let item of _data["roles"])
-                    this.roles!.push(Role.fromJS(item));
-            }
-            if (Array.isArray(_data["subCastes"])) {
-                this.subCastes = [] as any;
-                for (let item of _data["subCastes"])
-                    this.subCastes!.push(SubCaste.fromJS(item));
-            }
-            if (Array.isArray(_data["successStories"])) {
-                this.successStories = [] as any;
-                for (let item of _data["successStories"])
-                    this.successStories!.push(SuccessStory.fromJS(item));
-            }
-            if (Array.isArray(_data["tenantFeatures"])) {
-                this.tenantFeatures = [] as any;
-                for (let item of _data["tenantFeatures"])
-                    this.tenantFeatures!.push(TenantFeature.fromJS(item));
-            }
-            if (Array.isArray(_data["tenantSettings"])) {
-                this.tenantSettings = [] as any;
-                for (let item of _data["tenantSettings"])
-                    this.tenantSettings!.push(TenantSetting.fromJS(item));
-            }
-            this.tenantSubscription = _data["tenantSubscription"] ? TenantSubscription.fromJS(_data["tenantSubscription"]) : undefined as any;
-            if (Array.isArray(_data["tenantUserPlans"])) {
-                this.tenantUserPlans = [] as any;
-                for (let item of _data["tenantUserPlans"])
-                    this.tenantUserPlans!.push(TenantUserPlan.fromJS(item));
-            }
-            if (Array.isArray(_data["users"])) {
-                this.users = [] as any;
-                for (let item of _data["users"])
-                    this.users!.push(User.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Tenant {
-        data = typeof data === 'object' ? data : {};
-        let result = new Tenant();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["tenantCode"] = this.tenantCode;
-        data["domain"] = this.domain;
-        data["subscriptionStatus"] = this.subscriptionStatus;
-        data["trialEndDate"] = this.trialEndDate ? formatDate(this.trialEndDate) : undefined as any;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.apiKeys)) {
-            data["apiKeys"] = [];
-            for (let item of this.apiKeys)
-                data["apiKeys"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.auditLogs)) {
-            data["auditLogs"] = [];
-            for (let item of this.auditLogs)
-                data["auditLogs"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.blockedChatUsers)) {
-            data["blockedChatUsers"] = [];
-            for (let item of this.blockedChatUsers)
-                data["blockedChatUsers"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.castes)) {
-            data["castes"] = [];
-            for (let item of this.castes)
-                data["castes"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatConversations)) {
-            data["chatConversations"] = [];
-            for (let item of this.chatConversations)
-                data["chatConversations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.events)) {
-            data["events"] = [];
-            for (let item of this.events)
-                data["events"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.interestRequests)) {
-            data["interestRequests"] = [];
-            for (let item of this.interestRequests)
-                data["interestRequests"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.messages)) {
-            data["messages"] = [];
-            for (let item of this.messages)
-                data["messages"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.oauth2Providers)) {
-            data["oauth2Providers"] = [];
-            for (let item of this.oauth2Providers)
-                data["oauth2Providers"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.payments)) {
-            data["payments"] = [];
-            for (let item of this.payments)
-                data["payments"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.permissions)) {
-            data["permissions"] = [];
-            for (let item of this.permissions)
-                data["permissions"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileBlocks)) {
-            data["profileBlocks"] = [];
-            for (let item of this.profileBlocks)
-                data["profileBlocks"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileFavorites)) {
-            data["profileFavorites"] = [];
-            for (let item of this.profileFavorites)
-                data["profileFavorites"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileReports)) {
-            data["profileReports"] = [];
-            for (let item of this.profileReports)
-                data["profileReports"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profiles)) {
-            data["profiles"] = [];
-            for (let item of this.profiles)
-                data["profiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.religions)) {
-            data["religions"] = [];
-            for (let item of this.religions)
-                data["religions"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.roles)) {
-            data["roles"] = [];
-            for (let item of this.roles)
-                data["roles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.subCastes)) {
-            data["subCastes"] = [];
-            for (let item of this.subCastes)
-                data["subCastes"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.successStories)) {
-            data["successStories"] = [];
-            for (let item of this.successStories)
-                data["successStories"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.tenantFeatures)) {
-            data["tenantFeatures"] = [];
-            for (let item of this.tenantFeatures)
-                data["tenantFeatures"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.tenantSettings)) {
-            data["tenantSettings"] = [];
-            for (let item of this.tenantSettings)
-                data["tenantSettings"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenantSubscription"] = this.tenantSubscription ? this.tenantSubscription.toJSON() : undefined as any;
-        if (Array.isArray(this.tenantUserPlans)) {
-            data["tenantUserPlans"] = [];
-            for (let item of this.tenantUserPlans)
-                data["tenantUserPlans"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.users)) {
-            data["users"] = [];
-            for (let item of this.users)
-                data["users"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ITenant {
-    tenantId?: number;
-    tenantCode?: string | undefined;
-    domain?: string | undefined;
-    subscriptionStatus?: string | undefined;
-    trialEndDate?: Date | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    apiKeys?: ApiKey[] | undefined;
-    auditLogs?: AuditLog[] | undefined;
-    blockedChatUsers?: BlockedChatUser[] | undefined;
-    castes?: Caste[] | undefined;
-    chatConversations?: ChatConversation[] | undefined;
-    events?: Event[] | undefined;
-    interestRequests?: InterestRequest[] | undefined;
-    messages?: Message[] | undefined;
-    oauth2Providers?: Oauth2Provider[] | undefined;
-    payments?: Payment[] | undefined;
-    permissions?: Permission[] | undefined;
-    profileBlocks?: ProfileBlock[] | undefined;
-    profileFavorites?: ProfileFavorite[] | undefined;
-    profileReports?: ProfileReport[] | undefined;
-    profiles?: Profile[] | undefined;
-    religions?: Religion[] | undefined;
-    roles?: Role[] | undefined;
-    subCastes?: SubCaste[] | undefined;
-    successStories?: SuccessStory[] | undefined;
-    tenantFeatures?: TenantFeature[] | undefined;
-    tenantSettings?: TenantSetting[] | undefined;
-    tenantSubscription?: TenantSubscription;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
-    users?: User[] | undefined;
-}
-
-export class TenantFeature implements ITenantFeature {
-    featureId?: number;
-    tenantId?: number;
-    featureName?: string | undefined;
-    isEnabled?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenant?: Tenant;
-
-    constructor(data?: ITenantFeature) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.featureId = _data["featureId"];
-            this.tenantId = _data["tenantId"];
-            this.featureName = _data["featureName"];
-            this.isEnabled = _data["isEnabled"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): TenantFeature {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantFeature();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["featureId"] = this.featureId;
-        data["tenantId"] = this.tenantId;
-        data["featureName"] = this.featureName;
-        data["isEnabled"] = this.isEnabled;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ITenantFeature {
-    featureId?: number;
-    tenantId?: number;
-    featureName?: string | undefined;
-    isEnabled?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenant?: Tenant;
-}
-
-export class TenantSetting implements ITenantSetting {
-    settingId?: number;
-    tenantId?: number;
-    settingKey?: string | undefined;
-    settingValue?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    tenant?: Tenant;
-
-    constructor(data?: ITenantSetting) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.settingId = _data["settingId"];
-            this.tenantId = _data["tenantId"];
-            this.settingKey = _data["settingKey"];
-            this.settingValue = _data["settingValue"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.rowVersion = _data["rowVersion"];
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): TenantSetting {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantSetting();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["settingId"] = this.settingId;
-        data["tenantId"] = this.tenantId;
-        data["settingKey"] = this.settingKey;
-        data["settingValue"] = this.settingValue;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["rowVersion"] = this.rowVersion;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ITenantSetting {
-    settingId?: number;
-    tenantId?: number;
-    settingKey?: string | undefined;
-    settingValue?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    tenant?: Tenant;
-}
-
-export class TenantSubscription implements ITenantSubscription {
-    subscriptionId?: number;
-    tenantId?: number;
-    planId?: number;
-    startDate?: Date;
-    endDate?: Date;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    payments?: Payment[] | undefined;
-    plan?: Plan;
-    tenant?: Tenant;
-
-    constructor(data?: ITenantSubscription) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.subscriptionId = _data["subscriptionId"];
-            this.tenantId = _data["tenantId"];
-            this.planId = _data["planId"];
-            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : undefined as any;
-            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["payments"])) {
-                this.payments = [] as any;
-                for (let item of _data["payments"])
-                    this.payments!.push(Payment.fromJS(item));
-            }
-            this.plan = _data["plan"] ? Plan.fromJS(_data["plan"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): TenantSubscription {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantSubscription();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["subscriptionId"] = this.subscriptionId;
-        data["tenantId"] = this.tenantId;
-        data["planId"] = this.planId;
-        data["startDate"] = this.startDate ? formatDate(this.startDate) : undefined as any;
-        data["endDate"] = this.endDate ? formatDate(this.endDate) : undefined as any;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.payments)) {
-            data["payments"] = [];
-            for (let item of this.payments)
-                data["payments"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["plan"] = this.plan ? this.plan.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ITenantSubscription {
-    subscriptionId?: number;
-    tenantId?: number;
-    planId?: number;
-    startDate?: Date;
-    endDate?: Date;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    payments?: Payment[] | undefined;
-    plan?: Plan;
-    tenant?: Tenant;
-}
-
-export class TenantUserPlan implements ITenantUserPlan {
-    tenantUserPlanId?: number;
-    tenantId?: number;
-    planName?: string | undefined;
-    price?: number;
-    durationMonths?: number;
-    featuresJson?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenant?: Tenant;
-    userSubscriptions?: UserSubscription[] | undefined;
-
-    constructor(data?: ITenantUserPlan) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantUserPlanId = _data["tenantUserPlanId"];
-            this.tenantId = _data["tenantId"];
-            this.planName = _data["planName"];
-            this.price = _data["price"];
-            this.durationMonths = _data["durationMonths"];
-            this.featuresJson = _data["featuresJson"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            if (Array.isArray(_data["userSubscriptions"])) {
-                this.userSubscriptions = [] as any;
-                for (let item of _data["userSubscriptions"])
-                    this.userSubscriptions!.push(UserSubscription.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): TenantUserPlan {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantUserPlan();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantUserPlanId"] = this.tenantUserPlanId;
-        data["tenantId"] = this.tenantId;
-        data["planName"] = this.planName;
-        data["price"] = this.price;
-        data["durationMonths"] = this.durationMonths;
-        data["featuresJson"] = this.featuresJson;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        if (Array.isArray(this.userSubscriptions)) {
-            data["userSubscriptions"] = [];
-            for (let item of this.userSubscriptions)
-                data["userSubscriptions"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ITenantUserPlan {
-    tenantUserPlanId?: number;
-    tenantId?: number;
-    planName?: string | undefined;
-    price?: number;
-    durationMonths?: number;
-    featuresJson?: string | undefined;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    tenant?: Tenant;
-    userSubscriptions?: UserSubscription[] | undefined;
-}
-
-export class User implements IUser {
-    id?: number;
-    tenantId?: number;
-    email?: string | undefined;
-    passwordHash?: string | undefined;
-    isSuperAdmin?: boolean;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    passwordSalt?: string | undefined;
-    failedLoginAttempts?: number;
-    lockoutEnd?: Date | undefined;
-    lastLoginAt?: Date | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    apiKeys?: ApiKey[] | undefined;
-    auditLogs?: AuditLog[] | undefined;
-    authenticationMethod?: AuthenticationMethod;
-    blockedChatUserUserNavigations?: BlockedChatUser[] | undefined;
-    blockedChatUserUsers?: BlockedChatUser[] | undefined;
-    chatConversationUserNavigations?: ChatConversation[] | undefined;
-    chatConversationUsers?: ChatConversation[] | undefined;
-    chatMessageDeletedByUsers?: ChatMessage[] | undefined;
-    chatMessageUsers?: ChatMessage[] | undefined;
-    chatParticipants?: ChatParticipant[] | undefined;
-    loginHistories?: LoginHistory[] | undefined;
-    messageReadStatuses?: MessageReadStatus[] | undefined;
-    notifications?: Notification[] | undefined;
-    oauth2Tokens?: Oauth2Token[] | undefined;
-    payments?: Payment[] | undefined;
-    profiles?: Profile[] | undefined;
-    refreshTokens?: RefreshToken[] | undefined;
-    tenant?: Tenant;
-    userOnlineStatuses?: UserOnlineStatus[] | undefined;
-    userPermissionGrantedByNavigations?: UserPermission[] | undefined;
-    userPermissionUsers?: UserPermission[] | undefined;
-    userRoles?: UserRole[] | undefined;
-    userSessions?: UserSession[] | undefined;
-    userSetting?: UserSetting;
-    userSubscriptions?: UserSubscription[] | undefined;
-
-    constructor(data?: IUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.tenantId = _data["tenantId"];
-            this.email = _data["email"];
-            this.passwordHash = _data["passwordHash"];
-            this.isSuperAdmin = _data["isSuperAdmin"];
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.passwordSalt = _data["passwordSalt"];
-            this.failedLoginAttempts = _data["failedLoginAttempts"];
-            this.lockoutEnd = _data["lockoutEnd"] ? new Date(_data["lockoutEnd"].toString()) : undefined as any;
-            this.lastLoginAt = _data["lastLoginAt"] ? new Date(_data["lastLoginAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["apiKeys"])) {
-                this.apiKeys = [] as any;
-                for (let item of _data["apiKeys"])
-                    this.apiKeys!.push(ApiKey.fromJS(item));
-            }
-            if (Array.isArray(_data["auditLogs"])) {
-                this.auditLogs = [] as any;
-                for (let item of _data["auditLogs"])
-                    this.auditLogs!.push(AuditLog.fromJS(item));
-            }
-            this.authenticationMethod = _data["authenticationMethod"] ? AuthenticationMethod.fromJS(_data["authenticationMethod"]) : undefined as any;
-            if (Array.isArray(_data["blockedChatUserUserNavigations"])) {
-                this.blockedChatUserUserNavigations = [] as any;
-                for (let item of _data["blockedChatUserUserNavigations"])
-                    this.blockedChatUserUserNavigations!.push(BlockedChatUser.fromJS(item));
-            }
-            if (Array.isArray(_data["blockedChatUserUsers"])) {
-                this.blockedChatUserUsers = [] as any;
-                for (let item of _data["blockedChatUserUsers"])
-                    this.blockedChatUserUsers!.push(BlockedChatUser.fromJS(item));
-            }
-            if (Array.isArray(_data["chatConversationUserNavigations"])) {
-                this.chatConversationUserNavigations = [] as any;
-                for (let item of _data["chatConversationUserNavigations"])
-                    this.chatConversationUserNavigations!.push(ChatConversation.fromJS(item));
-            }
-            if (Array.isArray(_data["chatConversationUsers"])) {
-                this.chatConversationUsers = [] as any;
-                for (let item of _data["chatConversationUsers"])
-                    this.chatConversationUsers!.push(ChatConversation.fromJS(item));
-            }
-            if (Array.isArray(_data["chatMessageDeletedByUsers"])) {
-                this.chatMessageDeletedByUsers = [] as any;
-                for (let item of _data["chatMessageDeletedByUsers"])
-                    this.chatMessageDeletedByUsers!.push(ChatMessage.fromJS(item));
-            }
-            if (Array.isArray(_data["chatMessageUsers"])) {
-                this.chatMessageUsers = [] as any;
-                for (let item of _data["chatMessageUsers"])
-                    this.chatMessageUsers!.push(ChatMessage.fromJS(item));
-            }
-            if (Array.isArray(_data["chatParticipants"])) {
-                this.chatParticipants = [] as any;
-                for (let item of _data["chatParticipants"])
-                    this.chatParticipants!.push(ChatParticipant.fromJS(item));
-            }
-            if (Array.isArray(_data["loginHistories"])) {
-                this.loginHistories = [] as any;
-                for (let item of _data["loginHistories"])
-                    this.loginHistories!.push(LoginHistory.fromJS(item));
-            }
-            if (Array.isArray(_data["messageReadStatuses"])) {
-                this.messageReadStatuses = [] as any;
-                for (let item of _data["messageReadStatuses"])
-                    this.messageReadStatuses!.push(MessageReadStatus.fromJS(item));
-            }
-            if (Array.isArray(_data["notifications"])) {
-                this.notifications = [] as any;
-                for (let item of _data["notifications"])
-                    this.notifications!.push(Notification.fromJS(item));
-            }
-            if (Array.isArray(_data["oauth2Tokens"])) {
-                this.oauth2Tokens = [] as any;
-                for (let item of _data["oauth2Tokens"])
-                    this.oauth2Tokens!.push(Oauth2Token.fromJS(item));
-            }
-            if (Array.isArray(_data["payments"])) {
-                this.payments = [] as any;
-                for (let item of _data["payments"])
-                    this.payments!.push(Payment.fromJS(item));
-            }
-            if (Array.isArray(_data["profiles"])) {
-                this.profiles = [] as any;
-                for (let item of _data["profiles"])
-                    this.profiles!.push(Profile.fromJS(item));
-            }
-            if (Array.isArray(_data["refreshTokens"])) {
-                this.refreshTokens = [] as any;
-                for (let item of _data["refreshTokens"])
-                    this.refreshTokens!.push(RefreshToken.fromJS(item));
-            }
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            if (Array.isArray(_data["userOnlineStatuses"])) {
-                this.userOnlineStatuses = [] as any;
-                for (let item of _data["userOnlineStatuses"])
-                    this.userOnlineStatuses!.push(UserOnlineStatus.fromJS(item));
-            }
-            if (Array.isArray(_data["userPermissionGrantedByNavigations"])) {
-                this.userPermissionGrantedByNavigations = [] as any;
-                for (let item of _data["userPermissionGrantedByNavigations"])
-                    this.userPermissionGrantedByNavigations!.push(UserPermission.fromJS(item));
-            }
-            if (Array.isArray(_data["userPermissionUsers"])) {
-                this.userPermissionUsers = [] as any;
-                for (let item of _data["userPermissionUsers"])
-                    this.userPermissionUsers!.push(UserPermission.fromJS(item));
-            }
-            if (Array.isArray(_data["userRoles"])) {
-                this.userRoles = [] as any;
-                for (let item of _data["userRoles"])
-                    this.userRoles!.push(UserRole.fromJS(item));
-            }
-            if (Array.isArray(_data["userSessions"])) {
-                this.userSessions = [] as any;
-                for (let item of _data["userSessions"])
-                    this.userSessions!.push(UserSession.fromJS(item));
-            }
-            this.userSetting = _data["userSetting"] ? UserSetting.fromJS(_data["userSetting"]) : undefined as any;
-            if (Array.isArray(_data["userSubscriptions"])) {
-                this.userSubscriptions = [] as any;
-                for (let item of _data["userSubscriptions"])
-                    this.userSubscriptions!.push(UserSubscription.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): User {
-        data = typeof data === 'object' ? data : {};
-        let result = new User();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["tenantId"] = this.tenantId;
-        data["email"] = this.email;
-        data["passwordHash"] = this.passwordHash;
-        data["isSuperAdmin"] = this.isSuperAdmin;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["passwordSalt"] = this.passwordSalt;
-        data["failedLoginAttempts"] = this.failedLoginAttempts;
-        data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : undefined as any;
-        data["lastLoginAt"] = this.lastLoginAt ? this.lastLoginAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.apiKeys)) {
-            data["apiKeys"] = [];
-            for (let item of this.apiKeys)
-                data["apiKeys"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.auditLogs)) {
-            data["auditLogs"] = [];
-            for (let item of this.auditLogs)
-                data["auditLogs"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["authenticationMethod"] = this.authenticationMethod ? this.authenticationMethod.toJSON() : undefined as any;
-        if (Array.isArray(this.blockedChatUserUserNavigations)) {
-            data["blockedChatUserUserNavigations"] = [];
-            for (let item of this.blockedChatUserUserNavigations)
-                data["blockedChatUserUserNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.blockedChatUserUsers)) {
-            data["blockedChatUserUsers"] = [];
-            for (let item of this.blockedChatUserUsers)
-                data["blockedChatUserUsers"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatConversationUserNavigations)) {
-            data["chatConversationUserNavigations"] = [];
-            for (let item of this.chatConversationUserNavigations)
-                data["chatConversationUserNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatConversationUsers)) {
-            data["chatConversationUsers"] = [];
-            for (let item of this.chatConversationUsers)
-                data["chatConversationUsers"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatMessageDeletedByUsers)) {
-            data["chatMessageDeletedByUsers"] = [];
-            for (let item of this.chatMessageDeletedByUsers)
-                data["chatMessageDeletedByUsers"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatMessageUsers)) {
-            data["chatMessageUsers"] = [];
-            for (let item of this.chatMessageUsers)
-                data["chatMessageUsers"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.chatParticipants)) {
-            data["chatParticipants"] = [];
-            for (let item of this.chatParticipants)
-                data["chatParticipants"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.loginHistories)) {
-            data["loginHistories"] = [];
-            for (let item of this.loginHistories)
-                data["loginHistories"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.messageReadStatuses)) {
-            data["messageReadStatuses"] = [];
-            for (let item of this.messageReadStatuses)
-                data["messageReadStatuses"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.notifications)) {
-            data["notifications"] = [];
-            for (let item of this.notifications)
-                data["notifications"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.oauth2Tokens)) {
-            data["oauth2Tokens"] = [];
-            for (let item of this.oauth2Tokens)
-                data["oauth2Tokens"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.payments)) {
-            data["payments"] = [];
-            for (let item of this.payments)
-                data["payments"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profiles)) {
-            data["profiles"] = [];
-            for (let item of this.profiles)
-                data["profiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.refreshTokens)) {
-            data["refreshTokens"] = [];
-            for (let item of this.refreshTokens)
-                data["refreshTokens"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        if (Array.isArray(this.userOnlineStatuses)) {
-            data["userOnlineStatuses"] = [];
-            for (let item of this.userOnlineStatuses)
-                data["userOnlineStatuses"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.userPermissionGrantedByNavigations)) {
-            data["userPermissionGrantedByNavigations"] = [];
-            for (let item of this.userPermissionGrantedByNavigations)
-                data["userPermissionGrantedByNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.userPermissionUsers)) {
-            data["userPermissionUsers"] = [];
-            for (let item of this.userPermissionUsers)
-                data["userPermissionUsers"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.userRoles)) {
-            data["userRoles"] = [];
-            for (let item of this.userRoles)
-                data["userRoles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.userSessions)) {
-            data["userSessions"] = [];
-            for (let item of this.userSessions)
-                data["userSessions"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["userSetting"] = this.userSetting ? this.userSetting.toJSON() : undefined as any;
-        if (Array.isArray(this.userSubscriptions)) {
-            data["userSubscriptions"] = [];
-            for (let item of this.userSubscriptions)
-                data["userSubscriptions"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IUser {
-    id?: number;
-    tenantId?: number;
-    email?: string | undefined;
-    passwordHash?: string | undefined;
-    isSuperAdmin?: boolean;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    passwordSalt?: string | undefined;
-    failedLoginAttempts?: number;
-    lockoutEnd?: Date | undefined;
-    lastLoginAt?: Date | undefined;
-    isDeleted?: boolean;
-    rowVersion?: string | undefined;
-    apiKeys?: ApiKey[] | undefined;
-    auditLogs?: AuditLog[] | undefined;
-    authenticationMethod?: AuthenticationMethod;
-    blockedChatUserUserNavigations?: BlockedChatUser[] | undefined;
-    blockedChatUserUsers?: BlockedChatUser[] | undefined;
-    chatConversationUserNavigations?: ChatConversation[] | undefined;
-    chatConversationUsers?: ChatConversation[] | undefined;
-    chatMessageDeletedByUsers?: ChatMessage[] | undefined;
-    chatMessageUsers?: ChatMessage[] | undefined;
-    chatParticipants?: ChatParticipant[] | undefined;
-    loginHistories?: LoginHistory[] | undefined;
-    messageReadStatuses?: MessageReadStatus[] | undefined;
-    notifications?: Notification[] | undefined;
-    oauth2Tokens?: Oauth2Token[] | undefined;
-    payments?: Payment[] | undefined;
-    profiles?: Profile[] | undefined;
-    refreshTokens?: RefreshToken[] | undefined;
-    tenant?: Tenant;
-    userOnlineStatuses?: UserOnlineStatus[] | undefined;
-    userPermissionGrantedByNavigations?: UserPermission[] | undefined;
-    userPermissionUsers?: UserPermission[] | undefined;
-    userRoles?: UserRole[] | undefined;
-    userSessions?: UserSession[] | undefined;
-    userSetting?: UserSetting;
-    userSubscriptions?: UserSubscription[] | undefined;
-}
-
-export class UserOnlineStatus implements IUserOnlineStatus {
-    userId?: number;
-    profileId?: number;
-    tenantId?: number;
-    isOnline?: boolean;
-    lastSeenDate?: Date;
-    status?: string | undefined;
-    connectionId?: string | undefined;
-    deviceInfo?: string | undefined;
-    ipaddress?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    profile?: Profile;
-    user?: User;
-
-    constructor(data?: IUserOnlineStatus) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.userId = _data["userId"];
-            this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
-            this.isOnline = _data["isOnline"];
-            this.lastSeenDate = _data["lastSeenDate"] ? new Date(_data["lastSeenDate"].toString()) : undefined as any;
-            this.status = _data["status"];
-            this.connectionId = _data["connectionId"];
-            this.deviceInfo = _data["deviceInfo"];
-            this.ipaddress = _data["ipaddress"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.isDeleted = _data["isDeleted"];
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): UserOnlineStatus {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserOnlineStatus();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userId"] = this.userId;
-        data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
-        data["isOnline"] = this.isOnline;
-        data["lastSeenDate"] = this.lastSeenDate ? this.lastSeenDate.toISOString() : undefined as any;
-        data["status"] = this.status;
-        data["connectionId"] = this.connectionId;
-        data["deviceInfo"] = this.deviceInfo;
-        data["ipaddress"] = this.ipaddress;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["isDeleted"] = this.isDeleted;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IUserOnlineStatus {
-    userId?: number;
-    profileId?: number;
-    tenantId?: number;
-    isOnline?: boolean;
-    lastSeenDate?: Date;
-    status?: string | undefined;
-    connectionId?: string | undefined;
-    deviceInfo?: string | undefined;
-    ipaddress?: string | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    isDeleted?: boolean;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    profile?: Profile;
-    user?: User;
-}
-
-export class UserPermission implements IUserPermission {
-    userPermissionId?: number;
-    userId?: number;
-    permissionId?: number;
-    grantedBy?: number | undefined;
-    grantedAt?: Date;
-    expiresAt?: Date | undefined;
-    tenantId?: number;
-    grantedByNavigation?: User;
-    permission?: Permission;
-    user?: User;
-
-    constructor(data?: IUserPermission) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.userPermissionId = _data["userPermissionId"];
-            this.userId = _data["userId"];
-            this.permissionId = _data["permissionId"];
-            this.grantedBy = _data["grantedBy"];
-            this.grantedAt = _data["grantedAt"] ? new Date(_data["grantedAt"].toString()) : undefined as any;
-            this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.grantedByNavigation = _data["grantedByNavigation"] ? User.fromJS(_data["grantedByNavigation"]) : undefined as any;
-            this.permission = _data["permission"] ? Permission.fromJS(_data["permission"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): UserPermission {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserPermission();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userPermissionId"] = this.userPermissionId;
-        data["userId"] = this.userId;
-        data["permissionId"] = this.permissionId;
-        data["grantedBy"] = this.grantedBy;
-        data["grantedAt"] = this.grantedAt ? this.grantedAt.toISOString() : undefined as any;
-        data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["grantedByNavigation"] = this.grantedByNavigation ? this.grantedByNavigation.toJSON() : undefined as any;
-        data["permission"] = this.permission ? this.permission.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IUserPermission {
-    userPermissionId?: number;
-    userId?: number;
-    permissionId?: number;
-    grantedBy?: number | undefined;
-    grantedAt?: Date;
-    expiresAt?: Date | undefined;
-    tenantId?: number;
-    grantedByNavigation?: User;
-    permission?: Permission;
-    user?: User;
-}
-
-export class UserProfile implements IUserProfile {
-    profileId?: number;
-    userId?: number;
-    tenantId?: number;
-    profileCode?: string | undefined;
-    fullName?: string | undefined;
-    age?: number | undefined;
-    bio?: string | undefined;
-    locationText?: string | undefined;
-    occupationText?: string | undefined;
-    isDeleted?: boolean;
-    isVerified?: boolean;
-    profileCompletionPercent?: number;
-    lastActiveAt?: Date | undefined;
-    searchScore?: number | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    personalDetails?: PersonalDetails;
-    familyDetails?: FamilyDetails;
-    careerDetails?: CareerDetails;
-    contactDetails?: ContactDetails;
-    partnerPreference?: PartnerPreference;
-    profilePhotos?: ProfilePhoto[] | undefined;
-
-    constructor(data?: IUserProfile) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.profileId = _data["profileId"];
-            this.userId = _data["userId"];
-            this.tenantId = _data["tenantId"];
-            this.profileCode = _data["profileCode"];
-            this.fullName = _data["fullName"];
-            this.age = _data["age"];
-            this.bio = _data["bio"];
-            this.locationText = _data["locationText"];
-            this.occupationText = _data["occupationText"];
-            this.isDeleted = _data["isDeleted"];
-            this.isVerified = _data["isVerified"];
-            this.profileCompletionPercent = _data["profileCompletionPercent"];
-            this.lastActiveAt = _data["lastActiveAt"] ? new Date(_data["lastActiveAt"].toString()) : undefined as any;
-            this.searchScore = _data["searchScore"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.personalDetails = _data["personalDetails"] ? PersonalDetails.fromJS(_data["personalDetails"]) : undefined as any;
-            this.familyDetails = _data["familyDetails"] ? FamilyDetails.fromJS(_data["familyDetails"]) : undefined as any;
-            this.careerDetails = _data["careerDetails"] ? CareerDetails.fromJS(_data["careerDetails"]) : undefined as any;
-            this.contactDetails = _data["contactDetails"] ? ContactDetails.fromJS(_data["contactDetails"]) : undefined as any;
-            this.partnerPreference = _data["partnerPreference"] ? PartnerPreference.fromJS(_data["partnerPreference"]) : undefined as any;
-            if (Array.isArray(_data["profilePhotos"])) {
-                this.profilePhotos = [] as any;
-                for (let item of _data["profilePhotos"])
-                    this.profilePhotos!.push(ProfilePhoto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): UserProfile {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserProfile();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["profileId"] = this.profileId;
-        data["userId"] = this.userId;
-        data["tenantId"] = this.tenantId;
-        data["profileCode"] = this.profileCode;
-        data["fullName"] = this.fullName;
-        data["age"] = this.age;
-        data["bio"] = this.bio;
-        data["locationText"] = this.locationText;
-        data["occupationText"] = this.occupationText;
-        data["isDeleted"] = this.isDeleted;
-        data["isVerified"] = this.isVerified;
-        data["profileCompletionPercent"] = this.profileCompletionPercent;
-        data["lastActiveAt"] = this.lastActiveAt ? this.lastActiveAt.toISOString() : undefined as any;
-        data["searchScore"] = this.searchScore;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["personalDetails"] = this.personalDetails ? this.personalDetails.toJSON() : undefined as any;
-        data["familyDetails"] = this.familyDetails ? this.familyDetails.toJSON() : undefined as any;
-        data["careerDetails"] = this.careerDetails ? this.careerDetails.toJSON() : undefined as any;
-        data["contactDetails"] = this.contactDetails ? this.contactDetails.toJSON() : undefined as any;
-        data["partnerPreference"] = this.partnerPreference ? this.partnerPreference.toJSON() : undefined as any;
-        if (Array.isArray(this.profilePhotos)) {
-            data["profilePhotos"] = [];
-            for (let item of this.profilePhotos)
-                data["profilePhotos"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IUserProfile {
-    profileId?: number;
-    userId?: number;
-    tenantId?: number;
-    profileCode?: string | undefined;
-    fullName?: string | undefined;
-    age?: number | undefined;
-    bio?: string | undefined;
-    locationText?: string | undefined;
-    occupationText?: string | undefined;
-    isDeleted?: boolean;
-    isVerified?: boolean;
-    profileCompletionPercent?: number;
-    lastActiveAt?: Date | undefined;
-    searchScore?: number | undefined;
-    createdAt?: Date;
-    updatedAt?: Date;
-    personalDetails?: PersonalDetails;
-    familyDetails?: FamilyDetails;
-    careerDetails?: CareerDetails;
-    contactDetails?: ContactDetails;
-    partnerPreference?: PartnerPreference;
-    profilePhotos?: ProfilePhoto[] | undefined;
-}
-
-export class UserRole implements IUserRole {
-    userId?: number;
-    roleId?: number;
-    assignedAt?: Date;
-    tenantId?: number;
-    role?: Role;
-    user?: User;
-
-    constructor(data?: IUserRole) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.userId = _data["userId"];
-            this.roleId = _data["roleId"];
-            this.assignedAt = _data["assignedAt"] ? new Date(_data["assignedAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.role = _data["role"] ? Role.fromJS(_data["role"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): UserRole {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserRole();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userId"] = this.userId;
-        data["roleId"] = this.roleId;
-        data["assignedAt"] = this.assignedAt ? this.assignedAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["role"] = this.role ? this.role.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IUserRole {
-    userId?: number;
-    roleId?: number;
-    assignedAt?: Date;
-    tenantId?: number;
-    role?: Role;
-    user?: User;
-}
-
-export class UserSession implements IUserSession {
-    sessionId?: number;
-    userId?: number;
-    sessionToken?: string | undefined;
-    sessionHash?: string | undefined;
-    expiresAt?: Date;
-    isActive?: boolean;
-    deviceId?: string | undefined;
-    deviceInfo?: string | undefined;
-    ipAddress?: string | undefined;
-    userAgent?: string | undefined;
-    lastActivityAt?: Date;
-    createdAt?: Date;
-    terminatedAt?: Date | undefined;
-    tenantId?: number;
-    rowVersion?: string | undefined;
-    rotatedFromSessionId?: number | undefined;
-    revokedReason?: string | undefined;
-    user?: User;
-
-    constructor(data?: IUserSession) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.sessionId = _data["sessionId"];
-            this.userId = _data["userId"];
-            this.sessionToken = _data["sessionToken"];
-            this.sessionHash = _data["sessionHash"];
-            this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
-            this.isActive = _data["isActive"];
-            this.deviceId = _data["deviceId"];
-            this.deviceInfo = _data["deviceInfo"];
-            this.ipAddress = _data["ipAddress"];
-            this.userAgent = _data["userAgent"];
-            this.lastActivityAt = _data["lastActivityAt"] ? new Date(_data["lastActivityAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.terminatedAt = _data["terminatedAt"] ? new Date(_data["terminatedAt"].toString()) : undefined as any;
-            this.tenantId = _data["tenantId"];
-            this.rowVersion = _data["rowVersion"];
-            this.rotatedFromSessionId = _data["rotatedFromSessionId"];
-            this.revokedReason = _data["revokedReason"];
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): UserSession {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserSession();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["sessionId"] = this.sessionId;
-        data["userId"] = this.userId;
-        data["sessionToken"] = this.sessionToken;
-        data["sessionHash"] = this.sessionHash;
-        data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
-        data["isActive"] = this.isActive;
-        data["deviceId"] = this.deviceId;
-        data["deviceInfo"] = this.deviceInfo;
-        data["ipAddress"] = this.ipAddress;
-        data["userAgent"] = this.userAgent;
-        data["lastActivityAt"] = this.lastActivityAt ? this.lastActivityAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["terminatedAt"] = this.terminatedAt ? this.terminatedAt.toISOString() : undefined as any;
-        data["tenantId"] = this.tenantId;
-        data["rowVersion"] = this.rowVersion;
-        data["rotatedFromSessionId"] = this.rotatedFromSessionId;
-        data["revokedReason"] = this.revokedReason;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IUserSession {
-    sessionId?: number;
-    userId?: number;
-    sessionToken?: string | undefined;
-    sessionHash?: string | undefined;
-    expiresAt?: Date;
-    isActive?: boolean;
-    deviceId?: string | undefined;
-    deviceInfo?: string | undefined;
-    ipAddress?: string | undefined;
-    userAgent?: string | undefined;
-    lastActivityAt?: Date;
-    createdAt?: Date;
-    terminatedAt?: Date | undefined;
-    tenantId?: number;
-    rowVersion?: string | undefined;
-    rotatedFromSessionId?: number | undefined;
-    revokedReason?: string | undefined;
-    user?: User;
-}
-
-export class UserSetting implements IUserSetting {
-    userId?: number;
-    profileVisibility?: string | undefined;
-    emailAlerts?: boolean;
-    smsAlerts?: boolean;
-    eventReminders?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    user?: User;
-
-    constructor(data?: IUserSetting) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.userId = _data["userId"];
-            this.profileVisibility = _data["profileVisibility"];
-            this.emailAlerts = _data["emailAlerts"];
-            this.smsAlerts = _data["smsAlerts"];
-            this.eventReminders = _data["eventReminders"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.rowVersion = _data["rowVersion"];
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): UserSetting {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserSetting();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userId"] = this.userId;
-        data["profileVisibility"] = this.profileVisibility;
-        data["emailAlerts"] = this.emailAlerts;
-        data["smsAlerts"] = this.smsAlerts;
-        data["eventReminders"] = this.eventReminders;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["rowVersion"] = this.rowVersion;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IUserSetting {
-    userId?: number;
-    profileVisibility?: string | undefined;
-    emailAlerts?: boolean;
-    smsAlerts?: boolean;
-    eventReminders?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    user?: User;
-}
-
-export class UserSubscription implements IUserSubscription {
-    userSubscriptionId?: number;
-    tenantId?: number;
-    userId?: number;
-    tenantUserPlanId?: number;
-    startDate?: Date;
-    endDate?: Date;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    payments?: Payment[] | undefined;
-    tenantUserPlan?: TenantUserPlan;
-    user?: User;
-
-    constructor(data?: IUserSubscription) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.userSubscriptionId = _data["userSubscriptionId"];
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.tenantUserPlanId = _data["tenantUserPlanId"];
-            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : undefined as any;
-            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
-            this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["payments"])) {
-                this.payments = [] as any;
-                for (let item of _data["payments"])
-                    this.payments!.push(Payment.fromJS(item));
-            }
-            this.tenantUserPlan = _data["tenantUserPlan"] ? TenantUserPlan.fromJS(_data["tenantUserPlan"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): UserSubscription {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserSubscription();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userSubscriptionId"] = this.userSubscriptionId;
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["tenantUserPlanId"] = this.tenantUserPlanId;
-        data["startDate"] = this.startDate ? formatDate(this.startDate) : undefined as any;
-        data["endDate"] = this.endDate ? formatDate(this.endDate) : undefined as any;
-        data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.payments)) {
-            data["payments"] = [];
-            for (let item of this.payments)
-                data["payments"].push(item ? item.toJSON() : undefined as any);
-        }
-        data["tenantUserPlan"] = this.tenantUserPlan ? this.tenantUserPlan.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IUserSubscription {
-    userSubscriptionId?: number;
-    tenantId?: number;
-    userId?: number;
-    tenantUserPlanId?: number;
-    startDate?: Date;
-    endDate?: Date;
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
-    rowVersion?: string | undefined;
-    payments?: Payment[] | undefined;
-    tenantUserPlan?: TenantUserPlan;
-    user?: User;
+export interface IProfilePhotoDtoCreate {
+    photoSlot?: number;
+    fileName?: string | undefined;
+    fileUrl?: string | undefined;
+    isPrimary?: boolean;
 }
 
 function formatDate(d: Date) {
     return d.getFullYear() + '-' + 
         (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
         (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
+}
+
+export interface FileParameter {
+    data: any;
+    fileName: string;
 }
 
 export class ApiException extends Error {

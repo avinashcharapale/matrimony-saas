@@ -1,0 +1,11 @@
+{
+  "name": "data-access-chat",
+  "sourceRoot": "libs/data-access/chat/src",
+  "projectType": "library",
+  "tags": ["scope:data-access"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

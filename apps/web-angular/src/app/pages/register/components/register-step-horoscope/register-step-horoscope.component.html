@@ -1,0 +1,81 @@
+<section>
+  <h2>Horoscope Details</h2>
+  <div class="field-grid compact" [formGroup]="horoscope">
+    <div class="form-field">
+      <label>Rashi</label>
+      <select formControlName="rashiId">
+        <option [ngValue]="null">Unspecified</option>
+        @for (opt of rashiOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Nakshatra</label>
+      <select formControlName="nakshatraId">
+        <option [ngValue]="null">Unspecified</option>
+        @for (opt of nakshatraOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Charan</label>
+      <select formControlName="charanId">
+        <option [ngValue]="null">Unspecified</option>
+        @for (opt of charanOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Nadi</label>
+      <select formControlName="nadiId">
+        <option [ngValue]="null">Unspecified</option>
+        @for (opt of nadiOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Gan</label>
+      <select formControlName="ganId">
+        <option [ngValue]="null">Unspecified</option>
+        @for (opt of ganOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Mangal</label>
+      <select formControlName="manglik">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Yes</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Birth Time (It's important)</label>
+      <div class="time-group">
+        <select formControlName="birthHour">
+          @for (h of [1,2,3,4,5,6,7,8,9,10,11,12]; track h) { <option [ngValue]="h">{{ h < 10 ? '0' + h : h }}</option> }
+        </select>
+        <select formControlName="birthMinute">
+          @for (m of [0,5,10,15,20,25,30,35,40,45,50,55]; track m) { <option [ngValue]="m">{{ m < 10 ? '0' + m : m }}</option> }
+        </select>
+        <select formControlName="birthPeriod">
+          <option value="">Select</option>
+          <option value="AM">AM</option>
+          <option value="PM">PM</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label>Birth State</label>
+      <select [value]="birthStateId ?? ''" (change)="onBirthStateChange($event)">
+        <option value="">Select State</option>
+        @for (s of birthStates; track s.stateId) { <option [value]="s.stateId">{{ s.name }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Birth District</label>
+      <select formControlName="birthDistrict" [disabled]="birthDistricts.length === 0">
+        <option value="">Select District</option>
+        @for (d of birthDistricts; track d.districtId) { <option [value]="d.name!">{{ d.name }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Devak</label>
+      <input type="text" formControlName="devak" />
+    </div>
+  </div>
+</section>

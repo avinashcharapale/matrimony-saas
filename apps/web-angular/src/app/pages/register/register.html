@@ -1,42 +1,42 @@
 <section class="enroll-page">
   <h1>Enroll Form</h1>
 
-  <app-register-stepper [steps]="steps" [currentStep]="currentStep"></app-register-stepper>
+  <app-register-stepper [steps]="steps" [currentStep]="currentStep()"></app-register-stepper>
 
-  <form class="enroll-form" (ngSubmit)="submit()" (input)="onFormInteraction()" (change)="onFormInteraction()" novalidate>
-    @if (currentStep === 1) {
-    <app-register-step-personal [vm]="this"></app-register-step-personal>
+  <form class="enroll-form" [formGroup]="profileForm" (ngSubmit)="submit()" (input)="onFormInteraction()" (change)="onFormInteraction()" novalidate>
+    @if (currentStep() === 1) {
+    <app-register-step-personal [form]="profileForm" [days]="days" [months]="months" [years]="years"></app-register-step-personal>
     }
 
-    @if (currentStep === 2) {
-    <app-register-step-horoscope [vm]="this"></app-register-step-horoscope>
+    @if (currentStep() === 2) {
+    <app-register-step-horoscope [form]="profileForm"></app-register-step-horoscope>
     }
 
-    @if (currentStep === 3) {
-    <app-register-step-education [vm]="this"></app-register-step-education>
+    @if (currentStep() === 3) {
+    <app-register-step-education [form]="profileForm"></app-register-step-education>
     }
 
-    @if (currentStep === 4) {
-    <app-register-step-address [vm]="this"></app-register-step-address>
+    @if (currentStep() === 4) {
+    <app-register-step-address [form]="profileForm"></app-register-step-address>
     }
 
-    @if (currentStep === 5) {
-    <app-register-step-family [vm]="this"></app-register-step-family>
+    @if (currentStep() === 5) {
+    <app-register-step-family [form]="profileForm"></app-register-step-family>
     }
 
-    @if (currentStep === 6) {
-    <app-register-step-expectation [vm]="this"></app-register-step-expectation>
+    @if (currentStep() === 6) {
+    <app-register-step-expectation [form]="profileForm" (photoSelected)="onPhotoSelected($event)" (photo2Selected)="onPhoto2Selected($event)" (refreshCaptcha)="refreshCaptcha()"></app-register-step-expectation>
     }
 
     <div class="form-actions">
-      @if (currentStep > 1) { <button type="button" class="btn-secondary" (click)="previousStep()">Previous</button> }
-      @if (!isLastStep) { <button type="button" class="btn-primary" (click)="nextStep()">Next</button> }
-      @if (isLastStep) { <button type="submit" class="btn-primary">Submit</button> }
+      @if (currentStep() > 1) { <button type="button" class="btn-secondary" (click)="previousStep()">Previous</button> }
+      @if (!isLastStep()) { <button type="button" class="btn-primary" (click)="nextStep()">Next</button> }
+      @if (isLastStep()) { <button type="submit" class="btn-primary">Submit</button> }
     </div>
 
-    @if (message) {
-    <div [class.error]="isError" [class.success]="!isError" class="form-message">
-      {{ message }}
+    @if (message()) {
+    <div [class.error]="isError()" [class.success]="!isError()" class="form-message">
+      {{ message() }}
     </div>
     }
   </form>

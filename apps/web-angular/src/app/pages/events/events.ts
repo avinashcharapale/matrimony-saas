@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 
 interface MeetEvent {
   id: string;
@@ -11,6 +11,7 @@ interface MeetEvent {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-events',
   standalone: true,
   imports: [CommonModule],
@@ -23,7 +24,7 @@ interface MeetEvent {
       </header>
 
       <section class="cards">
-        @for (event of events; track event.id) {
+        @for (event of events(); track event.id) {
         <article class="event-card">
           <div>
             <h2>{{ event.title }}</h2>
@@ -57,13 +58,15 @@ interface MeetEvent {
   ],
 })
 export class Events {
-  events: MeetEvent[] = [
+  readonly events = signal<MeetEvent[]>([
     { id: 'e1', title: 'Maratha Meet - Pune', place: 'Kothrud Hall, Pune', date: '19 Apr', time: '11:00 AM', joined: false },
     { id: 'e2', title: 'Virtual Family Connect', place: 'Online Zoom Session', date: '26 Apr', time: '7:00 PM', joined: true },
     { id: 'e3', title: 'Navi Mumbai Session', place: 'Vashi Community Center', date: '05 May', time: '4:30 PM', joined: false },
-  ];
+  ]);
 
   toggleJoin(id: string): void {
-    this.events = this.events.map((event) => (event.id === id ? { ...event, joined: !event.joined } : event));
+    this.events.update(items =>
+      items.map((event) => (event.id === id ? { ...event, joined: !event.joined } : event))
+    );
   }
 }

@@ -1,26 +1,56 @@
 import { Route } from '@angular/router';
-import { Home } from './pages/home/home';
-import { Landing } from './pages/landing/landing';
-import { Login } from './pages/login/login';
-import { MenuPage } from './pages/menu-page/menu-page';
-import { ProfileList } from './pages/profile-list/profile-list';
-import { ProfileDetail } from './pages/profile-detail/profile-detail';
-import { Register } from './pages/register/register';
+import { authGuard } from '@org/core-auth';
 
 export const appRoutes: Route[] = [
-  { path: '', component: Landing },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
-  { path: 'home', component: Home },
-  { path: 'profiles', component: ProfileList },
-  { path: 'profiles/:id', component: ProfileDetail },
-  { path: 'search', component: ProfileList },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/landing/landing').then((m) => m.Landing),
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/login/login').then((m) => m.Login),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/register/register').then((m) => m.Register),
+  },
+  {
+    path: 'home',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/home/home').then((m) => m.Home),
+  },
+  {
+    path: 'profiles',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/profile-list/profile-list').then((m) => m.ProfileList),
+  },
+  {
+    path: 'profiles/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/profile-detail/profile-detail').then(
+        (m) => m.ProfileDetail,
+      ),
+  },
+  {
+    path: 'search',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/profile-list/profile-list').then((m) => m.ProfileList),
+  },
   {
     path: 'rules',
-    component: MenuPage,
+    loadComponent: () =>
+      import('./pages/menu-page/menu-page').then((m) => m.MenuPage),
     data: {
       title: 'Rules & Guidelines',
-      description: 'Clear and simple membership rules to keep matchmaking safe and respectful for everyone.',
+      description:
+        'Clear and simple membership rules to keep matchmaking safe and respectful for everyone.',
       highlights: [
         'Profiles must contain genuine details and recent information.',
         'Contact details are shared only after account verification.',
@@ -30,10 +60,12 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'success-stories',
-    component: MenuPage,
+    loadComponent: () =>
+      import('./pages/menu-page/menu-page').then((m) => m.MenuPage),
     data: {
       title: 'Success Stories',
-      description: 'Real stories from families and couples who found their life partner through our platform.',
+      description:
+        'Real stories from families and couples who found their life partner through our platform.',
       highlights: [
         'Trusted by thousands of families across Maharashtra.',
         'Verified journeys from first match to wedding.',
@@ -43,10 +75,12 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'contact',
-    component: MenuPage,
+    loadComponent: () =>
+      import('./pages/menu-page/menu-page').then((m) => m.MenuPage),
     data: {
       title: 'Contact Us',
-      description: 'Reach our support team for registration help, profile updates, and matchmaking guidance.',
+      description:
+        'Reach our support team for registration help, profile updates, and matchmaking guidance.',
       highlights: [
         'Phone and email support for quick assistance.',
         'Guidance for profile creation and verification.',

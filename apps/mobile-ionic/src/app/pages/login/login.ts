@@ -1,12 +1,14 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { AuthService } from '@org/shared-services';
+import { AuthStore } from '@org/data-access-auth';
 import { TenantService } from '../../services/tenant.service';
+import { isValidEmail } from '@org/shared-utils';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule],
@@ -16,39 +18,42 @@ import { TenantService } from '../../services/tenant.service';
 })
 export class Login {
   readonly tenant = inject(TenantService).tenant;
+  private readonly authStore = inject(AuthStore);
+  private readonly router = inject(Router);
 
   email = '';
   password = '';
-  error = '';
-  emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  constructor(private auth: AuthService, private router: Router) {}
+  readonly error = signal('');
+  readonly isLoading = signal(false);
 
   submit() {
-    this.error = '';
+    this.error.set('');
     const email = this.email.trim().toLowerCase();
     const password = this.password.trim();
 
-    if (!this.emailPattern.test(email)) {
-      this.error = 'Please enter a valid email address.';
+    if (!isValidEmail(email)) {
+      this.error.set('Please enter a valid email address.');
       return;
     }
 
     if (password.length < 6 || password.length > 64) {
-      this.error = 'Password must be between 6 and 64 characters.';
+      this.error.set('Password must be between 6 and 64 characters.');
       return;
     }
 
-    this.auth.login({ email, password }).subscribe({
+    this.isLoading.set(true);
+    this.authStore.login(email, password).subscribe({
       next: (result) => {
-        if (result.accessToken) {
+        this.isLoading.set(false);
+        if (result.ok) {
           this.router.navigateByUrl('/home');
-          return;
+        } else {
+          this.error.set(result.message);
         }
-        this.error = 'Please enter valid credentials.';
       },
       error: () => {
-        this.error = 'Please enter valid credentials.';
+        this.isLoading.set(false);
+        this.error.set('Please enter valid credentials.');
       },
     });
   }

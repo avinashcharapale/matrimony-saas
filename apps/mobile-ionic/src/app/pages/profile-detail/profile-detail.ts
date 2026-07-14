@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -15,6 +15,7 @@ interface ProfileSection {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile-detail',
   standalone: true,
   imports: [CommonModule, IonicModule, RouterModule],
@@ -22,75 +23,30 @@ interface ProfileSection {
   templateUrl: './profile-detail.html',
   styleUrl: './profile-detail.css',
 })
-export class ProfileDetail {
+export class ProfileDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly memberService = inject(MemberService);
 
-  profile: MemberRecord | null = null;
-  currentPhotoIndex = 0;
-  isGalleryOpen = false;
-  currentGalleryIndex = 0;
+  readonly profile = signal<MemberRecord | null>(null);
+  readonly currentPhotoIndex = signal(0);
+  readonly isGalleryOpen = signal(false);
+  readonly currentGalleryIndex = signal(0);
 
-  ngOnInit(): void {
-    const profileId = this.route.snapshot.paramMap.get('id');
-    this.profile = profileId ? this.memberService.getProfileById(profileId) : null;
-  }
-
-  getProfilePhoto(secondary: boolean = false): string {
-    if (!this.profile) return '';
-    const seed = encodeURIComponent((this.profile.email || this.profile.id || this.profile.name).toLowerCase());
-    return `https://i.pravatar.cc/300?u=${seed}${secondary ? '-alt' : ''}`;
-  }
-
-  getMemberId(): string {
-    if (!this.profile) return '';
-    const seed = this.hashSeed(this.profile);
-    const code = 10000 + (seed % 89999);
-    return `MBU${code}`;
-  }
-
-  nextPhoto(): void {
-    if ((this.profile?.registrationDetails?.photos.length ?? 0) > 1) {
-      this.currentPhotoIndex = (this.currentPhotoIndex + 1) % 2;
-    }
-  }
-
-  prevPhoto(): void {
-    if ((this.profile?.registrationDetails?.photos.length ?? 0) > 1) {
-      this.currentPhotoIndex = (this.currentPhotoIndex - 1 + 2) % 2;
-    }
-  }
-
-  get galleryPhotos(): string[] {
+  readonly galleryPhotos = computed(() => {
+    const p = this.profile();
     const photos: string[] = [this.getProfilePhoto()];
-    if ((this.profile?.registrationDetails?.photos.length ?? 0) > 1) {
+    if ((p?.registrationDetails?.photos.length ?? 0) > 1) {
       photos.push(this.getProfilePhoto(true));
     }
-    if ((this.profile?.registrationDetails?.photos.length ?? 0) > 2 && photos.length < 3) {
+    if ((p?.registrationDetails?.photos.length ?? 0) > 2 && photos.length < 3) {
       photos.push(this.getProfilePhoto());
     }
     return photos.slice(0, 3);
-  }
+  });
 
-  openGallery(): void {
-    this.isGalleryOpen = true;
-    this.currentGalleryIndex = 0;
-  }
-
-  closeGallery(): void {
-    this.isGalleryOpen = false;
-  }
-
-  nextGalleryPhoto(): void {
-    this.currentGalleryIndex = (this.currentGalleryIndex + 1) % this.galleryPhotos.length;
-  }
-
-  prevGalleryPhoto(): void {
-    this.currentGalleryIndex = (this.currentGalleryIndex - 1 + this.galleryPhotos.length) % this.galleryPhotos.length;
-  }
-
-  get sections(): ProfileSection[] {
-    const details = this.profile?.registrationDetails;
+  readonly sections = computed(() => {
+    const p = this.profile();
+    const details = p?.registrationDetails;
     const personal = details?.personal;
     const horoscope = details?.horoscope;
     const professional = details?.professional;
@@ -102,9 +58,9 @@ export class ProfileDetail {
       {
         title: 'Personal Details',
         fields: [
-          this.field('Full Name', this.profile?.name || this.joinNames(personal?.firstName, personal?.middleName, personal?.lastName)),
+          this.field('Full Name', p?.name || this.joinNames(personal?.firstName, personal?.middleName, personal?.lastName)),
           this.field('Date of Birth', this.dateText(personal?.dobDay, personal?.dobMonth, personal?.dobYear)),
-          this.field('Age', this.profile?.age),
+          this.field('Age', p?.age),
           this.field('Height', this.heightText(personal?.heightFt, personal?.heightIn)),
           this.field('Weight', personal?.weightKg),
           this.field('Gender', personal?.gender),
@@ -128,8 +84,8 @@ export class ProfileDetail {
       {
         title: 'Education & Occupation',
         fields: [
-          this.field('Education', professional?.education || this.profile?.bio),
-          this.field('Occupation', professional?.occupationDetails || this.profile?.occupation),
+          this.field('Education', professional?.education || p?.bio),
+          this.field('Occupation', professional?.occupationDetails || p?.occupation),
           this.field('Working City', professional?.workingCityCountry),
           this.field('Income', professional?.incomeAmount),
         ],
@@ -137,8 +93,8 @@ export class ProfileDetail {
       {
         title: 'Address & Contact',
         fields: [
-          this.field('Address', contact?.residenceAddress || this.profile?.location),
-          this.field('Email', contact?.contactEmail || this.profile?.email),
+          this.field('Address', contact?.residenceAddress || p?.location),
+          this.field('Email', contact?.contactEmail || p?.email),
           this.field('Mobile', contact?.smsMobile),
           this.field('Phone', contact?.phonePrimary),
         ],
@@ -165,6 +121,61 @@ export class ProfileDetail {
         ],
       },
     ];
+  });
+
+  ngOnInit(): void {
+    const profileId = this.route.snapshot.paramMap.get('id');
+    if (profileId) {
+      this.profile.set(this.memberService.getProfileById(profileId));
+    }
+  }
+
+  getProfilePhoto(secondary = false): string {
+    const p = this.profile();
+    if (!p) return '';
+    const seed = encodeURIComponent((p.email || p.id || p.name).toLowerCase());
+    return `https://i.pravatar.cc/300?u=${seed}${secondary ? '-alt' : ''}`;
+  }
+
+  getMemberId(): string {
+    const p = this.profile();
+    if (!p) return '';
+    const seed = this.hashSeed(p);
+    const code = 10000 + (seed % 89999);
+    return `MBU${code}`;
+  }
+
+  nextPhoto(): void {
+    if ((this.profile()?.registrationDetails?.photos.length ?? 0) > 1) {
+      this.currentPhotoIndex.update(i => (i + 1) % 2);
+    }
+  }
+
+  prevPhoto(): void {
+    if ((this.profile()?.registrationDetails?.photos.length ?? 0) > 1) {
+      this.currentPhotoIndex.update(i => (i - 1 + 2) % 2);
+    }
+  }
+
+  openGallery(): void {
+    this.isGalleryOpen.set(true);
+    this.currentGalleryIndex.set(0);
+  }
+
+  closeGallery(): void {
+    this.isGalleryOpen.set(false);
+  }
+
+  nextGalleryPhoto(): void {
+    this.currentGalleryIndex.update(i => (i + 1) % this.galleryPhotos().length);
+  }
+
+  prevGalleryPhoto(): void {
+    this.currentGalleryIndex.update(i => (i - 1 + this.galleryPhotos().length) % this.galleryPhotos().length);
+  }
+
+  goToGalleryPhoto(index: number): void {
+    this.currentGalleryIndex.set(index);
   }
 
   private field(label: string, value: unknown): ProfileField {
@@ -195,7 +206,7 @@ export class ProfileDetail {
     return [first, middle, last].filter(Boolean).join(' ');
   }
 
-  private hashSeed(profile: any): number {
+  private hashSeed(profile: MemberRecord): number {
     const source = `${profile.id}-${profile.email}-${profile.name}`.toLowerCase();
     let hash = 0;
     for (let i = 0; i < source.length; i += 1) {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 interface Conversation {
@@ -9,6 +9,7 @@ interface Conversation {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-messages',
   standalone: true,
   imports: [CommonModule, FormsModule],
@@ -21,8 +22,8 @@ interface Conversation {
 
       <section class="chat-layout">
         <aside class="chat-list">
-          @for (chat of conversations; track chat.id) {
-          <button type="button" [class.active]="chat.id === activeId" (click)="activeId = chat.id">
+          @for (chat of conversations(); track chat.id) {
+          <button type="button" [class.active]="chat.id === activeId()" (click)="activeId.set(chat.id)">
             <strong>{{ chat.name }}</strong>
             <span>{{ chat.messages[chat.messages.length - 1]?.text }}</span>
           </button>
@@ -30,9 +31,9 @@ interface Conversation {
         </aside>
 
         <main class="chat-panel">
-          <h2>{{ activeConversation?.name }}</h2>
+          <h2>{{ activeConversation()?.name }}</h2>
           <div class="messages-box">
-            @for (msg of activeConversation?.messages || []; track $index) {
+            @for (msg of activeConversation()?.messages || []; track $index) {
             <div class="bubble" [class.me]="msg.byMe">
               <p>{{ msg.text }}</p>
               <small>{{ msg.time }}</small>
@@ -40,8 +41,8 @@ interface Conversation {
             }
           </div>
           <form class="composer" (ngSubmit)="sendMessage()">
-            <input type="text" name="message" [(ngModel)]="draft" placeholder="Type message" />
-            <button type="submit" [disabled]="!draft.trim()">Send</button>
+            <input type="text" name="message" [ngModel]="draft()" (ngModelChange)="draft.set($event)" placeholder="Type message" />
+            <button type="submit" [disabled]="!draft().trim()">Send</button>
           </form>
         </main>
       </section>
@@ -73,10 +74,10 @@ interface Conversation {
   ],
 })
 export class Messages {
-  draft = '';
-  activeId = 'c1';
+  readonly draft = signal('');
+  readonly activeId = signal('c1');
 
-  conversations: Conversation[] = [
+  readonly conversations = signal<Conversation[]>([
     {
       id: 'c1',
       name: 'Priya Shinde',
@@ -92,15 +93,23 @@ export class Messages {
         { byMe: false, text: 'Thanks for sharing details.', time: 'Yesterday' },
       ],
     },
-  ];
+  ]);
 
-  get activeConversation(): Conversation | undefined {
-    return this.conversations.find((item) => item.id === this.activeId);
-  }
+  readonly activeConversation = computed(() =>
+    this.conversations().find((item) => item.id === this.activeId())
+  );
 
   sendMessage(): void {
-    if (!this.draft.trim() || !this.activeConversation) return;
-    this.activeConversation.messages.push({ byMe: true, text: this.draft.trim(), time: 'Now' });
-    this.draft = '';
+    const draftValue = this.draft().trim();
+    const active = this.activeConversation();
+    if (!draftValue || !active) return;
+    this.conversations.update(convos =>
+      convos.map((c) =>
+        c.id === active.id
+          ? { ...c, messages: [...c.messages, { byMe: true, text: draftValue, time: 'Now' }] }
+          : c
+      )
+    );
+    this.draft.set('');
   }
 }

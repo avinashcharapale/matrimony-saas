@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { TenantClient, TenantResolveResponse } from '@org/generated';
 import { resolveTenant, TenantConfig, THEME_PALETTES, ThemePalette } from './tenant-config';
 
 @Injectable({
@@ -8,6 +9,7 @@ export class TenantService {
   private static readonly THEME_STORAGE_KEY = 'tenant_theme_id';
   private currentTenant: TenantConfig;
   private selectedThemeId = 'warm-ivory';
+  private readonly tenantClient = inject(TenantClient);
 
   constructor() {
     this.currentTenant = resolveTenant(window.location.hostname, window.location.search);
@@ -27,31 +29,20 @@ export class TenantService {
   }
 
   async initialize(): Promise<void> {
-    const host = encodeURIComponent(window.location.hostname);
-    const path = encodeURIComponent(window.location.pathname);
-    const query = encodeURIComponent(window.location.search);
-    const candidates = [
-      `/api/tenant/resolve?host=${host}&path=${path}&query=${query}`,
-      `/api/tenants/resolve?host=${host}&path=${path}&query=${query}`,
-    ];
+    try {
+      const resolved = await this.tenantClient.resolveTenant(
+        window.location.hostname,
+        window.location.pathname,
+        window.location.search
+      ).toPromise();
 
-    for (const url of candidates) {
-      try {
-        const response = await fetch(url, { credentials: 'include' });
-        if (!response.ok) {
-          continue;
-        }
-
-        const resolved = (await response.json()) as Partial<TenantConfig>;
+      if (resolved) {
         this.currentTenant = { ...this.currentTenant, ...resolved };
-        this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
-        return;
-      } catch {
-        // Continue to fallback.
       }
+      this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
+    } catch {
+      this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
     }
-
-    this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
   }
 
   setTheme(themeId: string): void {

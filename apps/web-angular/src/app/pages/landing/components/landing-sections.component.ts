@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { LandingHeroComponent } from './landing-hero.component';
 import { LandingStatsComponent } from './landing-stats.component';
 import { LandingInfoComponent } from './landing-info.component';
@@ -8,6 +8,7 @@ import { LandingCtaFooterComponent } from './landing-cta-footer.component';
 import { FeatureItem, ProfileItem, StatItem, TrustCardItem } from '../landing.models';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-landing-sections',
   standalone: true,
   imports: [

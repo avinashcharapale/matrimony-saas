@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, from, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { MasterDataOptionDto, ProfileServiceClient } from '../../../../../libs/shared/clients/profile-client';
+import { MasterDataClient, MasterDataOptionDto } from '@org/generated';
 import { TenantService } from './tenant.service';
+import { Taluka } from './geo.service';
 
 export interface RegisterLookupOption {
   id: number;
@@ -23,116 +24,92 @@ export interface RegisterDistrictOption {
   name: string;
 }
 
+export interface RegisterTalukaOption {
+  talukaId: number;
+  districtId: number;
+  name: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RegisterMasterDataService {
+  private readonly masterData = inject(MasterDataClient);
   private readonly tenantService = inject(TenantService);
-  private readonly profileClient = new ProfileServiceClient('/profile', {
-    fetch: (input, init) => this.fetchWithTenantContext(input, init),
-  });
 
   private readonly optionCache = new Map<string, RegisterLookupOption[]>();
   private readonly districtCache = new Map<number, RegisterDistrictOption[]>();
+  private readonly talukaCache = new Map<number, RegisterTalukaOption[]>();
   private stateCache: RegisterStateOption[] | null = null;
 
-  private fetchWithTenantContext(input: RequestInfo, init?: RequestInit): Promise<Response> {
-    const sourceRequest = new Request(input, init);
-    const tenantId = this.tenantService.tenantHeaderId;
-    let requestUrl = sourceRequest.url;
-
-    // Gateway route is /profile/{**catch-all} -> /api/{**catch-all},
-    // so callers must send /profile/master-data/* (not /profile/api/master-data/*).
-    requestUrl = requestUrl.replace('/profile/api/master-data/', '/profile/master-data/');
-
-    if (tenantId && requestUrl.includes('/master-data/')) {
-      const url = new URL(requestUrl, window.location.origin);
-      if (!url.searchParams.has('tenantId')) {
-        url.searchParams.set('tenantId', tenantId);
-      }
-      requestUrl = url.toString();
-    }
-
-    const headers = new Headers(sourceRequest.headers);
-    if (tenantId && !headers.has('x-tenant-id')) {
-      headers.set('x-tenant-id', tenantId);
-      headers.set('x-tenant-host', window.location.hostname);
-    }
-
-    const requestWithUrl = new Request(requestUrl, sourceRequest);
-    const requestWithTenant = new Request(requestWithUrl, { headers });
-
-    return fetch(requestWithTenant);
-  }
-
   getGenders(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('genders', () => from(this.profileClient.genders()));
+    return this.getOptions('genders', () => this.masterData.getGenders());
   }
 
   getReligions(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('religions', () => from(this.profileClient.religions()));
+    return this.getOptions('religions', () => this.masterData.getReligions());
   }
 
   getCastes(religionId: number): Observable<RegisterLookupOption[]> {
-    return this.getOptions(`castes?religionId=${religionId}`, () => from(this.profileClient.castes(religionId)));
+    return this.getOptions(`castes?religionId=${religionId}`, () => this.masterData.getCastes(religionId));
   }
 
   getSubCastes(casteId: number): Observable<RegisterLookupOption[]> {
-    return this.getOptions(`sub-castes?casteId=${casteId}`, () => from(this.profileClient.subCastes(casteId)));
+    return this.getOptions(`sub-castes?casteId=${casteId}`, () => this.masterData.getSubCastes(casteId));
   }
 
   getMaritalStatuses(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('marital-statuses', () => from(this.profileClient.maritalStatuses()));
+    return this.getOptions('marital-statuses', () => this.masterData.getMaritalStatuses());
   }
 
   getBloodGroups(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('blood-groups', () => from(this.profileClient.bloodGroups()));
+    return this.getOptions('blood-groups', () => this.masterData.getBloodGroups());
   }
 
   getComplexions(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('complexions', () => from(this.profileClient.complexions()));
+    return this.getOptions('complexions', () => this.masterData.getComplexions());
   }
 
   getDiets(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('diets', () => from(this.profileClient.diets()));
+    return this.getOptions('diets', () => this.masterData.getDiets());
   }
 
   getPersonalities(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('personalities', () => from(this.profileClient.personalities()));
+    return this.getOptions('personalities', () => this.masterData.getPersonalities());
   }
 
   getRashis(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('rashis', () => from(this.profileClient.rashis()));
+    return this.getOptions('rashis', () => this.masterData.getRashis());
   }
 
   getNakshatras(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('nakshatras', () => from(this.profileClient.nakshatras()));
+    return this.getOptions('nakshatras', () => this.masterData.getNakshatras());
   }
 
   getCharans(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('charans', () => from(this.profileClient.charans()));
+    return this.getOptions('charans', () => this.masterData.getCharans());
   }
 
   getNadis(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('nadis', () => from(this.profileClient.nadis()));
+    return this.getOptions('nadis', () => this.masterData.getNadis());
   }
 
   getGans(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('gans', () => from(this.profileClient.gans()));
+    return this.getOptions('gans', () => this.masterData.getGans());
   }
 
   getEducations(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('educations', () => from(this.profileClient.educations()));
+    return this.getOptions('educations', () => this.masterData.getEducations());
   }
 
   getEducationAreas(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('education-areas', () => from(this.profileClient.educationAreas()));
+    return this.getOptions('education-areas', () => this.masterData.getEducationAreas());
   }
 
   getOccupations(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('occupations', () => from(this.profileClient.occupations()));
+    return this.getOptions('occupations', () => this.masterData.getOccupations());
   }
 
   getIncomePeriods(): Observable<RegisterLookupOption[]> {
-    return this.getOptions('income-periods', () => from(this.profileClient.incomePeriods()));
+    return this.getOptions('income-periods', () => this.masterData.getIncomePeriods());
   }
 
   getStates(): Observable<RegisterStateOption[]> {
@@ -140,7 +117,7 @@ export class RegisterMasterDataService {
       return of(this.stateCache);
     }
 
-    return from(this.profileClient.states()).pipe(
+    return this.masterData.getStates(0).pipe(
       map((rows) => this.mapStates(rows ?? [])),
       tap((normalized) => {
         this.stateCache = normalized;
@@ -158,13 +135,31 @@ export class RegisterMasterDataService {
       return of(cached);
     }
 
-    return from(this.profileClient.districts(stateId)).pipe(
+    return this.masterData.getDistricts(stateId).pipe(
       map((rows) => this.mapDistricts(rows ?? [], stateId)),
       tap((normalized) => {
         this.districtCache.set(stateId, normalized);
       }),
       catchError((error) => {
         console.error('Register master-data districts lookup failed:', error);
+        return of([]);
+      })
+    );
+  }
+
+  getTalukas(districtId: number): Observable<RegisterTalukaOption[]> {
+    const cached = this.talukaCache.get(districtId);
+    if (cached) {
+      return of(cached);
+    }
+
+    return this.masterData.getTalukas(districtId).pipe(
+      map((rows) => this.mapTalukas(rows ?? [], districtId)),
+      tap((normalized) => {
+        this.talukaCache.set(districtId, normalized);
+      }),
+      catchError((error) => {
+        console.error('Register master-data talukas lookup failed:', error);
         return of([]);
       })
     );
@@ -231,5 +226,22 @@ export class RegisterMasterDataService {
         } satisfies RegisterDistrictOption;
       })
       .filter((row): row is RegisterDistrictOption => row !== null);
+  }
+
+  private mapTalukas(rows: MasterDataOptionDto[], districtId: number): RegisterTalukaOption[] {
+    return rows
+      .map((row) => {
+        const talukaId = row.id;
+        const name = (row.name ?? '').trim();
+        if (!talukaId || !name) {
+          return null;
+        }
+        return {
+          talukaId,
+          districtId,
+          name,
+        } satisfies RegisterTalukaOption;
+      })
+      .filter((row): row is RegisterTalukaOption => row !== null);
   }
 }

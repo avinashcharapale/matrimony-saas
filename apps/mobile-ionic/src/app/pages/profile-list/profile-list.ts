@@ -1,10 +1,11 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject, signal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile-list',
   standalone: true,
   imports: [IonicModule, CommonModule],
@@ -12,22 +13,22 @@ import { MemberRecord, MemberService } from '../../services/member.service';
   templateUrl: './profile-list.html',
   styleUrl: './profile-list.css',
 })
-export class ProfileList {
+export class ProfileList implements OnInit {
   private readonly memberService = inject(MemberService);
   private readonly router = inject(Router);
 
-  profiles: MemberRecord[] = [];
+  readonly profiles = signal<MemberRecord[]>([]);
 
   ngOnInit(): void {
     this.loadProfiles();
   }
 
   loadProfiles(): void {
-    this.profiles = this.memberService.searchProfiles({
+    this.profiles.set(this.memberService.searchProfiles({
       name: '',
       location: '',
       occupation: '',
-    });
+    }));
   }
 
   getProfilePhotoUrl(profile: MemberRecord): string {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
@@ -138,6 +138,7 @@ interface MappedProfileDetail {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile-detail',
   standalone: true,
   imports: [CommonModule, RouterModule],
@@ -148,68 +149,15 @@ export class ProfileDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly memberService = inject(MemberService);
 
-  profile: MemberRecord | null = null;
-  isGalleryOpen = false;
-  currentGalleryIndex = 0;
-  isLoading = true;
-  error: string | null = null;
+  readonly profile = signal<MemberRecord | null>(null);
+  readonly isGalleryOpen = signal(false);
+  readonly currentGalleryIndex = signal(0);
+  readonly isLoading = signal(true);
+  readonly error = signal<string | null>(null);
 
-  ngOnInit(): void {
-    const profileIdParam = this.route.snapshot.paramMap.get('id');
-    if (profileIdParam) {
-      this.loadProfile(profileIdParam);
-    } else {
-      this.error = 'Profile ID not found.';
-      this.isLoading = false;
-    }
-  }
-
-  private loadProfile(profileId: string): void {
-    this.isLoading = true;
-    this.error = null;
-
-    const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
-    if (isNaN(numericId)) {
-      this.error = 'Invalid profile ID.';
-      this.isLoading = false;
-      return;
-    }
-
-    this.memberService.getProfileById(numericId).pipe(
-      finalize(() => {
-        this.isLoading = false;
-      })
-    ).subscribe({
-      next: (profileDetail: MappedProfileDetail) => {
-        const registrationDetails = this.mapRegistrationDetails(profileDetail);
-        this.profile = {
-          id: `${profileDetail.profileId ?? ''}`,
-          email: profileDetail.email ?? '',
-          name: profileDetail.fullName ?? profileDetail.displayName ?? '',
-          age: profileDetail.age,
-          occupation: profileDetail.occupationText,
-          location: profileDetail.locationText ?? profileDetail.city,
-          bio: profileDetail.bio,
-          password: '',
-          createdAt: profileDetail.createdAt ?? new Date().toISOString(),
-          registrationDetails,
-        };
-      },
-      error: (error: unknown) => {
-        console.error('Failed to load profile:', error);
-        this.error = 'Failed to load profile. Please try again.';
-      },
-    });
-  }
-
-  getProfilePhoto(secondary = false): string {
-    if (!this.profile) return '';
-    const seed = encodeURIComponent((this.profile.email || this.profile.id || this.profile.name).toLowerCase());
-    return `https://i.pravatar.cc/300?u=${seed}${secondary ? '-alt' : ''}`;
-  }
-
-  get galleryPhotos(): string[] {
-    const slots = this.profile?.registrationDetails?.photos ?? [];
+  readonly galleryPhotos = computed(() => {
+    const p = this.profile();
+    const slots = p?.registrationDetails?.photos ?? [];
     const photos: string[] = [this.getProfilePhoto()];
     if (slots.length > 1) {
       photos.push(this.getProfilePhoto(true));
@@ -218,44 +166,10 @@ export class ProfileDetail implements OnInit {
       photos.push(this.getProfilePhoto());
     }
     return photos.slice(0, 3);
-  }
+  });
 
-  openGallery(): void {
-    this.isGalleryOpen = true;
-    this.currentGalleryIndex = 0;
-  }
-
-  closeGallery(): void {
-    this.isGalleryOpen = false;
-  }
-
-  nextPhoto(): void {
-    this.currentGalleryIndex = (this.currentGalleryIndex + 1) % this.galleryPhotos.length;
-  }
-
-  prevPhoto(): void {
-    this.currentGalleryIndex = (this.currentGalleryIndex - 1 + this.galleryPhotos.length) % this.galleryPhotos.length;
-  }
-
-  getMemberId(): string {
-    if (!this.profile) return '';
-    const seed = this.hashSeed(this.profile);
-    const code = 10000 + (seed % 89999);
-    return `MBU${code} (${[...this.profile.name.split(' ')][0]?.toUpperCase()})`;
-  }
-
-  private hashSeed(profile: MemberRecord): number {
-    const source = `${profile.id}-${profile.email}-${profile.name}`.toLowerCase();
-    let hash = 0;
-    for (let i = 0; i < source.length; i += 1) {
-      hash = (hash << 5) - hash + source.charCodeAt(i);
-      hash |= 0;
-    }
-    return Math.abs(hash);
-  }
-
-  get sections(): ProfileSection[] {
-    const details = this.profile?.registrationDetails;
+  readonly sections = computed(() => {
+    const details = this.profile()?.registrationDetails;
     const personal = details?.personal;
     const horoscope = details?.horoscope;
     const professional = details?.professional;
@@ -273,8 +187,8 @@ export class ProfileDetail implements OnInit {
           this.field('Religion', personal?.religion),
           this.field('Caste', personal?.caste),
           this.field('Sub Caste', personal?.subCast),
-          this.field('Education', professional?.education || this.profile?.bio),
-          this.field('Occupation', professional?.occupationDetails || this.profile?.occupation),
+          this.field('Education', professional?.education || this.profile()?.bio),
+          this.field('Occupation', professional?.occupationDetails || this.profile()?.occupation),
           this.field('Blood Group / Weight', `${personal?.bloodGroup || '-'} / ${personal?.weightKg || 'N/A'}`),
           this.field('Spectacle / Lens', `${personal?.spectacles || '-'} / ${personal?.lens || '-'}`),
           this.field('Complexion', personal?.complexion),
@@ -291,8 +205,8 @@ export class ProfileDetail implements OnInit {
       {
         title: 'Contact',
         fields: [
-          this.field('Email', contact?.contactEmail || this.profile?.email),
-          this.field('Address', contact?.residenceAddress || this.profile?.location),
+          this.field('Email', contact?.contactEmail || this.profile()?.email),
+          this.field('Address', contact?.residenceAddress || this.profile()?.location),
           this.field('Primary Mobile', contact?.smsMobile),
           this.field('Secondary Mobile', contact?.mobileSecondary),
         ],
@@ -325,6 +239,100 @@ export class ProfileDetail implements OnInit {
         ],
       },
     ];
+  });
+
+  ngOnInit(): void {
+    const profileIdParam = this.route.snapshot.paramMap.get('id');
+    if (profileIdParam) {
+      this.loadProfile(profileIdParam);
+    } else {
+      this.error.set('Profile ID not found.');
+      this.isLoading.set(false);
+    }
+  }
+
+  private loadProfile(profileId: string): void {
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
+    if (isNaN(numericId)) {
+      this.error.set('Invalid profile ID.');
+      this.isLoading.set(false);
+      return;
+    }
+
+    this.memberService.getProfileById(numericId).pipe(
+      finalize(() => {
+        this.isLoading.set(false);
+      })
+    ).subscribe({
+      next: (profileDetail: MappedProfileDetail) => {
+        const registrationDetails = this.mapRegistrationDetails(profileDetail);
+        this.profile.set({
+          id: `${profileDetail.profileId ?? ''}`,
+          email: profileDetail.email ?? '',
+          name: profileDetail.fullName ?? profileDetail.displayName ?? '',
+          age: profileDetail.age,
+          occupation: profileDetail.occupationText,
+          location: profileDetail.locationText ?? profileDetail.city,
+          bio: profileDetail.bio,
+          password: '',
+          createdAt: profileDetail.createdAt ?? new Date().toISOString(),
+          registrationDetails,
+        });
+      },
+      error: (error: unknown) => {
+        console.error('Failed to load profile:', error);
+        this.error.set('Failed to load profile. Please try again.');
+      },
+    });
+  }
+
+  getProfilePhoto(secondary = false): string {
+    const p = this.profile();
+    if (!p) return '';
+    const seed = encodeURIComponent((p.email || p.id || p.name).toLowerCase());
+    return `https://i.pravatar.cc/300?u=${seed}${secondary ? '-alt' : ''}`;
+  }
+
+  openGallery(): void {
+    this.isGalleryOpen.set(true);
+    this.currentGalleryIndex.set(0);
+  }
+
+  closeGallery(): void {
+    this.isGalleryOpen.set(false);
+  }
+
+  nextPhoto(): void {
+    this.currentGalleryIndex.update(i => (i + 1) % this.galleryPhotos().length);
+  }
+
+  prevPhoto(): void {
+    this.currentGalleryIndex.update(i => (i - 1 + this.galleryPhotos().length) % this.galleryPhotos().length);
+  }
+
+  goToPhoto(index: number): void {
+    this.currentGalleryIndex.set(index);
+  }
+
+  getMemberId(): string {
+    const p = this.profile();
+    if (!p) return '';
+    const seed = this.hashSeed(p);
+    const code = 10000 + (seed % 89999);
+    return `MBU${code} (${[...p.name.split(' ')][0]?.toUpperCase()})`;
+  }
+
+  private hashSeed(profile: MemberRecord): number {
+    const source = `${profile.id}-${profile.email}-${profile.name}`.toLowerCase();
+    let hash = 0;
+    for (let i = 0; i < source.length; i += 1) {
+      hash = (hash << 5) - hash + source.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
   }
 
   private mapRegistrationDetails(profileDetail: MappedProfileDetail): RegisterFormDetails {

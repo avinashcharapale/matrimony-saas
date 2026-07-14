@@ -24,16 +24,40 @@ export class RegisterDraftService {
 
     const draftId = draftIdFromQuery || RegisterDraftService.DEFAULT_DRAFT_ID;
     const tenantId =
-      tenantIdFromQuery ||
-      this.tenantService.tenantHeaderId ||
-      this.tenantService.tenant.id ||
-      'default';
+      (tenantIdFromQuery ??
+      this.tenantService.tenantHeaderId ??
+      this.tenantService.tenant.id ??
+      'default') as string;
 
     return {
       draftId,
       tenantId,
       storageKey: `${RegisterDraftService.DRAFT_STORAGE_PREFIX}_${tenantId}_${draftId}`,
     };
+  }
+
+  rekeyContext(
+    oldContext: RegisterDraftContext,
+    newTenantId: string,
+  ): RegisterDraftContext {
+    if (!newTenantId || oldContext.tenantId === newTenantId) {
+      return oldContext;
+    }
+
+    const newState: RegisterDraftContext = {
+      draftId: oldContext.draftId,
+      tenantId: newTenantId,
+      storageKey: `${RegisterDraftService.DRAFT_STORAGE_PREFIX}_${newTenantId}_${oldContext.draftId}`,
+    };
+
+    const existing = this.read(oldContext);
+    if (existing) {
+      existing.tenantId = newTenantId;
+      localStorage.setItem(newState.storageKey, JSON.stringify(existing));
+      localStorage.removeItem(oldContext.storageKey);
+    }
+
+    return newState;
   }
 
   saveStep(

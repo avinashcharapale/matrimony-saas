@@ -31,8 +31,8 @@
       </ion-item>
 
       <ion-button expand="block" class="submit-button" (click)="submit()">Sign In</ion-button>
-      @if (error) {
-      <p class="error-message">{{ error }}</p>
+      @if (error()) {
+      <p class="error-message">{{ error() }}</p>
       }
     </div>
   </ion-content>

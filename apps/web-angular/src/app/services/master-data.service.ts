@@ -1,64 +1,54 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
+import { MasterDataClient, MasterDataItemDto } from '@org/generated';
 
-export interface MasterDataItem {
-  masterDataId: number;
-  category: string;
-  valueCode: string;
-  sortOrder: number;
-  label: string;
-}
+export type MasterDataItem = MasterDataItemDto;
 
 @Injectable({ providedIn: 'root' })
 export class MasterDataService {
-  private http = inject(HttpClient);
-  private base = '/api/master';
-  private lang = 'en'; // TODO: connect to i18n service when available
+  private readonly masterData = inject(MasterDataClient);
+  private lang = 'en';
 
-  /** Cache key: `${category}:${lang}` */
-  private cache = new Map<string, MasterDataItem[]>();
+  private cache = new Map<string, MasterDataItemDto[]>();
 
   setLang(lang: string): void {
     this.lang = lang;
   }
 
-  getOptions(category: string, lang?: string): Observable<MasterDataItem[]> {
+  getOptions(category: string, lang?: string): Observable<MasterDataItemDto[]> {
     const l = lang ?? this.lang;
     const key = `${category}:${l}`;
     const cached = this.cache.get(key);
     if (cached) return of(cached);
 
-    const params = new HttpParams().set('category', category).set('lang', l);
-    return this.http.get<MasterDataItem[]>(`${this.base}`, { params }).pipe(
+    return this.masterData.getMasterOptions(category, l).pipe(
       tap((data) => this.cache.set(key, data))
     );
   }
 
-  /** Fetch multiple categories in one HTTP call. */
   getMultiple(
     categories: string[],
     lang?: string
-  ): Observable<Record<string, MasterDataItem[]>> {
+  ): Observable<Record<string, MasterDataItemDto[]>> {
     const l = lang ?? this.lang;
     const uncached = categories.filter((c) => !this.cache.has(`${c}:${l}`));
 
     const source$ = uncached.length > 0
-      ? this.http.get<Record<string, MasterDataItem[]>>(`${this.base}`, {
-        params: new HttpParams().set('category', uncached.join(',')).set('lang', l),
-      }).pipe(
+      ? this.masterData.getMasterOptions(uncached.join(','), l).pipe(
         tap((data) => {
-          for (const [cat, items] of Object.entries(data)) {
-            this.cache.set(`${cat}:${l}`, items);
+          for (const item of data) {
+            const existing = this.cache.get(`${item.category}:${l}`) ?? [];
+            existing.push(item);
+            this.cache.set(`${item.category}:${l}`, existing);
           }
         })
       )
-      : of({} as Record<string, MasterDataItem[]>);
+      : of([] as MasterDataItemDto[]);
 
     return source$.pipe(
       map(() => {
-        const result: Record<string, MasterDataItem[]> = {};
+        const result: Record<string, MasterDataItemDto[]> = {};
         for (const cat of categories) {
           result[cat] = this.cache.get(`${cat}:${l}`) ?? [];
         }
