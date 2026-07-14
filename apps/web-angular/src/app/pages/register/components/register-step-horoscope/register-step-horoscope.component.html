@@ -61,18 +61,38 @@
     </div>
     <div class="form-field">
       <label>Birth State</label>
-      <select [value]="birthStateId ?? ''" (change)="onBirthStateChange($event)">
-        <option value="">Select State</option>
-        @for (s of birthStates; track s.stateId) { <option [value]="s.stateId">{{ s.name }}</option> }
+      <select formControlName="birthStateId">
+        <option [ngValue]="null">Select State</option>
+        @for (s of birthStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
+        <option [ngValue]="0">Other</option>
       </select>
     </div>
-    <div class="form-field">
-      <label>Birth District</label>
-      <select formControlName="birthDistrict" [disabled]="birthDistricts.length === 0">
-        <option value="">Select District</option>
-        @for (d of birthDistricts; track d.districtId) { <option [value]="d.name!">{{ d.name }}</option> }
-      </select>
-    </div>
+    @if (horoscope.get('birthStateId')?.value === 0) {
+      <div class="form-field">
+        <label>Birth State (Other)</label>
+        <input type="text" formControlName="birthStateOther" placeholder="Enter state name" maxlength="100" />
+      </div>
+      <div class="form-field">
+        <label>Birth District (Other)</label>
+        <input type="text" formControlName="birthDistrictOther" placeholder="Enter district name" maxlength="80" />
+      </div>
+    }
+    @if (horoscope.get('birthStateId')?.value && horoscope.get('birthStateId')?.value !== 0) {
+      <div class="form-field">
+        <label>Birth District</label>
+        <select formControlName="birthDistrictId" [disabled]="birthDistricts.length === 0">
+          <option [ngValue]="null">Select District</option>
+          @for (d of birthDistricts; track d.districtId) { <option [ngValue]="d.districtId">{{ d.name }}</option> }
+          <option [ngValue]="0">Other</option>
+        </select>
+      </div>
+      @if (horoscope.get('birthDistrictId')?.value === 0) {
+        <div class="form-field">
+          <label>Birth District (Other)</label>
+          <input type="text" formControlName="birthDistrictOther" placeholder="Enter district name" maxlength="80" />
+        </div>
+      }
+    }
     <div class="form-field">
       <label>Devak</label>
       <input type="text" formControlName="devak" />

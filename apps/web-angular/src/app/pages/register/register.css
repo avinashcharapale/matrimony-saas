@@ -104,6 +104,8 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   margin-bottom: 2rem;
+  position: relative;
+  overflow: visible;
 }
 
 .field-grid.compact {
@@ -122,6 +124,13 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+.form-field.has-open-dropdown {
+  z-index: 1000;
 }
 
 .form-field.full-width {
@@ -587,6 +596,218 @@ section {
 .radio-row mat-radio-group {
   display: flex;
   gap: 1.1rem;
+}
+
+.multi-select {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+  font-size: 0.9rem;
+  background: white;
+}
+
+.multi-select option {
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.multi-select option:checked {
+  background: #8b6f47;
+  color: white;
+}
+
+.dropdown-select {
+  position: relative;
+  z-index: 100;
+  min-width: 0;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #1f2638;
+  min-height: 44px;
+  min-width: 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dropdown-trigger:hover {
+  border-color: #8b6f47;
+}
+
+.dropdown-placeholder {
+  color: #aaa;
+}
+
+.dropdown-values {
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdown-arrow {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.dropdown-menu {
+  position: absolute;
+  z-index: 200;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.88rem;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.dropdown-option:hover {
+  background: #f5f0eb;
+}
+
+.dropdown-option input[type="checkbox"] {
+  accent-color: #8b6f47;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.inline-select-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  overflow: visible;
+}
+
+.inline-select-row .dropdown-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.no-bar-toggle {
+  white-space: nowrap;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.no-bar-toggle input {
+  margin-right: 0.3rem;
+  accent-color: #8b6f47;
+}
+
+.tag-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0;
+  background: transparent;
+  cursor: text;
+}
+
+.tag-input-container:focus-within {
+  outline: none;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem 0.4rem 0.2rem 0.6rem;
+  background: #f0ebe5;
+  color: #4a3a2d;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #999;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+
+.tag-remove:hover {
+  color: #c0392b;
+  background: #e8e0d8;
+}
+
+.tag-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: transparent;
+  color: #333;
+  padding: 0.25rem 0.1rem;
+  line-height: 1.4;
+}
+
+.tag-input:focus {
+  border-bottom-color: #8b6f47;
+}
+
+.tag-input::placeholder {
+  color: #aaa;
+  font-weight: 400;
 }
 
 .verification-block {

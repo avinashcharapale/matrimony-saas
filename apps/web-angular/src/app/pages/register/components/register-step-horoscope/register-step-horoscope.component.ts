@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { Subscription, forkJoin } from 'rxjs';
 import {
   RegisterMasterDataService,
@@ -34,6 +34,28 @@ export class RegisterStepHoroscopeComponent implements OnInit, OnDestroy {
   get horoscope(): FormGroup { return this.form.get('profileHoroscope') as FormGroup; }
 
   ngOnInit(): void {
+    this.subs.push(
+      this.horoscope.get('birthStateId')!.valueChanges.subscribe((value) => {
+        const stateId = Number(value);
+        if (!stateId || stateId === 0) {
+          this.birthStateId = null;
+          this.horoscope.get('birthStateOther')!.setValue('', { emitEvent: false });
+          this.birthDistricts = [];
+          this.horoscope.get('birthDistrictId')!.setValue(null, { emitEvent: false });
+          this.horoscope.get('birthDistrictOther')!.setValue('', { emitEvent: false });
+        } else {
+          this.birthStateId = stateId;
+          this.horoscope.get('birthStateOther')!.setValue('', { emitEvent: false });
+          this.horoscope.get('birthDistrictId')!.setValue(null, { emitEvent: false });
+          this.horoscope.get('birthDistrictOther')!.setValue('', { emitEvent: false });
+          this.masterData.getDistricts(stateId).subscribe((districts) => {
+            this.birthDistricts = districts;
+            this.cdr.detectChanges();
+          });
+        }
+      })
+    );
+
     forkJoin({
       rashis: this.masterData.getRashis(),
       nakshatras: this.masterData.getNakshatras(),
@@ -60,53 +82,15 @@ export class RegisterStepHoroscopeComponent implements OnInit, OnDestroy {
     this.subs.forEach(s => s.unsubscribe());
   }
 
-  onBirthStateChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const value = select.value ? Number(select.value) : null;
-    this.birthStateId = value;
-    this.birthDistricts = [];
-    this.horoscope.get('birthDistrict')!.setValue('');
-    if (value) {
-      this.masterData.getDistricts(value).subscribe((districts) => {
-        this.birthDistricts = districts;
-        this.cdr.detectChanges();
-      });
-    } else {
-      this.cdr.detectChanges();
-    }
-  }
-
-  onBirthDistrictChange(districtName: string): void {
-    this.horoscope.get('birthDistrict')!.setValue(districtName);
-  }
-
   private restoreBirthStateFromDraft(): void {
-    const saved = (this.horoscope.get('birthDistrict')?.value ?? '').toString().trim().toUpperCase();
-    if (saved) {
-      this.findBirthStateForDistrict(saved, 0);
-      return;
-    }
-    const mh = this.birthStates.find((s) => s.code === 'MH');
-    if (mh) {
-      this.birthStateId = mh.stateId;
-      this.masterData.getDistricts(mh.stateId).subscribe((districts) => {
+    const savedStateId = this.horoscope.get('birthStateId')?.value;
+
+    if (savedStateId && savedStateId !== 0) {
+      this.birthStateId = savedStateId;
+      this.masterData.getDistricts(savedStateId).subscribe((districts) => {
         this.birthDistricts = districts;
         this.cdr.detectChanges();
       });
     }
-  }
-
-  private findBirthStateForDistrict(token: string, index: number): void {
-    if (index >= this.birthStates.length) return;
-    const state = this.birthStates[index];
-    this.masterData.getDistricts(state.stateId).subscribe((districts) => {
-      if (districts.some((d) => d.name?.toUpperCase() === token)) {
-        this.birthStateId = state.stateId;
-        this.birthDistricts = districts;
-        this.cdr.detectChanges();
-        return;
-      }
-      this.findBirthStateForDistrict(token, index + 1);
-    });
   }
 }

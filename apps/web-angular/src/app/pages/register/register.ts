@@ -94,7 +94,10 @@ export class Register implements OnInit, OnDestroy {
       birthHour: new FormControl(1),
       birthMinute: new FormControl(0),
       birthPeriod: new FormControl(''),
-      birthDistrict: new FormControl(''),
+      birthStateId: new FormControl<number | null>(null),
+      birthStateOther: new FormControl(''),
+      birthDistrictId: new FormControl<number | null>(null),
+      birthDistrictOther: new FormControl(''),
       devak: new FormControl(''),
     }),
     careerDetails: new FormGroup({
@@ -102,7 +105,12 @@ export class Register implements OnInit, OnDestroy {
       educationId: new FormControl<number | null>(null),
       occupationId: new FormControl<number | null>(null),
       occupationDetails: new FormControl(''),
-      workingCityCountry: new FormControl(''),
+      workingCity: new FormControl(''),
+      workingCityOther: new FormControl(''),
+      workingStateId: new FormControl<number | null>(null),
+      workingStateOther: new FormControl(''),
+      workingCountryId: new FormControl<number | null>(null),
+      workingCountryOther: new FormControl(''),
       incomeAmount: new FormControl<number | null>(null),
       incomePeriodId: new FormControl<number | null>(null),
     }),
@@ -127,20 +135,28 @@ export class Register implements OnInit, OnDestroy {
       parentsResidentCity: new FormControl(''),
       familyWealth: new FormControl(''),
       mamaSurnamePlace: new FormControl(''),
-      nativeDistrict: new FormControl(''),
-      nativeTaluka: new FormControl(''),
+      nativeStateId: new FormControl<number | null>(null),
+      nativeStateOther: new FormControl(''),
+      nativeDistrictId: new FormControl<number | null>(null),
+      nativeDistrictOther: new FormControl(''),
+      nativeTalukaId: new FormControl<number | null>(null),
+      nativeTalukaOther: new FormControl(''),
       intercastMarriage: new FormControl(false),
       intercastRelation: new FormControl(''),
     }),
     partnerPreference: new FormGroup({
       expectedManglik: new FormControl(false),
-      expectedCaste: new FormControl(''),
       maxAgeDifference: new FormControl(0),
       expectedHeightFt: new FormControl(5),
       expectedHeightIn: new FormControl(0),
-      expectedEducation: new FormControl(''),
-      expectedOccupationIncome: new FormControl(''),
       divorcee: new FormControl(false),
+      expectedCasteNoBar: new FormControl(false),
+      expectedEducationNoBar: new FormControl(false),
+      expectedOccupationNoBar: new FormControl(false),
+      expectedCasteIds: new FormControl(''),
+      expectedEducationIds: new FormControl(''),
+      expectedOccupationIds: new FormControl(''),
+      expectedIncomeRangeId: new FormControl<number | null>(null),
     }),
     fullName: new FormControl<string | null>(null),
     age: new FormControl<number | null>(null),
@@ -149,8 +165,8 @@ export class Register implements OnInit, OnDestroy {
     occupationText: new FormControl<string | null>(null),
     preferredCities: new FormControl(''),
     relativesSurnames: new FormControl(''),
+    interests: new FormControl(''),
     account: new FormGroup({
-      email: new FormControl(''),
       password: new FormControl(''),
       confirmPassword: new FormControl(''),
     }),
@@ -260,10 +276,11 @@ export class Register implements OnInit, OnDestroy {
 
     const f = this.profileForm.value;
     const account = this.profileForm.get('account')!.value;
+    const ct = this.profileForm.get('contactDetails')!.value;
     const name = [f.personalDetails?.firstName, f.personalDetails?.middleName, f.personalDetails?.lastName]
       .filter(Boolean).join(' ');
 
-    if (!name || !account.email || !account.password) {
+    if (!name || !ct.contactEmail || !account.password) {
       this.isError.set(true);
       this.message.set('Please fill required fields including email and account password.');
       this.isLoading.set(false);
@@ -289,17 +306,15 @@ export class Register implements OnInit, OnDestroy {
 
     const occupation = f.careerDetails?.occupationDetails || '';
     const address = f.contactDetails?.residenceAddress || '';
-    const expectedOcc = f.partnerPreference?.expectedOccupationIncome || '';
     const education = f.careerDetails?.educationId ? String(f.careerDetails.educationId) : '';
 
     const bioParts = [
       education && `Education: ${education}`,
       occupation && `Occupation: ${normalizeText(occupation)}`,
       address && `Address: ${normalizeText(address)}`,
-      expectedOcc && `Expectation: ${normalizeText(expectedOcc)}`,
     ].filter(Boolean);
 
-    this.registerAsync(name, account.email.trim().toLowerCase(), account.password, bioParts.join(' | '), age);
+    this.registerAsync(name, ct.contactEmail.trim().toLowerCase(), account.password, bioParts.join(' | '), age);
   }
 
   refreshCaptcha(): void {
@@ -387,11 +402,31 @@ export class Register implements OnInit, OnDestroy {
     if (p1) profilePhotos.push({ photoSlot: 1, fileName: p1, isPrimary: true });
     if (p2) profilePhotos.push({ photoSlot: 2, fileName: p2, isPrimary: false });
 
+    const preferredCities = f.preferredCities
+      ? f.preferredCities.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
+      : undefined;
+
+    const interests = f.interests
+      ? f.interests.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
+      : undefined;
+
+    const expectedCasteIds = pp.expectedCasteIds
+      ? String(pp.expectedCasteIds).split(',').map((s: string) => Number(s.trim())).filter((n: number) => Number.isFinite(n) && n > 0)
+      : undefined;
+
+    const expectedEducationIds = pp.expectedEducationIds
+      ? String(pp.expectedEducationIds).split(',').map((s: string) => Number(s.trim())).filter((n: number) => Number.isFinite(n) && n > 0)
+      : undefined;
+
+    const expectedOccupationIds = pp.expectedOccupationIds
+      ? String(pp.expectedOccupationIds).split(',').map((s: string) => Number(s.trim())).filter((n: number) => Number.isFinite(n) && n > 0)
+      : undefined;
+
     return {
       fullName: [pd.firstName, pd.middleName, pd.lastName].filter(Boolean).join(' '),
       age: f.age ?? age,
       bio: f.bio ?? undefined,
-      locationText: (f.locationText || ct.residenceAddress || cd.workingCityCountry) ?? undefined,
+      locationText: (f.locationText || ct.residenceAddress || cd.workingCity) ?? undefined,
       occupationText: (f.occupationText || cd.occupationDetails) ?? undefined,
       personalDetails: {
         firstName: pd.firstName ?? undefined,
@@ -428,8 +463,12 @@ export class Register implements OnInit, OnDestroy {
         educationId: cd.educationId ?? undefined,
         occupationId: cd.occupationId ?? undefined,
         occupationDetails: cd.occupationDetails ?? undefined,
-        workingCityCountry: cd.workingCityCountry ?? undefined,
-        incomeAmount: cd.incomeAmount ?? undefined,
+        workingCity: cd.workingCity === '__other__' ? (cd.workingCityOther || undefined) : (cd.workingCity || undefined),
+        workingStateId: cd.workingStateId && cd.workingStateId !== 0 ? cd.workingStateId : undefined,
+        workingStateOther: cd.workingStateId === 0 ? cd.workingStateOther || undefined : undefined,
+        workingCountryId: cd.workingCountryId && cd.workingCountryId !== 0 ? cd.workingCountryId : undefined,
+        workingCountryOther: cd.workingCountryId === 0 ? cd.workingCountryOther || undefined : undefined,
+        incomeAmount: cd.incomeAmount ? Number(cd.incomeAmount) : undefined,
         incomePeriodId: cd.incomePeriodId ?? undefined,
       },
       familyDetails: {
@@ -444,36 +483,47 @@ export class Register implements OnInit, OnDestroy {
         parentsResidentCity: fd.parentsResidentCity ?? undefined,
         familyWealth: fd.familyWealth ?? undefined,
         mamaSurnamePlace: fd.mamaSurnamePlace ?? undefined,
-        nativeDistrict: fd.nativeDistrict ?? undefined,
-        nativeTaluka: fd.nativeTaluka ?? undefined,
+        nativeDistrictId: fd.nativeDistrictId && fd.nativeDistrictId !== 0 ? fd.nativeDistrictId : undefined,
+        nativeDistrictOther: fd.nativeDistrictId === 0 ? fd.nativeDistrictOther || undefined : undefined,
+        nativeTalukaId: fd.nativeTalukaId && fd.nativeTalukaId !== 0 ? fd.nativeTalukaId : undefined,
+        nativeTalukaOther: fd.nativeTalukaId === 0 ? fd.nativeTalukaOther || undefined : undefined,
         intercastMarriage: fd.intercastMarriage ?? undefined,
         intercastRelation: fd.intercastRelation ?? undefined,
       },
       relativeSurnames,
       partnerPreference: {
         expectedManglik: pp.expectedManglik ?? undefined,
-        expectedCaste: pp.expectedCaste ?? undefined,
         maxAgeDifference: pp.maxAgeDifference ?? undefined,
         expectedHeightFt: pp.expectedHeightFt ?? undefined,
         expectedHeightIn: pp.expectedHeightIn ?? undefined,
-        expectedEducation: pp.expectedEducation ?? undefined,
-        expectedOccupationIncome: pp.expectedOccupationIncome ?? undefined,
         divorcee: pp.divorcee ?? undefined,
+        expectedCasteNoBar: pp.expectedCasteNoBar ?? undefined,
+        expectedEducationNoBar: pp.expectedEducationNoBar ?? undefined,
+        expectedOccupationNoBar: pp.expectedOccupationNoBar ?? undefined,
+        expectedIncomeRangeId: pp.expectedIncomeRangeId ?? undefined,
       },
       profileHoroscope: {
         manglik: hd.manglik ?? undefined,
         birthHour: hd.birthHour ?? undefined,
         birthMinute: hd.birthMinute ?? undefined,
         birthPeriod: hd.birthPeriod ?? undefined,
-        birthDistrict: hd.birthDistrict ?? undefined,
         devak: hd.devak ?? undefined,
         rashiId: hd.rashiId ?? undefined,
         nakshatraId: hd.nakshatraId ?? undefined,
         charanId: hd.charanId ?? undefined,
         nadiId: hd.nadiId ?? undefined,
         ganId: hd.ganId ?? undefined,
+        birthStateId: hd.birthStateId && hd.birthStateId !== 0 ? hd.birthStateId : undefined,
+        birthStateOther: hd.birthStateOther || undefined,
+        birthDistrictId: hd.birthDistrictId && hd.birthDistrictId !== 0 ? hd.birthDistrictId : undefined,
+        birthDistrictOther: hd.birthDistrictOther || undefined,
       },
       profilePhotos: profilePhotos.length > 0 ? profilePhotos : undefined,
+      interests,
+      preferredCities,
+      expectedCasteIds,
+      expectedEducationIds,
+      expectedOccupationIds,
     };
   }
 
@@ -513,8 +563,14 @@ export class Register implements OnInit, OnDestroy {
     }
 
     if (step === 2) {
-      if (!hd.birthPeriod || !hd.birthDistrict) {
-        return 'Please select birth time period and birth district.';
+      if (!hd.birthPeriod) {
+        return 'Please select birth time period.';
+      }
+      const birthStateIsOther = hd.birthStateId === 0;
+      const birthDistrictIsSelected = hd.birthDistrictId && hd.birthDistrictId !== 0;
+      const birthDistrictIsOther = hd.birthDistrictId === 0;
+      if (!birthStateIsOther && !birthDistrictIsSelected && !birthDistrictIsOther) {
+        return 'Please select birth district.';
       }
     }
 
@@ -525,10 +581,10 @@ export class Register implements OnInit, OnDestroy {
       if (!cd.occupationId || !normalizeText(cd.occupationDetails || '')) {
         return 'Please provide occupation details.';
       }
-      if (!cd.workingCityCountry) {
+      if (!cd.workingCity) {
         return 'Please select working city/country.';
       }
-      if (cd.incomeAmount && !Number.isFinite(cd.incomeAmount)) {
+      if (cd.incomeAmount && !Number.isFinite(Number(cd.incomeAmount))) {
         return 'Income amount must be numeric.';
       }
     }
@@ -570,7 +626,10 @@ export class Register implements OnInit, OnDestroy {
       if (!normalizeText(fd.parentsFullName || '')) {
         return 'Please enter parents full name.';
       }
-      if (!fd.nativeDistrict) {
+      const stateIsOther = fd.nativeStateId === 0;
+      const districtIsSelected = fd.nativeDistrictId && fd.nativeDistrictId !== 0;
+      const districtIsOther = fd.nativeDistrictId === 0;
+      if (!stateIsOther && !districtIsSelected && !districtIsOther) {
         return 'Please select native district.';
       }
     }
@@ -578,9 +637,6 @@ export class Register implements OnInit, OnDestroy {
     if (step === 6) {
       if (!normalizeText(this.profileForm.get('preferredCities')!.value || '')) {
         return 'Please enter preferred cities.';
-      }
-      if (!normalizeText(pp.expectedEducation || '') || !normalizeText(pp.expectedOccupationIncome || '')) {
-        return 'Please fill expected education and occupation/income.';
       }
       if (!account.password || !account.confirmPassword) {
         return 'Please set your account password and confirm it.';
@@ -672,7 +728,7 @@ export class Register implements OnInit, OnDestroy {
         const v = values as Record<string, unknown>;
         if (v['preferredCities'] != null) this.profileForm.get('preferredCities')?.patchValue(v['preferredCities'] as string, { emitEvent: false });
         if (v['relativesSurnames'] != null) this.profileForm.get('relativesSurnames')?.patchValue(v['relativesSurnames'] as string, { emitEvent: false });
-        if (v['account']) this.profileForm.get('account')?.patchValue(v['account'] as { email: string | null; password: string | null; confirmPassword: string | null }, { emitEvent: false });
+        if (v['account']) this.profileForm.get('account')?.patchValue(v['account'] as { password: string | null; confirmPassword: string | null }, { emitEvent: false });
         if (v['verification']) this.profileForm.get('verification')?.patchValue(v['verification'] as { code: string | null; input: string | null; imageDataUrl: string | null }, { emitEvent: false });
         if (v['photos']) this.profileForm.get('photos')?.patchValue(v['photos'] as { photo1Name: string | null; photo2Name: string | null }, { emitEvent: false });
       }

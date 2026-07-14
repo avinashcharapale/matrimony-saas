@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { finalize } from 'rxjs/operators';
 import {
   RegisterMasterDataService,
   RegisterStateOption,
@@ -26,13 +25,36 @@ export class RegisterStepFamilyComponent implements OnInit, OnDestroy {
   nativeStates: RegisterStateOption[] = [];
   nativeDistricts: RegisterDistrictOption[] = [];
   nativeTalukas: RegisterTalukaOption[] = [];
-  nativeStateId: number | null = null;
-  nativeDistrictId: number | null = null;
 
   get family(): FormGroup { return this.form.get('familyDetails') as FormGroup; }
   get relativesSurnamesCtrl(): FormControl { return this.form.get('relativesSurnames') as FormControl; }
 
   ngOnInit(): void {
+    this.subs.push(
+      this.family.get('nativeStateId')!.valueChanges.subscribe((value) => {
+        const stateId = Number(value);
+        if (!stateId || stateId === 0) {
+          this.nativeDistricts = [];
+          this.nativeTalukas = [];
+          this.family.get('nativeDistrictId')!.setValue(null, { emitEvent: false });
+          this.family.get('nativeDistrictOther')!.setValue('', { emitEvent: false });
+          this.family.get('nativeTalukaId')!.setValue(null, { emitEvent: false });
+          this.family.get('nativeTalukaOther')!.setValue('', { emitEvent: false });
+        } else {
+          this.nativeDistricts = [];
+          this.nativeTalukas = [];
+          this.family.get('nativeDistrictId')!.setValue(null, { emitEvent: false });
+          this.family.get('nativeDistrictOther')!.setValue('', { emitEvent: false });
+          this.family.get('nativeTalukaId')!.setValue(null, { emitEvent: false });
+          this.family.get('nativeTalukaOther')!.setValue('', { emitEvent: false });
+          this.masterData.getDistricts(stateId).subscribe((districts) => {
+            this.nativeDistricts = districts;
+            this.cdr.detectChanges();
+          });
+        }
+      })
+    );
+
     this.masterData.getStates().subscribe((states) => {
       this.nativeStates = states;
       this.restoreNativeLocationFromDraft();
@@ -44,82 +66,14 @@ export class RegisterStepFamilyComponent implements OnInit, OnDestroy {
     this.subs.forEach(s => s.unsubscribe());
   }
 
-  onNativeStateChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const value = select.value ? Number(select.value) : null;
-    this.nativeStateId = value;
-    this.nativeDistricts = [];
-    this.nativeTalukas = [];
-    this.nativeDistrictId = null;
-    this.family.patchValue({ nativeDistrict: '', nativeTaluka: '' });
-    if (value) {
-      this.masterData.getDistricts(value).subscribe((districts) => {
-        this.nativeDistricts = districts;
-        this.cdr.detectChanges();
-      });
-    } else {
-      this.cdr.detectChanges();
-    }
-  }
-
-  onNativeDistrictChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const districtId = select.value ? Number(select.value) : null;
-    this.nativeTalukas = [];
-    this.family.get('nativeTaluka')!.setValue('');
-    const district = this.nativeDistricts.find((d) => d.districtId === districtId);
-    this.family.get('nativeDistrict')!.setValue(district?.name ?? '');
-    this.nativeDistrictId = districtId;
-    if (districtId) {
-      this.masterData.getTalukas(districtId).subscribe((talukas) => {
-        this.nativeTalukas = talukas;
-        this.cdr.detectChanges();
-      });
-    } else {
-      this.cdr.detectChanges();
-    }
-  }
-
   private restoreNativeLocationFromDraft(): void {
-    const saved = (this.family.get('nativeDistrict')?.value ?? '').toString().trim().toUpperCase();
-    if (saved) {
-      this.findNativeDistrict(saved, 0);
-      return;
-    }
-    const mh = this.nativeStates.find((s) => s.code === 'MH');
-    if (mh) {
-      this.nativeStateId = mh.stateId;
-      this.masterData.getDistricts(mh.stateId)
-        .pipe(finalize(() => this.cdr.detectChanges()))
-        .subscribe((districts) => { this.nativeDistricts = districts; });
-    }
-  }
+    const savedStateId = this.family.get('nativeStateId')?.value;
 
-  private findNativeDistrict(token: string, index: number): void {
-    if (index >= this.nativeStates.length) return;
-    const state = this.nativeStates[index];
-    this.masterData.getDistricts(state.stateId).subscribe((districts) => {
-      const matched = districts.find((d) => d.name?.toUpperCase() === token);
-      if (matched) {
-        this.nativeStateId = state.stateId;
+    if (savedStateId && savedStateId !== 0) {
+      this.masterData.getDistricts(savedStateId).subscribe((districts) => {
         this.nativeDistricts = districts;
-        this.nativeDistrictId = matched.districtId;
-        this.family.get('nativeDistrict')!.setValue(matched.name!);
-        this.loadTalukasPreserve(matched.districtId!);
-        return;
-      }
-      this.findNativeDistrict(token, index + 1);
-    });
-  }
-
-  private loadTalukasPreserve(districtId: number): void {
-    this.masterData.getTalukas(districtId).subscribe((talukas) => {
-      this.nativeTalukas = talukas;
-      const saved = (this.family.get('nativeTaluka')?.value ?? '').toString().trim().toUpperCase();
-      if (!this.nativeTalukas.some((t) => t.name?.toUpperCase() === saved)) {
-        this.family.get('nativeTaluka')!.setValue('');
-      }
-      this.cdr.detectChanges();
-    });
+        this.cdr.detectChanges();
+      });
+    }
   }
 }

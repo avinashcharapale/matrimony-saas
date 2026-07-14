@@ -152,8 +152,10 @@ export interface FamilyDetailsDto {
   parentsResidentCity?: string;
   familyWealth?: string;
   mamaSurnamePlace?: string;
-  nativeDistrict?: string;
-  nativeTaluka?: string;
+  nativeDistrictId?: number;
+  nativeDistrictOther?: string;
+  nativeTalukaId?: number;
+  nativeTalukaOther?: string;
   intercastMarriage?: boolean;
   intercastRelation?: string;
 }
@@ -163,7 +165,11 @@ export interface CareerDetailsDtoCreate {
   educationAreaId?: number;
   occupationId?: number;
   occupationDetails?: string;
-  workingCityCountry?: string;
+  workingCity?: string;
+  workingStateId?: number;
+  workingStateOther?: string;
+  workingCountryId?: number;
+  workingCountryOther?: string;
   incomeAmount?: number;
   incomePeriodId?: number;
 }
@@ -173,20 +179,25 @@ export interface CareerDetailsViewDto {
   educationAreaId?: number;
   occupationId?: number;
   occupationDetails?: string;
-  workingCityCountry?: string;
+  workingCity?: string;
+  workingStateId?: number;
+  workingStateOther?: string;
+  workingCountryId?: number;
+  workingCountryOther?: string;
   incomeAmount?: number;
   incomePeriodId?: number;
 }
 
 export interface PartnerPreferenceDto {
   expectedManglik?: boolean;
-  expectedCaste?: string;
   maxAgeDifference?: number;
   expectedHeightFt?: number;
   expectedHeightIn?: number;
-  expectedEducation?: string;
-  expectedOccupationIncome?: string;
   divorcee?: boolean;
+  expectedCasteNoBar?: boolean;
+  expectedEducationNoBar?: boolean;
+  expectedOccupationNoBar?: boolean;
+  expectedIncomeRangeId?: number;
 }
 
 export interface ProfilePhotoDto {
@@ -210,13 +221,16 @@ export interface ProfileHoroscopeDetailDto {
   birthHour?: number;
   birthMinute?: number;
   birthPeriod?: string;
-  birthDistrict?: string;
   devak?: string;
   rashiId?: number;
   nakshatraId?: number;
   charanId?: number;
   nadiId?: number;
   ganId?: number;
+  birthStateId?: number;
+  birthStateOther?: string;
+  birthDistrictId?: number;
+  birthDistrictOther?: string;
 }
 
 export interface CreateProfileDto {
@@ -234,6 +248,11 @@ export interface CreateProfileDto {
   partnerPreference?: PartnerPreferenceDto;
   profilePhotos?: ProfilePhotoDtoCreate[];
   profileHoroscope?: ProfileHoroscopeDetailDto;
+  interests?: string[];
+  preferredCities?: string[];
+  expectedCasteIds?: number[];
+  expectedEducationIds?: number[];
+  expectedOccupationIds?: number[];
 }
 
 export interface ProfileDetailDto {
@@ -276,7 +295,7 @@ export interface ProfileListItemDto {
   manglik?: boolean;
   educationId?: number;
   occupationId?: number;
-  workingCityCountry?: string;
+  workingCity?: string;
   incomeAmount?: number;
   thumbnailUrl?: string;
   isVerified?: boolean;

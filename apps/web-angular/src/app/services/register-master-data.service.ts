@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MasterDataClient, MasterDataOptionDto } from '@org/generated';
@@ -30,15 +31,28 @@ export interface RegisterTalukaOption {
   name: string;
 }
 
+export interface RegisterCountryOption {
+  countryId: number;
+  name: string;
+}
+
+export interface RegisterIncomeRangeOption {
+  incomeRangeId: number;
+  label: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RegisterMasterDataService {
   private readonly masterData = inject(MasterDataClient);
   private readonly tenantService = inject(TenantService);
+  private readonly http = inject(HttpClient);
 
   private readonly optionCache = new Map<string, RegisterLookupOption[]>();
   private readonly districtCache = new Map<number, RegisterDistrictOption[]>();
   private readonly talukaCache = new Map<number, RegisterTalukaOption[]>();
   private stateCache: RegisterStateOption[] | null = null;
+  private countryCache: RegisterCountryOption[] | null = null;
+  private incomeRangeCache: RegisterIncomeRangeOption[] | null = null;
 
   getGenders(): Observable<RegisterLookupOption[]> {
     return this.getOptions('genders', () => this.masterData.getGenders());
@@ -162,6 +176,30 @@ export class RegisterMasterDataService {
         console.error('Register master-data talukas lookup failed:', error);
         return of([]);
       })
+    );
+  }
+
+  getCountries(): Observable<RegisterCountryOption[]> {
+    if (this.countryCache) {
+      return of(this.countryCache);
+    }
+
+    return this.http.get<Array<{ id: number; name: string }>>('/profile/master-data/countries').pipe(
+      map((rows) => rows.map((r) => ({ countryId: r.id, name: r.name }))),
+      tap((countries) => { this.countryCache = countries; }),
+      catchError(() => of([]))
+    );
+  }
+
+  getIncomeRanges(): Observable<RegisterIncomeRangeOption[]> {
+    if (this.incomeRangeCache) {
+      return of(this.incomeRangeCache);
+    }
+
+    return this.http.get<Array<{ id: number; name: string }>>('/profile/master-data/income-ranges').pipe(
+      map((rows) => rows.map((r) => ({ incomeRangeId: r.id, label: r.name }))),
+      tap((ranges) => { this.incomeRangeCache = ranges; }),
+      catchError(() => of([]))
     );
   }
 
