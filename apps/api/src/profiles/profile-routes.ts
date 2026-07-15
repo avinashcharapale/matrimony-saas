@@ -21,7 +21,7 @@ export function createProfileRoutes(
    */
   router.get('/', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const tenantId = req.auth?.tenantId || 1;
+      const tenantId = req.auth!.tenantId;
       const filters: ProfileSearchFilters = {
         name: req.query.name as string | undefined,
         location: req.query.location as string | undefined,
@@ -59,7 +59,7 @@ export function createProfileRoutes(
    */
   router.get('/search', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const tenantId = req.auth?.tenantId || 1;
+      const tenantId = req.auth!.tenantId;
       const filters: ProfileSearchFilters = {
         name: req.query.name as string | undefined,
         location: req.query.location as string | undefined,
@@ -97,7 +97,7 @@ export function createProfileRoutes(
    */
   router.get('/:id', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const tenantId = req.auth?.tenantId || 1;
+      const tenantId = req.auth!.tenantId;
       const profileId = parseInt(req.params.id);
 
       if (isNaN(profileId)) {
@@ -131,7 +131,7 @@ export function createProfileRoutes(
    */
   router.get('/user/:userId', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const tenantId = req.auth?.tenantId || 1;
+      const tenantId = req.auth!.tenantId;
       const userId = parseInt(req.params.userId);
 
       if (isNaN(userId)) {
@@ -165,7 +165,7 @@ export function createProfileRoutes(
    */
   router.post('/', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const tenantId = req.auth?.tenantId || 1;
+      const tenantId = req.auth!.tenantId;
       const userId = req.auth?.userId;
 
       if (!userId) {

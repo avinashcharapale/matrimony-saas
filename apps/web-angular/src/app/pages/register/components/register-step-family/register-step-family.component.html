@@ -26,6 +26,9 @@
       <select formControlName="marriedBrothers">
         @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
       </select>
+      @if (family.hasError('marriedBrothersExceeds')) {
+        <small class="field-error">Cannot exceed total brothers count</small>
+      }
     </div>
     <div class="form-field">
       <label>Sisters</label>
@@ -38,6 +41,9 @@
       <select formControlName="marriedSisters">
         @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
       </select>
+      @if (family.hasError('marriedSistersExceeds')) {
+        <small class="field-error">Cannot exceed total sisters count</small>
+      }
     </div>
     <div class="form-field">
       <label>Parents Full Name</label>

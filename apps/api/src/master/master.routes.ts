@@ -2,14 +2,16 @@
  * Master Data Routes — /api/master
  *
  * Public:  GET  /api/master?category=education_area&lang=en
- * Admin:   POST /api/master  (requires auth + admin role check – TODO: add role guard)
- *          PUT  /api/master/:id/deactivate
+ * Admin:   POST /api/master  (requires auth)
+ *          PUT  /api/master/:id/deactivate (requires auth)
  */
 import { Router, Request, Response, NextFunction } from 'express';
 import { ConnectionPool } from 'mssql';
 import { MasterDataService } from './master.service';
+import { authMiddleware, resolveTenantId } from '../auth/middleware';
+import { AuthDatabase } from '../auth/database';
 
-export function createMasterRoutes(pool: ConnectionPool): Router {
+export function createMasterRoutes(pool: ConnectionPool, db: AuthDatabase): Router {
   const router = Router();
   const svc = new MasterDataService(pool);
 
@@ -31,7 +33,7 @@ export function createMasterRoutes(pool: ConnectionPool): Router {
       }
       const categories = categoryParam.split(',').map((c) => c.trim()).filter(Boolean);
       const lang = (req.query.lang as string) || 'en';
-      const tenantId = req.query.tenantId ? parseInt(req.query.tenantId as string, 10) : 0;
+      const tenantId = resolveTenantId(req);
 
       const data = await svc.getOptions(categories, lang, tenantId);
       // If only one category, return the array directly for convenience
@@ -49,6 +51,7 @@ export function createMasterRoutes(pool: ConnectionPool): Router {
    */
   router.post(
     '/',
+    authMiddleware(db),
     handle(async (req, res) => {
       const { category, valueCode, translations, sortOrder, tenantId } = req.body as {
         category?: string;
@@ -73,6 +76,7 @@ export function createMasterRoutes(pool: ConnectionPool): Router {
    */
   router.put(
     '/:id/deactivate',
+    authMiddleware(db),
     handle(async (req, res) => {
       const id = parseInt(req.params.id, 10);
       if (isNaN(id)) {

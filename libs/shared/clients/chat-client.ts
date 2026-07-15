@@ -18,19 +18,13 @@ export class ChatConversationsClient {
     }
 
     /**
-     * @param tenantId (optional) 
      * @return OK
      */
-    getById(id: number, tenantId: number | undefined): Promise<ChatConversation> {
-        let url_ = this.baseUrl + "/api/ChatConversations/{id}?";
+    getById(id: number): Promise<ChatConversation> {
+        let url_ = this.baseUrl + "/api/ChatConversations/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' cannot be null.");
-        else if (tenantId !== undefined)
-            url_ += "tenantId=" + encodeURIComponent("" + tenantId) + "&";
-        url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
@@ -63,20 +57,14 @@ export class ChatConversationsClient {
     }
 
     /**
-     * @param tenantId (optional) 
      * @param body (optional) 
      * @return OK
      */
-    update(id: number, tenantId: number | undefined, body: ChatConversationDto | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/ChatConversations/{id}?";
+    update(id: number, body: ChatConversationDto | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/ChatConversations/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' cannot be null.");
-        else if (tenantId !== undefined)
-            url_ += "tenantId=" + encodeURIComponent("" + tenantId) + "&";
-        url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
@@ -109,19 +97,13 @@ export class ChatConversationsClient {
     }
 
     /**
-     * @param tenantId (optional) 
      * @return OK
      */
-    delete(id: number, tenantId: number | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/ChatConversations/{id}?";
+    delete(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/ChatConversations/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' cannot be null.");
-        else if (tenantId !== undefined)
-            url_ += "tenantId=" + encodeURIComponent("" + tenantId) + "&";
-        url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "DELETE",
@@ -150,19 +132,13 @@ export class ChatConversationsClient {
     }
 
     /**
-     * @param tenantId (optional) 
      * @return OK
      */
-    getByUser(userId: number, tenantId: number | undefined): Promise<ChatConversation[]> {
-        let url_ = this.baseUrl + "/api/ChatConversations/by-user/{userId}?";
+    getByUser(userId: number): Promise<ChatConversation[]> {
+        let url_ = this.baseUrl + "/api/ChatConversations/by-user/{userId}";
         if (userId === undefined || userId === null)
             throw new globalThis.Error("The parameter 'userId' must be defined.");
         url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
-        if (tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' cannot be null.");
-        else if (tenantId !== undefined)
-            url_ += "tenantId=" + encodeURIComponent("" + tenantId) + "&";
-        url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",

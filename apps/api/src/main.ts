@@ -158,7 +158,7 @@ function setupRoutes() {
   app.use('/api/geo', geoRoutes);
 
   // Master data lookup routes (public read, admin write)
-  const masterRoutes = createMasterRoutes(authServices.pool);
+  const masterRoutes = createMasterRoutes(authServices.pool, authServices.authDb);
   app.use('/api/master', masterRoutes);
 
   // Profile-service compatible master-data lookups used by registration flows

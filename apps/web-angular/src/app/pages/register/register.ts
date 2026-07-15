@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl, FormArray } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MemberService } from '../../services/member.service';
 import { RegisterDraftContext, RegisterDraftService } from '../../services/register-draft.service';
@@ -143,6 +143,13 @@ export class Register implements OnInit, OnDestroy {
       nativeTalukaOther: new FormControl(''),
       intercastMarriage: new FormControl(false),
       intercastRelation: new FormControl(''),
+    }, {
+      validators: [
+        (g: AbstractControl) => g.get('marriedBrothers')!.value > g.get('brothers')!.value
+          ? { marriedBrothersExceeds: true } : null,
+        (g: AbstractControl) => g.get('marriedSisters')!.value > g.get('sisters')!.value
+          ? { marriedSistersExceeds: true } : null,
+      ],
     }),
     partnerPreference: new FormGroup({
       expectedManglik: new FormControl(false),
@@ -365,14 +372,17 @@ export class Register implements OnInit, OnDestroy {
       next: (result) => {
         this.isError.set(!result.ok);
         this.message.set(result.message);
-        if (result.ok) {
+        if (result.ok && result.profileSynced) {
           this.clearDraftFromStorage();
           this.router.navigateByUrl('/login');
+        } else {
+          this.persistCurrentStep();
         }
       },
       error: (error: unknown) => {
         this.isError.set(true);
         this.message.set(error instanceof Error ? error.message : 'Registration failed. Please try again.');
+        this.persistCurrentStep();
       },
     });
   }
@@ -387,10 +397,10 @@ export class Register implements OnInit, OnDestroy {
     const pp = f.partnerPreference!;
 
     const phoneNumbers: Array<{ phoneType: string; phoneNumber: string }> = [];
-    if (ct.smsMobile) phoneNumbers.push({ phoneType: 'Mobile', phoneNumber: ct.smsMobile });
-    if (ct.mobile2) phoneNumbers.push({ phoneType: 'Mobile2', phoneNumber: ct.mobile2 });
-    if (ct.phone1) phoneNumbers.push({ phoneType: 'Phone', phoneNumber: ct.phone1 });
-    if (ct.phone2) phoneNumbers.push({ phoneType: 'Phone2', phoneNumber: ct.phone2 });
+    if (ct.smsMobile) phoneNumbers.push({ phoneType: 'sms_mobile', phoneNumber: ct.smsMobile });
+    if (ct.mobile2) phoneNumbers.push({ phoneType: 'mobile_secondary', phoneNumber: ct.mobile2 });
+    if (ct.phone1) phoneNumbers.push({ phoneType: 'phone_primary', phoneNumber: ct.phone1 });
+    if (ct.phone2) phoneNumbers.push({ phoneType: 'phone_secondary', phoneNumber: ct.phone2 });
 
     const relativeSurnames = f.relativesSurnames
       ? f.relativesSurnames.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
@@ -717,14 +727,27 @@ export class Register implements OnInit, OnDestroy {
 
   private restoreDraftFromStorage(): void {
     if (!this.draftContext) return;
-    const state = this.registerDraftService.read(this.draftContext);
+    let state = this.registerDraftService.read(this.draftContext);
+
+    if (!state) {
+      const existingKey = this.registerDraftService.findExistingDraftKey(this.draftContext.draftId);
+      if (existingKey && existingKey !== this.draftContext.storageKey) {
+        const existingContext = { ...this.draftContext, storageKey: existingKey };
+        state = this.registerDraftService.read(existingContext);
+        if (state) {
+          this.registerDraftService.rekeyContext(existingContext, this.draftContext.tenantId);
+        }
+      }
+    }
+
     if (!state) return;
 
     for (const [step, values] of Object.entries(state.steps)) {
       const groupName = STEP_GROUP_NAMES[Number(step)];
       if (groupName) {
         this.profileForm.get(groupName)?.patchValue(values, { emitEvent: false });
-      } else if (Number(step) === 6) {
+      }
+      if (Number(step) === 6) {
         const v = values as Record<string, unknown>;
         if (v['preferredCities'] != null) this.profileForm.get('preferredCities')?.patchValue(v['preferredCities'] as string, { emitEvent: false });
         if (v['relativesSurnames'] != null) this.profileForm.get('relativesSurnames')?.patchValue(v['relativesSurnames'] as string, { emitEvent: false });
@@ -742,16 +765,18 @@ export class Register implements OnInit, OnDestroy {
   private captureStepValues(step: number): Record<string, unknown> {
     const groupName = STEP_GROUP_NAMES[step];
     if (groupName) {
-      return this.profileForm.get(groupName)?.value ?? {};
-    }
-    if (step === 6) {
-      return {
-        preferredCities: this.profileForm.get('preferredCities')?.value,
-        relativesSurnames: this.profileForm.get('relativesSurnames')?.value,
-        account: this.profileForm.get('account')?.value,
-        verification: this.profileForm.get('verification')?.value,
-        photos: this.profileForm.get('photos')?.value,
-      };
+      const groupValue = this.profileForm.get(groupName)?.value ?? {};
+      if (step === 6) {
+        return {
+          ...groupValue,
+          preferredCities: this.profileForm.get('preferredCities')?.value,
+          relativesSurnames: this.profileForm.get('relativesSurnames')?.value,
+          account: this.profileForm.get('account')?.value,
+          verification: this.profileForm.get('verification')?.value,
+          photos: this.profileForm.get('photos')?.value,
+        };
+      }
+      return groupValue;
     }
     return {};
   }

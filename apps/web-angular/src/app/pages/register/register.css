@@ -276,6 +276,12 @@ select {
   border: 1px solid #86efac;
 }
 
+.field-error {
+  color: #991b1b;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
 /* Section styling */
 section {
   margin-bottom: 0;

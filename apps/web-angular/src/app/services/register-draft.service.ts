@@ -99,7 +99,62 @@ export class RegisterDraftService {
     }
   }
 
+  findExistingDraft(draftId: string): RegisterDraftState | null {
+    const suffix = `_${draftId}`;
+    const prefix = `${RegisterDraftService.DRAFT_STORAGE_PREFIX}_`;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix) && key.endsWith(suffix)) {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        try {
+          const parsed = JSON.parse(raw) as RegisterDraftState;
+          if (parsed && typeof parsed === 'object' && parsed.steps && typeof parsed.steps === 'object') {
+            return parsed;
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+    return null;
+  }
+
+  findExistingDraftKey(draftId: string): string | null {
+    const suffix = `_${draftId}`;
+    const prefix = `${RegisterDraftService.DRAFT_STORAGE_PREFIX}_`;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix) && key.endsWith(suffix)) {
+        const raw = localStorage.getItem(key);
+        if (!raw) continue;
+        try {
+          const parsed = JSON.parse(raw) as RegisterDraftState;
+          if (parsed && typeof parsed === 'object' && parsed.steps && typeof parsed.steps === 'object') {
+            return key;
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+    return null;
+  }
+
   clear(context: RegisterDraftContext): void {
     localStorage.removeItem(context.storageKey);
+  }
+
+  clearAllDrafts(draftId: string): void {
+    const suffix = `_${draftId}`;
+    const prefix = `${RegisterDraftService.DRAFT_STORAGE_PREFIX}_`;
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix) && key.endsWith(suffix)) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
   }
 }

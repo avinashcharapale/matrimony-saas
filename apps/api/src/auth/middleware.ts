@@ -19,6 +19,24 @@ declare global {
 }
 
 /**
+ * Resolve tenantId from request headers, body, or query params.
+ * Used by pre-authentication routes where req.auth is not yet available.
+ * Priority: body > header > query > default (1)
+ */
+export function resolveTenantId(req: Request): number {
+  const bodyId = Number((req.body as Record<string, unknown>)?.tenantId);
+  if (Number.isFinite(bodyId) && bodyId > 0) return bodyId;
+
+  const headerId = Number(req.header('x-tenant-id'));
+  if (Number.isFinite(headerId) && headerId > 0) return headerId;
+
+  const queryId = Number(req.query?.tenantId);
+  if (Number.isFinite(queryId) && queryId > 0) return queryId;
+
+  return 1;
+}
+
+/**
  * JWT Authentication Middleware
  * Validates JWT token from Authorization header
  */
