@@ -1,0 +1,324 @@
+<section class="public-search-page">
+  <header class="search-header">
+    <h1>{{ heading }}</h1>
+    <p>{{ subtitle }}</p>
+  </header>
+
+  <form class="search-panel" (ngSubmit)="onSearch()">
+    @if (error()) {
+      <div class="form-error">{{ error() }}</div>
+    }
+
+    <div class="search-primary">
+      <div class="search-input-wrap">
+        <span class="search-icon">&#x1F50D;</span>
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="filters.name"
+          name="name"
+          placeholder="Search by name, city, or keyword..."
+          maxlength="60"
+        />
+      </div>
+
+      <div class="search-quick-filters">
+        <div class="qf-field">
+          <label>Looking For</label>
+          <select [(ngModel)]="filters.lookingFor" name="lookingFor">
+            <option value="">Any</option>
+            <option value="Bride">Bride</option>
+            <option value="Groom">Groom</option>
+          </select>
+        </div>
+        <div class="qf-field">
+          <label>Age</label>
+          <div class="age-range">
+            <select [(ngModel)]="filters.ageMin" name="ageMin">
+              <option [ngValue]="18">18</option>
+              <option [ngValue]="20">20</option>
+              <option [ngValue]="22">22</option>
+              <option [ngValue]="24">24</option>
+              <option [ngValue]="26">26</option>
+              <option [ngValue]="28">28</option>
+              <option [ngValue]="30">30</option>
+              <option [ngValue]="32">32</option>
+              <option [ngValue]="34">34</option>
+              <option [ngValue]="36">36</option>
+              <option [ngValue]="38">38</option>
+              <option [ngValue]="40">40</option>
+              <option [ngValue]="42">42</option>
+              <option [ngValue]="44">44</option>
+              <option [ngValue]="46">46</option>
+              <option [ngValue]="48">48</option>
+              <option [ngValue]="50">50</option>
+            </select>
+            <span class="range-sep">to</span>
+            <select [(ngModel)]="filters.ageMax" name="ageMax">
+              <option [ngValue]="20">20</option>
+              <option [ngValue]="22">22</option>
+              <option [ngValue]="24">24</option>
+              <option [ngValue]="26">26</option>
+              <option [ngValue]="28">28</option>
+              <option [ngValue]="30">30</option>
+              <option [ngValue]="32">32</option>
+              <option [ngValue]="34">34</option>
+              <option [ngValue]="36">36</option>
+              <option [ngValue]="38">38</option>
+              <option [ngValue]="40">40</option>
+              <option [ngValue]="42">42</option>
+              <option [ngValue]="44">44</option>
+              <option [ngValue]="46">46</option>
+              <option [ngValue]="48">48</option>
+              <option [ngValue]="50">50</option>
+              <option [ngValue]="55">55</option>
+              <option [ngValue]="60">60</option>
+            </select>
+          </div>
+        </div>
+        <div class="qf-field">
+          <label>City</label>
+          <input type="text" [(ngModel)]="filters.city" name="city" placeholder="Any" maxlength="60" />
+        </div>
+        <button type="submit" class="btn-search">Search</button>
+      </div>
+    </div>
+
+    <div class="search-meta-bar">
+      <button type="button" class="filter-toggle" (click)="showAdvanced = !showAdvanced" [class.active]="showAdvanced">
+        <span class="toggle-arrow" [class.open]="showAdvanced">&#x25B8;</span>
+        Filters
+        @if (advancedFilterCount() > 0) {
+          <span class="filter-badge">{{ advancedFilterCount() }}</span>
+        }
+      </button>
+      <div class="result-summary">
+        <strong>{{ totalCount() }}</strong>
+        <span> matching profiles</span>
+      </div>
+      <label class="sort-control">
+        Sort by
+        <select [(ngModel)]="filters.sortBy" name="sortBy" (ngModelChange)="onSearch()">
+          <option value="relevance">Relevance</option>
+          <option value="age-asc">Age: Low to High</option>
+          <option value="age-desc">Age: High to Low</option>
+        </select>
+      </label>
+    </div>
+
+    @if (showAdvanced) {
+      <div class="advanced-panel">
+        <div class="adv-grid">
+          <div class="adv-field">
+            <label>Religion</label>
+            <select [(ngModel)]="filters.religionId" name="religionId" (ngModelChange)="onReligionChange()">
+              <option value="">Any</option>
+              @for (opt of religionOptions(); track opt.id) {
+                <option [value]="opt.id">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="adv-field">
+            <label>Caste</label>
+            <select [(ngModel)]="filters.casteId" name="casteId">
+              <option value="">Any</option>
+              @for (opt of casteOptions(); track opt.id) {
+                <option [value]="opt.id">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="adv-field">
+            <label>Education</label>
+            <select [(ngModel)]="filters.educationId" name="educationId">
+              <option value="">Any</option>
+              @for (opt of educationOptions(); track opt.id) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="adv-field">
+            <label>Marital Status</label>
+            <select [(ngModel)]="filters.maritalStatusId" name="maritalStatusId">
+              <option value="">Any</option>
+              @for (opt of maritalStatusOptions(); track opt.id) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="adv-footer">
+          <button type="button" class="btn-clear" (click)="clearFilters()">Clear All</button>
+          <button type="button" class="btn-apply" (click)="onSearch()">Apply Filters</button>
+        </div>
+      </div>
+    }
+  </form>
+
+  <div class="results-section">
+    @if (loading()) {
+      <div class="loading-state">
+        <p>Loading profiles...</p>
+      </div>
+    } @else if (results().length > 0) {
+      <div class="results-list">
+        @for (profile of results(); track profile.profileId) {
+          <article class="profile-card" role="button" tabindex="0" (click)="onProfileClick(profile)" (keyup.enter)="onProfileClick(profile)">
+            <div class="card-photo-col">
+              <img
+                class="card-photo"
+                [src]="getPhotoUrl(profile)"
+                [alt]="getDisplayName(profile)"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                (error)="onPhotoError($event, profile)"
+              />
+            </div>
+            <div class="card-info-col">
+              <div class="card-header">
+                <h2 class="card-name">{{ getDisplayName(profile) }}</h2>
+                <span class="card-age">{{ profile.age ?? '-' }} yrs</span>
+                @if (profile.profileCode) {
+                  <span class="card-id">{{ profile.profileCode }}</span>
+                }
+              </div>
+              @if (profile.occupationText || profile.locationText) {
+                <p class="card-detail">
+                  {{ profile.occupationText || '' }}
+                  @if (profile.occupationText && profile.locationText) {
+                    <span class="sep">&bull;</span>
+                  }
+                  {{ profile.locationText || '' }}
+                </p>
+              }
+              <div class="card-tags">
+                @if (getReligionLabel(profile)) {
+                  <span class="tag">{{ getReligionLabel(profile) }}</span>
+                }
+                @if (getCasteLabel(profile)) {
+                  <span class="tag">{{ getCasteLabel(profile) }}</span>
+                }
+              </div>
+            </div>
+            <div class="card-action-col">
+              <button type="button" class="btn-connect" (click)="onCardCtaClick(profile, $event)">
+                {{ ctaLabel }}
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+
+      @if (totalPages() > 1) {
+        <div class="pagination">
+          <button type="button" [disabled]="pageNumber() <= 1" (click)="goToPage(pageNumber() - 1)">&#x2039;</button>
+          @for (page of pageNumbers(); track page) {
+            <button
+              type="button"
+              [class.active]="page === pageNumber()"
+              (click)="goToPage(page)">
+              {{ page }}
+            </button>
+          }
+          <button type="button" [disabled]="pageNumber() >= totalPages()" (click)="goToPage(pageNumber() + 1)">&#x203A;</button>
+        </div>
+      }
+    } @else {
+      <div class="empty-state">
+        <p class="empty-icon">&#x1F50D;</p>
+        <p class="empty-title">No profiles found</p>
+        <p class="empty-sub">Try adjusting your filters or search with different keywords.</p>
+      </div>
+    }
+  </div>
+
+  <div class="cta-banner">
+    <h2>Interested in someone?</h2>
+    <p>Register free to view full profiles and connect</p>
+    <button class="cta-btn" (click)="onBottomCta()">Register Now &mdash; It's Free</button>
+  </div>
+
+  @if (selectedProfile(); as profile) {
+    <div class="detail-overlay" (click)="closeProfileDetail()">
+      <div class="detail-panel" (click)="$event.stopPropagation()">
+        <button type="button" class="detail-close" (click)="closeProfileDetail()">&#x2715;</button>
+
+        <div class="detail-photo-wrap">
+          <img
+            class="detail-photo"
+            [src]="getPhotoUrl(profile)"
+            [alt]="getDisplayName(profile)"
+            referrerpolicy="no-referrer"
+            (error)="onPhotoError($event, profile)"
+          />
+          @if (profile.isVerified) {
+            <span class="detail-verified">&#x2713; Verified</span>
+          }
+        </div>
+
+        <div class="detail-info">
+          <h2 class="detail-name">{{ getDisplayName(profile) }}</h2>
+          <p class="detail-age">{{ profile.age ?? '-' }} years old</p>
+
+          <div class="detail-grid">
+            @if (getMaritalStatusLabel(profile)) {
+              <div class="detail-field">
+                <span class="detail-label">Marital Status</span>
+                <span class="detail-value">{{ getMaritalStatusLabel(profile) }}</span>
+              </div>
+            }
+            @if (profile.occupationText) {
+              <div class="detail-field">
+                <span class="detail-label">Occupation</span>
+                <span class="detail-value">{{ profile.occupationText }}</span>
+              </div>
+            }
+            @if (getEducationLabel(profile)) {
+              <div class="detail-field">
+                <span class="detail-label">Education</span>
+                <span class="detail-value">{{ getEducationLabel(profile) }}</span>
+              </div>
+            }
+            @if (profile.locationText || getReligionLabel(profile) || getCasteLabel(profile)) {
+              @if (profile.locationText) {
+                <div class="detail-field">
+                  <span class="detail-label">Location</span>
+                  <span class="detail-value">{{ profile.locationText }}</span>
+                </div>
+              }
+              @if (getReligionLabel(profile)) {
+                <div class="detail-field">
+                  <span class="detail-label">Religion</span>
+                  <span class="detail-value">{{ getReligionLabel(profile) }}</span>
+                </div>
+              }
+              @if (getCasteLabel(profile)) {
+                <div class="detail-field">
+                  <span class="detail-label">Caste</span>
+                  <span class="detail-value">{{ getCasteLabel(profile) }}</span>
+                </div>
+              }
+            } @else {
+              @if (getStateLabel(profile)) {
+                <div class="detail-field">
+                  <span class="detail-label">State</span>
+                  <span class="detail-value">{{ getStateLabel(profile) }}</span>
+                </div>
+              }
+              @if (getDistrictLabel(profile)) {
+                <div class="detail-field">
+                  <span class="detail-label">District</span>
+                  <span class="detail-value">{{ getDistrictLabel(profile) }}</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="detail-cta">
+          <p class="detail-cta-text">Register free to view full profile and connect</p>
+          <button class="btn-connect" (click)="onCardCtaClick(profile, $event)">Register to Connect</button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

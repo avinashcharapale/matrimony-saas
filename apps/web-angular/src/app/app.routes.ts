@@ -104,8 +104,7 @@ export const appRoutes: Route[] = [
       {
         path: 'search',
         loadComponent: () =>
-          import('./pages/profile-list/profile-list').then((m) => m.ProfileList),
-        canActivate: [authGuard],
+          import('./pages/public-search/public-search').then((m) => m.PublicSearch),
       },
       {
         path: 'contact',

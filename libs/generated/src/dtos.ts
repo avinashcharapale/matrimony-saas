@@ -334,6 +334,7 @@ export interface ProfileListItemDto {
   thumbnailUrl?: string;
   isVerified?: boolean;
   isPremiumTenant?: boolean;
+  publicDisplayName?: string;
 }
 
 export interface ProfileListItemDtoPagedResult {
