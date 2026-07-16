@@ -99,6 +99,30 @@
   font-weight: 700;
 }
 
+.sidebar-nav .sidebar-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-nav .sidebar-logout:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .nav-icon {
   width: 1rem;
   display: inline-flex;

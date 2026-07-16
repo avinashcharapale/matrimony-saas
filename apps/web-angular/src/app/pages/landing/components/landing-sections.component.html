@@ -1,6 +1,27 @@
-<app-landing-hero [tenantDisplayName]="tenant.displayName"></app-landing-hero>
+<app-landing-hero
+  [tenantDisplayName]="tenant.displayName"
+  [heroTitle]="tenant.heroTitle"
+  [heroSubtitle]="tenant.heroSubtitle"
+  [heroDescription]="tenant.heroDescription"
+  [ctaEnroll]="tenant.ctaEnroll"
+  [eyebrow]="tenant.landingContent?.eyebrow ?? ''"
+  [badges]="tenant.landingContent?.heroBadges ?? []">
+</app-landing-hero>
 <app-landing-stats [stats]="stats"></app-landing-stats>
-<app-landing-info [tenantDisplayName]="tenant.displayName" [whyChoose]="whyChoose" [howItWorks]="howItWorks"></app-landing-info>
+<app-landing-info
+  [tenantDisplayName]="tenant.displayName"
+  [whyChoose]="whyChoose"
+  [howItWorks]="howItWorks">
+</app-landing-info>
 <app-landing-recent-profiles [profiles]="autoScrollProfiles"></app-landing-recent-profiles>
-<app-landing-trust [tenantDisplayName]="tenant.displayName" [trustCards]="trustCards"></app-landing-trust>
-<app-landing-cta-footer [tenant]="tenant"></app-landing-cta-footer>
+<app-landing-trust
+  [tenantDisplayName]="tenant.displayName"
+  [trustCards]="trustCards">
+</app-landing-trust>
+<app-landing-cta-footer
+  [tenant]="tenant"
+  [ctaHeading]="tenant.landingContent?.ctaHeading ?? ''"
+  [ctaDescription]="tenant.landingContent?.ctaDescription ?? ''"
+  [footerDescription]="tenant.landingContent?.footerDescription ?? ''"
+  [footerLinks]="tenant.landingContent?.footerLinks ?? []">
+</app-landing-cta-footer>

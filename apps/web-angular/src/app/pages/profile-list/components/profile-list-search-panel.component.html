@@ -19,6 +19,7 @@
     </div>
 
     <div class="search-quick-filters">
+      @if (!isAuthenticated) {
       <div class="qf-field">
         <label>Looking For</label>
         <select name="lookingForQuick" [(ngModel)]="filters['lookingFor']">
@@ -26,6 +27,7 @@
           <option value="Groom">Groom</option>
         </select>
       </div>
+      }
       <div class="qf-field">
         <label>Age</label>
         <div class="age-range">
@@ -37,9 +39,21 @@
             <option [ngValue]="26">26</option>
             <option [ngValue]="28">28</option>
             <option [ngValue]="30">30</option>
+            <option [ngValue]="32">32</option>
+            <option [ngValue]="34">34</option>
+            <option [ngValue]="36">36</option>
+            <option [ngValue]="38">38</option>
+            <option [ngValue]="40">40</option>
+            <option [ngValue]="42">42</option>
+            <option [ngValue]="44">44</option>
+            <option [ngValue]="46">46</option>
+            <option [ngValue]="48">48</option>
+            <option [ngValue]="50">50</option>
           </select>
           <span class="range-sep">to</span>
           <select name="ageMax" [(ngModel)]="filters['ageMax']">
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="22">22</option>
             <option [ngValue]="24">24</option>
             <option [ngValue]="26">26</option>
             <option [ngValue]="28">28</option>
@@ -47,7 +61,15 @@
             <option [ngValue]="32">32</option>
             <option [ngValue]="34">34</option>
             <option [ngValue]="36">36</option>
+            <option [ngValue]="38">38</option>
             <option [ngValue]="40">40</option>
+            <option [ngValue]="42">42</option>
+            <option [ngValue]="44">44</option>
+            <option [ngValue]="46">46</option>
+            <option [ngValue]="48">48</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="55">55</option>
+            <option [ngValue]="60">60</option>
           </select>
         </div>
       </div>
@@ -88,10 +110,10 @@
     <div class="adv-grid">
       <div class="adv-field">
         <label>Religion</label>
-        <select name="religion" [(ngModel)]="filters['religion']">
+        <select name="religion" [(ngModel)]="filters['religion']" (ngModelChange)="religionChange.emit()">
           <option value="">Any</option>
-          @for (opt of religionOptions; track opt.valueCode) {
-            <option [value]="opt.valueCode">{{ opt.label }}</option>
+          @for (opt of religionOptions; track opt.id) {
+            <option [value]="opt.id">{{ opt.label }}</option>
           }
         </select>
       </div>
@@ -99,8 +121,8 @@
         <label>Caste</label>
         <select name="caste" [(ngModel)]="filters['caste']">
           <option value="">Any</option>
-          @for (opt of casteOptions; track opt.valueCode) {
-            <option [value]="opt.valueCode">{{ opt.label }}</option>
+          @for (opt of casteOptions; track opt.id) {
+            <option [value]="opt.id">{{ opt.label }}</option>
           }
         </select>
       </div>
@@ -135,10 +157,15 @@
         <label>Height</label>
         <select name="height" [(ngModel)]="filters['height']">
           <option value="Any">Any</option>
-          <option value="5'0&quot; - 5'4&quot;">5'0&quot; - 5'4&quot;</option>
-          <option value="5'4&quot; - 5'8&quot;">5'4&quot; - 5'8&quot;</option>
-          <option value="5'8&quot; - 6'0&quot;">5'8&quot; - 6'0&quot;</option>
-          <option value="6'0&quot;+">6'0&quot;+</option>
+          <option value="4'10&quot; - 5'0&quot;">4'10&quot; - 5'0&quot;</option>
+          <option value="5'0&quot; - 5'2&quot;">5'0&quot; - 5'2&quot;</option>
+          <option value="5'2&quot; - 5'4&quot;">5'2&quot; - 5'4&quot;</option>
+          <option value="5'4&quot; - 5'6&quot;">5'4&quot; - 5'6&quot;</option>
+          <option value="5'6&quot; - 5'8&quot;">5'6&quot; - 5'8&quot;</option>
+          <option value="5'8&quot; - 5'10&quot;">5'8&quot; - 5'10&quot;</option>
+          <option value="5'10&quot; - 6'0&quot;">5'10&quot; - 6'0&quot;</option>
+          <option value="6'0&quot; - 6'2&quot;">6'0&quot; - 6'2&quot;</option>
+          <option value="6'2&quot;+">6'2&quot;+</option>
         </select>
       </div>
     </div>

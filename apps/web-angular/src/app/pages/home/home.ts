@@ -1,5 +1,7 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { TenantService } from '../../services/tenant.service';
+import { MemberService } from '../../services/member.service';
+import { AuthService } from '../../services/auth.service';
 import { HomeSidebarComponent } from './components/home-sidebar.component';
 import { HomeHeaderComponent } from './components/home-header.component';
 import { HomeStatsComponent } from './components/home-stats.component';
@@ -21,8 +23,10 @@ import { ActivityItem, EventItem, InterestItem, MatchItem, MessageItem, Notifica
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {
+export class Home implements OnInit {
   readonly tenant = inject(TenantService).tenant;
+  private readonly memberService = inject(MemberService);
+  private readonly authService = inject(AuthService);
 
   get brandMark(): string {
     return this.tenant.logoText
@@ -33,124 +37,68 @@ export class Home {
       .toUpperCase();
   }
 
-  quickStats: NotificationCard[] = [
-    {
-      label: 'Profile Views',
-      value: '86',
-      hint: '+12 today',
-      tone: 'orange',
-    },
-    {
-      label: 'Matched Profiles',
-      value: '24',
-      hint: '3 new',
-      tone: 'gold',
-    },
-    {
-      label: 'Interests Received',
-      value: '4',
-      hint: '2 today',
-      tone: 'green',
-    },
-    {
-      label: 'Unread Messages',
-      value: '3',
-      hint: 'new',
-      tone: 'purple',
-    },
-  ];
+  readonly userName = signal('');
+  readonly userFirstName = signal('');
+  readonly currentDate = signal('');
+  readonly quickStats = signal<NotificationCard[]>([]);
+  readonly topMatches = signal<MatchItem[]>([]);
+  readonly interests = signal<InterestItem[]>([]);
+  readonly activities = signal<ActivityItem[]>([]);
+  readonly messages = signal<MessageItem[]>([]);
+  readonly upcomingEvents = signal<EventItem[]>([]);
+  readonly horoscopeTags = signal<string[]>([]);
 
-  topMatches: MatchItem[] = [
-    {
-      id: 'MBL113801',
-      name: 'Priya Shinde',
-      detail: '29 y, 5ft 4in, Engineer, Pune',
-      score: 93,
-      badge: 'verified',
-    },
-    {
-      id: 'MBL113460',
-      name: 'Snehal Deshmukh',
-      detail: '27 y, 5ft 3in, Analyst, Nashik',
-      score: 88,
-      badge: 'active',
-    },
-    {
-      id: 'MBL113302',
-      name: 'Kavya Jadhav',
-      detail: '26 y, 5ft 5in, Designer, Satara',
-      score: 85,
-      badge: 'new',
-    },
-  ];
+  ngOnInit(): void {
+    this.currentDate.set(this.formatDate(new Date()));
+    this.loadMyProfile();
+    this.loadTopMatches();
+    this.loadRecentActivity();
+  }
 
-  interests: InterestItem[] = [
-    {
-      name: 'Anita Patil',
-      detail: 'Viewed your profile 1h ago',
-    },
-    {
-      name: 'Pooja More',
-      detail: 'Sent interest 3h ago',
-    },
-    {
-      name: 'Rutuja Pawar',
-      detail: 'Shortlisted your profile',
-    },
-  ];
+  private formatDate(date: Date): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  }
 
-  activities: ActivityItem[] = [
-    {
-      text: 'MBL113901 viewed your profile',
-      time: '10m ago',
-    },
-    {
-      text: 'You sent interest to MBL112250',
-      time: '35m ago',
-    },
-    {
-      text: 'MBL113312 shortlisted you',
-      time: '1h ago',
-    },
-  ];
+  private loadMyProfile(): void {
+    this.memberService.getMyProfile().subscribe({
+      next: (profile) => {
+        const fullName = profile.fullName ?? '';
+        const firstName = fullName.split(' ')[0] ?? '';
+        this.userName.set(fullName);
+        this.userFirstName.set(firstName);
+      },
+      error: () => {},
+    });
+  }
 
-  messages: MessageItem[] = [
-    {
-      name: 'Priya Shinde',
-      text: 'Can we talk this weekend?',
-      unread: 2,
-    },
-    {
-      name: 'Snehal Deshmukh',
-      text: 'Thanks for sharing details.',
-      unread: 1,
-    },
-    {
-      name: 'AM Support',
-      text: 'Your profile has been verified.',
-    },
-  ];
+  private loadTopMatches(): void {
+    this.memberService.getProfiles(1, 5).subscribe({
+      next: (response) => {
+        const matches: MatchItem[] = response.profiles.map((p) => ({
+          id: p.profileCode ?? String(p.profileId),
+          name: p.fullName,
+          detail: [p.age ? `${p.age} y` : '', p.locationText, p.occupationText].filter(Boolean).join(', '),
+          score: 0,
+          badge: 'new' as string,
+        }));
+        this.topMatches.set(matches);
+      },
+      error: () => {},
+    });
+  }
 
-  upcomingEvents: EventItem[] = [
-    {
-      day: '19',
-      month: 'APR',
-      title: 'Maratha Meet - Pune',
-      time: '11:00 AM',
-    },
-    {
-      day: '26',
-      month: 'APR',
-      title: 'Virtual Meet - Maharashtra',
-      time: '7:00 PM',
-    },
-    {
-      day: '05',
-      month: 'MAY',
-      title: 'Navi Mumbai Session',
-      time: '4:30 PM',
-    },
-  ];
-
-  horoscopeTags: string[] = ['Reliable', 'Mature', 'Family Value', 'Kind'];
+  private loadRecentActivity(): void {
+    this.memberService.searchProfiles({ name: '', location: '', occupation: '', pageNumber: 1, pageSize: 3 }).subscribe({
+      next: (profiles) => {
+        const interests: InterestItem[] = profiles.map((p) => ({
+          name: p.name,
+          detail: p.bio ?? 'Viewed your profile',
+        }));
+        this.interests.set(interests);
+      },
+      error: () => {},
+    });
+  }
 }

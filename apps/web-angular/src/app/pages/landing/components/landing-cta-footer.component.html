@@ -1,11 +1,15 @@
 <section class="cta-banner">
   <div>
-    <h2>Begin Your Journey Today</h2>
-    <p>Join thousands of families who found their perfect match through {{ tenant.displayName }}.</p>
+    <h2>{{ ctaHeading || 'Get Started Today' }}</h2>
+    @if (ctaDescription) {
+      <p>{{ ctaDescription }}</p>
+    } @else {
+      <p>Join families who found their perfect match through {{ tenant.displayName }}.</p>
+    }
   </div>
   <div class="cta-actions">
-    <a routerLink="/register" class="btn btn-light">Register Now - Free</a>
-    <a routerLink="/login" class="btn btn-outline">Login to Account</a>
+    <a routerLink="/register" class="btn btn-light">{{ tenant.ctaEnroll }}</a>
+    <a routerLink="/login" class="btn btn-outline">{{ tenant.ctaLogin }}</a>
   </div>
 </section>
 
@@ -13,13 +17,15 @@
   <div class="footer-grid">
     <section>
       <h3>{{ tenant.displayName }}</h3>
-      <p>Trusted Vadhhu Var Suchak Kendra for the Maratha community since 1998.</p>
+      @if (footerDescription) {
+        <p>{{ footerDescription }}</p>
+      }
     </section>
 
     <section>
       <h4>Enquiry & Support</h4>
-      <p>📞 {{ tenant.supportPhone }}</p>
-      <p>✉️ {{ tenant.supportEmail }}</p>
+      <p>{{ tenant.supportPhone }}</p>
+      <p>{{ tenant.supportEmail }}</p>
     </section>
 
     <section>
@@ -30,10 +36,12 @@
 
   <div class="footer-meta">
     <p>{{ tenant.copyrightText }}</p>
-    <nav>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms & Conditions</a>
-      <a href="#">Refund Policy</a>
-    </nav>
+    @if (footerLinks.length > 0) {
+      <nav>
+        @for (link of footerLinks; track link.label) {
+          <a [routerLink]="link.url">{{ link.label }}</a>
+        }
+      </nav>
+    }
   </div>
 </footer>

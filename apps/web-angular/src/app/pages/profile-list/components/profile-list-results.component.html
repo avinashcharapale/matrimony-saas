@@ -19,26 +19,32 @@
         referrerpolicy="no-referrer"
         (error)="onPhotoError($event, profile.name)"
       />
-      <div class="card-score">{{ getMatchScore(profile) }}% Match</div>
     </div>
 
     <div class="card-info-col">
       <div class="card-header">
         <h2 class="card-name">{{ profile.name }}</h2>
         <span class="card-age">{{ profile.age ?? '-' }} yrs</span>
-        <span class="card-id">{{ getMemberCode(profile, i) }}</span>
+        @if (profile.profileCode) {
+          <span class="card-id">{{ profile.profileCode }}</span>
+        }
       </div>
 
       <p class="card-detail">
-        {{ profile.occupation ?? 'Professional' }}
-        <span class="sep">&bull;</span>
-        {{ profile.location ?? 'Maharashtra' }}
+        {{ profile.occupation || '' }}
+        @if (profile.occupation && profile.location) {
+          <span class="sep">&bull;</span>
+        }
+        {{ profile.location || '' }}
       </p>
 
       <div class="card-tags">
-        <span class="tag">{{ getHeight(profile, i) }}</span>
-        <span class="tag">{{ getReligion(profile, i) }}</span>
-        <span class="tag">{{ getCaste(profile, i) }}</span>
+        @if (getReligionLabel(profile)) {
+          <span class="tag">{{ getReligionLabel(profile) }}</span>
+        }
+        @if (getCasteLabel(profile)) {
+          <span class="tag">{{ getCasteLabel(profile) }}</span>
+        }
       </div>
     </div>
 

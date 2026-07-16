@@ -58,6 +58,7 @@ export class Register implements OnInit, OnDestroy {
 
   private draftContext: RegisterDraftContext | null = null;
   private persistTimer: ReturnType<typeof setTimeout> | null = null;
+  private selectedPhotos: File[] = [];
 
   readonly profileForm = new FormGroup({
     personalDetails: new FormGroup({
@@ -344,6 +345,7 @@ export class Register implements OnInit, OnDestroy {
       return;
     }
     this.profileForm.get('photos')!.get('photo1Name')!.setValue(file?.name ?? '');
+    this.selectedPhotos = file ? [file] : [];
   }
 
   onPhoto2Selected(event: Event): void {
@@ -356,6 +358,9 @@ export class Register implements OnInit, OnDestroy {
       return;
     }
     this.profileForm.get('photos')!.get('photo2Name')!.setValue(file?.name ?? '');
+    if (file) {
+      this.selectedPhotos.push(file);
+    }
   }
 
   private registerAsync(name: string, email: string, password: string, bio: string, age?: number): void {
@@ -366,6 +371,7 @@ export class Register implements OnInit, OnDestroy {
       password,
       confirmPassword: password,
       profile: dto,
+      photos: this.selectedPhotos,
       name,
       age,
       bio,

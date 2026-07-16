@@ -3,10 +3,12 @@
     <app-home-sidebar [brandMark]="brandMark" [tenantDisplayName]="tenant.displayName"></app-home-sidebar>
 
     <section class="dashboard-main">
-      <app-home-header></app-home-header>
-      <app-home-stats [stats]="quickStats"></app-home-stats>
-      <app-home-content [topMatches]="topMatches" [interests]="interests" [activities]="activities"></app-home-content>
-      <app-home-bottom [horoscopeTags]="horoscopeTags" [messages]="messages" [upcomingEvents]="upcomingEvents"></app-home-bottom>
+      <app-home-header [userName]="userFirstName()" [currentDate]="currentDate()"></app-home-header>
+      @if (quickStats().length > 0) {
+        <app-home-stats [stats]="quickStats()"></app-home-stats>
+      }
+      <app-home-content [topMatches]="topMatches()" [interests]="interests()" [activities]="activities()"></app-home-content>
+      <app-home-bottom [horoscopeTags]="horoscopeTags()" [messages]="messages()" [upcomingEvents]="upcomingEvents()"></app-home-bottom>
     </section>
   </div>
 </main>

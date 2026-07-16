@@ -3,7 +3,6 @@ import {
   MemberRecord,
   RegisterFormDetails,
   RegisterSubmissionPayload,
-  SAMPLE_PROFILES,
   createEmptyRegisterFormDetails,
 } from '@org/models';
 import { TenantService } from './tenant.service';
@@ -20,6 +19,7 @@ export interface SearchFilters {
   name: string;
   location: string;
   occupation: string;
+  genderId?: number;
   ageMin?: number;
   ageMax?: number;
   religion?: string;
@@ -46,6 +46,9 @@ export interface ProfileSearchResult {
   locationText?: string;
   occupationText?: string;
   email: string;
+  religionId?: number;
+  casteId?: number;
+  heightText?: string;
   createdAt: string;
 }
 
@@ -103,6 +106,10 @@ export class MemberService {
       occupation: profile.occupationText,
       location: profile.locationText,
       bio: profile.bio,
+      profileCode: profile.profileCode,
+      religionId: profile.religionId,
+      casteId: profile.casteId,
+      heightText: profile.heightText,
       createdAt: profile.createdAt,
       password: '',
     };
@@ -337,6 +344,7 @@ export class MemberService {
     password: string;
     confirmPassword: string;
     profile: CreateProfileDto;
+    photos?: File[];
     name?: string;
     age?: number;
     bio?: string;
@@ -355,7 +363,7 @@ export class MemberService {
         localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
         localStorage.setItem(this.sessionKey, response.userId.toString());
 
-        return this.apiService.createOrUpdateProfile(payload.profile).pipe(
+        return this.apiService.createOrUpdateProfile(payload.profile, payload.photos ?? []).pipe(
           map(() => ({ ok: true, message: 'Registration successful. Welcome!', profileSynced: true })),
           catchError((profileSyncError: unknown) =>
             this.registerSyncService.enqueuePendingProfileSync(
@@ -464,10 +472,11 @@ export class MemberService {
 
   searchProfiles(filters: SearchFilters): Observable<MemberRecord[]> {
     if (!this.isAuthenticated()) {
-      return of(this.searchProfilesLocal(filters));
+      return of([]);
     }
 
     return this.profileClient.searchPublicProfiles({
+      genderId: filters.genderId,
       ageFrom: filters.ageMin,
       ageTo: filters.ageMax,
       religionId: filters.religion ? Number(filters.religion) || undefined : undefined,
@@ -481,31 +490,19 @@ export class MemberService {
       map((response) => (response.items ?? []).map((p) => this.convertToMemberRecord(this.mapListItemToSearchResult(p)))),
       catchError((error) => {
         console.error('Search profiles error:', error);
-        return of(this.searchProfilesLocal(filters));
+        return of([]);
       })
     );
   }
 
   getProfiles(pageNumber = 1, pageSize = 10): Observable<ProfileListResponse> {
     if (!this.isAuthenticated()) {
-      const profiles = SAMPLE_PROFILES.slice(0, pageSize).map((p) => ({
-        profileId: parseInt(p.id.split('-')[1] || '0', 10),
-        userId: parseInt(p.id.split('-')[1] || '0', 10),
-        profileCode: p.id,
-        fullName: p.name,
-        age: p.age,
-        bio: p.bio,
-        locationText: p.location,
-        occupationText: p.occupation,
-        email: p.email,
-        createdAt: p.createdAt,
-      }));
       return of({
-        profiles,
-        total: SAMPLE_PROFILES.length,
+        profiles: [],
+        total: 0,
         pageNumber,
         pageSize,
-        totalPages: Math.ceil(SAMPLE_PROFILES.length / pageSize),
+        totalPages: 0,
       });
     }
 
@@ -546,22 +543,6 @@ export class MemberService {
     );
   }
 
-  private searchProfilesLocal(filters: SearchFilters): MemberRecord[] {
-    const source = [...this.getMembers(), ...SAMPLE_PROFILES];
-    const unique = source.filter(
-      (item, index, arr) => arr.findIndex((x) => x.email.toLowerCase() === item.email.toLowerCase()) === index,
-    );
-
-    return unique.filter((item) => {
-      const nameMatch = !filters.name || item.name.toLowerCase().includes(filters.name.toLowerCase());
-      const locationMatch =
-        !filters.location || (item.location ?? '').toLowerCase().includes(filters.location.toLowerCase());
-      const occupationMatch =
-        !filters.occupation || (item.occupation ?? '').toLowerCase().includes(filters.occupation.toLowerCase());
-      return nameMatch && locationMatch && occupationMatch;
-    });
-  }
-
   private mapListItemsToListResponse(
     profiles: ProfileListItemDto[],
     pageNumber: number,
@@ -597,13 +578,15 @@ export class MemberService {
     return {
       profileId: profile.profileId ?? 0,
       userId: profile.profileId ?? 0,
-      profileCode: String(profile.profileId ?? ''),
+      profileCode: profile.profileCode ?? String(profile.profileId ?? ''),
       fullName: profile.fullName ?? '',
       age: profile.age ?? undefined,
       bio: undefined,
       locationText: profile.locationText ?? undefined,
       occupationText: profile.occupationText ?? undefined,
       email: '',
+      religionId: profile.religionId ?? undefined,
+      casteId: profile.casteId ?? undefined,
       createdAt: new Date().toISOString(),
     };
   }

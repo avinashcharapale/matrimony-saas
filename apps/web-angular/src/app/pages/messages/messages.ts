@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ChatClient } from '@org/generated';
+import { AuthService } from '../../services/auth.service';
 
 interface Conversation {
   id: string;
@@ -22,28 +24,38 @@ interface Conversation {
 
       <section class="chat-layout">
         <aside class="chat-list">
-          @for (chat of conversations(); track chat.id) {
-          <button type="button" [class.active]="chat.id === activeId()" (click)="activeId.set(chat.id)">
-            <strong>{{ chat.name }}</strong>
-            <span>{{ chat.messages[chat.messages.length - 1]?.text }}</span>
-          </button>
+          @if (conversations().length > 0) {
+            @for (chat of conversations(); track chat.id) {
+            <button type="button" [class.active]="chat.id === activeId()" (click)="activeId.set(chat.id)">
+              <strong>{{ chat.name }}</strong>
+              <span>{{ chat.messages[chat.messages.length - 1]?.text }}</span>
+            </button>
+            }
+          } @else {
+            <p class="empty-hint">No conversations yet.</p>
           }
         </aside>
 
         <main class="chat-panel">
-          <h2>{{ activeConversation()?.name }}</h2>
-          <div class="messages-box">
-            @for (msg of activeConversation()?.messages || []; track $index) {
-            <div class="bubble" [class.me]="msg.byMe">
-              <p>{{ msg.text }}</p>
-              <small>{{ msg.time }}</small>
+          @if (activeConversation()) {
+            <h2>{{ activeConversation()?.name }}</h2>
+            <div class="messages-box">
+              @for (msg of activeConversation()?.messages || []; track $index) {
+              <div class="bubble" [class.me]="msg.byMe">
+                <p>{{ msg.text }}</p>
+                <small>{{ msg.time }}</small>
+              </div>
+              }
             </div>
-            }
-          </div>
-          <form class="composer" (ngSubmit)="sendMessage()">
-            <input type="text" name="message" [ngModel]="draft()" (ngModelChange)="draft.set($event)" placeholder="Type message" />
-            <button type="submit" [disabled]="!draft().trim()">Send</button>
-          </form>
+            <form class="composer" (ngSubmit)="sendMessage()">
+              <input type="text" name="message" [ngModel]="draft()" (ngModelChange)="draft.set($event)" placeholder="Type message" />
+              <button type="submit" [disabled]="!draft().trim()">Send</button>
+            </form>
+          } @else {
+            <div class="empty-chat">
+              <p>Select a conversation to start messaging.</p>
+            </div>
+          }
         </main>
       </section>
     </section>
@@ -69,35 +81,49 @@ interface Conversation {
       .composer { margin-top: 0.8rem; display: flex; gap: 0.6rem; }
       .composer input { flex: 1; border: 1px solid #dcc8bc; border-radius: 0.6rem; padding: 0.6rem; }
       .composer button { border: none; border-radius: 0.6rem; background: #9a5e45; color: #fff; padding: 0.6rem 0.9rem; font-weight: 700; }
+      .empty-hint { color: #6f7486; font-size: 0.85rem; text-align: center; padding: 1rem; }
+      .empty-chat { display: grid; place-items: center; height: 100%; color: #6f7486; }
       @media (max-width: 780px) { .chat-layout { grid-template-columns: 1fr; } .messages-box { height: 260px; } }
     `,
   ],
 })
-export class Messages {
+export class Messages implements OnInit {
   readonly draft = signal('');
-  readonly activeId = signal('c1');
+  readonly activeId = signal('');
+  readonly conversations = signal<Conversation[]>([]);
 
-  readonly conversations = signal<Conversation[]>([
-    {
-      id: 'c1',
-      name: 'Priya Shinde',
-      messages: [
-        { byMe: false, text: 'Hi, can we talk this weekend?', time: '09:10' },
-        { byMe: true, text: 'Sure, Sunday evening works.', time: '09:14' },
-      ],
-    },
-    {
-      id: 'c2',
-      name: 'Snehal Deshmukh',
-      messages: [
-        { byMe: false, text: 'Thanks for sharing details.', time: 'Yesterday' },
-      ],
-    },
-  ]);
+  private readonly chatClient = inject(ChatClient);
+  private readonly authService = inject(AuthService);
 
   readonly activeConversation = computed(() =>
     this.conversations().find((item) => item.id === this.activeId())
   );
+
+  ngOnInit(): void {
+    this.loadConversations();
+  }
+
+  private loadConversations(): void {
+    const session = this.authService.getSession();
+    if (!session?.userId) return;
+
+    this.chatClient.getByUser(String(session.userId)).subscribe({
+      next: (convos) => {
+        const mapped: Conversation[] = (convos ?? []).map((c) => ({
+          id: c.id ?? '',
+          name: c.conversationName ?? 'Unknown',
+          messages: c.lastMessage
+            ? [{ byMe: false, text: c.lastMessage.content ?? '', time: c.lastMessage.sentDate ?? '' }]
+            : [],
+        }));
+        this.conversations.set(mapped);
+        if (mapped.length > 0) {
+          this.activeId.set(mapped[0].id);
+        }
+      },
+      error: () => {},
+    });
+  }
 
   sendMessage(): void {
     const draftValue = this.draft().trim();

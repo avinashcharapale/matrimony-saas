@@ -21,6 +21,19 @@ export interface TenantConfig {
   ctaEnroll: string;
   domainAliases: string[];
   pathAliases: string[];
+  landingContent?: TenantLandingContent;
+}
+
+export interface TenantLandingContent {
+  eyebrow?: string;
+  heroBadges?: { text: string }[];
+  whyChoose?: { title: string; description: string }[];
+  howItWorks?: { title: string; description: string }[];
+  trustCards?: { value: string; title: string; description: string; icon: string }[];
+  ctaHeading?: string;
+  ctaDescription?: string;
+  footerDescription?: string;
+  footerLinks?: { label: string; url: string }[];
 }
 
 export interface ThemePalette {
@@ -89,6 +102,39 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     ctaEnroll: 'Register Now',
     domainAliases: ['demo.matrimony.local', 'localhost'],
     pathAliases: ['demo'],
+    landingContent: {
+      eyebrow: 'Trusted Matrimony Platform',
+      heroBadges: [
+        { text: '100% Verified Profiles' },
+        { text: 'Family-Approved Matches' },
+      ],
+      whyChoose: [
+        { title: 'Trusted Platform', description: 'A reliable matrimonial platform with verified profiles and meaningful matchmaking.' },
+        { title: 'Smart Matching', description: 'AI-powered matching based on preferences, location, and lifestyle.' },
+        { title: 'Verified Profiles', description: 'Every profile is carefully verified for authenticity and trust.' },
+        { title: 'Affordable Plans', description: 'Quality matchmaking accessible for everyone.' },
+      ],
+      howItWorks: [
+        { title: 'Register & Create Profile', description: 'Sign up and tell us your details including profession, education, and family background.' },
+        { title: 'Enroll & Pay', description: 'Activate your account with an affordable yearly membership.' },
+        { title: 'Search Matches', description: 'Browse verified profiles filtered by age, location, education and occupation.' },
+        { title: 'Connect & Meet', description: 'Exchange contacts and start your journey with confidence.' },
+      ],
+      trustCards: [
+        { value: '11,000+', title: 'Genuine Profiles', description: 'Every profile is verified by our team for authenticity and trust.', icon: '🪪' },
+        { value: '26+ Years', title: 'Most Trusted', description: 'The most trusted matrimony service.', icon: '🏆' },
+        { value: 'AI + Manual', title: 'Smart Match', description: 'Find matches by preferences, location, education and more.', icon: '🔎' },
+        { value: '28,000+', title: 'Weddings Complete', description: 'Thousands of happy families and success stories every year.', icon: '💍' },
+      ],
+      ctaHeading: 'Begin Your Journey Today',
+      ctaDescription: 'Join thousands of families who found their perfect match.',
+      footerDescription: 'Trusted matrimony service with real profiles and meaningful matchmaking.',
+      footerLinks: [
+        { label: 'Privacy Policy', url: '/privacy' },
+        { label: 'Terms & Conditions', url: '/terms' },
+        { label: 'Refund Policy', url: '/refund' },
+      ],
+    },
   },
   {
     id: 'anand-maratha',
@@ -111,6 +157,39 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     ctaEnroll: 'Enroll Now',
     domainAliases: ['anandmaratha.com', 'www.anandmaratha.com'],
     pathAliases: ['anand-maratha'],
+    landingContent: {
+      eyebrow: 'Trusted Matrimony Service',
+      heroBadges: [
+        { text: 'Verified Profiles' },
+        { text: 'Family-Approved Matches' },
+      ],
+      whyChoose: [
+        { title: '26+ Years of Experience', description: 'Decades of trusted matrimony service with deep roots in the Maratha community.' },
+        { title: 'Exclusive for Marathas', description: 'A focused platform for Marathas, including families, brides and grooms.' },
+        { title: 'Verified Profiles', description: 'Every profile is carefully verified for authenticity and better trust.' },
+        { title: 'Affordable Membership', description: 'A low yearly plan that keeps quality matchmaking accessible for everyone.' },
+      ],
+      howItWorks: [
+        { title: 'Register & Create Profile', description: 'Sign up and tell us your details including profession, education, and family background.' },
+        { title: 'Enroll & Pay', description: 'Activate your account with an affordable yearly membership.' },
+        { title: 'Search Matches', description: 'Browse verified profiles filtered by age, location, education and occupation.' },
+        { title: 'Connect & Meet', description: 'Exchange contacts and start your journey with confidence.' },
+      ],
+      trustCards: [
+        { value: '11,000+', title: 'Genuine Profiles', description: 'Every profile is verified by our team for authenticity and trust.', icon: '🪪' },
+        { value: '26+ Years', title: 'Most Trusted', description: 'The most trusted Maratha matrimony service in Maharashtra.', icon: '🏆' },
+        { value: 'AI + Manual', title: 'Smart Match', description: 'Find matches by preferences, location, education and more.', icon: '🔎' },
+        { value: '28,000+', title: 'Weddings Complete', description: 'Thousands of happy families and success stories every year.', icon: '💍' },
+      ],
+      ctaHeading: 'Begin Your Journey Today',
+      ctaDescription: 'Join thousands of families who found their perfect match.',
+      footerDescription: 'Trusted matrimony service for the Maratha community.',
+      footerLinks: [
+        { label: 'Privacy Policy', url: '/privacy' },
+        { label: 'Terms & Conditions', url: '/terms' },
+        { label: 'Refund Policy', url: '/refund' },
+      ],
+    },
   },
   {
     id: 'petwatch',

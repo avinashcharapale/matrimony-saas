@@ -23,15 +23,21 @@ interface Story {
       </header>
 
       <section class="stories">
-        @for (story of stories(); track story.id) {
-        <article class="story-card">
-          <h2>{{ story.couple }}</h2>
-          <small>{{ story.location }}</small>
-          <p>{{ story.expanded ? story.summary : (story.summary | slice:0:120) + '...' }}</p>
-          <button type="button" (click)="toggleExpand(story.id)">
-            {{ story.expanded ? 'Show less' : 'Read more' }}
-          </button>
-        </article>
+        @if (stories().length > 0) {
+          @for (story of stories(); track story.id) {
+          <article class="story-card">
+            <h2>{{ story.couple }}</h2>
+            <small>{{ story.location }}</small>
+            <p>{{ story.expanded ? story.summary : (story.summary | slice:0:120) + '...' }}</p>
+            <button type="button" (click)="toggleExpand(story.id)">
+              {{ story.expanded ? 'Show less' : 'Read more' }}
+            </button>
+          </article>
+          }
+        } @else {
+          <div class="empty-state">
+            <p>No success stories available yet.</p>
+          </div>
         }
       </section>
     </section>
@@ -49,30 +55,12 @@ interface Story {
       .story-card small { color: #7a8095; }
       .story-card p { color: #5f667c; line-height: 1.55; }
       .story-card button { border: none; background: #9a5e45; color: #fff; border-radius: 0.5rem; padding: 0.45rem 0.7rem; font-weight: 600; }
+      .empty-state { text-align: center; padding: 2rem; color: #6f7486; grid-column: 1 / -1; }
     `,
   ],
 })
 export class SuccessStories {
-  readonly stories = signal<Story[]>([
-    {
-      id: 's1',
-      couple: 'Neha & Rahul',
-      location: 'Pune',
-      summary: 'We connected through shared values and family priorities. After a few guided calls and one family meet, everything aligned naturally and we got engaged within four months.',
-    },
-    {
-      id: 's2',
-      couple: 'Shweta & Saurabh',
-      location: 'Nashik',
-      summary: 'Our match score was high but what really helped was profile transparency. We discussed goals clearly, involved both families early, and planned a smooth wedding journey.',
-    },
-    {
-      id: 's3',
-      couple: 'Aarti & Pratik',
-      location: 'Mumbai',
-      summary: 'The platform made it easy to filter by lifestyle and expectations. We met in a community event, stayed in touch, and finalized after both families were confident.',
-    },
-  ]);
+  readonly stories = signal<Story[]>([]);
 
   toggleExpand(id: string): void {
     this.stories.update(items =>

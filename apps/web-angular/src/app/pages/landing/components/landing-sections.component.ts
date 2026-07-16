@@ -6,6 +6,7 @@ import { LandingRecentProfilesComponent } from './landing-recent-profiles.compon
 import { LandingTrustComponent } from './landing-trust.component';
 import { LandingCtaFooterComponent } from './landing-cta-footer.component';
 import { FeatureItem, ProfileItem, StatItem, TrustCardItem } from '../landing.models';
+import { TenantLandingContent } from '../../../services/tenant-config';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,10 +25,16 @@ import { FeatureItem, ProfileItem, StatItem, TrustCardItem } from '../landing.mo
 export class LandingSectionsComponent {
   @Input({ required: true }) tenant!: {
     displayName: string;
+    heroTitle: string;
+    heroSubtitle: string;
+    heroDescription: string;
+    ctaEnroll: string;
     supportPhone: string;
     supportEmail: string;
     supportAddress: string;
     copyrightText: string;
+    ctaLogin: string;
+    landingContent?: TenantLandingContent;
   };
   @Input({ required: true }) stats!: StatItem[];
   @Input({ required: true }) whyChoose!: FeatureItem[];

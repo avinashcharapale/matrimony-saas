@@ -13,13 +13,15 @@
         [sortBy]="sortBy"
         [resultsCount]="sortedResults().length"
         [error]="error()"
+        [isAuthenticated]="isAuthenticated()"
         [religionOptions]="religionOptions()"
         [casteOptions]="casteOptions()"
         [educationOptions]="educationOptions()"
         [maritalStatusOptions]="maritalStatusOptions()"
         [occupationOptions]="occupationOptions()"
         (searchRequested)="search($event)"
-        (sortByChange)="sortBy = $event">
+        (sortByChange)="sortBy = $event"
+        (religionChange)="onReligionChange()">
       </app-profile-list-search-panel>
 
       <app-profile-list-results
@@ -29,11 +31,8 @@
         [pageNumbers]="pageNumbers()"
         [pageResults]="pageResults()"
         [getProfilePhotoUrl]="getProfilePhotoUrl.bind(this)"
-        [getHeight]="getHeight.bind(this)"
-        [getReligion]="getReligion.bind(this)"
-        [getCaste]="getCaste.bind(this)"
-        [getMemberCode]="getMemberCode.bind(this)"
-        [getMatchScore]="getMatchScore.bind(this)"
+        [getReligionLabel]="getReligionLabel.bind(this)"
+        [getCasteLabel]="getCasteLabel.bind(this)"
         [onPhotoError]="onPhotoError.bind(this)"
         (pageChange)="goToPage($event)"
         (profileSelect)="openProfile($event)">

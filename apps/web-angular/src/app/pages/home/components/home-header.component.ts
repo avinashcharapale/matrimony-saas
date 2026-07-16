@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -9,4 +9,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './home-header.component.html',
   styleUrl: '../home.css',
 })
-export class HomeHeaderComponent {}
+export class HomeHeaderComponent {
+  @Input() userName = '';
+  @Input() currentDate = '';
+}

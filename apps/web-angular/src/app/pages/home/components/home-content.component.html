@@ -5,21 +5,27 @@
       <a routerLink="/profiles">View All</a>
     </div>
 
-    <div class="match-list">
-      @for (match of topMatches; track match.id) {
-      <div class="match-item">
-        <div class="match-main">
-          <p class="match-id">{{ match.id }}</p>
-          <h4>{{ match.name }}</h4>
-          <p class="match-detail">{{ match.detail }}</p>
+    @if (topMatches.length > 0) {
+      <div class="match-list">
+        @for (match of topMatches; track match.id) {
+        <div class="match-item">
+          <div class="match-main">
+            <p class="match-id">{{ match.id }}</p>
+            <h4>{{ match.name }}</h4>
+            <p class="match-detail">{{ match.detail }}</p>
+          </div>
+          @if (match.score > 0) {
+            <div class="match-side">
+              <strong>{{ match.score }}%</strong>
+              <span>{{ match.badge }}</span>
+            </div>
+          }
         </div>
-        <div class="match-side">
-          <strong>{{ match.score }}%</strong>
-          <span>{{ match.badge }}</span>
-        </div>
+        }
       </div>
-      }
-    </div>
+    } @else {
+      <p class="empty-hint">No matches found yet. Try searching for profiles.</p>
+    }
   </article>
 
   <div class="stacked-right">
@@ -27,28 +33,36 @@
       <div class="panel-title">
         <h3>Interests Received</h3>
       </div>
-      <div class="simple-list">
-        @for (item of interests; track item.name) {
-        <div>
-          <strong>{{ item.name }}</strong>
-          <p>{{ item.detail }}</p>
+      @if (interests.length > 0) {
+        <div class="simple-list">
+          @for (item of interests; track item.name) {
+          <div>
+            <strong>{{ item.name }}</strong>
+            <p>{{ item.detail }}</p>
+          </div>
+          }
         </div>
-        }
-      </div>
+      } @else {
+        <p class="empty-hint">No interests received yet.</p>
+      }
     </article>
 
     <article class="panel compact-panel">
       <div class="panel-title">
         <h3>Recent Activity</h3>
       </div>
-      <div class="simple-list">
-        @for (item of activities; track item.text) {
-        <div>
-          <strong>{{ item.text }}</strong>
-          <p>{{ item.time }}</p>
+      @if (activities.length > 0) {
+        <div class="simple-list">
+          @for (item of activities; track item.text) {
+          <div>
+            <strong>{{ item.text }}</strong>
+            <p>{{ item.time }}</p>
+          </div>
+          }
         </div>
-        }
-      </div>
+      } @else {
+        <p class="empty-hint">No recent activity.</p>
+      }
     </article>
   </div>
 </section>

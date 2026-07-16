@@ -105,6 +105,35 @@
   transform: translateX(2px);
 }
 
+.sidebar-nav .sidebar-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.58rem;
+  text-decoration: none;
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-nav .sidebar-logout:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateX(2px);
+}
+
+.sidebar-nav .sidebar-logout:hover .nav-icon {
+  opacity: 1;
+}
+
 .renew-card {
   margin-top: 0.5rem;
   border: 1px solid var(--accent-border);
@@ -474,6 +503,13 @@
 .panel-link:hover {
   color: var(--accent-dark);
   transform: translateX(2px);
+}
+
+.empty-hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-style: italic;
 }
 
 .message-list {

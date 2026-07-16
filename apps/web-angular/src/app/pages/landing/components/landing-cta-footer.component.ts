@@ -12,9 +12,15 @@ import { RouterModule } from '@angular/router';
 export class LandingCtaFooterComponent {
   @Input({ required: true }) tenant!: {
     displayName: string;
+    ctaEnroll: string;
+    ctaLogin: string;
     supportPhone: string;
     supportEmail: string;
     supportAddress: string;
     copyrightText: string;
   };
+  @Input() ctaHeading = '';
+  @Input() ctaDescription = '';
+  @Input() footerDescription = '';
+  @Input() footerLinks: { label: string; url: string }[] = [];
 }

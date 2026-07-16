@@ -30,6 +30,6 @@ export class Layout {
   }
 
   logout(): void {
-    this.authService.logout();
+    this.authService.logout().subscribe();
   }
 }

@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -13,4 +14,10 @@ export class ProfileListSidebarComponent {
   @Input() userName = '';
   @Input() userPhotoUrl = '';
   @Input() userOccupation = '';
+
+  private readonly authService = inject(AuthService);
+
+  logout(): void {
+    this.authService.logout().subscribe();
+  }
 }

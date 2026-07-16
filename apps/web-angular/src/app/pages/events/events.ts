@@ -24,17 +24,23 @@ interface MeetEvent {
       </header>
 
       <section class="cards">
-        @for (event of events(); track event.id) {
-        <article class="event-card">
-          <div>
-            <h2>{{ event.title }}</h2>
-            <p>{{ event.place }}</p>
-            <small>{{ event.date }} • {{ event.time }}</small>
+        @if (events().length > 0) {
+          @for (event of events(); track event.id) {
+          <article class="event-card">
+            <div>
+              <h2>{{ event.title }}</h2>
+              <p>{{ event.place }}</p>
+              <small>{{ event.date }} &#8226; {{ event.time }}</small>
+            </div>
+            <button type="button" [class.joined]="event.joined" (click)="toggleJoin(event.id)">
+              {{ event.joined ? 'RSVP Confirmed' : 'RSVP Now' }}
+            </button>
+          </article>
+          }
+        } @else {
+          <div class="empty-state">
+            <p>No upcoming events at this time.</p>
           </div>
-          <button type="button" [class.joined]="event.joined" (click)="toggleJoin(event.id)">
-            {{ event.joined ? 'RSVP Confirmed' : 'RSVP Now' }}
-          </button>
-        </article>
         }
       </section>
     </section>
@@ -53,16 +59,13 @@ interface MeetEvent {
       .event-card small { color: #7b8197; }
       .event-card button { border: none; border-radius: 0.6rem; background: #9a5e45; color: #fff; font-weight: 700; padding: 0.55rem 0.8rem; cursor: pointer; }
       .event-card button.joined { background: #2f8d4e; }
+      .empty-state { text-align: center; padding: 2rem; color: #6f7486; }
       @media (max-width: 700px) { .event-card { flex-direction: column; align-items: flex-start; } }
     `,
   ],
 })
 export class Events {
-  readonly events = signal<MeetEvent[]>([
-    { id: 'e1', title: 'Maratha Meet - Pune', place: 'Kothrud Hall, Pune', date: '19 Apr', time: '11:00 AM', joined: false },
-    { id: 'e2', title: 'Virtual Family Connect', place: 'Online Zoom Session', date: '26 Apr', time: '7:00 PM', joined: true },
-    { id: 'e3', title: 'Navi Mumbai Session', place: 'Vashi Community Center', date: '05 May', time: '4:30 PM', joined: false },
-  ]);
+  readonly events = signal<MeetEvent[]>([]);
 
   toggleJoin(id: string): void {
     this.events.update(items =>

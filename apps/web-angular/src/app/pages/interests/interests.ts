@@ -29,22 +29,28 @@ interface InterestCard {
       </div>
 
       <section class="cards">
-        @for (item of visibleInterests(); track item.id) {
-        <article class="card">
-          <div>
-            <h2>{{ item.name }}</h2>
-            <p>{{ item.detail }}</p>
+        @if (visibleInterests().length > 0) {
+          @for (item of visibleInterests(); track item.id) {
+          <article class="card">
+            <div>
+              <h2>{{ item.name }}</h2>
+              <p>{{ item.detail }}</p>
+            </div>
+            <div class="card-actions">
+              <span class="status" [class.accepted]="item.status === 'accepted'" [class.declined]="item.status === 'declined'">
+                {{ item.status }}
+              </span>
+              @if (activeTab() === 'received' && item.status === 'pending') {
+              <button type="button" class="accept" (click)="updateStatus(item.id, 'accepted')">Accept</button>
+              <button type="button" class="decline" (click)="updateStatus(item.id, 'declined')">Decline</button>
+              }
+            </div>
+          </article>
+          }
+        } @else {
+          <div class="empty-state">
+            <p>No {{ activeTab() }} interests yet.</p>
           </div>
-          <div class="card-actions">
-            <span class="status" [class.accepted]="item.status === 'accepted'" [class.declined]="item.status === 'declined'">
-              {{ item.status }}
-            </span>
-            @if (activeTab() === 'received' && item.status === 'pending') {
-            <button type="button" class="accept" (click)="updateStatus(item.id, 'accepted')">Accept</button>
-            <button type="button" class="decline" (click)="updateStatus(item.id, 'declined')">Decline</button>
-            }
-          </div>
-        </article>
         }
       </section>
     </section>
@@ -70,6 +76,7 @@ interface InterestCard {
       .accept, .decline { border: none; border-radius: 0.5rem; padding: 0.45rem 0.7rem; cursor: pointer; font-weight: 600; }
       .accept { background: #2f8d4e; color: #fff; }
       .decline { background: #be4343; color: #fff; }
+      .empty-state { text-align: center; padding: 2rem; color: #6f7486; }
       @media (max-width: 700px) { .card { flex-direction: column; } }
     `,
   ],
@@ -77,12 +84,7 @@ interface InterestCard {
 export class Interests {
   readonly activeTab = signal<'received' | 'sent'>('received');
 
-  private readonly interests = signal<InterestCard[]>([
-    { id: 'i1', name: 'Priya Shinde', detail: 'Viewed your profile and sent interest.', status: 'pending', type: 'received' },
-    { id: 'i2', name: 'Snehal Deshmukh', detail: 'Family approved and waiting for your response.', status: 'pending', type: 'received' },
-    { id: 'i3', name: 'Kavya Jadhav', detail: 'You sent interest 2 days ago.', status: 'accepted', type: 'sent' },
-    { id: 'i4', name: 'Anita Patil', detail: 'You sent interest yesterday.', status: 'pending', type: 'sent' },
-  ]);
+  private readonly interests = signal<InterestCard[]>([]);
 
   readonly visibleInterests = computed(() =>
     this.interests().filter((item) => item.type === this.activeTab())

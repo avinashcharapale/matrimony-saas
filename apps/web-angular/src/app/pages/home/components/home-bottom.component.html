@@ -3,49 +3,61 @@
     <div class="panel-title">
       <h3>My Horoscope</h3>
     </div>
-    <div class="tag-row">
-      @for (tag of horoscopeTags; track tag) {
-      <span>{{ tag }}</span>
-      }
-    </div>
-    <p class="compatibility">Avg match with your recent views <strong>76%</strong></p>
-    <a routerLink="/home" class="panel-link">View Full Report Match</a>
+    @if (horoscopeTags.length > 0) {
+      <div class="tag-row">
+        @for (tag of horoscopeTags; track tag) {
+        <span>{{ tag }}</span>
+        }
+      </div>
+    } @else {
+      <p class="empty-hint">No horoscope data yet.</p>
+    }
+    <a routerLink="/home" class="panel-link">View Full Report</a>
   </article>
 
   <article class="panel small-panel">
     <div class="panel-title">
       <h3>Messages</h3>
     </div>
-    <div class="message-list">
-      @for (item of messages; track item.name) {
-      <div>
-        <div class="message-head">
-          <strong>{{ item.name }}</strong>
-          @if (item.unread) { <span>{{ item.unread }}</span> }
+    @if (messages.length > 0) {
+      <div class="message-list">
+        @for (item of messages; track item.name) {
+        <div>
+          <div class="message-head">
+            <strong>{{ item.name }}</strong>
+            @if (item.unread) { <span>{{ item.unread }}</span> }
+          </div>
+          <p>{{ item.text }}</p>
         </div>
-        <p>{{ item.text }}</p>
+        }
       </div>
-      }
-    </div>
+    } @else {
+      <p class="empty-hint">No messages yet.</p>
+    }
   </article>
 
   <article class="panel small-panel">
     <div class="panel-title">
       <h3>Upcoming Events</h3>
     </div>
-    <div class="event-list">
-      @for (event of upcomingEvents; track event.title) {
-      <div class="event-item">
-        <div class="event-date">
-          <strong>{{ event.day }}</strong>
-          <span>{{ event.month }}</span>
+    @if (upcomingEvents.length > 0) {
+      <div class="event-list">
+        @for (event of upcomingEvents; track event.title) {
+        <div class="event-item">
+          <div class="event-date">
+            <strong>{{ event.day }}</strong>
+            <span>{{ event.month }}</span>
+          </div>
+          <div>
+            <h4>{{ event.title }}</h4>
+            <p>{{ event.time }}</p>
+          </div>
         </div>
-        <div>
-          <h4>{{ event.title }}</h4>
-          <p>{{ event.time }}</p>
-        </div>
+        }
       </div>
-      }
-    </div>
+    } @else {
+      <p class="empty-hint">No upcoming events.</p>
+    }
   </article>
 </section>
+

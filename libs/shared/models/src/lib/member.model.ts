@@ -7,6 +7,10 @@ export interface MemberRecord {
   location?: string;
   occupation?: string;
   bio?: string;
+  profileCode?: string;
+  religionId?: number;
+  casteId?: number;
+  heightText?: string;
   registrationDetails?: RegisterFormDetails;
   createdAt: string;
 }

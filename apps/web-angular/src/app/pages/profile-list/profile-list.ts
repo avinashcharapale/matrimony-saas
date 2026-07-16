@@ -3,8 +3,8 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
-import { MasterDataService, MasterDataItem } from '../../services/master-data.service';
 import { RegisterMasterDataService, RegisterLookupOption } from '../../services/register-master-data.service';
+import { AuthService } from '../../services/auth.service';
 import { ProfileListSidebarComponent } from './components/profile-list-sidebar.component';
 import { ProfileListTitleComponent } from './components/profile-list-title.component';
 import { ProfileListSearchPanelComponent } from './components/profile-list-search-panel.component';
@@ -26,17 +26,17 @@ import { ProfileListResultsComponent } from './components/profile-list-results.c
 export class ProfileList implements OnInit {
   private readonly memberService = inject(MemberService);
   private readonly router = inject(Router);
-  private readonly masterDataSvc = inject(MasterDataService);
   private readonly registerMasterData = inject(RegisterMasterDataService);
-  private readonly heights = ["5'0\"", "5'2\"", "5'4\"", "5'6\"", "5'8\""];
+  private readonly authService = inject(AuthService);
 
+  readonly isAuthenticated = signal(false);
   readonly userName = signal('');
   readonly userFirstName = signal('');
   readonly userPhotoUrl = signal('');
   readonly userOccupation = signal('');
 
-  religionOptions = signal<MasterDataItem[]>([]);
-  casteOptions = signal<MasterDataItem[]>([]);
+  religionOptions = signal<RegisterLookupOption[]>([]);
+  casteOptions = signal<RegisterLookupOption[]>([]);
   educationOptions = signal<RegisterLookupOption[]>([]);
   maritalStatusOptions = signal<RegisterLookupOption[]>([]);
   occupationOptions = signal<RegisterLookupOption[]>([]);
@@ -44,15 +44,14 @@ export class ProfileList implements OnInit {
     name: '',
     location: '',
     occupation: '',
-    lookingFor: 'Bride',
-    ageMin: 20,
-    ageMax: 28,
-    height: "5'0\" - 5'4\"",
+    lookingFor: 'Groom',
+    ageMin: 18,
+    ageMax: 35,
+    height: 'Any',
     religion: '',
     caste: '',
     education: '',
     maritalStatus: '',
-    horoscope: 50,
   };
 
   sortBy = 'relevance';
@@ -64,7 +63,10 @@ export class ProfileList implements OnInit {
   isLoading = signal(false);
 
   ngOnInit(): void {
-    this.loadMyProfile();
+    this.isAuthenticated.set(this.authService.isAuthenticated());
+    if (this.isAuthenticated()) {
+      this.loadMyProfile();
+    }
   }
 
   private loadMyProfile(): void {
@@ -82,6 +84,10 @@ export class ProfileList implements OnInit {
         this.userFirstName.set(firstName);
         this.userPhotoUrl.set(photoUrl);
         this.userOccupation.set(profile.occupationText ?? '');
+
+        if (genderId) {
+          this.filters.lookingFor = genderId === 1 ? 'Bride' : 'Groom';
+        }
       },
       error: () => {},
     });
@@ -95,7 +101,7 @@ export class ProfileList implements OnInit {
     if (this.sortBy === 'age-desc') {
       return items.sort((a, b) => (b.age ?? 0) - (a.age ?? 0));
     }
-    return items.sort((a, b) => this.getMatchScore(b) - this.getMatchScore(a));
+    return items;
   });
 
   readonly totalPages = computed(() =>
@@ -117,11 +123,8 @@ export class ProfileList implements OnInit {
   }
 
   loadFilterOptions(): void {
-    this.masterDataSvc.getMultiple(['religion', 'caste']).subscribe({
-      next: (data) => {
-        this.religionOptions.set(data['religion'] ?? []);
-        this.casteOptions.set(data['caste'] ?? []);
-      },
+    this.registerMasterData.getReligions().subscribe({
+      next: (opts) => this.religionOptions.set(opts),
       error: () => {},
     });
 
@@ -141,33 +144,6 @@ export class ProfileList implements OnInit {
     });
   }
 
-  loadProfiles(): void {
-    this.isLoading.set(true);
-    this.memberService.getProfiles(this.currentPage, this.pageSize).subscribe({
-      next: (response) => {
-        this.isLoading.set(false);
-        this.results.set(
-          response.profiles.map((p) => ({
-            id: `${p.profileId}`,
-            email: p.email,
-            name: p.fullName,
-            age: p.age,
-            occupation: p.occupationText,
-            location: p.locationText,
-            bio: p.bio,
-            password: '',
-            createdAt: p.createdAt,
-          })),
-        );
-      },
-      error: (error) => {
-        this.isLoading.set(false);
-        console.error('Failed to load profiles:', error);
-        this.error.set('Failed to load profiles. Please try again.');
-      },
-    });
-  }
-
   getProfilePhotoUrl(profile: MemberRecord): string {
     const genderId = profile.registrationDetails?.personal?.gender ? Number(profile.registrationDetails.personal.gender) || null : null;
     return getDefaultAvatar(profile.name, genderId);
@@ -179,29 +155,29 @@ export class ProfileList implements OnInit {
     image.src = getDefaultAvatar(name);
   }
 
-  getMatchScore(profile: MemberRecord): number {
-    return 78 + (this.hashSeed(profile) % 20);
+  getReligionLabel(profile: MemberRecord): string {
+    if (!profile.religionId) return '';
+    const match = this.religionOptions().find(r => r.id === profile.religionId);
+    return match?.label ?? '';
   }
 
-  getMemberCode(profile: MemberRecord, index: number): string {
-    const seed = 10000 + ((this.hashSeed(profile) + index * 17) % 89999);
-    return `MES1${seed}`;
+  getCasteLabel(profile: MemberRecord): string {
+    if (!profile.casteId) return '';
+    const match = this.casteOptions().find(c => c.id === profile.casteId);
+    return match?.label ?? '';
   }
 
-  getHeight(profile: MemberRecord, index: number): string {
-    return this.heights[(this.hashSeed(profile) + index) % this.heights.length];
-  }
-
-  getReligion(profile: MemberRecord, index: number): string {
-    const opts = this.religionOptions();
-    if (opts.length === 0) return '';
-    return opts[(this.hashSeed(profile) + index) % opts.length].label;
-  }
-
-  getCaste(profile: MemberRecord, index: number): string {
-    const opts = this.casteOptions();
-    if (opts.length === 0) return '';
-    return opts[(this.hashSeed(profile) + index) % opts.length].label;
+  onReligionChange(): void {
+    this.filters.caste = '';
+    const religionId = Number(this.filters.religion);
+    if (!religionId) {
+      this.casteOptions.set([]);
+      return;
+    }
+    this.registerMasterData.getCastes(religionId).subscribe({
+      next: (opts) => this.casteOptions.set(opts),
+      error: () => this.casteOptions.set([]),
+    });
   }
 
   openProfile(profile: MemberRecord): void {
@@ -210,16 +186,6 @@ export class ProfileList implements OnInit {
 
   goToPage(page: number): void {
     this.currentPage = Math.min(this.totalPages(), Math.max(1, page));
-  }
-
-  private hashSeed(profile: MemberRecord): number {
-    const source = `${profile.id}-${profile.email}-${profile.name}`.toLowerCase();
-    let hash = 0;
-    for (let i = 0; i < source.length; i += 1) {
-      hash = (hash << 5) - hash + source.charCodeAt(i);
-      hash |= 0;
-    }
-    return Math.abs(hash);
   }
 
   search(form?: NgForm): void {
@@ -246,11 +212,14 @@ export class ProfileList implements OnInit {
     this.isLoading.set(true);
     this.error.set('');
 
+    const searchGenderId = this.filters.lookingFor === 'Bride' ? 2 : 1;
+
     this.memberService
       .searchProfiles({
         name: this.filters.name,
         location: this.filters.location,
         occupation: this.filters.occupation,
+        genderId: searchGenderId,
         ageMin: this.filters.ageMin,
         ageMax: this.filters.ageMax,
         religion: this.filters.religion || undefined,

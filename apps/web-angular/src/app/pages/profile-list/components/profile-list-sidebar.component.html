@@ -22,6 +22,6 @@
     <a routerLink="/events" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">☷</span><span>Events &amp; Meets</span></a>
     <a routerLink="/gallery" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">▣</span><span>Photo Gallery</span></a>
     <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">⚙</span><span>Settings</span></a>
-    <a routerLink="/login"><span class="nav-icon" aria-hidden="true">↪</span><span>Logout</span></a>
+    <button type="button" class="sidebar-logout" (click)="logout()"><span class="nav-icon" aria-hidden="true">↪</span><span>Logout</span></button>
   </nav>
 </aside>

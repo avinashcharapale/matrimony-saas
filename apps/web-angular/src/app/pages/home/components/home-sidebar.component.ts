@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -12,4 +13,10 @@ import { RouterModule } from '@angular/router';
 export class HomeSidebarComponent {
   @Input({ required: true }) brandMark!: string;
   @Input({ required: true }) tenantDisplayName!: string;
+
+  private readonly authService = inject(AuthService);
+
+  logout(): void {
+    this.authService.logout().subscribe();
+  }
 }

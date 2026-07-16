@@ -1,7 +1,6 @@
 import { Component, ChangeDetectionStrategy, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { MasterDataItem } from '../../../services/master-data.service';
 import { RegisterLookupOption } from '../../../services/register-master-data.service';
 
 @Component({
@@ -19,14 +18,16 @@ export class ProfileListSearchPanelComponent {
   @Input({ required: true }) sortBy!: string;
   @Input({ required: true }) resultsCount!: number;
   @Input() error = '';
-  @Input() religionOptions: MasterDataItem[] = [];
-  @Input() casteOptions: MasterDataItem[] = [];
+  @Input() isAuthenticated = false;
+  @Input() religionOptions: RegisterLookupOption[] = [];
+  @Input() casteOptions: RegisterLookupOption[] = [];
   @Input() educationOptions: RegisterLookupOption[] = [];
   @Input() maritalStatusOptions: RegisterLookupOption[] = [];
   @Input() occupationOptions: RegisterLookupOption[] = [];
 
   @Output() readonly searchRequested = new EventEmitter<NgForm | undefined>();
   @Output() readonly sortByChange = new EventEmitter<string>();
+  @Output() readonly religionChange = new EventEmitter<void>();
 
   get activeFilterCount(): number {
     let count = 0;

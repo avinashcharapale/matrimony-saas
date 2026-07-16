@@ -11,4 +11,10 @@ import { RouterModule } from '@angular/router';
 })
 export class LandingHeroComponent {
   @Input({ required: true }) tenantDisplayName!: string;
+  @Input() heroTitle = '';
+  @Input() heroSubtitle = '';
+  @Input() heroDescription = '';
+  @Input() ctaEnroll = 'Register Now';
+  @Input() eyebrow = '';
+  @Input() badges: { text: string }[] = [];
 }
