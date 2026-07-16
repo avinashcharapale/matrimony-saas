@@ -1,10 +1,14 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { RegisterFormDetails, createEmptyRegisterFormDetails } from '@org/models';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 import { finalize } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
+import { SubscriptionStore } from '@org/data-access-subscription';
+import { TenantService } from '../../services/tenant.service';
 
 interface ProfileField {
   label: string;
@@ -129,6 +133,7 @@ interface MappedProfileDetail {
   bio?: string;
   createdAt?: string;
   email?: string;
+  isContactUnlocked?: boolean;
   personal?: DbPersonalSection;
   horoscope?: DbHoroscopeSection;
   professional?: DbProfessionalSection;
@@ -149,13 +154,26 @@ interface MappedProfileDetail {
 })
 export class ProfileDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly memberService = inject(MemberService);
+  private readonly authService = inject(AuthService);
+  private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly tenantService = inject(TenantService);
+  private readonly http = inject(HttpClient);
 
   readonly profile = signal<MemberRecord | null>(null);
   readonly isGalleryOpen = signal(false);
   readonly currentGalleryIndex = signal(0);
   readonly isLoading = signal(true);
   readonly error = signal<string | null>(null);
+  readonly isContactUnlocked = signal(false);
+  readonly showUpgradePrompt = signal(false);
+  readonly isSendingInterest = signal(false);
+  readonly interestSent = signal(false);
+
+  readonly isPaidUser = computed(() => this.subscriptionStore.isActive());
+  readonly isFreeUser = computed(() => this.authService.isAuthenticated() && !this.subscriptionStore.isActive());
+  readonly isVisitor = computed(() => !this.authService.isAuthenticated());
 
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
@@ -178,6 +196,18 @@ export class ProfileDetail implements OnInit {
     const contact = details?.contact;
     const family = details?.family;
     const expectations = details?.expectations;
+
+    const contactSection = this.isContactUnlocked()
+      ? [{
+          title: 'Contact',
+          fields: [
+            this.field('Email', contact?.contactEmail || this.profile()?.email),
+            this.field('Address', contact?.residenceAddress || this.profile()?.location),
+            this.field('Primary Mobile', contact?.smsMobile),
+            this.field('Secondary Mobile', contact?.mobileSecondary),
+          ],
+        }]
+      : [];
 
     return [
       {
@@ -204,15 +234,7 @@ export class ProfileDetail implements OnInit {
           this.field('Mangal', horoscope?.manglik),
         ],
       },
-      {
-        title: 'Contact',
-        fields: [
-          this.field('Email', contact?.contactEmail || this.profile()?.email),
-          this.field('Address', contact?.residenceAddress || this.profile()?.location),
-          this.field('Primary Mobile', contact?.smsMobile),
-          this.field('Secondary Mobile', contact?.mobileSecondary),
-        ],
-      },
+      ...contactSection,
       {
         title: 'Family Background',
         fields: [
@@ -244,6 +266,13 @@ export class ProfileDetail implements OnInit {
   });
 
   ngOnInit(): void {
+    if (this.authService.isAuthenticated()) {
+      const tenantId = Number(this.tenantService.tenantHeaderId);
+      if (tenantId) {
+        this.subscriptionStore.loadSubscriptionStatus(tenantId);
+      }
+    }
+
     const profileIdParam = this.route.snapshot.paramMap.get('id');
     if (profileIdParam) {
       this.loadProfile(profileIdParam);
@@ -271,6 +300,7 @@ export class ProfileDetail implements OnInit {
     ).subscribe({
       next: (profileDetail: MappedProfileDetail) => {
         const registrationDetails = this.mapRegistrationDetails(profileDetail);
+        this.isContactUnlocked.set(profileDetail.isContactUnlocked === true);
         this.profile.set({
           id: `${profileDetail.profileId ?? ''}`,
           email: profileDetail.email ?? '',
@@ -332,6 +362,51 @@ export class ProfileDetail implements OnInit {
     const seed = this.hashSeed(p);
     const code = 10000 + (seed % 89999);
     return `MBU${code} (${[...p.name.split(' ')][0]?.toUpperCase()})`;
+  }
+
+  onConnect(): void {
+    if (this.isVisitor()) {
+      this.router.navigate(['/register']);
+      return;
+    }
+    if (this.isFreeUser()) {
+      this.showUpgradePrompt.set(true);
+      return;
+    }
+    this.sendInterest();
+  }
+
+  dismissUpgradePrompt(): void {
+    this.showUpgradePrompt.set(false);
+  }
+
+  goToPlans(): void {
+    this.router.navigate(['/plans']);
+  }
+
+  private sendInterest(): void {
+    const p = this.profile();
+    if (!p || this.isSendingInterest() || this.interestSent()) return;
+
+    const targetProfileId = parseInt(p.id, 10);
+    if (isNaN(targetProfileId)) return;
+
+    this.isSendingInterest.set(true);
+    const tenantId = Number(this.tenantService.tenantHeaderId);
+
+    this.http.post('/api/InterestRequests', {
+      targetProfileId,
+      message: '',
+    }, {
+      headers: tenantId ? { 'X-Tenant-Id': String(tenantId) } : {},
+    }).pipe(
+      finalize(() => this.isSendingInterest.set(false)),
+    ).subscribe({
+      next: () => this.interestSent.set(true),
+      error: (err: unknown) => {
+        console.error('Failed to send interest:', err);
+      },
+    });
   }
 
   private hashSeed(profile: MemberRecord): number {
@@ -404,6 +479,8 @@ export class ProfileDetail implements OnInit {
         idProofNumber: profileDetail.contact?.IdProofNumber ?? '',
         residenceAddress: profileDetail.contact?.ResidenceAddress ?? '',
         contactEmail: profileDetail.contact?.ContactEmail ?? profileDetail.email ?? '',
+        smsMobile: profileDetail.contact?.SmsMobile ?? '',
+        mobileSecondary: profileDetail.contact?.MobileSecondary ?? '',
       },
       family: {
         ...details.family,

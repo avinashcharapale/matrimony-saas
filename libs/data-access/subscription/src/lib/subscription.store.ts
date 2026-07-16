@@ -26,7 +26,7 @@ export const SubscriptionStore = signalStore(
   withState(initialState),
   withComputed(({ plans, status }) => ({
     hasPlans: computed(() => plans().length > 0),
-    isActive: computed(() => status()?.isActive ?? false),
+    isActive: computed(() => (status()?.isActive ?? false) && !(status()?.isTrial ?? false)),
     isTrial: computed(() => status()?.isTrial ?? false),
   })),
   withMethods((store, repository = inject(SubscriptionRepository)) => ({

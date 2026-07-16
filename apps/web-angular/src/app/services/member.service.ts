@@ -50,6 +50,7 @@ export interface ProfileSearchResult {
   casteId?: number;
   heightText?: string;
   createdAt: string;
+  isContactUnlocked?: boolean;
 }
 
 export interface ProfileListResponse {
@@ -516,7 +517,11 @@ export class MemberService {
   }
 
   getProfileById(profileId: number): Observable<ProfileDetail> {
-    return this.profileClient.getPublicProfileById(profileId).pipe(
+    const request$ = this.authService.isAuthenticated()
+      ? this.profileClient.getById(profileId)
+      : this.profileClient.getPublicProfileById(profileId);
+
+    return request$.pipe(
       map((profile) => this.mapProfileDetailToProfileDetail(profile)),
       catchError((error) => {
         console.error('Get profile by ID error:', error);
@@ -592,6 +597,17 @@ export class MemberService {
   }
 
   private mapProfileDetailToProfileDetail(profile: ProfileDetailDto): ProfileDetail {
+    const phones = profile.phoneNumbers ?? [];
+    const contactData: Record<string, unknown> | undefined = profile.contact
+      ? {
+          ContactEmail: profile.contact.contactEmail ?? '',
+          ResidenceAddress: profile.contact.residenceAddress ?? '',
+          IdProofNumber: profile.contact.idProofNumber ?? '',
+          SmsMobile: phones[0]?.phoneNumber ?? '',
+          MobileSecondary: phones[1]?.phoneNumber ?? '',
+        }
+      : undefined;
+
     return {
       profileId: profile.profileId ?? 0,
       userId: profile.profileId ?? 0,
@@ -603,6 +619,8 @@ export class MemberService {
       occupationText: profile.occupationText ?? undefined,
       email: '',
       createdAt: new Date().toISOString(),
+      isContactUnlocked: profile.isContactUnlocked ?? false,
+      contact: contactData,
     };
   }
 

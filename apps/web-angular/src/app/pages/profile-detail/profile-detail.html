@@ -24,7 +24,23 @@
         <p class="member-meta">{{ profile()!.age }} years • {{ profile()!.location }}</p>
       </div>
 
-      <button class="connect-button">Connect</button>
+      <button class="connect-button" [class.sent]="interestSent()" [disabled]="isSendingInterest()" (click)="onConnect()">
+        @if (isVisitor()) {
+          Register to Connect
+        } @else if (isFreeUser()) {
+          Upgrade to Connect
+        } @else if (interestSent()) {
+          Interest Sent
+        } @else if (isSendingInterest()) {
+          Sending...
+        } @else {
+          &#x2764; Connect
+        }
+      </button>
+
+      @if (!isContactUnlocked() && !isVisitor()) {
+      <p class="unlock-hint">Subscribe to view contact details</p>
+      }
     </aside>
 
     <main class="profile-content">
@@ -84,6 +100,22 @@
     </div>
   </div>
   }
+
+  <!-- Upgrade Prompt Modal -->
+  @if (showUpgradePrompt()) {
+  <div class="upgrade-overlay" (click)="dismissUpgradePrompt()">
+    <div class="upgrade-modal" (click)="$event.stopPropagation()">
+      <button class="upgrade-close" (click)="dismissUpgradePrompt()">&#x2715;</button>
+      <div class="upgrade-content">
+        <h2>Upgrade to Connect</h2>
+        <p>You need an active subscription to send interests and view contact details.</p>
+        <button class="upgrade-cta" (click)="goToPlans()">View Plans</button>
+        <button class="upgrade-cancel" (click)="dismissUpgradePrompt()">Maybe Later</button>
+      </div>
+    </div>
+  </div>
+  }
+
   } @else {
   <article class="detail-card empty">
     <h2>Profile not found</h2>

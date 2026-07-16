@@ -1,0 +1,92 @@
+<section class="plans-page">
+  <div class="plans-container">
+    <div class="plans-header">
+      <h1>Choose Your Plan</h1>
+      <p>Unlock premium features to find your perfect match</p>
+    </div>
+
+    @if (checkoutResult()) {
+    <div class="checkout-success">
+      <div class="success-icon">&#x2713;</div>
+      <h2>Payment Successful!</h2>
+      <p class="success-detail">
+        <strong>{{ checkoutResult()!.planName }}</strong> plan activated
+      </p>
+      <p class="success-dates">
+        Valid from {{ checkoutResult()!.startDate | date:'mediumDate' }}
+        to {{ checkoutResult()!.endDate | date:'mediumDate' }}
+      </p>
+      <p class="success-amount">Amount paid: {{ formatPrice(checkoutResult()!.amount) }}</p>
+      <button class="cta-button" (click)="goToProfiles()">Browse Profiles</button>
+    </div>
+    } @else {
+    <div class="plans-grid">
+      @for (plan of plans(); track plan.id) {
+      <div class="plan-card" [class.popular]="plan.isPopular" [class.processing]="selectedPlanId() === plan.id">
+        @if (plan.isPopular) {
+        <div class="popular-badge">Most Popular</div>
+        }
+        <div class="plan-name">{{ plan.name }}</div>
+        <div class="plan-price">{{ formatPrice(plan.price) }}</div>
+        <div class="plan-duration">{{ formatDuration(plan.durationInDays) }}</div>
+
+        @if (plan.description) {
+        <p class="plan-description">{{ plan.description }}</p>
+        }
+
+        <ul class="plan-features">
+          @if (plan.canViewContactDetails) {
+          <li class="feature-item included">View Contact Details</li>
+          }
+          @if (plan.canSendMessages) {
+          <li class="feature-item included">Send Messages</li>
+          }
+          @if (plan.hasAdvancedSearch) {
+          <li class="feature-item included">Advanced Search</li>
+          }
+          @if (plan.hasMatchRecommendations) {
+          <li class="feature-item included">Match Recommendations</li>
+          }
+          @if (plan.hasProfileVerification) {
+          <li class="feature-item included">Profile Verification Badge</li>
+          }
+          @if (plan.hasPrioritySupport) {
+          <li class="feature-item included">Priority Support</li>
+          }
+          @if (plan.maxProfiles) {
+          <li class="feature-item included">{{ plan.maxProfiles }} Profile Views / Day</li>
+          }
+          @if (plan.maxPhotos) {
+          <li class="feature-item included">{{ plan.maxPhotos }} Photos</li>
+          }
+        </ul>
+
+        <button
+          class="plan-select-btn"
+          [class.primary]="plan.isPopular"
+          [disabled]="isProcessing()"
+          (click)="selectPlan(plan)">
+          @if (selectedPlanId() === plan.id) {
+          Processing...
+          } @else {
+          Select Plan
+          }
+        </button>
+      </div>
+      }
+    </div>
+
+    @if (error()) {
+    <div class="checkout-error">
+      <p>{{ error() }}</p>
+    </div>
+    }
+
+    @if (plans().length === 0 && !isLoading()) {
+    <div class="no-plans">
+      <p>No plans available at the moment.</p>
+    </div>
+    }
+    }
+  </div>
+</section>

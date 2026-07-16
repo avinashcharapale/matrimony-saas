@@ -1,0 +1,263 @@
+.plans-page {
+  min-height: 100vh;
+  background: #f5f3f0;
+  padding: 2rem 1.5rem;
+}
+
+.plans-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.plans-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.plans-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.8rem;
+  color: #1f2230;
+  font-weight: 700;
+}
+
+.plans-header p {
+  margin: 0;
+  font-size: 1rem;
+  color: #6d7285;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.plan-card {
+  background: #fff;
+  border: 2px solid #ece0d8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.plan-card:hover {
+  border-color: #c9a994;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.plan-card.popular {
+  border-color: #9a5e45;
+  box-shadow: 0 4px 20px rgba(154, 94, 69, 0.15);
+}
+
+.plan-card.processing {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #9a5e45;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 1rem;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.plan-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1f2230;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.plan-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #9a5e45;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.plan-duration {
+  font-size: 0.85rem;
+  color: #9a8f86;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.plan-description {
+  font-size: 0.85rem;
+  color: #6d7285;
+  text-align: center;
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.feature-item {
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  color: #4f566b;
+  border-bottom: 1px solid #f0ede8;
+}
+
+.feature-item:last-child {
+  border-bottom: none;
+}
+
+.feature-item.included::before {
+  content: '\2713';
+  color: #6b8f71;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.plan-select-btn {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid #9a5e45;
+  border-radius: 8px;
+  background: #fff;
+  color: #9a5e45;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
+.plan-select-btn:hover:not(:disabled) {
+  background: #9a5e45;
+  color: #fff;
+}
+
+.plan-select-btn.primary {
+  background: #9a5e45;
+  color: #fff;
+}
+
+.plan-select-btn.primary:hover:not(:disabled) {
+  background: #7d4a37;
+}
+
+.plan-select-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Checkout Success */
+.checkout-success {
+  background: #fff;
+  border: 2px solid #6b8f71;
+  border-radius: 12px;
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.success-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #6b8f71;
+  color: #fff;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.checkout-success h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.3rem;
+  color: #1f2230;
+}
+
+.success-detail {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: #4f566b;
+}
+
+.success-dates {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: #6d7285;
+}
+
+.success-amount {
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+  color: #9a5e45;
+  font-weight: 600;
+}
+
+.cta-button {
+  display: inline-block;
+  background: #9a5e45;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.cta-button:hover {
+  background: #7d4a37;
+}
+
+/* Error */
+.checkout-error {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+}
+
+.checkout-error p {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.no-plans {
+  text-align: center;
+  padding: 3rem;
+  color: #6d7285;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-card {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

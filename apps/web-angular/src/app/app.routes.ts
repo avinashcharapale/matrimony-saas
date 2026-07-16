@@ -102,6 +102,12 @@ export const appRoutes: Route[] = [
         },
       },
       {
+        path: 'plans',
+        loadComponent: () =>
+          import('./pages/plans/plans').then((m) => m.PlansPage),
+        canActivate: [authGuard],
+      },
+      {
         path: 'search',
         loadComponent: () =>
           import('./pages/public-search/public-search').then((m) => m.PublicSearch),
