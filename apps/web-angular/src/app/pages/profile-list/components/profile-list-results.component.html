@@ -1,43 +1,57 @@
 @if (hasResults) {
 <section class="results-list">
   <div class="results-topbar">
-    <p>{{ currentPage }} / {{ totalPages }} <span>Matching profiles</span></p>
+    <p>{{ currentPage }} / {{ totalPages }} <span>pages</span></p>
     <div class="pager-mini">
-      <button type="button" (click)="pageChange.emit(currentPage - 1)">Prev</button>
-      <button type="button" (click)="pageChange.emit(currentPage + 1)">Next</button>
+      <button type="button" [disabled]="currentPage <= 1" (click)="pageChange.emit(currentPage - 1)">&#x2039; Prev</button>
+      <button type="button" [disabled]="currentPage >= totalPages" (click)="pageChange.emit(currentPage + 1)">Next &#x203A;</button>
     </div>
   </div>
 
   @for (profile of pageResults; track profile.email ?? $index; let i = $index) {
-  <article class="result-card" role="button" tabindex="0" (click)="profileSelect.emit(profile)" (keyup.enter)="profileSelect.emit(profile)">
-    <img
-      class="result-photo"
-      [src]="getProfilePhotoUrl(profile)"
-      [alt]="profile.name"
-      loading="lazy"
-      referrerpolicy="no-referrer"
-      (error)="onPhotoError($event, profile.name)"
-    />
+  <article class="profile-card" role="button" tabindex="0" (click)="profileSelect.emit(profile)" (keyup.enter)="profileSelect.emit(profile)">
+    <div class="card-photo-col">
+      <img
+        class="card-photo"
+        [src]="getProfilePhotoUrl(profile)"
+        [alt]="profile.name"
+        loading="lazy"
+        referrerpolicy="no-referrer"
+        (error)="onPhotoError($event, profile.name)"
+      />
+      <div class="card-score">{{ getMatchScore(profile) }}% Match</div>
+    </div>
 
-    <div class="result-main">
-      <h2>{{ profile.name }}, {{ profile.age ?? '-' }}</h2>
-      <p class="line1">{{ profile.occupation ?? 'Professional' }}, {{ profile.location ?? 'Maharashtra' }}</p>
-      <p class="line2">{{ getHeight(profile, i) }} | {{ getReligion(profile, i) }} | {{ getCaste(profile, i) }}</p>
-      <div class="tag-row">
-        <span class="premium">Premium</span>
-        <span class="member-code">{{ getMemberCode(profile, i) }}</span>
+    <div class="card-info-col">
+      <div class="card-header">
+        <h2 class="card-name">{{ profile.name }}</h2>
+        <span class="card-age">{{ profile.age ?? '-' }} yrs</span>
+        <span class="card-id">{{ getMemberCode(profile, i) }}</span>
+      </div>
+
+      <p class="card-detail">
+        {{ profile.occupation ?? 'Professional' }}
+        <span class="sep">&bull;</span>
+        {{ profile.location ?? 'Maharashtra' }}
+      </p>
+
+      <div class="card-tags">
+        <span class="tag">{{ getHeight(profile, i) }}</span>
+        <span class="tag">{{ getReligion(profile, i) }}</span>
+        <span class="tag">{{ getCaste(profile, i) }}</span>
       </div>
     </div>
 
-    <div class="result-side">
-      <div class="score-pill">{{ getMatchScore(profile) }}%</div>
-      <button type="button" class="connect-btn" (click)="$event.stopPropagation(); profileSelect.emit(profile)">Connect</button>
+    <div class="card-action-col">
+      <button type="button" class="btn-connect" (click)="$event.stopPropagation(); profileSelect.emit(profile)">
+        &#x2764; Connect
+      </button>
     </div>
   </article>
   }
 
   <div class="pagination">
-    <button type="button" (click)="pageChange.emit(currentPage - 1)">‹</button>
+    <button type="button" [disabled]="currentPage <= 1" (click)="pageChange.emit(currentPage - 1)">&#x2039;</button>
     @for (page of pageNumbers; track page) {
     <button
       type="button"
@@ -46,9 +60,13 @@
       {{ page }}
     </button>
     }
-    <button type="button" (click)="pageChange.emit(currentPage + 1)">›</button>
+    <button type="button" [disabled]="currentPage >= totalPages" (click)="pageChange.emit(currentPage + 1)">&#x203A;</button>
   </div>
 </section>
 } @else {
-  <p class="empty-state">No profiles found for the selected filters.</p>
+<div class="empty-state">
+  <p class="empty-icon">&#x1F50D;</p>
+  <p class="empty-title">No profiles found</p>
+  <p class="empty-sub">Try adjusting your filters or search with different keywords.</p>
+</div>
 }

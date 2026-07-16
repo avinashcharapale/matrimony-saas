@@ -1,17 +1,20 @@
-<header class="app-header">
+<app-loader></app-loader>
+<header class="app-header" [class.authenticated]="isLoggedIn()">
   <div class="app-toolbar">
     <div class="brand-block">
-      <div class="brand-icon">
-        @if (tenant.logoUrl) {
-        <img [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" class="brand-icon-img" />
-        } @else {
-        <span>{{ tenant.logoEmoji || '🌼' }}</span>
-        }
-      </div>
-      <div>
-        <p class="brand-title">{{ tenant.displayName }}</p>
-        <p class="brand-subtitle">{{ tenant.tagline }}</p>
-      </div>
+      <a routerLink="/" class="brand-link">
+        <div class="brand-icon">
+          @if (tenant.logoUrl) {
+          <img [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" class="brand-icon-img" />
+          } @else {
+          <span>{{ tenant.logoEmoji || '🌼' }}</span>
+          }
+        </div>
+        <div>
+          <p class="brand-title">{{ tenant.displayName }}</p>
+          <p class="brand-subtitle">{{ tenant.tagline }}</p>
+        </div>
+      </a>
     </div>
 
     <button
@@ -25,19 +28,33 @@
     </button>
 
     <div class="toolbar-center" [class.open]="isMobileMenuOpen">
-      <nav class="main-nav">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Home</a>
-        <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">Rules</a>
-        <a routerLink="/register" routerLinkActive="active" (click)="closeMobileMenu()">Register</a>
-        <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
-        <a routerLink="/login" routerLinkActive="active" (click)="closeMobileMenu()">Login</a>
-        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Contact Us</a>
+      @if (isLoggedIn()) {
+      <nav class="main-nav auth-nav">
+        <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Dashboard</a>
+        <a routerLink="/my-profile" routerLinkActive="active" (click)="closeMobileMenu()">My Profile</a>
+        <a routerLink="/profiles" routerLinkActive="active" (click)="closeMobileMenu()">Search Matches</a>
+        <a routerLink="/messages" routerLinkActive="active" (click)="closeMobileMenu()">Messages</a>
       </nav>
+      } @else {
+      <nav class="main-nav public-nav">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Home</a>
+        <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
+        <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">How It Works</a>
+        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Contact</a>
+      </nav>
+      }
     </div>
 
     <div class="toolbar-right" [class.open]="isMobileMenuOpen">
-      <p class="toolbar-contact">📞 {{ tenant.supportPhone }} | ✉️ {{ tenant.supportEmail }}</p>
-      <a routerLink="/success-stories" class="menu-cta" routerLinkActive="active-cta" (click)="closeMobileMenu()">Success Stories</a>
+      @if (isLoggedIn()) {
+        <button class="logout-btn" (click)="logout(); closeMobileMenu()">Logout</button>
+      } @else {
+        <p class="toolbar-contact">{{ tenant.supportPhone }} | {{ tenant.supportEmail }}</p>
+        <div class="auth-actions">
+          <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">Login</a>
+          <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">Register Now</a>
+        </div>
+      }
     </div>
   </div>
 </header>

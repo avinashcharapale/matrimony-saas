@@ -1,8 +1,10 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
+import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 import { MasterDataService, MasterDataItem } from '../../services/master-data.service';
+import { RegisterMasterDataService, RegisterLookupOption } from '../../services/register-master-data.service';
 import { ProfileListSidebarComponent } from './components/profile-list-sidebar.component';
 import { ProfileListTitleComponent } from './components/profile-list-title.component';
 import { ProfileListSearchPanelComponent } from './components/profile-list-search-panel.component';
@@ -21,14 +23,23 @@ import { ProfileListResultsComponent } from './components/profile-list-results.c
   templateUrl: './profile-list.html',
   styleUrl: './profile-list.css',
 })
-export class ProfileList {
+export class ProfileList implements OnInit {
   private readonly memberService = inject(MemberService);
   private readonly router = inject(Router);
   private readonly masterDataSvc = inject(MasterDataService);
+  private readonly registerMasterData = inject(RegisterMasterDataService);
   private readonly heights = ["5'0\"", "5'2\"", "5'4\"", "5'6\"", "5'8\""];
+
+  readonly userName = signal('');
+  readonly userFirstName = signal('');
+  readonly userPhotoUrl = signal('');
+  readonly userOccupation = signal('');
 
   religionOptions = signal<MasterDataItem[]>([]);
   casteOptions = signal<MasterDataItem[]>([]);
+  educationOptions = signal<RegisterLookupOption[]>([]);
+  maritalStatusOptions = signal<RegisterLookupOption[]>([]);
+  occupationOptions = signal<RegisterLookupOption[]>([]);
   filters = {
     name: '',
     location: '',
@@ -51,6 +62,30 @@ export class ProfileList {
   results = signal<MemberRecord[]>([]);
   error = signal('');
   isLoading = signal(false);
+
+  ngOnInit(): void {
+    this.loadMyProfile();
+  }
+
+  private loadMyProfile(): void {
+    this.memberService.getMyProfile().subscribe({
+      next: (profile) => {
+        const fullName = profile.fullName ?? '';
+        const firstName = fullName.split(' ')[0] ?? '';
+        const genderId = profile.personalDetails?.genderId ?? null;
+        const primaryPhoto = (profile.photos ?? []).find(ph => ph.isPrimary) ?? profile.photos?.[0];
+        const photoUrl = primaryPhoto
+          ? resolvePhotoUrl(primaryPhoto.fileUrl, fullName, genderId)
+          : getDefaultAvatar(fullName, genderId);
+
+        this.userName.set(fullName);
+        this.userFirstName.set(firstName);
+        this.userPhotoUrl.set(photoUrl);
+        this.userOccupation.set(profile.occupationText ?? '');
+      },
+      error: () => {},
+    });
+  }
 
   readonly sortedResults = computed(() => {
     const items = [...this.results()];
@@ -77,8 +112,8 @@ export class ProfileList {
   );
 
   constructor() {
-    this.loadProfiles();
     this.loadFilterOptions();
+    this.performSearch();
   }
 
   loadFilterOptions(): void {
@@ -87,6 +122,21 @@ export class ProfileList {
         this.religionOptions.set(data['religion'] ?? []);
         this.casteOptions.set(data['caste'] ?? []);
       },
+      error: () => {},
+    });
+
+    this.registerMasterData.getEducations().subscribe({
+      next: (opts) => this.educationOptions.set(opts),
+      error: () => {},
+    });
+
+    this.registerMasterData.getMaritalStatuses().subscribe({
+      next: (opts) => this.maritalStatusOptions.set(opts),
+      error: () => {},
+    });
+
+    this.registerMasterData.getOccupations().subscribe({
+      next: (opts) => this.occupationOptions.set(opts),
       error: () => {},
     });
   }
@@ -119,16 +169,14 @@ export class ProfileList {
   }
 
   getProfilePhotoUrl(profile: MemberRecord): string {
-    const seed = encodeURIComponent(
-      (profile.email || profile.id || profile.name).toLowerCase(),
-    );
-    return `https://i.pravatar.cc/180?u=${seed}`;
+    const genderId = profile.registrationDetails?.personal?.gender ? Number(profile.registrationDetails.personal.gender) || null : null;
+    return getDefaultAvatar(profile.name, genderId);
   }
 
   onPhotoError(event: Event, name: string): void {
     const image = event.target as HTMLImageElement;
     image.onerror = null;
-    image.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=efe4d2&color=8f4228&size=180`;
+    image.src = getDefaultAvatar(name);
   }
 
   getMatchScore(profile: MemberRecord): number {

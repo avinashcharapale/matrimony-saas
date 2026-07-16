@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { RegisterFormDetails, createEmptyRegisterFormDetails } from '@org/models';
+import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 import { finalize } from 'rxjs/operators';
 
 interface ProfileField {
@@ -113,6 +114,7 @@ interface DbVerificationSection {
 interface DbPhotoSection {
   PhotoSlot?: number | string;
   FileName?: string;
+  FileUrl?: string;
   IsPrimary?: boolean;
 }
 
@@ -292,8 +294,15 @@ export class ProfileDetail implements OnInit {
   getProfilePhoto(secondary = false): string {
     const p = this.profile();
     if (!p) return '';
-    const seed = encodeURIComponent((p.email || p.id || p.name).toLowerCase());
-    return `https://i.pravatar.cc/300?u=${seed}${secondary ? '-alt' : ''}`;
+    const genderId = p.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null;
+    const photos = (p.registrationDetails?.photos ?? []) as DbPhotoSection[];
+    if (secondary && photos.length > 1) {
+      return resolvePhotoUrl(photos[1].FileUrl, p.name, genderId);
+    }
+    if (photos.length > 0) {
+      return resolvePhotoUrl(photos[0].FileUrl, p.name, genderId);
+    }
+    return getDefaultAvatar(p.name, genderId);
   }
 
   openGallery(): void {

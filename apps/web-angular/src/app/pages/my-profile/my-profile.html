@@ -1,0 +1,119 @@
+<section class="my-profile-page">
+  @if (isLoading()) {
+  <div class="loading-state">
+    <p>Loading your profile...</p>
+  </div>
+  } @else if (error()) {
+  <div class="error-state">
+    <p>{{ error() }}</p>
+    <button class="btn-primary" (click)="loadMyProfile()">Try Again</button>
+  </div>
+  } @else if (profile()) {
+  <div class="detail-container">
+    <div class="page-header">
+      <h1>My Profile</h1>
+      <a routerLink="/home" class="back-link">&larr; Dashboard</a>
+    </div>
+    <aside class="profile-sidebar">
+      <div class="photo-section">
+        <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden-file-input" />
+        <div class="photo-wrapper">
+          <img
+            [src]="getProfilePhoto()"
+            [alt]="profile()!.fullName"
+            class="profile-main-photo"
+            (click)="openGallery()"
+            title="Click to view gallery"
+          />
+          <button class="change-photo-btn" (click)="triggerFileInput()" [disabled]="isUploading()" title="Change photo">
+            @if (isUploading()) {
+              ⏳
+            } @else {
+              📷
+            }
+          </button>
+        </div>
+        @if (galleryPhotos().length > 1) {
+        <div class="photo-thumbnails">
+          @for (photo of galleryPhotos().slice(0, 2); track $index) {
+          <img [src]="photo" [alt]="profile()!.fullName + ' - ' + ($index + 1)" (click)="openGallery()" />
+          }
+        </div>
+        }
+      </div>
+
+      <div class="member-header">
+        <h1>{{ profile()!.fullName }}</h1>
+        <p class="member-id">{{ getMemberId() }}</p>
+        <p class="member-meta">{{ profile()!.age }} years old</p>
+        @if (profile()!.locationText) {
+        <p class="member-location">{{ profile()!.locationText }}</p>
+        }
+      </div>
+
+      <a routerLink="/my-profile/edit" class="edit-profile-btn">Edit Profile</a>
+    </aside>
+
+    <main class="profile-content">
+      @for (section of sections(); track section.title; let i = $index) {
+      <div class="detail-section" [class.collapsed]="!isSectionOpen(i)">
+        <h2 class="section-title" (click)="toggleSection(i)">
+          {{ section.title }}
+        </h2>
+        <div class="fields-matrix" [class.hidden]="!isSectionOpen(i)">
+          @for (item of section.fields; track item.label) {
+          <div class="field-row">
+            <span class="field-label">{{ item.label }}</span>
+            <span class="field-value">{{ item.value }}</span>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </main>
+  </div>
+
+  <!-- Gallery Modal -->
+  @if (isGalleryOpen()) {
+  <div class="gallery-overlay" (click)="closeGallery()">
+    <div class="gallery-modal" (click)="$event.stopPropagation()">
+      <button class="gallery-close" (click)="closeGallery()">&#x2715;</button>
+
+      <div class="gallery-container">
+        <button class="gallery-nav prev" (click)="prevPhoto()" [disabled]="galleryPhotos().length <= 1">&#x2039;</button>
+
+        <div class="gallery-image-wrapper">
+          <img
+            [src]="galleryPhotos()[currentGalleryIndex()]"
+            [alt]="profile()!.fullName + ' - photo ' + (currentGalleryIndex() + 1)"
+            class="gallery-image"
+          />
+        </div>
+
+        <button class="gallery-nav next" (click)="nextPhoto()" [disabled]="galleryPhotos().length <= 1">&#x203A;</button>
+      </div>
+
+      <div class="gallery-indicators">
+        <p class="gallery-counter">{{ currentGalleryIndex() + 1 }} / {{ galleryPhotos().length }}</p>
+        <div class="gallery-dots">
+          @for (photo of galleryPhotos(); track $index; let i = $index) {
+          <button
+            class="dot"
+            [class.active]="i === currentGalleryIndex()"
+            (click)="goToPhoto($index)"
+            [attr.aria-label]="'Go to photo ' + (i + 1)"
+          ></button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  } @else {
+  <article class="empty-state">
+    <h2>Profile not found</h2>
+    <p>Your profile could not be loaded. Please try again later.</p>
+  </article>
+  }
+</section>

@@ -470,13 +470,13 @@ export class MemberService {
     return this.profileClient.searchPublicProfiles({
       ageFrom: filters.ageMin,
       ageTo: filters.ageMax,
-      religionId: filters.religion ? undefined : undefined,
-      casteId: filters.caste ? undefined : undefined,
-      maritalStatusId: filters.maritalStatus ? undefined : undefined,
+      religionId: filters.religion ? Number(filters.religion) || undefined : undefined,
+      casteId: filters.caste ? Number(filters.caste) || undefined : undefined,
+      maritalStatusId: filters.maritalStatus ? Number(filters.maritalStatus) || undefined : undefined,
       city: filters.location || undefined,
       pageNumber: filters.pageNumber ?? 1,
       pageSize: filters.pageSize ?? 20,
-      searchTerm: filters.name || undefined,
+      searchTerm: [filters.name, filters.occupation].filter(Boolean).join(' ') || undefined,
     }).pipe(
       map((response) => (response.items ?? []).map((p) => this.convertToMemberRecord(this.mapListItemToSearchResult(p)))),
       catchError((error) => {
@@ -523,6 +523,24 @@ export class MemberService {
       map((profile) => this.mapProfileDetailToProfileDetail(profile)),
       catchError((error) => {
         console.error('Get profile by ID error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getMyProfile(): Observable<ProfileDetailDto> {
+    return this.profileClient.getMyProfile().pipe(
+      catchError((error) => {
+        console.error('Get my profile error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateMyProfile(dto: CreateProfileDto): Observable<void> {
+    return this.profileClient.updateMyProfile(dto).pipe(
+      catchError((error) => {
+        console.error('Update my profile error:', error);
         return throwError(() => error);
       })
     );

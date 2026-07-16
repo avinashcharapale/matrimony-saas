@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -7,4 +7,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   templateUrl: './profile-list-title.component.html',
   styleUrl: '../profile-list.css',
 })
-export class ProfileListTitleComponent {}
+export class ProfileListTitleComponent {
+  @Input() userFirstName = '';
+}

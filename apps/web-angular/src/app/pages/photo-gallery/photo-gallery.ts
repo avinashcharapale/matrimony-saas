@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@angular/core';
 import { MemberRecord } from '../../services/member.service';
 import { MemberService } from '../../services/member.service';
+import { getDefaultAvatar } from '../../utils/default-avatar';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,6 +65,6 @@ export class PhotoGallery implements OnInit {
   }
 
   getPhoto(seedValue: string): string {
-    return `https://i.pravatar.cc/300?u=${encodeURIComponent(seedValue.toLowerCase())}`;
+    return getDefaultAvatar(seedValue);
   }
 }

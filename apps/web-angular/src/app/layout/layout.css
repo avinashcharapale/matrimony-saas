@@ -12,6 +12,10 @@
   box-shadow: 0 6px 18px rgba(24, 20, 16, 0.06);
 }
 
+.app-header.authenticated {
+  border-color: color-mix(in srgb, var(--tenant-primary) 20%, var(--border-soft));
+}
+
 .app-toolbar {
   display: flex;
   align-items: center;
@@ -25,6 +29,14 @@
   align-items: center;
   gap: 0.75rem;
   min-width: 260px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
 }
 
 .brand-icon {
@@ -114,16 +126,67 @@
   border-color: color-mix(in srgb, var(--tenant-primary) 55%, var(--color-white));
 }
 
-.menu-cta {
+.auth-nav a {
+  font-size: 0.88rem;
+}
+
+.auth-nav a.active {
+  font-weight: 700;
+}
+
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.login-link {
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--tenant-primary);
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.login-link:hover {
+  color: var(--tenant-accent);
+}
+
+.register-btn {
   text-decoration: none;
   white-space: nowrap;
   border-radius: 0.72rem;
-  padding: 0.68rem 1rem;
+  padding: 0.6rem 1.1rem;
   font-size: 0.84rem;
   font-weight: 700;
   color: var(--on-primary);
   background: linear-gradient(90deg, var(--tenant-primary) 0%, var(--tenant-accent) 100%);
   border: 1px solid color-mix(in srgb, var(--tenant-primary) 70%, var(--color-white));
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.register-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--tenant-primary) 30%, transparent);
+}
+
+.logout-btn {
+  border: 1px solid var(--border-strong);
+  border-radius: 0.6rem;
+  background: var(--surface-soft);
+  color: var(--accent-strong);
+  font-weight: 700;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.84rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: color-mix(in srgb, var(--tenant-primary) 12%, var(--color-white));
+  color: var(--tenant-primary);
 }
 
 .app-content {
@@ -190,8 +253,12 @@
     padding: 0.32rem 0;
   }
 
-  .menu-cta {
-    align-self: stretch;
+  .auth-actions {
+    width: 100%;
+  }
+
+  .register-btn {
+    display: block;
     text-align: center;
   }
 

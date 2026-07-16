@@ -1,45 +1,80 @@
-<form class="quick-search" #searchForm="ngForm" (ngSubmit)="searchRequested.emit(searchForm)">
-  <input
-    type="text"
-    name="name"
-    [(ngModel)]="filters['name']"
-    placeholder="Enter city, state or keyword"
-    maxlength="60"
-    pattern="[A-Za-z .-]*"
-  />
-  <select name="lookingForQuick" [(ngModel)]="filters['lookingFor']">
-    <option>Bride</option>
-    <option>Groom</option>
-  </select>
-  <input type="text" name="location" [(ngModel)]="filters['location']" placeholder="City" maxlength="60" pattern="[A-Za-z .-]*" />
-  <select name="ageMin" [(ngModel)]="filters['ageMin']">
-    <option [ngValue]="20">20</option>
-    <option [ngValue]="22">22</option>
-    <option [ngValue]="24">24</option>
-    <option [ngValue]="26">26</option>
-    <option [ngValue]="28">28</option>
-  </select>
-  <select name="ageMax" [(ngModel)]="filters['ageMax']">
-    <option [ngValue]="26">26</option>
-    <option [ngValue]="28">28</option>
-    <option [ngValue]="30">30</option>
-    <option [ngValue]="32">32</option>
-    <option [ngValue]="34">34</option>
-  </select>
-  <input type="text" name="occupation" [(ngModel)]="filters['occupation']" placeholder="Occupation" maxlength="60" pattern="[A-Za-z .-]*" />
-  <button type="submit">Search</button>
-</form>
+<form class="search-panel" #searchForm="ngForm" (ngSubmit)="searchRequested.emit(searchForm)">
 
-@if (error) {
-<p class="form-error">{{ error }}</p>
-}
+  @if (error) {
+  <div class="form-error">{{ error }}</div>
+  }
 
-<section class="filter-shell">
-  <div class="filter-head">
-    <strong>{{ resultsCount }}</strong>
-    <span>matching profiles</span>
-    <label>
-      Sort By
+  <div class="search-primary">
+    <div class="search-input-wrap">
+      <span class="search-icon">&#x1F50D;</span>
+      <input
+        type="text"
+        class="search-input"
+        name="name"
+        [(ngModel)]="filters['name']"
+        placeholder="Search by name, city, or keyword..."
+        maxlength="60"
+        pattern="[A-Za-z .-]*"
+      />
+    </div>
+
+    <div class="search-quick-filters">
+      <div class="qf-field">
+        <label>Looking For</label>
+        <select name="lookingForQuick" [(ngModel)]="filters['lookingFor']">
+          <option value="Bride">Bride</option>
+          <option value="Groom">Groom</option>
+        </select>
+      </div>
+      <div class="qf-field">
+        <label>Age</label>
+        <div class="age-range">
+          <select name="ageMin" [(ngModel)]="filters['ageMin']">
+            <option [ngValue]="18">18</option>
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="22">22</option>
+            <option [ngValue]="24">24</option>
+            <option [ngValue]="26">26</option>
+            <option [ngValue]="28">28</option>
+            <option [ngValue]="30">30</option>
+          </select>
+          <span class="range-sep">to</span>
+          <select name="ageMax" [(ngModel)]="filters['ageMax']">
+            <option [ngValue]="24">24</option>
+            <option [ngValue]="26">26</option>
+            <option [ngValue]="28">28</option>
+            <option [ngValue]="30">30</option>
+            <option [ngValue]="32">32</option>
+            <option [ngValue]="34">34</option>
+            <option [ngValue]="36">36</option>
+            <option [ngValue]="40">40</option>
+          </select>
+        </div>
+      </div>
+      <div class="qf-field">
+        <label>City</label>
+        <input type="text" name="location" [(ngModel)]="filters['location']" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
+      </div>
+      <button type="submit" class="btn-search">Search</button>
+    </div>
+  </div>
+
+  <div class="search-meta-bar">
+    <button type="button" class="filter-toggle" (click)="showAdvanced = !showAdvanced" [class.active]="showAdvanced">
+      <span class="toggle-arrow" [class.open]="showAdvanced">&#x25B8;</span>
+      Filters
+      @if (activeFilterCount > 0) {
+        <span class="filter-badge">{{ activeFilterCount }}</span>
+      }
+    </button>
+
+    <div class="result-summary">
+      <strong>{{ resultsCount }}</strong>
+      <span>matching profiles</span>
+    </div>
+
+    <label class="sort-control">
+      Sort by
       <select name="sortBy" [ngModel]="sortBy" (ngModelChange)="sortByChange.emit($event)">
         <option value="relevance">Relevance</option>
         <option value="age-asc">Age: Low to High</option>
@@ -48,69 +83,69 @@
     </label>
   </div>
 
-  <div class="filter-grid">
-    <label>
-      Looking For
-      <select name="lookingFor" [(ngModel)]="filters['lookingFor']">
-        <option>Bride</option>
-        <option>Groom</option>
-      </select>
-    </label>
-    <label>
-      Religion
-      <select name="religion" [(ngModel)]="filters['religion']">
-        <option value="">Any</option>
-        @for (opt of religionOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
-        }
-      </select>
-    </label>
-    <label>
-      Height
-      <select name="height" [(ngModel)]="filters['height']">
-        <option>5'0\" - 5'4\"</option>
-        <option>5'4\" - 5'8\"</option>
-        <option>5'8\" - 6'0\"</option>
-      </select>
-    </label>
-    <label>
-      Education
-      <select name="education" [(ngModel)]="filters['education']">
-        <option value="">Any</option>
-        <option value="Graduate">Graduate</option>
-        <option value="Post Graduate">Post Graduate</option>
-        <option value="Doctorate">Doctorate</option>
-      </select>
-    </label>
-    <label>
-      Caste
-      <select name="caste" [(ngModel)]="filters['caste']">
-        <option value="">Any</option>
-        @for (opt of casteOptions; track opt.valueCode) {
-          <option [value]="opt.valueCode">{{ opt.label }}</option>
-        }
-      </select>
-    </label>
-    <label>
-      Marital Status
-      <select name="maritalStatus" [(ngModel)]="filters['maritalStatus']">
-        <option value="">Any</option>
-        <option value="Unmarried">Unmarried</option>
-        <option value="Divorced">Divorced</option>
-        <option value="Widowed">Widowed</option>
-      </select>
-    </label>
-    <label>
-      Occupation
-      <input type="text" name="occupationFilter" [(ngModel)]="filters['occupation']" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
-    </label>
-    <label>
-      Horoscope Match %
-      <input type="range" name="horoscope" [(ngModel)]="filters['horoscope']" min="40" max="100" />
-    </label>
+  @if (showAdvanced) {
+  <div class="advanced-panel">
+    <div class="adv-grid">
+      <div class="adv-field">
+        <label>Religion</label>
+        <select name="religion" [(ngModel)]="filters['religion']">
+          <option value="">Any</option>
+          @for (opt of religionOptions; track opt.valueCode) {
+            <option [value]="opt.valueCode">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="adv-field">
+        <label>Caste</label>
+        <select name="caste" [(ngModel)]="filters['caste']">
+          <option value="">Any</option>
+          @for (opt of casteOptions; track opt.valueCode) {
+            <option [value]="opt.valueCode">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="adv-field">
+        <label>Education</label>
+        <select name="education" [(ngModel)]="filters['education']">
+          <option value="">Any</option>
+          @for (opt of educationOptions; track opt.id) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="adv-field">
+        <label>Marital Status</label>
+        <select name="maritalStatus" [(ngModel)]="filters['maritalStatus']">
+          <option value="">Any</option>
+          @for (opt of maritalStatusOptions; track opt.id) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="adv-field">
+        <label>Occupation</label>
+        <select name="occupationFilter" [(ngModel)]="filters['occupation']">
+          <option value="">Any</option>
+          @for (opt of occupationOptions; track opt.id) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="adv-field">
+        <label>Height</label>
+        <select name="height" [(ngModel)]="filters['height']">
+          <option value="Any">Any</option>
+          <option value="5'0&quot; - 5'4&quot;">5'0&quot; - 5'4&quot;</option>
+          <option value="5'4&quot; - 5'8&quot;">5'4&quot; - 5'8&quot;</option>
+          <option value="5'8&quot; - 6'0&quot;">5'8&quot; - 6'0&quot;</option>
+          <option value="6'0&quot;+">6'0&quot;+</option>
+        </select>
+      </div>
+    </div>
+    <div class="adv-footer">
+      <button type="button" class="btn-clear" (click)="clearFilters()">Clear All</button>
+      <button type="button" class="btn-apply" (click)="searchRequested.emit(searchForm)">Apply Filters</button>
+    </div>
   </div>
-
-  <div class="filter-actions">
-    <button type="button" (click)="searchRequested.emit(searchForm)">Search Matches</button>
-  </div>
-</section>
+  }
+</form>

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -9,4 +9,8 @@ import { RouterModule } from '@angular/router';
   templateUrl: './profile-list-sidebar.component.html',
   styleUrl: '../profile-list.css',
 })
-export class ProfileListSidebarComponent {}
+export class ProfileListSidebarComponent {
+  @Input() userName = '';
+  @Input() userPhotoUrl = '';
+  @Input() userOccupation = '';
+}

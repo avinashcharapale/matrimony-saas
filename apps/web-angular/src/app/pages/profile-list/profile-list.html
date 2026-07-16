@@ -1,9 +1,13 @@
 <section class="search-page">
   <div class="search-shell">
-    <app-profile-list-sidebar></app-profile-list-sidebar>
+    <app-profile-list-sidebar
+      [userName]="userName()"
+      [userPhotoUrl]="userPhotoUrl()"
+      [userOccupation]="userOccupation()">
+    </app-profile-list-sidebar>
 
     <div class="search-main">
-      <app-profile-list-title></app-profile-list-title>
+      <app-profile-list-title [userFirstName]="userFirstName()"></app-profile-list-title>
       <app-profile-list-search-panel
         [filters]="filters"
         [sortBy]="sortBy"
@@ -11,6 +15,9 @@
         [error]="error()"
         [religionOptions]="religionOptions()"
         [casteOptions]="casteOptions()"
+        [educationOptions]="educationOptions()"
+        [maritalStatusOptions]="maritalStatusOptions()"
+        [occupationOptions]="occupationOptions()"
         (searchRequested)="search($event)"
         (sortByChange)="sortBy = $event">
       </app-profile-list-search-panel>

@@ -1,0 +1,726 @@
+<section class="edit-profile-page">
+  <div class="page-header">
+    <h1>Edit Profile</h1>
+    <a routerLink="/my-profile" class="back-link">&larr; Back to My Profile</a>
+  </div>
+
+  @if (isLoading()) {
+  <div class="loading-state">
+    <p>Loading your profile...</p>
+  </div>
+  } @else if (error() && !successMessage()) {
+  <div class="error-state">
+    <p>{{ error() }}</p>
+    <button class="btn-primary" (click)="loadProfile()">Try Again</button>
+  </div>
+  } @else {
+  <div class="form-card">
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="edit-form">
+
+    <!-- Personal Details -->
+    <div class="form-section" [class.collapsed]="!isSectionOpen(0)">
+      <h2 class="accordion-header" (click)="toggleSection(0)">
+        Personal Details
+      </h2>
+      @if (isSectionOpen(0)) {
+      <div class="field-grid" formGroupName="personalDetails">
+        <div class="form-field">
+          <label>First Name</label>
+          <input type="text" formControlName="firstName" />
+        </div>
+        <div class="form-field">
+          <label>Middle Name</label>
+          <input type="text" formControlName="middleName" />
+        </div>
+        <div class="form-field">
+          <label>Last Name</label>
+          <input type="text" formControlName="lastName" />
+        </div>
+        <div class="form-field">
+          <label>Date of Birth</label>
+          <div class="date-group">
+            <select formControlName="dobDay">
+              <option [ngValue]="null">DD</option>
+              @for (d of days; track d) { <option [ngValue]="d">{{ d }}</option> }
+            </select>
+            <select formControlName="dobMonth">
+              <option value="">MM</option>
+              @for (m of months; track m) { <option [value]="m">{{ m }}</option> }
+            </select>
+            <select formControlName="dobYear">
+              <option [ngValue]="null">YYYY</option>
+              @for (y of years; track y) { <option [ngValue]="y">{{ y }}</option> }
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Gender</label>
+          <select formControlName="genderId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of genderOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Religion</label>
+          <select formControlName="religionId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of religionOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Caste</label>
+          <select formControlName="casteId">
+            <option [ngValue]="null">Select</option>
+            @for (opt of casteOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Sub Caste</label>
+          <select formControlName="subCasteId">
+            <option [ngValue]="null">Select</option>
+            @for (opt of subCasteOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Marital Status</label>
+          <select formControlName="maritalStatusId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of maritalStatusOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Height</label>
+          <div class="height-group">
+            <select formControlName="heightFt">
+              @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }} ft</option> }
+            </select>
+            <select formControlName="heightIn">
+              @for (inch of [0,1,2,3,4,5,6,7,8,9,10,11]; track inch) { <option [ngValue]="inch">{{ inch }} in</option> }
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Weight (kg)</label>
+          <select formControlName="weightKg">
+            @for (w of [40,45,50,55,60,65,70,75,80,85,90]; track w) { <option [ngValue]="w">{{ w }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Blood Group</label>
+          <select formControlName="bloodGroupId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of bloodGroupOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Complexion</label>
+          <select formControlName="complexionId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of complexionOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Physical Disability</label>
+          <select formControlName="physicalDisability">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Disability Detail</label>
+          <input type="text" formControlName="disabilityDetail" />
+        </div>
+        <div class="form-field">
+          <label>Diet</label>
+          <select formControlName="dietId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of dietOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Spectacles</label>
+          <select formControlName="spectacles">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Lens</label>
+          <select formControlName="lens">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Personality</label>
+          <select formControlName="personalityId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of personalityOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="form-field full-width">
+          <label>Bio</label>
+          <textarea formControlName="bio" rows="3" placeholder="Tell us about yourself"></textarea>
+        </div>
+        <div class="form-field">
+          <label>Location</label>
+          <input type="text" formControlName="locationText" placeholder="City, State" />
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Horoscope -->
+    <div class="form-section" [class.collapsed]="!isSectionOpen(1)">
+      <h2 class="accordion-header" (click)="toggleSection(1)">
+        Horoscope &amp; Astrology
+      </h2>
+      @if (isSectionOpen(1)) {
+      <div class="field-grid" formGroupName="horoscope">
+        <div class="form-field">
+          <label>Manglik</label>
+          <select formControlName="manglik">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Rashi</label>
+          <select formControlName="rashiId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of rashisOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Nakshatra</label>
+          <select formControlName="nakshatraId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of nakshatrasOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Charan</label>
+          <select formControlName="charanId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of charansOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Nadi</label>
+          <select formControlName="nadiId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of nadisOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Gan</label>
+          <select formControlName="ganId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of gansOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Birth Period</label>
+          <select formControlName="birthPeriod">
+            <option value="">Select</option>
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Birth Hour</label>
+          <select formControlName="birthHour">
+            @for (h of [1,2,3,4,5,6,7,8,9,10,11,12]; track h) { <option [ngValue]="h">{{ h }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Birth Minute</label>
+          <select formControlName="birthMinute">
+            @for (m of [0,15,30,45]; track m) { <option [ngValue]="m">{{ m }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Devak</label>
+          <input type="text" formControlName="devak" />
+        </div>
+        <div class="form-field">
+          <label>Birth State</label>
+          <select formControlName="birthStateId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select State' }}</option>
+            @for (s of birthStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
+            <option [ngValue]="0">Other</option>
+          </select>
+        </div>
+        @if (horoscope.get('birthStateId')?.value === 0) {
+          <div class="form-field">
+            <label>Birth State (Other)</label>
+            <input type="text" formControlName="birthStateOther" placeholder="Enter state name" maxlength="100" />
+          </div>
+          <div class="form-field">
+            <label>Birth District (Other)</label>
+            <input type="text" formControlName="birthDistrictOther" placeholder="Enter district name" maxlength="80" />
+          </div>
+        }
+        @if (horoscope.get('birthStateId')?.value && horoscope.get('birthStateId')?.value !== 0) {
+          <div class="form-field">
+            <label>Birth District</label>
+            <select formControlName="birthDistrictId" [disabled]="birthDistricts.length === 0">
+              <option [ngValue]="null">Select District</option>
+              @for (d of birthDistricts; track d.districtId) { <option [ngValue]="d.districtId">{{ d.name }}</option> }
+              <option [ngValue]="0">Other</option>
+            </select>
+          </div>
+          @if (horoscope.get('birthDistrictId')?.value === 0) {
+            <div class="form-field">
+              <label>Birth District (Other)</label>
+              <input type="text" formControlName="birthDistrictOther" placeholder="Enter district name" maxlength="80" />
+            </div>
+          }
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Career & Education -->
+    <div class="form-section" [class.collapsed]="!isSectionOpen(2)">
+      <h2 class="accordion-header" (click)="toggleSection(2)">
+        Career &amp; Education
+      </h2>
+      @if (isSectionOpen(2)) {
+      <div class="field-grid" formGroupName="careerDetails">
+        <div class="form-field">
+          <label>Education Area</label>
+          <select formControlName="educationAreaId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of educationAreasOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Education</label>
+          <select formControlName="educationId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of educationsOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Occupation</label>
+          <select formControlName="occupationId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of occupationsOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Occupation Details</label>
+          <input type="text" formControlName="occupationDetails" />
+        </div>
+        <div class="form-field">
+          <label>Working Country</label>
+          <select formControlName="workingCountryId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select Country' }}</option>
+            @for (c of countries; track c.countryId) { <option [ngValue]="c.countryId">{{ c.name }}</option> }
+            <option [ngValue]="0">Other</option>
+          </select>
+        </div>
+        @if (career.get('workingCountryId')?.value === 0) {
+          <div class="form-field">
+            <label>Working Country (Other)</label>
+            <input type="text" formControlName="workingCountryOther" placeholder="Enter country name" maxlength="100" />
+          </div>
+        }
+        @if (career.get('workingCountryId')?.value && career.get('workingCountryId')?.value !== 0) {
+          <div class="form-field">
+            <label>Working State</label>
+            <select formControlName="workingStateId" [disabled]="lookupsLoading">
+              <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select State' }}</option>
+              @for (s of workingStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
+              <option [ngValue]="0">Other</option>
+            </select>
+          </div>
+          @if (career.get('workingStateId')?.value === 0) {
+            <div class="form-field">
+              <label>Working State (Other)</label>
+              <input type="text" formControlName="workingStateOther" placeholder="Enter state name" maxlength="100" />
+            </div>
+            <div class="form-field">
+              <label>Working City</label>
+              <input type="text" formControlName="workingCity" placeholder="Enter city name" maxlength="120" />
+            </div>
+          }
+          @if (career.get('workingStateId')?.value && career.get('workingStateId')?.value !== 0) {
+            <div class="form-field">
+              <label>Working City / District</label>
+              <select formControlName="workingCity" [disabled]="workingDistricts.length === 0">
+                <option value="">Select District</option>
+                @for (d of workingDistricts; track d.districtId) { <option [value]="d.name!">{{ d.name }}</option> }
+                <option value="__other__">Other</option>
+              </select>
+            </div>
+            @if (career.get('workingCity')?.value === '__other__') {
+              <div class="form-field">
+                <label>Working City (Other)</label>
+                <input type="text" formControlName="workingCityOther" placeholder="Enter city name" maxlength="120" />
+              </div>
+            }
+          }
+        }
+        <div class="form-field">
+          <label>Income Amount</label>
+          <input type="number" formControlName="incomeAmount" />
+        </div>
+        <div class="form-field">
+          <label>Income Period</label>
+          <select formControlName="incomePeriodId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of incomePeriodsOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
+          </select>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Contact Details -->
+    <div class="form-section" [class.collapsed]="!isSectionOpen(3)">
+      <h2 class="accordion-header" (click)="toggleSection(3)">
+        Contact Details
+      </h2>
+      @if (isSectionOpen(3)) {
+      <div class="field-grid" formGroupName="contactDetails">
+        <div class="form-field full-width">
+          <label>Residence Address</label>
+          <input type="text" formControlName="residenceAddress" />
+        </div>
+        <div class="form-field">
+          <label>Contact Email</label>
+          <input type="email" formControlName="contactEmail" />
+        </div>
+        <div class="form-field">
+          <label>ID Proof Number</label>
+          <input type="text" formControlName="idProofNumber" />
+        </div>
+        <div class="form-field">
+          <label>SMS Mobile</label>
+          <input type="tel" formControlName="smsMobile" inputmode="numeric" maxlength="16" placeholder="Primary mobile number" />
+        </div>
+        <div class="form-field">
+          <label>Secondary Mobile</label>
+          <input type="tel" formControlName="mobile2" inputmode="numeric" maxlength="16" placeholder="Secondary mobile" />
+        </div>
+        <div class="form-field">
+          <label>Phone (Primary)</label>
+          <input type="tel" formControlName="phone1" inputmode="numeric" maxlength="16" placeholder="Landline / phone" />
+        </div>
+        <div class="form-field">
+          <label>Phone (Secondary)</label>
+          <input type="tel" formControlName="phone2" inputmode="numeric" maxlength="16" placeholder="Secondary phone" />
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Family Details -->
+    <div class="form-section" [class.collapsed]="!isSectionOpen(4)">
+      <h2 class="accordion-header" (click)="toggleSection(4)">
+        Family Details
+      </h2>
+      @if (isSectionOpen(4)) {
+      <div class="field-grid" formGroupName="familyDetails">
+        <div class="form-field">
+          <label>Father Status</label>
+          <select formControlName="fatherStatus">
+            <option [ngValue]="false">Not Alive</option>
+            <option [ngValue]="true">Alive</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Mother Status</label>
+          <select formControlName="motherStatus">
+            <option [ngValue]="false">Not Alive</option>
+            <option [ngValue]="true">Alive</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Brothers</label>
+          <input type="number" formControlName="brothers" min="0" />
+        </div>
+        <div class="form-field">
+          <label>Married Brothers</label>
+          <input type="number" formControlName="marriedBrothers" min="0" />
+        </div>
+        <div class="form-field">
+          <label>Sisters</label>
+          <input type="number" formControlName="sisters" min="0" />
+        </div>
+        <div class="form-field">
+          <label>Married Sisters</label>
+          <input type="number" formControlName="marriedSisters" min="0" />
+        </div>
+        <div class="form-field">
+          <label>Parents Full Name</label>
+          <input type="text" formControlName="parentsFullName" />
+        </div>
+        <div class="form-field">
+          <label>Parents Occupation</label>
+          <input type="text" formControlName="parentsOccupation" />
+        </div>
+        <div class="form-field">
+          <label>Parents Resident City</label>
+          <input type="text" formControlName="parentsResidentCity" />
+        </div>
+        <div class="form-field">
+          <label>Family Wealth</label>
+          <input type="text" formControlName="familyWealth" />
+        </div>
+        <div class="form-field">
+          <label>Mama Surname / Place</label>
+          <input type="text" formControlName="mamaSurnamePlace" />
+        </div>
+        <div class="form-field">
+          <label>Native State</label>
+          <select formControlName="nativeStateId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select State' }}</option>
+            @for (s of nativeStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
+            <option [ngValue]="0">Other</option>
+          </select>
+        </div>
+        @if (family.get('nativeStateId')?.value === 0) {
+          <div class="form-field">
+            <label>Native State (Other)</label>
+            <input type="text" formControlName="nativeStateOther" placeholder="Enter state name" maxlength="100" />
+          </div>
+          <div class="form-field">
+            <label>Native District (Other)</label>
+            <input type="text" formControlName="nativeDistrictOther" placeholder="Enter district name" maxlength="80" />
+          </div>
+        }
+        @if (family.get('nativeStateId')?.value && family.get('nativeStateId')?.value !== 0) {
+          <div class="form-field">
+            <label>Native District</label>
+            <select formControlName="nativeDistrictId" [disabled]="nativeDistricts.length === 0">
+              <option [ngValue]="null">Select District</option>
+              @for (d of nativeDistricts; track d.districtId) { <option [ngValue]="d.districtId">{{ d.name }}</option> }
+              <option [ngValue]="0">Other</option>
+            </select>
+          </div>
+          @if (family.get('nativeDistrictId')?.value === 0) {
+            <div class="form-field">
+              <label>Native District (Other)</label>
+              <input type="text" formControlName="nativeDistrictOther" placeholder="Enter district name" maxlength="80" />
+            </div>
+          }
+          @if (family.get('nativeDistrictId')?.value && family.get('nativeDistrictId')?.value !== 0) {
+            <div class="form-field">
+              <label>Native Taluka</label>
+              <select formControlName="nativeTalukaId" [disabled]="nativeTalukas.length === 0">
+                <option [ngValue]="null">Select Taluka</option>
+                @for (t of nativeTalukas; track t.talukaId) { <option [ngValue]="t.talukaId">{{ t.name }}</option> }
+                <option [ngValue]="0">Other</option>
+              </select>
+            </div>
+            @if (family.get('nativeTalukaId')?.value === 0) {
+              <div class="form-field">
+                <label>Native Taluka (Other)</label>
+                <input type="text" formControlName="nativeTalukaOther" placeholder="Enter taluka name" maxlength="120" />
+              </div>
+            }
+          }
+        }
+        <div class="form-field">
+          <label>Intercast Marriage</label>
+          <select formControlName="intercastMarriage">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-field full-width">
+          <label>Intercast Relation</label>
+          <input type="text" formControlName="intercastRelation" />
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Partner Preferences -->
+    <div class="form-section" [class.collapsed]="!isSectionOpen(5)">
+      <h2 class="accordion-header" (click)="toggleSection(5)">
+        Partner Preferences
+      </h2>
+      @if (isSectionOpen(5)) {
+      <div class="field-grid">
+        <div class="form-field">
+          <label>Preferred Cities</label>
+          <div class="tag-input-container">
+            <div class="tag-list">
+              @for (tag of getTags('preferredCities'); track tag) {
+                <span class="tag-chip">{{ tag }}<button type="button" class="tag-remove" (click)="removeTag('preferredCities', tag)">&times;</button></span>
+              }
+            </div>
+            <input type="text" class="tag-input" placeholder="Type and press Enter" maxlength="120"
+              (keydown)="onTagKeydown($event, 'preferredCities')" (blur)="addTagFromInput('preferredCities', $event)" />
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Interests</label>
+          <div class="tag-input-container">
+            <div class="tag-list">
+              @for (tag of getTags('interests'); track tag) {
+                <span class="tag-chip">{{ tag }}<button type="button" class="tag-remove" (click)="removeTag('interests', tag)">&times;</button></span>
+              }
+            </div>
+            <input type="text" class="tag-input" placeholder="Type and press Enter" maxlength="250"
+              (keydown)="onTagKeydown($event, 'interests')" (blur)="addTagFromInput('interests', $event)" />
+          </div>
+        </div>
+      </div>
+      <div class="field-grid" formGroupName="partnerPreference">
+        <div class="form-field">
+          <label>Expected Manglik</label>
+          <select formControlName="expectedManglik">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Max Age Difference</label>
+          <input type="number" formControlName="maxAgeDifference" min="0" />
+        </div>
+        <div class="form-field">
+          <label>Expected Height (ft)</label>
+          <select formControlName="expectedHeightFt">
+            @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }} ft</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Expected Height (in)</label>
+          <select formControlName="expectedHeightIn">
+            @for (inch of [0,1,2,3,4,5,6,7,8,9,10,11]; track inch) { <option [ngValue]="inch">{{ inch }} in</option> }
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Divorcee</label>
+          <select formControlName="divorcee">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-field" [class.has-open-dropdown]="casteDropdownOpen">
+          <label>Expected Caste</label>
+          @if (!partner.get('expectedCasteNoBar')?.value) {
+            <div class="inline-select-row">
+              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> No Bar</label>
+              <div class="dropdown-select">
+                <div class="dropdown-trigger" (click)="toggleCasteDropdown($event)">
+                  @if (getSelectedCasteLabels().length === 0) {
+                    <span class="dropdown-placeholder">Select caste</span>
+                  } @else {
+                    <span class="dropdown-values">{{ getSelectedCasteLabels().join(', ') }}</span>
+                  }
+                  <span class="dropdown-arrow"></span>
+                </div>
+                @if (casteDropdownOpen) {
+                  <div class="dropdown-menu" [style]="dropdownStyle">
+                    @for (opt of expectedCasteOptions; track opt.id) {
+                      <label class="dropdown-option" (click)="$event.stopPropagation()">
+                        <input type="checkbox" [checked]="isCasteSelected(opt.id)" (change)="toggleCasteOption(opt.id, $event)" />
+                        <span>{{ opt.label }}</span>
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          } @else {
+            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> No Bar</label>
+          }
+        </div>
+        <div class="form-field" [class.has-open-dropdown]="educationDropdownOpen">
+          <label>Expected Education</label>
+          @if (!partner.get('expectedEducationNoBar')?.value) {
+            <div class="inline-select-row">
+              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> No Bar</label>
+              <div class="dropdown-select">
+                <div class="dropdown-trigger" (click)="toggleEducationDropdown($event)">
+                  @if (getSelectedEducationLabels().length === 0) {
+                    <span class="dropdown-placeholder">Select education</span>
+                  } @else {
+                    <span class="dropdown-values">{{ getSelectedEducationLabels().join(', ') }}</span>
+                  }
+                  <span class="dropdown-arrow"></span>
+                </div>
+                @if (educationDropdownOpen) {
+                  <div class="dropdown-menu" [style]="dropdownStyle">
+                    @for (opt of expectedEducationOptions; track opt.id) {
+                      <label class="dropdown-option" (click)="$event.stopPropagation()">
+                        <input type="checkbox" [checked]="isEducationSelected(opt.id)" (change)="toggleEducationOption(opt.id, $event)" />
+                        <span>{{ opt.label }}</span>
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          } @else {
+            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> No Bar</label>
+          }
+        </div>
+        <div class="form-field" [class.has-open-dropdown]="occupationDropdownOpen">
+          <label>Expected Occupation</label>
+          @if (!partner.get('expectedOccupationNoBar')?.value) {
+            <div class="inline-select-row">
+              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> No Bar</label>
+              <div class="dropdown-select">
+                <div class="dropdown-trigger" (click)="toggleOccupationDropdown($event)">
+                  @if (getSelectedOccupationLabels().length === 0) {
+                    <span class="dropdown-placeholder">Select occupation</span>
+                  } @else {
+                    <span class="dropdown-values">{{ getSelectedOccupationLabels().join(', ') }}</span>
+                  }
+                  <span class="dropdown-arrow"></span>
+                </div>
+                @if (occupationDropdownOpen) {
+                  <div class="dropdown-menu" [style]="dropdownStyle">
+                    @for (opt of expectedOccupationOptions; track opt.id) {
+                      <label class="dropdown-option" (click)="$event.stopPropagation()">
+                        <input type="checkbox" [checked]="isOccupationSelected(opt.id)" (change)="toggleOccupationOption(opt.id, $event)" />
+                        <span>{{ opt.label }}</span>
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          } @else {
+            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> No Bar</label>
+          }
+        </div>
+        <div class="form-field">
+          <label>Expected Income Range</label>
+          <select formControlName="expectedIncomeRangeId" [disabled]="lookupsLoading">
+            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            @for (opt of incomeRangeOptions; track opt.incomeRangeId) { <option [ngValue]="opt.incomeRangeId">{{ opt.label }}</option> }
+          </select>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Messages -->
+    @if (successMessage()) {
+    <div class="form-message success">{{ successMessage() }}</div>
+    }
+    @if (error() && !successMessage()) {
+    <div class="form-message error">{{ error() }}</div>
+    }
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <a routerLink="/my-profile" class="btn-secondary">Cancel</a>
+      <button type="submit" class="btn-primary" [disabled]="isSaving() || profileForm.invalid">
+        {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+  </form>
+  </div>
+  }
+</section>

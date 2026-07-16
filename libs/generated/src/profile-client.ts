@@ -214,8 +214,16 @@ export class ProfileClient {
     return this.http.get<ProfileDetailDto>(`/profile/UserProfiles/${id}`);
   }
 
+  getMyProfile(): Observable<ProfileDetailDto> {
+    return this.http.get<ProfileDetailDto>('/profile/UserProfiles/my');
+  }
+
   update(id: number, body: CreateProfileDto): Observable<void> {
     return this.http.put<void>(`/profile/UserProfiles/${id}`, body);
+  }
+
+  updateMyProfile(body: CreateProfileDto): Observable<void> {
+    return this.http.put<void>('/profile/UserProfiles/my', body);
   }
 
   delete(id: number): Observable<void> {
@@ -235,5 +243,19 @@ export class ProfileClient {
     formData.append('ProfileJson', JSON.stringify(body));
     photos.forEach((file) => formData.append('Photos', file));
     return this.http.post<void>('/profile/UserProfiles', formData);
+  }
+
+  uploadPhoto(slot: number, file: File): Observable<{ photoId: number; photoSlot: number; fileUrl: string; fileName: string }> {
+    const formData = new FormData();
+    formData.append('File', file);
+    formData.append('Slot', String(slot));
+    return this.http.post<{ photoId: number; photoSlot: number; fileUrl: string; fileName: string }>(
+      '/profile/UserProfiles/my/photos',
+      formData,
+    );
+  }
+
+  deletePhoto(slot: number): Observable<void> {
+    return this.http.delete<void>(`/profile/UserProfiles/my/photos/${slot}`);
   }
 }

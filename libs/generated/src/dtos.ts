@@ -107,6 +107,9 @@ export interface PersonalDetailsDto {
 }
 
 export interface PersonalDetailsViewDto {
+  dobDay?: number;
+  dobMonth?: string;
+  dobYear?: number;
   genderId?: number;
   religionId?: number;
   casteId?: number;
@@ -121,6 +124,17 @@ export interface PersonalDetailsViewDto {
   personalityId?: number;
   physicalDisability?: boolean;
   disabilityDetail?: string;
+  spectacles?: boolean;
+  lens?: boolean;
+  genderName?: string;
+  religionName?: string;
+  casteName?: string;
+  subCasteName?: string;
+  maritalStatusName?: string;
+  bloodGroupName?: string;
+  complexionName?: string;
+  dietName?: string;
+  personalityName?: string;
 }
 
 export interface ContactDetailsDto {
@@ -158,6 +172,8 @@ export interface FamilyDetailsDto {
   nativeTalukaOther?: string;
   intercastMarriage?: boolean;
   intercastRelation?: string;
+  nativeDistrictName?: string;
+  nativeTalukaName?: string;
 }
 
 export interface CareerDetailsDtoCreate {
@@ -186,6 +202,12 @@ export interface CareerDetailsViewDto {
   workingCountryOther?: string;
   incomeAmount?: number;
   incomePeriodId?: number;
+  educationAreaName?: string;
+  educationName?: string;
+  occupationName?: string;
+  incomePeriodName?: string;
+  workingStateName?: string;
+  workingCountryName?: string;
 }
 
 export interface PartnerPreferenceDto {
@@ -231,6 +253,13 @@ export interface ProfileHoroscopeDetailDto {
   birthStateOther?: string;
   birthDistrictId?: number;
   birthDistrictOther?: string;
+  rashiName?: string;
+  nakshatraName?: string;
+  charanName?: string;
+  nadiName?: string;
+  ganName?: string;
+  birthStateName?: string;
+  birthDistrictName?: string;
 }
 
 export interface CreateProfileDto {
@@ -276,6 +305,11 @@ export interface ProfileDetailDto {
   contact?: ContactDetailsDto;
   phoneNumbers?: PhoneNumberDto[];
   isContactUnlocked?: boolean;
+  interests?: string[];
+  preferredCities?: string[];
+  expectedCasteIds?: number[];
+  expectedEducationIds?: number[];
+  expectedOccupationIds?: number[];
 }
 
 export interface ProfileListItemDto {

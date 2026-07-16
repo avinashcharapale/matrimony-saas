@@ -360,6 +360,7 @@ export class Register implements OnInit, OnDestroy {
 
   private registerAsync(name: string, email: string, password: string, bio: string, age?: number): void {
     const dto = this.buildCreateProfileDto(age);
+    this.persistAllSteps();
     this.memberService.registerWithProfile({
       email,
       password,
@@ -376,13 +377,13 @@ export class Register implements OnInit, OnDestroy {
           this.clearDraftFromStorage();
           this.router.navigateByUrl('/login');
         } else {
-          this.persistCurrentStep();
+          this.persistAllSteps();
         }
       },
       error: (error: unknown) => {
         this.isError.set(true);
         this.message.set(error instanceof Error ? error.message : 'Registration failed. Please try again.');
-        this.persistCurrentStep();
+        this.persistAllSteps();
       },
     });
   }
@@ -779,6 +780,18 @@ export class Register implements OnInit, OnDestroy {
       return groupValue;
     }
     return {};
+  }
+
+  private persistAllSteps(): void {
+    if (!this.draftContext) return;
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+    for (let step = 1; step <= this.steps.length; step++) {
+      const stepValues = this.captureStepValues(step);
+      this.registerDraftService.saveStep(this.draftContext, step, stepValues);
+    }
   }
 
   private clearDraftFromStorage(): void {

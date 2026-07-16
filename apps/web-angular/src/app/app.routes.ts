@@ -43,6 +43,18 @@ export const appRoutes: Route[] = [
         canActivate: [authGuard],
       },
       {
+        path: 'my-profile',
+        loadComponent: () =>
+          import('./pages/my-profile/my-profile').then((m) => m.MyProfile),
+        canActivate: [authGuard],
+      },
+      {
+        path: 'my-profile/edit',
+        loadComponent: () =>
+          import('./pages/edit-profile/edit-profile').then((m) => m.EditProfile),
+        canActivate: [authGuard],
+      },
+      {
         path: 'interests',
         loadComponent: () =>
           import('./pages/interests/interests').then((m) => m.Interests),
@@ -96,13 +108,6 @@ export const appRoutes: Route[] = [
         canActivate: [authGuard],
       },
       {
-        path: 'success-stories',
-        loadComponent: () =>
-          import('./pages/success-stories/success-stories').then(
-            (m) => m.SuccessStories,
-          ),
-      },
-      {
         path: 'contact',
         loadComponent: () =>
           import('./pages/menu-page/menu-page').then((m) => m.MenuPage),
@@ -117,7 +122,6 @@ export const appRoutes: Route[] = [
           ],
         },
       },
-      { path: 'success', redirectTo: 'success-stories', pathMatch: 'full' },
       { path: '**', redirectTo: '' },
     ],
   },
