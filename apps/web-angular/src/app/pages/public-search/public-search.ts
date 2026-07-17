@@ -118,6 +118,7 @@ export class PublicSearch implements OnInit {
       city: this.filters.city || undefined,
       religionId: this.filters.religionId ? Number(this.filters.religionId) || undefined : undefined,
       casteId: this.filters.casteId ? Number(this.filters.casteId) || undefined : undefined,
+      educationId: this.filters.educationId ? Number(this.filters.educationId) || undefined : undefined,
       maritalStatusId: this.filters.maritalStatusId ? Number(this.filters.maritalStatusId) || undefined : undefined,
       searchTerm: [this.filters.name].filter(Boolean).join(' ') || undefined,
       pageNumber: this.pageNumber(),

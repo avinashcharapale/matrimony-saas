@@ -10,7 +10,7 @@
       <app-profile-list-title [userFirstName]="userFirstName()"></app-profile-list-title>
       <app-profile-list-search-panel
         [filters]="filters"
-        [sortBy]="sortBy"
+        [sortBy]="sortBy()"
         [resultsCount]="sortedResults().length"
         [error]="error()"
         [isAuthenticated]="isAuthenticated()"
@@ -20,13 +20,13 @@
         [maritalStatusOptions]="maritalStatusOptions()"
         [occupationOptions]="occupationOptions()"
         (searchRequested)="search($event)"
-        (sortByChange)="sortBy = $event"
+        (sortByChange)="sortBy.set($event)"
         (religionChange)="onReligionChange()">
       </app-profile-list-search-panel>
 
       <app-profile-list-results
         [hasResults]="sortedResults().length > 0"
-        [currentPage]="currentPage"
+        [currentPage]="currentPage()"
         [totalPages]="totalPages()"
         [pageNumbers]="pageNumbers()"
         [pageResults]="pageResults()"

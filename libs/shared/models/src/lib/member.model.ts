@@ -126,6 +126,8 @@ export interface RegisterExpectationDetails {
   expectedEducation: string;
   expectedOccupationIncome: string;
   divorcee: string;
+  expectedCasteIds?: number[];
+  expectedCasteNoBar?: boolean;
 }
 
 export interface RegisterVerificationDetails {

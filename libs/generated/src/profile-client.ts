@@ -153,6 +153,11 @@ export class ProfileClient {
     religionId?: number;
     casteId?: number;
     maritalStatusId?: number;
+    educationId?: number;
+    occupationId?: number;
+    workingCity?: string;
+    nativePlace?: string;
+    nativeDistrictId?: number;
     city?: string;
     stateId?: number;
     countryId?: number;
@@ -185,6 +190,11 @@ export class ProfileClient {
     religionId?: number;
     casteId?: number;
     maritalStatusId?: number;
+    educationId?: number;
+    occupationId?: number;
+    workingCity?: string;
+    nativePlace?: string;
+    nativeDistrictId?: number;
     city?: string;
     stateId?: number;
     countryId?: number;

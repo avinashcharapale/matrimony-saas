@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MemberService } from '../../services/member.service';
 import {
@@ -47,11 +47,11 @@ export class EditProfile implements OnInit {
       dobDay: new FormControl<number | null>(null),
       dobMonth: new FormControl(''),
       dobYear: new FormControl<number | null>(null),
-      genderId: new FormControl<number | null>(null),
-      religionId: new FormControl<number | null>(null),
-      casteId: new FormControl<number | null>(null),
+      genderId: new FormControl<number | null>(null, Validators.required),
+      religionId: new FormControl<number | null>(null, Validators.required),
+      casteId: new FormControl<number | null>(null, Validators.required),
       subCasteId: new FormControl<number | null>(null),
-      maritalStatusId: new FormControl<number | null>(null),
+      maritalStatusId: new FormControl<number | null>(null, Validators.required),
       heightFt: new FormControl<number>(5),
       heightIn: new FormControl<number>(4),
       weightKg: new FormControl<number>(50),
@@ -66,16 +66,16 @@ export class EditProfile implements OnInit {
     }),
     careerDetails: new FormGroup({
       educationAreaId: new FormControl<number | null>(null),
-      educationId: new FormControl<number | null>(null),
-      occupationId: new FormControl<number | null>(null),
+      educationId: new FormControl<number | null>(null, Validators.required),
+      occupationId: new FormControl<number | null>(null, Validators.required),
       occupationDetails: new FormControl(''),
       workingCountryId: new FormControl<number | null>(null),
       workingCountryOther: new FormControl(''),
       workingStateId: new FormControl<number | null>(null),
       workingStateOther: new FormControl(''),
-      workingCity: new FormControl(''),
+      workingCity: new FormControl('', Validators.required),
       workingCityOther: new FormControl(''),
-      incomeAmount: new FormControl<number | null>(null),
+      incomeAmount: new FormControl<number | null>(null, Validators.required),
       incomePeriodId: new FormControl<number | null>(null),
     }),
     contactDetails: new FormGroup({
@@ -101,7 +101,7 @@ export class EditProfile implements OnInit {
       mamaSurnamePlace: new FormControl(''),
       nativeStateId: new FormControl<number | null>(null),
       nativeStateOther: new FormControl(''),
-      nativeDistrictId: new FormControl<number | null>(null),
+      nativeDistrictId: new FormControl<number | null>(null, Validators.required),
       nativeDistrictOther: new FormControl(''),
       nativeTalukaId: new FormControl<number | null>(null),
       nativeTalukaOther: new FormControl(''),

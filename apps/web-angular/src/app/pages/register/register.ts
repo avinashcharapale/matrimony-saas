@@ -68,11 +68,11 @@ export class Register implements OnInit, OnDestroy {
       dobDay: new FormControl<number | null>(null),
       dobMonth: new FormControl(''),
       dobYear: new FormControl<number | null>(null),
-      genderId: new FormControl<number | null>(null),
-      religionId: new FormControl<number | null>(null),
-      casteId: new FormControl<number | null>(null),
+      genderId: new FormControl<number | null>(null, Validators.required),
+      religionId: new FormControl<number | null>(null, Validators.required),
+      casteId: new FormControl<number | null>(null, Validators.required),
       subCasteId: new FormControl<number | null>(null),
-      maritalStatusId: new FormControl<number | null>(null),
+      maritalStatusId: new FormControl<number | null>(null, Validators.required),
       heightFt: new FormControl(5),
       heightIn: new FormControl(4),
       weightKg: new FormControl(40),
@@ -103,16 +103,16 @@ export class Register implements OnInit, OnDestroy {
     }),
     careerDetails: new FormGroup({
       educationAreaId: new FormControl<number | null>(null),
-      educationId: new FormControl<number | null>(null),
-      occupationId: new FormControl<number | null>(null),
+      educationId: new FormControl<number | null>(null, Validators.required),
+      occupationId: new FormControl<number | null>(null, Validators.required),
       occupationDetails: new FormControl(''),
-      workingCity: new FormControl(''),
+      workingCity: new FormControl('', Validators.required),
       workingCityOther: new FormControl(''),
       workingStateId: new FormControl<number | null>(null),
       workingStateOther: new FormControl(''),
       workingCountryId: new FormControl<number | null>(null),
       workingCountryOther: new FormControl(''),
-      incomeAmount: new FormControl<number | null>(null),
+      incomeAmount: new FormControl<number | null>(null, Validators.required),
       incomePeriodId: new FormControl<number | null>(null),
     }),
     contactDetails: new FormGroup({
@@ -138,7 +138,7 @@ export class Register implements OnInit, OnDestroy {
       mamaSurnamePlace: new FormControl(''),
       nativeStateId: new FormControl<number | null>(null),
       nativeStateOther: new FormControl(''),
-      nativeDistrictId: new FormControl<number | null>(null),
+      nativeDistrictId: new FormControl<number | null>(null, Validators.required),
       nativeDistrictOther: new FormControl(''),
       nativeTalukaId: new FormControl<number | null>(null),
       nativeTalukaOther: new FormControl(''),
@@ -379,7 +379,7 @@ export class Register implements OnInit, OnDestroy {
       next: (result) => {
         this.isError.set(!result.ok);
         this.message.set(result.message);
-        if (result.ok && result.profileSynced) {
+        if (result.ok) {
           this.clearDraftFromStorage();
           this.router.navigateByUrl('/login');
         } else {

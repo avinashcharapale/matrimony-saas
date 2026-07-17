@@ -132,7 +132,7 @@
             <select [(ngModel)]="filters.educationId" name="educationId">
               <option value="">Any</option>
               @for (opt of educationOptions(); track opt.id) {
-                <option [value]="opt.value">{{ opt.label }}</option>
+                <option [value]="opt.id">{{ opt.label }}</option>
               }
             </select>
           </div>
@@ -141,7 +141,7 @@
             <select [(ngModel)]="filters.maritalStatusId" name="maritalStatusId">
               <option value="">Any</option>
               @for (opt of maritalStatusOptions(); track opt.id) {
-                <option [value]="opt.value">{{ opt.label }}</option>
+                <option [value]="opt.id">{{ opt.label }}</option>
               }
             </select>
           </div>

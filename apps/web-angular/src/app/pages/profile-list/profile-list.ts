@@ -46,16 +46,21 @@ export class ProfileList implements OnInit {
     occupation: '',
     lookingFor: 'Groom',
     ageMin: 18,
-    ageMax: 35,
+    ageMax: 60,
     height: 'Any',
     religion: '',
     caste: '',
     education: '',
+    occupationId: '',
+    workingCity: '',
+    nativePlace: '',
+    annualIncomeFrom: '',
+    annualIncomeTo: '',
     maritalStatus: '',
   };
 
-  sortBy = 'relevance';
-  currentPage = 1;
+  sortBy = signal('relevance');
+  currentPage = signal(1);
   readonly pageSize = 5;
 
   results = signal<MemberRecord[]>([]);
@@ -66,6 +71,8 @@ export class ProfileList implements OnInit {
     this.isAuthenticated.set(this.authService.isAuthenticated());
     if (this.isAuthenticated()) {
       this.loadMyProfile();
+    } else {
+      this.performSearch();
     }
   }
 
@@ -88,6 +95,7 @@ export class ProfileList implements OnInit {
         if (genderId) {
           this.filters.lookingFor = genderId === 1 ? 'Bride' : 'Groom';
         }
+        this.performSearch();
       },
       error: () => {},
     });
@@ -95,10 +103,10 @@ export class ProfileList implements OnInit {
 
   readonly sortedResults = computed(() => {
     const items = [...this.results()];
-    if (this.sortBy === 'age-asc') {
+    if (this.sortBy() === 'age-asc') {
       return items.sort((a, b) => (a.age ?? 99) - (b.age ?? 99));
     }
-    if (this.sortBy === 'age-desc') {
+    if (this.sortBy() === 'age-desc') {
       return items.sort((a, b) => (b.age ?? 0) - (a.age ?? 0));
     }
     return items;
@@ -109,7 +117,7 @@ export class ProfileList implements OnInit {
   );
 
   readonly pageResults = computed(() => {
-    const start = (this.currentPage - 1) * this.pageSize;
+    const start = (this.currentPage() - 1) * this.pageSize;
     return this.sortedResults().slice(start, start + this.pageSize);
   });
 
@@ -119,7 +127,6 @@ export class ProfileList implements OnInit {
 
   constructor() {
     this.loadFilterOptions();
-    this.performSearch();
   }
 
   loadFilterOptions(): void {
@@ -185,7 +192,7 @@ export class ProfileList implements OnInit {
   }
 
   goToPage(page: number): void {
-    this.currentPage = Math.min(this.totalPages(), Math.max(1, page));
+    this.currentPage.set(Math.min(this.totalPages(), Math.max(1, page)));
   }
 
   search(form?: NgForm): void {
@@ -204,7 +211,7 @@ export class ProfileList implements OnInit {
     };
 
     this.filters = normalized;
-    this.currentPage = 1;
+    this.currentPage.set(1);
     this.performSearch();
   }
 
@@ -224,9 +231,14 @@ export class ProfileList implements OnInit {
         ageMax: this.filters.ageMax,
         religion: this.filters.religion || undefined,
         caste: this.filters.caste || undefined,
-        education: this.filters.education || undefined,
+        educationId: this.filters.education ? Number(this.filters.education) || undefined : undefined,
+        occupationId: this.filters.occupationId ? Number(this.filters.occupationId) || undefined : undefined,
+        workingCity: this.filters.workingCity || undefined,
+        nativePlace: this.filters.nativePlace || undefined,
+        annualIncomeFrom: this.filters.annualIncomeFrom ? Number(this.filters.annualIncomeFrom) || undefined : undefined,
+        annualIncomeTo: this.filters.annualIncomeTo ? Number(this.filters.annualIncomeTo) || undefined : undefined,
         maritalStatus: this.filters.maritalStatus || undefined,
-        pageNumber: this.currentPage,
+        pageNumber: this.currentPage(),
         pageSize: this.pageSize,
       })
       .subscribe({

@@ -25,7 +25,13 @@ export interface SearchFilters {
   religion?: string;
   caste?: string;
   education?: string;
+  educationId?: number;
+  occupationId?: number;
+  workingCity?: string;
+  nativePlace?: string;
   maritalStatus?: string;
+  annualIncomeFrom?: number;
+  annualIncomeTo?: number;
   pageNumber?: number;
   pageSize?: number;
 }
@@ -482,7 +488,13 @@ export class MemberService {
       ageTo: filters.ageMax,
       religionId: filters.religion ? Number(filters.religion) || undefined : undefined,
       casteId: filters.caste ? Number(filters.caste) || undefined : undefined,
+      educationId: filters.educationId || (filters.education ? Number(filters.education) || undefined : undefined),
+      occupationId: filters.occupationId,
+      workingCity: filters.workingCity || undefined,
+      nativePlace: filters.nativePlace || undefined,
       maritalStatusId: filters.maritalStatus ? Number(filters.maritalStatus) || undefined : undefined,
+      annualIncomeFrom: filters.annualIncomeFrom,
+      annualIncomeTo: filters.annualIncomeTo,
       city: filters.location || undefined,
       pageNumber: filters.pageNumber ?? 1,
       pageSize: filters.pageSize ?? 20,
@@ -608,6 +620,117 @@ export class MemberService {
         }
       : undefined;
 
+    const pd = profile.personalDetails;
+    const personal: Record<string, unknown> | undefined = pd
+      ? {
+          FirstName: '',
+          MiddleName: '',
+          LastName: '',
+          DobDay: pd.dobDay,
+          DobMonth: pd.dobMonth,
+          DobYear: pd.dobYear,
+          GenderId: pd.genderId,
+          ReligionId: pd.religionId,
+          CasteId: pd.casteId,
+          SubCasteId: pd.subCasteId,
+          MaritalStatusId: pd.maritalStatusId,
+          Gender: pd.genderName ?? '',
+          Religion: pd.religionName ?? '',
+          Caste: pd.casteName ?? '',
+          SubCast: pd.subCasteName ?? '',
+          MaritalStatus: pd.maritalStatusName ?? '',
+          HeightFt: pd.heightFt,
+          HeightIn: pd.heightIn,
+          WeightKg: pd.weightKg,
+          BloodGroup: pd.bloodGroupName ?? '',
+          Complexion: pd.complexionName ?? '',
+          Diet: pd.dietName ?? '',
+          Personality: pd.personalityName ?? '',
+          Spectacles: pd.spectacles,
+          Lens: pd.lens,
+          PhysicalDisability: pd.physicalDisability,
+          DisabilityDetail: pd.disabilityDetail ?? '',
+        }
+      : undefined;
+
+    const hd = profile.horoscope;
+    const horoscope: Record<string, unknown> | undefined = hd
+      ? {
+          Manglik: hd.manglik,
+          Rashi: hd.rashiName ?? '',
+          Nakshatra: hd.nakshatraName ?? '',
+          Charan: hd.charanName ?? '',
+          Nadi: hd.nadiName ?? '',
+          Gan: hd.ganName ?? '',
+          BirthHour: hd.birthHour,
+          BirthMinute: hd.birthMinute,
+          BirthPeriod: hd.birthPeriod ?? '',
+          BirthDistrict: hd.birthDistrictName ?? '',
+          Devak: hd.devak ?? '',
+        }
+      : undefined;
+
+    const cd = profile.career;
+    const professional: Record<string, unknown> | undefined = cd
+      ? {
+          EducationArea: cd.educationAreaName ?? '',
+          Education: cd.educationName ?? '',
+          OccupationType: cd.occupationName ?? '',
+          OccupationDetails: cd.occupationDetails ?? '',
+          WorkingCityCountry: [cd.workingCity, cd.workingStateName, cd.workingCountryName].filter(Boolean).join(', '),
+          IncomeAmount: cd.incomeAmount,
+          IncomePeriod: cd.incomePeriodName ?? '',
+        }
+      : undefined;
+
+    const fd = profile.familyInfo;
+    const family: Record<string, unknown> | undefined = fd
+      ? {
+          FatherStatus: fd.fatherStatus,
+          MotherStatus: fd.motherStatus,
+          Brothers: fd.brothers,
+          MarriedBrothers: fd.marriedBrothers,
+          Sisters: fd.sisters,
+          MarriedSisters: fd.marriedSisters,
+          ParentsFullName: fd.parentsFullName ?? '',
+          ParentsOccupation: fd.parentsOccupation ?? '',
+          ParentsResidentCity: fd.parentsResidentCity ?? '',
+          FamilyWealth: fd.familyWealth ?? '',
+          MamaSurnamePlace: fd.mamaSurnamePlace ?? '',
+          NativeDistrict: fd.nativeDistrictName ?? '',
+          NativeTaluka: fd.nativeTalukaName ?? '',
+          IntercastMarriage: fd.intercastMarriage,
+          IntercastRelation: fd.intercastRelation ?? '',
+          RelativesSurnames: (profile.relativeSurnames ?? []).join(', '),
+        }
+      : undefined;
+
+    const pp = profile.partnerPreference;
+    const expectedCities = (profile.preferredCities ?? []).join(', ');
+    const expectations: Record<string, unknown> | undefined = pp
+      ? {
+          MaxAgeDifference: pp.maxAgeDifference,
+          ExpectedHeightFt: pp.expectedHeightFt,
+          ExpectedHeightIn: pp.expectedHeightIn,
+          ExpectedManglik: pp.expectedManglik,
+          Divorcee: pp.divorcee,
+          PreferredCities: expectedCities,
+          ExpectedCasteIds: profile.expectedCasteIds ?? [],
+          ExpectedCasteNoBar: pp.expectedCasteNoBar ?? false,
+          ExpectedEducationIds: profile.expectedEducationIds ?? [],
+          ExpectedEducationNoBar: pp.expectedEducationNoBar ?? false,
+          ExpectedOccupationIds: profile.expectedOccupationIds ?? [],
+          ExpectedOccupationNoBar: pp.expectedOccupationNoBar ?? false,
+        }
+      : { PreferredCities: expectedCities };
+
+    const photos = (profile.photos ?? []).map((p) => ({
+      PhotoSlot: p.photoSlot,
+      FileName: p.fileName ?? '',
+      FileUrl: p.fileUrl ?? p.fileName ?? '',
+      IsPrimary: p.isPrimary,
+    }));
+
     return {
       profileId: profile.profileId ?? 0,
       userId: profile.profileId ?? 0,
@@ -621,6 +744,12 @@ export class MemberService {
       createdAt: new Date().toISOString(),
       isContactUnlocked: profile.isContactUnlocked ?? false,
       contact: contactData,
+      personal,
+      horoscope,
+      professional,
+      family,
+      expectations,
+      photos,
     };
   }
 

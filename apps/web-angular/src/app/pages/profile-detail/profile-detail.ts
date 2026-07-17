@@ -9,6 +9,7 @@ import { finalize } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { TenantService } from '../../services/tenant.service';
+import { RegisterMasterDataService } from '../../services/register-master-data.service';
 
 interface ProfileField {
   label: string;
@@ -43,6 +44,11 @@ interface DbPersonalSection {
   Spectacles?: boolean;
   Lens?: boolean;
   Personality?: string;
+  GenderId?: number;
+  ReligionId?: number;
+  CasteId?: number;
+  SubCasteId?: number;
+  MaritalStatusId?: number;
 }
 
 interface DbHoroscopeSection {
@@ -101,13 +107,24 @@ interface DbFamilySection {
 interface DbExpectationsSection {
   PreferredCities?: string;
   ExpectedManglik?: boolean;
-  ExpectedCaste?: string;
+  ExpectedCasteIds?: number[];
+  ExpectedCasteNoBar?: boolean;
+  ExpectedEducationIds?: number[];
+  ExpectedEducationNoBar?: boolean;
+  ExpectedOccupationIds?: number[];
+  ExpectedOccupationNoBar?: boolean;
   MaxAgeDifference?: number | string;
   ExpectedHeightFt?: number | string;
   ExpectedHeightIn?: number | string;
-  ExpectedEducation?: string;
-  ExpectedOccupationIncome?: string;
   Divorcee?: boolean;
+  expectedEducation?: string;
+  expectedOccupationIncome?: string;
+  maxAgeDifference?: string;
+  expectedHeightFt?: string;
+  expectedHeightIn?: string;
+  divorcee?: string;
+  expectedManglik?: string;
+  preferredCities?: string;
 }
 
 interface DbVerificationSection {
@@ -160,6 +177,7 @@ export class ProfileDetail implements OnInit {
   private readonly subscriptionStore = inject(SubscriptionStore);
   private readonly tenantService = inject(TenantService);
   private readonly http = inject(HttpClient);
+  private readonly masterData = inject(RegisterMasterDataService);
 
   readonly profile = signal<MemberRecord | null>(null);
   readonly isGalleryOpen = signal(false);
@@ -170,6 +188,10 @@ export class ProfileDetail implements OnInit {
   readonly showUpgradePrompt = signal(false);
   readonly isSendingInterest = signal(false);
   readonly interestSent = signal(false);
+
+  readonly educationMap = signal<Map<number, string>>(new Map());
+  readonly occupationMap = signal<Map<number, string>>(new Map());
+  readonly casteMap = signal<Map<number, string>>(new Map());
 
   readonly isPaidUser = computed(() => this.subscriptionStore.isActive());
   readonly isFreeUser = computed(() => this.authService.isAuthenticated() && !this.subscriptionStore.isActive());
@@ -196,6 +218,7 @@ export class ProfileDetail implements OnInit {
     const contact = details?.contact;
     const family = details?.family;
     const expectations = details?.expectations;
+    const casteLookup = this.casteMap();
 
     const contactSection = this.isContactUnlocked()
       ? [{
@@ -256,7 +279,11 @@ export class ProfileDetail implements OnInit {
           this.field('Expected Height', this.heightText(expectations?.expectedHeightFt, expectations?.expectedHeightIn)),
           this.field('Education', expectations?.expectedEducation),
           this.field('Occupation', expectations?.expectedOccupationIncome),
-          this.field('Expected Caste', expectations?.expectedCaste),
+          this.field('Expected Caste', this.resolveExpectationIds(
+            expectations?.expectedCasteIds,
+            expectations?.expectedCasteNoBar,
+            casteLookup,
+          )),
           this.field('Divorce', expectations?.divorcee),
           this.field('Mangal', expectations?.expectedManglik),
           this.field('Preferred City', expectations?.preferredCities),
@@ -273,6 +300,8 @@ export class ProfileDetail implements OnInit {
       }
     }
 
+    this.loadMasterData();
+
     const profileIdParam = this.route.snapshot.paramMap.get('id');
     if (profileIdParam) {
       this.loadProfile(profileIdParam);
@@ -280,6 +309,25 @@ export class ProfileDetail implements OnInit {
       this.error.set('Profile ID not found.');
       this.isLoading.set(false);
     }
+  }
+
+  private loadMasterData(): void {
+    this.masterData.getEducations().subscribe({
+      next: (opts) => {
+        const map = new Map<number, string>();
+        opts.forEach(o => map.set(o.id, o.label));
+        this.educationMap.set(map);
+      },
+      error: () => {},
+    });
+    this.masterData.getOccupations().subscribe({
+      next: (opts) => {
+        const map = new Map<number, string>();
+        opts.forEach(o => map.set(o.id, o.label));
+        this.occupationMap.set(map);
+      },
+      error: () => {},
+    });
   }
 
   private loadProfile(profileId: string): void {
@@ -313,6 +361,18 @@ export class ProfileDetail implements OnInit {
           createdAt: profileDetail.createdAt ?? new Date().toISOString(),
           registrationDetails,
         });
+
+        const religionId = profileDetail.personal?.ReligionId;
+        if (religionId) {
+          this.masterData.getCastes(Number(religionId)).subscribe({
+            next: (opts) => {
+              const map = new Map<number, string>();
+              opts.forEach(o => map.set(o.id, o.label));
+              this.casteMap.set(map);
+            },
+            error: () => {},
+          });
+        }
       },
       error: (error: unknown) => {
         console.error('Failed to load profile:', error);
@@ -505,12 +565,21 @@ export class ProfileDetail implements OnInit {
         ...details.expectations,
         preferredCities: profileDetail.expectations?.PreferredCities ?? '',
         expectedManglik: profileDetail.expectations?.ExpectedManglik === null || profileDetail.expectations?.ExpectedManglik === undefined ? '' : profileDetail.expectations?.ExpectedManglik ? 'Yes' : 'No',
-        expectedCaste: profileDetail.expectations?.ExpectedCaste ?? '',
+        expectedCasteIds: profileDetail.expectations?.ExpectedCasteIds ?? [],
+        expectedCasteNoBar: profileDetail.expectations?.ExpectedCasteNoBar,
         maxAgeDifference: `${profileDetail.expectations?.MaxAgeDifference ?? ''}`,
         expectedHeightFt: `${profileDetail.expectations?.ExpectedHeightFt ?? ''}`,
         expectedHeightIn: `${profileDetail.expectations?.ExpectedHeightIn ?? ''}`,
-        expectedEducation: profileDetail.expectations?.ExpectedEducation ?? '',
-        expectedOccupationIncome: profileDetail.expectations?.ExpectedOccupationIncome ?? '',
+        expectedEducation: this.resolveExpectationIds(
+          profileDetail.expectations?.ExpectedEducationIds,
+          profileDetail.expectations?.ExpectedEducationNoBar,
+          this.educationMap()
+        ),
+        expectedOccupationIncome: this.resolveExpectationIds(
+          profileDetail.expectations?.ExpectedOccupationIds,
+          profileDetail.expectations?.ExpectedOccupationNoBar,
+          this.occupationMap()
+        ),
         divorcee: profileDetail.expectations?.Divorcee === null || profileDetail.expectations?.Divorcee === undefined ? '' : profileDetail.expectations?.Divorcee ? 'Yes' : 'No',
       },
       verification: {
@@ -520,6 +589,7 @@ export class ProfileDetail implements OnInit {
       photos: photos.map((photo, index: number) => ({
         photoSlot: Number(photo.PhotoSlot ?? index + 1),
         fileName: photo.FileName ?? '',
+        fileUrl: photo.FileUrl ?? '',
         isPrimary: Boolean(photo.IsPrimary),
       })),
     };
@@ -546,6 +616,17 @@ export class ProfileDetail implements OnInit {
     }
 
     return `${ft || '0'} ft ${inch || '0'} in`;
+  }
+
+  private resolveExpectationIds(
+    ids?: number[] | null,
+    noBar?: boolean,
+    lookup?: Map<number, string>,
+  ): string {
+    if (noBar) return 'No Bar';
+    if (!ids || ids.length === 0) return '';
+    if (!lookup || lookup.size === 0) return ids.join(', ');
+    return ids.map(id => lookup.get(id) ?? String(id)).join(', ');
   }
 
 }
