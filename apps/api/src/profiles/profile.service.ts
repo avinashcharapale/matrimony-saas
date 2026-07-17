@@ -1304,7 +1304,7 @@ export class ProfileService {
     userId: number,
     profileData: Partial<ProfileDetail>
   ): Promise<ProfileDetail> {
-    const profileCode = `PROFILE-${Date.now()}`;
+    const profileCode = await this.generateProfileCode(tenantId);
 
     const query = `
       INSERT INTO dbo.Profiles 
@@ -1331,6 +1331,32 @@ export class ProfileService {
     await this.syncHybridCanonicalFields(profileId, profileData);
 
     return this.getProfileById(tenantId, profileId) as Promise<ProfileDetail>;
+  }
+
+  private async generateProfileCode(tenantId: number): Promise<string> {
+    const seqResult = await this.pool.request()
+      .input('tenantId', 'int', tenantId)
+      .query(`
+        MERGE INTO dbo.TenantProfileSequences AS target
+        USING (SELECT @tenantId AS TenantId) AS source
+        ON target.TenantId = source.TenantId
+        WHEN MATCHED THEN UPDATE SET LastNumber = target.LastNumber + 1
+        WHEN NOT MATCHED THEN INSERT (TenantId, LastNumber) VALUES (@tenantId, 1);
+
+        SELECT LastNumber FROM dbo.TenantProfileSequences WHERE TenantId = @tenantId;
+      `);
+    const lastNumber: number = seqResult.recordset[0].LastNumber;
+
+    const tenantResult = await this.pool.request()
+      .input('tenantId', 'int', tenantId)
+      .query(`SELECT TenantCode FROM dbo.Tenants WHERE TenantId = @tenantId`);
+    const tenantCode: string = tenantResult.recordset[0].TenantCode;
+
+    const maxPrefix = 20;
+    const prefix = tenantCode.length > maxPrefix ? tenantCode.substring(0, maxPrefix) : tenantCode;
+    const numberStr = String(lastNumber);
+    const minDigits = Math.max(4, numberStr.length);
+    return `${prefix}-${numberStr.padStart(minDigits, '0')}`;
   }
 
   private async updateProfile(

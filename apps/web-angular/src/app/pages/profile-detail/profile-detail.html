@@ -5,23 +5,75 @@
       <div class="photo-section">
         <img 
           [src]="getProfilePhoto()" 
-          [alt]="profile()!.name" 
+          [alt]="displayName()" 
           class="profile-main-photo" 
           (click)="openGallery()"
           title="Click to view gallery" 
         />
         @if ((profile()!.registrationDetails?.photos?.length || 0) > 1) {
         <div class="photo-thumbnails">
-          <img [src]="getProfilePhoto()" [alt]="profile()!.name + ' - 1'" (click)="openGallery()" />
-          <img [src]="getProfilePhoto(true)" [alt]="profile()!.name + ' - 2'" (click)="openGallery()" />
+          <img [src]="getProfilePhoto()" [alt]="displayName() + ' - 1'" (click)="openGallery()" />
+          <img [src]="getProfilePhoto(true)" [alt]="displayName() + ' - 2'" (click)="openGallery()" />
         </div>
         }
       </div>
 
       <div class="member-header">
-        <h1>{{ profile()!.name }}</h1>
-        <p class="member-id">{{ getMemberId() }}</p>
-        <p class="member-meta">{{ profile()!.age }} years • {{ profile()!.location }}</p>
+        <h1>{{ profileCode() }} <span class="member-surname">({{ profile()!.lastName || '' }})</span></h1>
+
+        <div class="member-details">
+          @if (getCreatedAtText()) {
+            <div class="member-row">
+              <span class="member-label">DOR</span>
+              <span class="member-value">{{ getCreatedAtText() }}</span>
+            </div>
+          }
+          @if (getDobText()) {
+            <div class="member-row">
+              <span class="member-label">Birth Date</span>
+              <span class="member-value">{{ getDobText() }}</span>
+            </div>
+          }
+          @if (getHeightText()) {
+            <div class="member-row">
+              <span class="member-label">Height</span>
+              <span class="member-value">{{ getHeightText() }}</span>
+            </div>
+          }
+          @if (profile()!.location && isPaidUser()) {
+            <div class="member-row">
+              <span class="member-label">Residence</span>
+              <span class="member-value">{{ profile()!.location }}</span>
+            </div>
+          }
+          @if (getNativeDistrictName()) {
+            <div class="member-row">
+              <span class="member-label">Native District</span>
+              <span class="member-value">{{ getNativeDistrictName() }}</span>
+            </div>
+          }
+          @if (getEducationText()) {
+            <div class="member-row">
+              <span class="member-label">Education</span>
+              <span class="member-value">{{ getEducationText() }}</span>
+            </div>
+          }
+          @if (getOccupationIncomeText()) {
+            <div class="member-row">
+              <span class="member-label">Occupation</span>
+              <span class="member-value">{{ getOccupationIncomeText() }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="member-tags">
+          @if (getReligionLabel()) {
+            <span class="tag">{{ getReligionLabel() }}</span>
+          }
+          @if (getCasteLabel()) {
+            <span class="tag">{{ getCasteLabel() }}</span>
+          }
+        </div>
       </div>
 
       <button class="connect-button" [class.sent]="interestSent()" [disabled]="isSendingInterest()" (click)="onConnect()">

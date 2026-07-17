@@ -162,7 +162,9 @@ export class ProfileClient {
     stateId?: number;
     countryId?: number;
     heightFromFt?: number;
+    heightFromIn?: number;
     heightToFt?: number;
+    heightToIn?: number;
     annualIncomeFrom?: number;
     annualIncomeTo?: number;
     isVerified?: boolean;
@@ -199,7 +201,9 @@ export class ProfileClient {
     stateId?: number;
     countryId?: number;
     heightFromFt?: number;
+    heightFromIn?: number;
     heightToFt?: number;
+    heightToIn?: number;
     annualIncomeFrom?: number;
     annualIncomeTo?: number;
     isVerified?: boolean;

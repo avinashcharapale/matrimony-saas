@@ -415,7 +415,8 @@
   color: var(--text-muted);
 }
 
-.adv-field select {
+.adv-field select,
+.adv-field input[type="text"] {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
@@ -426,7 +427,8 @@
   transition: border-color 0.15s ease;
 }
 
-.adv-field select:focus {
+.adv-field select:focus,
+.adv-field input[type="text"]:focus {
   outline: none;
   border-color: var(--accent-border);
   background: #fff;
@@ -577,7 +579,7 @@
 
 .card-info-col {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.3rem;
   min-width: 0;
 }
 
@@ -595,30 +597,37 @@
   color: var(--text-main);
 }
 
-.card-age {
-  font-size: 0.82rem;
-  color: var(--text-soft);
+.card-surname {
   font-weight: 500;
-}
-
-.card-id {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  background: var(--bg-soft);
-  padding: 0.08rem 0.35rem;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.card-detail {
-  margin: 0;
-  font-size: 0.82rem;
   color: var(--text-soft);
+  font-size: 0.88rem;
 }
 
-.card-detail .sep {
-  margin: 0 0.25rem;
-  opacity: 0.4;
+.card-details {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.card-row {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.card-label {
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 110px;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+.card-value {
+  color: var(--text-main);
+  word-break: break-word;
 }
 
 .card-tags {

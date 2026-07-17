@@ -1,6 +1,7 @@
 export interface MemberRecord {
   id: string;
   name: string;
+  lastName?: string;
   email: string;
   password?: string;
   age?: number;
@@ -11,8 +12,15 @@ export interface MemberRecord {
   religionId?: number;
   casteId?: number;
   heightText?: string;
+  thumbnailUrl?: string;
+  genderId?: number;
   registrationDetails?: RegisterFormDetails;
   createdAt: string;
+  createdAtDate?: string;
+  dobText?: string;
+  nativeDistrictName?: string;
+  educationText?: string;
+  occupationIncomeText?: string;
 }
 
 export interface RegisterSubmissionPayload {

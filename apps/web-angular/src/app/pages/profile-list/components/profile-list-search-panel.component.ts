@@ -35,11 +35,10 @@ export class ProfileListSearchPanelComponent {
     if (this.filters['caste']) count++;
     if (this.filters['education']) count++;
     if (this.filters['maritalStatus']) count++;
-    if (this.filters['occupation']) count++;
     if (this.filters['occupationId']) count++;
     if (this.filters['workingCity']) count++;
     if (this.filters['nativePlace']) count++;
-    if (this.filters['annualIncomeFrom'] || this.filters['annualIncomeTo']) count++;
+    if (this.filters['annualIncomeFrom']) count++;
     if (this.filters['height'] && this.filters['height'] !== 'Any') count++;
     return count;
   }
@@ -49,12 +48,10 @@ export class ProfileListSearchPanelComponent {
     this.filters['caste'] = '';
     this.filters['education'] = '';
     this.filters['maritalStatus'] = '';
-    this.filters['occupation'] = '';
     this.filters['occupationId'] = '';
     this.filters['workingCity'] = '';
     this.filters['nativePlace'] = '';
     this.filters['annualIncomeFrom'] = '';
-    this.filters['annualIncomeTo'] = '';
     this.filters['height'] = 'Any';
   }
 }

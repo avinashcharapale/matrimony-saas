@@ -329,7 +329,8 @@
   color: var(--text-muted);
 }
 
-.adv-field select {
+.adv-field select,
+.adv-field input[type="text"] {
   width: 100%;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
@@ -340,7 +341,8 @@
   transition: border-color 0.2s ease;
 }
 
-.adv-field select:focus {
+.adv-field select:focus,
+.adv-field input[type="text"]:focus {
   outline: none;
   border-color: var(--accent-border);
   background: #fff;
@@ -462,27 +464,37 @@
   letter-spacing: -0.01em;
 }
 
-.card-age {
-  font-size: 0.85rem;
-  color: var(--text-soft);
+.card-surname {
   font-weight: 500;
-}
-
-.card-id {
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  background: var(--bg-soft);
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.card-detail {
-  margin: 0;
-  font-size: 0.84rem;
   color: var(--text-soft);
+  font-size: 0.88rem;
+}
+
+.card-details {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.card-row {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.78rem;
   line-height: 1.4;
+}
+
+.card-label {
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 110px;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+}
+
+.card-value {
+  color: var(--text-main);
+  word-break: break-word;
 }
 
 .card-detail .sep {
@@ -751,12 +763,10 @@
   letter-spacing: -0.02em;
 }
 
-.detail-age {
-  margin: -0.15rem 0 0;
-  text-align: center;
-  font-size: 0.82rem;
-  color: var(--text-soft);
-  font-weight: 400;
+.detail-surname {
+  font-weight: 600;
+  color: var(--accent);
+  font-size: 1rem;
 }
 
 .detail-grid {

@@ -71,19 +71,54 @@
   font-weight: 600;
 }
 
-.member-id {
-  margin: 0.5rem 0 0;
-  font-size: 0.85rem;
-  color: #9a5e45;
+.member-surname {
   font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  color: #9a5e45;
 }
 
-.member-meta {
-  margin: 0.35rem 0 0;
+.member-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1rem;
+  margin-top: 0.75rem;
+  text-align: left;
+}
+
+.member-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #9a5e45;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.member-value {
   font-size: 0.85rem;
+  color: #3d3f4e;
+  font-weight: 500;
+}
+
+.member-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  justify-content: center;
+}
+
+.tag {
+  font-size: 0.68rem;
+  font-weight: 600;
   color: #6d7285;
+  background: #f4ede8;
+  border: 1px solid #ece0d8;
+  border-radius: 999px;
+  padding: 0.12rem 0.5rem;
 }
 
 .connect-button {

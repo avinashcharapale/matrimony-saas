@@ -5,6 +5,8 @@ import { MemberRecord, MemberService } from '../../services/member.service';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 import { RegisterMasterDataService, RegisterLookupOption } from '../../services/register-master-data.service';
 import { AuthService } from '../../services/auth.service';
+import { TenantService } from '../../services/tenant.service';
+import { SubscriptionStore } from '@org/data-access-subscription';
 import { ProfileListSidebarComponent } from './components/profile-list-sidebar.component';
 import { ProfileListTitleComponent } from './components/profile-list-title.component';
 import { ProfileListSearchPanelComponent } from './components/profile-list-search-panel.component';
@@ -28,8 +30,11 @@ export class ProfileList implements OnInit {
   private readonly router = inject(Router);
   private readonly registerMasterData = inject(RegisterMasterDataService);
   private readonly authService = inject(AuthService);
+  private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly tenantService = inject(TenantService);
 
   readonly isAuthenticated = signal(false);
+  readonly isPaidUser = computed(() => this.subscriptionStore.isActive());
   readonly userName = signal('');
   readonly userFirstName = signal('');
   readonly userPhotoUrl = signal('');
@@ -70,6 +75,10 @@ export class ProfileList implements OnInit {
   ngOnInit(): void {
     this.isAuthenticated.set(this.authService.isAuthenticated());
     if (this.isAuthenticated()) {
+      const tenantId = Number(this.tenantService.tenantHeaderId);
+      if (tenantId) {
+        this.subscriptionStore.loadSubscriptionStatus(tenantId);
+      }
       this.loadMyProfile();
     } else {
       this.performSearch();
@@ -152,7 +161,10 @@ export class ProfileList implements OnInit {
   }
 
   getProfilePhotoUrl(profile: MemberRecord): string {
-    const genderId = profile.registrationDetails?.personal?.gender ? Number(profile.registrationDetails.personal.gender) || null : null;
+    if (profile.thumbnailUrl) {
+      return resolvePhotoUrl(profile.thumbnailUrl, profile.name, profile.genderId ?? null);
+    }
+    const genderId = profile.genderId ?? (profile.registrationDetails?.personal?.gender ? Number(profile.registrationDetails.personal.gender) || null : null);
     return getDefaultAvatar(profile.name, genderId);
   }
 
@@ -215,11 +227,35 @@ export class ProfileList implements OnInit {
     this.performSearch();
   }
 
+  private parseHeightRange(range: string): { fromFt: number; fromIn: number; toFt: number; toIn: number } {
+    const parts = range.split('-').map(s => s.trim());
+    const fromMatch = parts[0]?.match(/(\d+)[\u2032'"](\d+)/);
+    const toMatch = parts.length > 1 ? parts[parts.length - 1]?.match(/(\d+)[\u2032'"](\d+)/) : fromMatch;
+    return {
+      fromFt: parseInt(fromMatch?.[1] ?? '4', 10),
+      fromIn: parseInt(fromMatch?.[2] ?? '0', 10),
+      toFt: parseInt(toMatch?.[1] ?? '7', 10),
+      toIn: parseInt(toMatch?.[2] ?? '0', 10),
+    };
+  }
+
   private performSearch(): void {
     this.isLoading.set(true);
     this.error.set('');
 
     const searchGenderId = this.filters.lookingFor === 'Bride' ? 2 : 1;
+
+    let heightFromFt: number | undefined;
+    let heightFromIn: number | undefined;
+    let heightToFt: number | undefined;
+    let heightToIn: number | undefined;
+    if (this.filters.height && this.filters.height !== 'Any') {
+      const parsed = this.parseHeightRange(this.filters.height);
+      heightFromFt = parsed.fromFt;
+      heightFromIn = parsed.fromIn;
+      heightToFt = parsed.toFt;
+      heightToIn = parsed.toIn;
+    }
 
     this.memberService
       .searchProfiles({
@@ -238,6 +274,10 @@ export class ProfileList implements OnInit {
         annualIncomeFrom: this.filters.annualIncomeFrom ? Number(this.filters.annualIncomeFrom) || undefined : undefined,
         annualIncomeTo: this.filters.annualIncomeTo ? Number(this.filters.annualIncomeTo) || undefined : undefined,
         maritalStatus: this.filters.maritalStatus || undefined,
+        heightFromFt,
+        heightFromIn,
+        heightToFt,
+        heightToIn,
         pageNumber: this.currentPage(),
         pageSize: this.pageSize,
       })

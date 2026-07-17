@@ -2578,6 +2578,7 @@ export class ProfileListItemDto implements IProfileListItemDto {
     profileId?: number;
     profileCode?: string | undefined;
     fullName?: string | undefined;
+    surname?: string | undefined;
     age?: number | undefined;
     locationText?: string | undefined;
     occupationText?: string | undefined;
@@ -2596,6 +2597,18 @@ export class ProfileListItemDto implements IProfileListItemDto {
     thumbnailUrl?: string | undefined;
     isVerified?: boolean;
     isPremiumTenant?: boolean;
+    createdAt?: string | undefined;
+    dobDay?: number | undefined;
+    dobMonth?: string | undefined;
+    dobYear?: number | undefined;
+    heightFt?: number | undefined;
+    heightIn?: number | undefined;
+    nativeDistrictName?: string | undefined;
+    educationName?: string | undefined;
+    occupationName?: string | undefined;
+    occupationDetails?: string | undefined;
+    incomePeriodName?: string | undefined;
+    workingCountryName?: string | undefined;
 
     constructor(data?: IProfileListItemDto) {
         if (data) {
@@ -2611,6 +2624,7 @@ export class ProfileListItemDto implements IProfileListItemDto {
             this.profileId = _data["profileId"];
             this.profileCode = _data["profileCode"];
             this.fullName = _data["fullName"];
+            this.surname = _data["surname"];
             this.age = _data["age"];
             this.locationText = _data["locationText"];
             this.occupationText = _data["occupationText"];
@@ -2629,6 +2643,18 @@ export class ProfileListItemDto implements IProfileListItemDto {
             this.thumbnailUrl = _data["thumbnailUrl"];
             this.isVerified = _data["isVerified"];
             this.isPremiumTenant = _data["isPremiumTenant"];
+            this.createdAt = _data["createdAt"];
+            this.dobDay = _data["dobDay"];
+            this.dobMonth = _data["dobMonth"];
+            this.dobYear = _data["dobYear"];
+            this.heightFt = _data["heightFt"];
+            this.heightIn = _data["heightIn"];
+            this.nativeDistrictName = _data["nativeDistrictName"];
+            this.educationName = _data["educationName"];
+            this.occupationName = _data["occupationName"];
+            this.occupationDetails = _data["occupationDetails"];
+            this.incomePeriodName = _data["incomePeriodName"];
+            this.workingCountryName = _data["workingCountryName"];
         }
     }
 
@@ -2644,6 +2670,7 @@ export class ProfileListItemDto implements IProfileListItemDto {
         data["profileId"] = this.profileId;
         data["profileCode"] = this.profileCode;
         data["fullName"] = this.fullName;
+        data["surname"] = this.surname;
         data["age"] = this.age;
         data["locationText"] = this.locationText;
         data["occupationText"] = this.occupationText;
@@ -2662,6 +2689,18 @@ export class ProfileListItemDto implements IProfileListItemDto {
         data["thumbnailUrl"] = this.thumbnailUrl;
         data["isVerified"] = this.isVerified;
         data["isPremiumTenant"] = this.isPremiumTenant;
+        data["createdAt"] = this.createdAt;
+        data["dobDay"] = this.dobDay;
+        data["dobMonth"] = this.dobMonth;
+        data["dobYear"] = this.dobYear;
+        data["heightFt"] = this.heightFt;
+        data["heightIn"] = this.heightIn;
+        data["nativeDistrictName"] = this.nativeDistrictName;
+        data["educationName"] = this.educationName;
+        data["occupationName"] = this.occupationName;
+        data["occupationDetails"] = this.occupationDetails;
+        data["incomePeriodName"] = this.incomePeriodName;
+        data["workingCountryName"] = this.workingCountryName;
         return data;
     }
 }
@@ -2670,6 +2709,7 @@ export interface IProfileListItemDto {
     profileId?: number;
     profileCode?: string | undefined;
     fullName?: string | undefined;
+    surname?: string | undefined;
     age?: number | undefined;
     locationText?: string | undefined;
     occupationText?: string | undefined;
@@ -2688,6 +2728,18 @@ export interface IProfileListItemDto {
     thumbnailUrl?: string | undefined;
     isVerified?: boolean;
     isPremiumTenant?: boolean;
+    createdAt?: string | undefined;
+    dobDay?: number | undefined;
+    dobMonth?: string | undefined;
+    dobYear?: number | undefined;
+    heightFt?: number | undefined;
+    heightIn?: number | undefined;
+    nativeDistrictName?: string | undefined;
+    educationName?: string | undefined;
+    occupationName?: string | undefined;
+    occupationDetails?: string | undefined;
+    incomePeriodName?: string | undefined;
+    workingCountryName?: string | undefined;
 }
 
 export class ProfileListItemDtoPagedResult implements IProfileListItemDtoPagedResult {

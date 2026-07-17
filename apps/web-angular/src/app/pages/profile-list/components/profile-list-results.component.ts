@@ -16,6 +16,7 @@ export class ProfileListResultsComponent {
   @Input({ required: true }) totalPages!: number;
   @Input({ required: true }) pageNumbers!: number[];
   @Input({ required: true }) pageResults!: MemberRecord[];
+  @Input() isPaidUser = false;
 
   @Input({ required: true }) getProfilePhotoUrl!: (profile: MemberRecord) => string;
   @Input({ required: true }) getReligionLabel!: (profile: MemberRecord) => string;

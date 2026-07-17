@@ -141,6 +141,7 @@ interface DbPhotoSection {
 
 interface MappedProfileDetail {
   profileId?: number;
+  profileCode?: string;
   fullName?: string;
   displayName?: string;
   age?: number;
@@ -197,17 +198,32 @@ export class ProfileDetail implements OnInit {
   readonly isFreeUser = computed(() => this.authService.isAuthenticated() && !this.subscriptionStore.isActive());
   readonly isVisitor = computed(() => !this.authService.isAuthenticated());
 
+  private static readonly MONTH_MAP: Record<string, number> = {
+    Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
+    Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12,
+  };
+
+  readonly profileCode = computed(() => this.profile()?.profileCode ?? '');
+
+  readonly displayName = computed(() => {
+    const p = this.profile();
+    if (!p) return '';
+    const surname = p.lastName || '';
+    return `${p.profileCode || ''} ${surname ? '(' + surname + ')' : ''}`.trim();
+  });
+
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
     const slots = p?.registrationDetails?.photos ?? [];
-    const photos: string[] = [this.getProfilePhoto()];
-    if (slots.length > 1) {
-      photos.push(this.getProfilePhoto(true));
+    const genderId = p?.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null;
+    const urls: string[] = [];
+    for (let i = 0; i < Math.min(slots.length, 3); i++) {
+      const photo = slots[i] as any;
+      const url = resolvePhotoUrl(photo.fileUrl ?? photo.FileUrl, p?.name ?? '', genderId);
+      urls.push(url);
     }
-    if (slots.length > 2) {
-      photos.push(this.getProfilePhoto());
-    }
-    return photos.slice(0, 3);
+    if (urls.length === 0) urls.push(getDefaultAvatar(p?.name ?? '', genderId));
+    return urls;
   });
 
   readonly sections = computed(() => {
@@ -351,8 +367,10 @@ export class ProfileDetail implements OnInit {
         this.isContactUnlocked.set(profileDetail.isContactUnlocked === true);
         this.profile.set({
           id: `${profileDetail.profileId ?? ''}`,
+          profileCode: profileDetail.profileCode ?? String(profileDetail.profileId ?? ''),
           email: profileDetail.email ?? '',
           name: profileDetail.fullName ?? profileDetail.displayName ?? '',
+          lastName: profileDetail.personal?.LastName ?? '',
           age: profileDetail.age,
           occupation: profileDetail.occupationText,
           location: profileDetail.locationText ?? profileDetail.city,
@@ -385,12 +403,12 @@ export class ProfileDetail implements OnInit {
     const p = this.profile();
     if (!p) return '';
     const genderId = p.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null;
-    const photos = (p.registrationDetails?.photos ?? []) as DbPhotoSection[];
+    const photos = p.registrationDetails?.photos ?? [];
     if (secondary && photos.length > 1) {
-      return resolvePhotoUrl(photos[1].FileUrl, p.name, genderId);
+      return resolvePhotoUrl((photos[1] as any).fileUrl ?? (photos[1] as any).FileUrl, p.name, genderId);
     }
     if (photos.length > 0) {
-      return resolvePhotoUrl(photos[0].FileUrl, p.name, genderId);
+      return resolvePhotoUrl((photos[0] as any).fileUrl ?? (photos[0] as any).FileUrl, p.name, genderId);
     }
     return getDefaultAvatar(p.name, genderId);
   }
@@ -416,12 +434,98 @@ export class ProfileDetail implements OnInit {
     this.currentGalleryIndex.set(index);
   }
 
-  getMemberId(): string {
+  getDobText(): string {
     const p = this.profile();
     if (!p) return '';
-    const seed = this.hashSeed(p);
-    const code = 10000 + (seed % 89999);
-    return `MBU${code} (${[...p.name.split(' ')][0]?.toUpperCase()})`;
+    const personal = p.registrationDetails?.personal as Record<string, unknown> | undefined;
+    if (!personal) return '';
+    const day = personal['DobDay'] ?? personal['dobDay'];
+    const month = personal['DobMonth'] ?? personal['dobMonth'];
+    const year = personal['DobYear'] ?? personal['dobYear'];
+    if (!day || !month || !year) return '';
+    let monthNum: number | undefined;
+    if (typeof month === 'string' && month) {
+      monthNum = ProfileDetail.MONTH_MAP[month] ?? parseInt(month, 10);
+    } else if (typeof month === 'number') {
+      monthNum = month;
+    }
+    if (!monthNum) return '';
+    return `${String(day).padStart(2, '0')}/${String(monthNum).padStart(2, '0')}/${year}`;
+  }
+
+  getHeightText(): string {
+    const p = this.profile();
+    if (!p) return '';
+    const personal = p.registrationDetails?.personal as Record<string, unknown> | undefined;
+    if (!personal) return '';
+    const ft = personal['HeightFt'] ?? personal['heightFt'];
+    const inches = personal['HeightIn'] ?? personal['heightIn'];
+    if (ft != null) return `${ft}'${String(inches ?? 0).padStart(2, '0')}"`;
+    return '';
+  }
+
+  getCreatedAtText(): string {
+    const p = this.profile();
+    if (!p?.createdAt) return '';
+    const d = new Date(p.createdAt);
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(2)}`;
+  }
+
+  getOccupationIncomeText(): string {
+    const p = this.profile();
+    if (!p) return '';
+    const prof = p.registrationDetails?.professional as Record<string, unknown> | undefined;
+    if (!prof) return p.occupation ?? '';
+    const parts: string[] = [];
+    const occupationDetails = prof['OccupationDetails'] ?? prof['occupationDetails'];
+    const workingCityCountry = prof['WorkingCityCountry'] ?? prof['workingCityCountry'];
+    const incomeAmount = prof['IncomeAmount'] ?? prof['incomeAmount'];
+    const incomePeriod = prof['IncomePeriod'] ?? prof['incomePeriod'];
+    if (occupationDetails) parts.push(occupationDetails as string);
+    if (workingCityCountry) parts.push(workingCityCountry as string);
+    const income = incomeAmount ? Number(incomeAmount) : null;
+    const period = incomePeriod;
+    if (parts.length > 0) {
+      let text = parts.join(', ');
+      if (income) {
+        let formatted: string;
+        if (income >= 10000000) formatted = `${(income / 10000000).toFixed(income % 10000000 === 0 ? 0 : 1)} Cr`;
+        else if (income >= 100000) formatted = `${(income / 100000).toFixed(income % 100000 === 0 ? 0 : 1)} L`;
+        else formatted = income.toLocaleString();
+        text += ` / ${formatted}`;
+        if (period) text += ` / ${period}`;
+      }
+      return text;
+    }
+    return p.occupation ?? '';
+  }
+
+  getNativeDistrictName(): string {
+    const p = this.profile();
+    if (!p) return '';
+    const family = p.registrationDetails?.family as Record<string, unknown> | undefined;
+    return (family?.['NativeDistrict'] ?? family?.['nativeDistrict'] ?? '') as string;
+  }
+
+  getEducationText(): string {
+    const p = this.profile();
+    if (!p) return '';
+    const prof = p.registrationDetails?.professional as Record<string, unknown> | undefined;
+    return ((prof?.['Education'] ?? prof?.['education']) ?? '') as string;
+  }
+
+  getReligionLabel(): string {
+    const p = this.profile();
+    if (!p) return '';
+    const personal = p.registrationDetails?.personal as Record<string, unknown> | undefined;
+    return ((personal?.['Religion'] ?? personal?.['religion']) ?? '') as string;
+  }
+
+  getCasteLabel(): string {
+    const p = this.profile();
+    if (!p) return '';
+    const personal = p.registrationDetails?.personal as Record<string, unknown> | undefined;
+    return ((personal?.['Caste'] ?? personal?.['caste']) ?? '') as string;
   }
 
   onConnect(): void {

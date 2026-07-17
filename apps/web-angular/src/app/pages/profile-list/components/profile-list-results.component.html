@@ -23,20 +23,53 @@
 
     <div class="card-info-col">
       <div class="card-header">
-        <h2 class="card-name">{{ profile.name }}</h2>
-        <span class="card-age">{{ profile.age ?? '-' }} yrs</span>
-        @if (profile.profileCode) {
-          <span class="card-id">{{ profile.profileCode }}</span>
-        }
+        <h2 class="card-name">{{ profile.profileCode }} <span class="card-surname">({{ profile.lastName || '' }})</span></h2>
       </div>
 
-      <p class="card-detail">
-        {{ profile.occupation || '' }}
-        @if (profile.occupation && profile.location) {
-          <span class="sep">&bull;</span>
+      <div class="card-details">
+        @if (profile.createdAtDate) {
+          <div class="card-row">
+            <span class="card-label">DOR</span>
+            <span class="card-value">{{ profile.createdAtDate }}</span>
+          </div>
         }
-        {{ profile.location || '' }}
-      </p>
+        @if (profile.dobText) {
+          <div class="card-row">
+            <span class="card-label">Birth Date</span>
+            <span class="card-value">{{ profile.dobText }}</span>
+          </div>
+        }
+        @if (profile.heightText) {
+          <div class="card-row">
+            <span class="card-label">Height</span>
+            <span class="card-value">{{ profile.heightText }}</span>
+          </div>
+        }
+        @if (profile.location) {
+          <div class="card-row">
+            <span class="card-label">Residence</span>
+            <span class="card-value">{{ profile.location }}</span>
+          </div>
+        }
+        @if (profile.nativeDistrictName) {
+          <div class="card-row">
+            <span class="card-label">Native District</span>
+            <span class="card-value">{{ profile.nativeDistrictName }}</span>
+          </div>
+        }
+        @if (profile.educationText) {
+          <div class="card-row">
+            <span class="card-label">Education</span>
+            <span class="card-value">{{ profile.educationText }}</span>
+          </div>
+        }
+        @if (profile.occupationIncomeText) {
+          <div class="card-row">
+            <span class="card-label">Occupation</span>
+            <span class="card-value">{{ profile.occupationIncomeText }}</span>
+          </div>
+        }
+      </div>
 
       <div class="card-tags">
         @if (getReligionLabel(profile)) {

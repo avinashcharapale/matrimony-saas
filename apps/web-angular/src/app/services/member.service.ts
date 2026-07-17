@@ -32,6 +32,10 @@ export interface SearchFilters {
   maritalStatus?: string;
   annualIncomeFrom?: number;
   annualIncomeTo?: number;
+  heightFromFt?: number;
+  heightFromIn?: number;
+  heightToFt?: number;
+  heightToIn?: number;
   pageNumber?: number;
   pageSize?: number;
 }
@@ -47,6 +51,7 @@ export interface ProfileSearchResult {
   userId: number;
   profileCode: string;
   fullName: string;
+  surname?: string;
   age?: number;
   bio?: string;
   locationText?: string;
@@ -55,7 +60,14 @@ export interface ProfileSearchResult {
   religionId?: number;
   casteId?: number;
   heightText?: string;
+  thumbnailUrl?: string;
+  genderId?: number;
   createdAt: string;
+  createdAtDate?: string;
+  dobText?: string;
+  nativeDistrictName?: string;
+  educationText?: string;
+  occupationIncomeText?: string;
   isContactUnlocked?: boolean;
 }
 
@@ -81,6 +93,12 @@ interface ProfileDetail extends ProfileSearchResult {
 const MEMBERS_KEY_PREFIX = 'matrimony_members';
 const SESSION_KEY_PREFIX = 'matrimony_session_user';
 const LEGACY_MEMBERS_KEY = 'matrimony_members';
+
+function formatCurrency(amount: number): string {
+  if (amount >= 10000000) return `${(amount / 10000000).toFixed(amount % 10000000 === 0 ? 0 : 1)} Cr`;
+  if (amount >= 100000) return `${(amount / 100000).toFixed(amount % 100000 === 0 ? 0 : 1)} L`;
+  return amount.toLocaleString('en-IN');
+}
 
 @Injectable({
   providedIn: 'root',
@@ -109,6 +127,7 @@ export class MemberService {
       id: `${profile.profileId}`,
       email: profile.email,
       name: profile.fullName,
+      lastName: profile.surname,
       age: profile.age,
       occupation: profile.occupationText,
       location: profile.locationText,
@@ -117,7 +136,14 @@ export class MemberService {
       religionId: profile.religionId,
       casteId: profile.casteId,
       heightText: profile.heightText,
+      thumbnailUrl: profile.thumbnailUrl,
+      genderId: profile.genderId,
       createdAt: profile.createdAt,
+      createdAtDate: profile.createdAtDate,
+      dobText: profile.dobText,
+      nativeDistrictName: profile.nativeDistrictName,
+      educationText: profile.educationText,
+      occupationIncomeText: profile.occupationIncomeText,
       password: '',
     };
   }
@@ -489,16 +515,20 @@ export class MemberService {
       religionId: filters.religion ? Number(filters.religion) || undefined : undefined,
       casteId: filters.caste ? Number(filters.caste) || undefined : undefined,
       educationId: filters.educationId || (filters.education ? Number(filters.education) || undefined : undefined),
-      occupationId: filters.occupationId,
+      occupationId: filters.occupationId || (filters.occupation ? Number(filters.occupation) || undefined : undefined),
       workingCity: filters.workingCity || undefined,
       nativePlace: filters.nativePlace || undefined,
       maritalStatusId: filters.maritalStatus ? Number(filters.maritalStatus) || undefined : undefined,
       annualIncomeFrom: filters.annualIncomeFrom,
       annualIncomeTo: filters.annualIncomeTo,
+      heightFromFt: filters.heightFromFt,
+      heightFromIn: filters.heightFromIn,
+      heightToFt: filters.heightToFt,
+      heightToIn: filters.heightToIn,
       city: filters.location || undefined,
       pageNumber: filters.pageNumber ?? 1,
       pageSize: filters.pageSize ?? 20,
-      searchTerm: [filters.name, filters.occupation].filter(Boolean).join(' ') || undefined,
+      searchTerm: [filters.name].filter(Boolean).join(' ') || undefined,
     }).pipe(
       map((response) => (response.items ?? []).map((p) => this.convertToMemberRecord(this.mapListItemToSearchResult(p)))),
       catchError((error) => {
@@ -565,18 +595,7 @@ export class MemberService {
     pageNumber: number,
     pageSize: number
   ): ProfileListResponse {
-    const mapped = profiles.map((profile) => ({
-      profileId: profile.profileId ?? 0,
-      userId: profile.profileId ?? 0,
-      profileCode: String(profile.profileId ?? ''),
-      fullName: profile.fullName ?? '',
-      age: profile.age ?? undefined,
-      bio: undefined,
-      locationText: profile.locationText ?? undefined,
-      occupationText: profile.occupationText ?? undefined,
-      email: '',
-      createdAt: new Date().toISOString(),
-    }));
+    const mapped = profiles.map((profile) => this.mapListItemToSearchResult(profile));
 
     const start = (pageNumber - 1) * pageSize;
     const paged = mapped.slice(start, start + pageSize);
@@ -591,12 +610,47 @@ export class MemberService {
     };
   }
 
+  private static readonly MONTH_MAP: Record<string, number> = {
+    Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
+    Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12,
+  };
+
   private mapListItemToSearchResult(profile: ProfileListItemDto): ProfileSearchResult {
+    const heightFt = profile.heightFt ?? undefined;
+    const heightIn = profile.heightIn ?? undefined;
+    const heightText = heightFt != null ? `${heightFt}'${String(heightIn ?? 0).padStart(2, '0')}"` : undefined;
+
+    const dobDay = profile.dobDay ?? undefined;
+    const dobYear = profile.dobYear ?? undefined;
+    let dobMonthNum: number | undefined;
+    if (typeof profile.dobMonth === 'string' && profile.dobMonth) {
+      dobMonthNum = MemberService.MONTH_MAP[profile.dobMonth] ?? parseInt(profile.dobMonth, 10);
+    } else if (typeof profile.dobMonth === 'number') {
+      dobMonthNum = profile.dobMonth;
+    }
+    const dobText = dobDay != null && dobMonthNum != null && dobYear != null
+      ? `${String(dobDay).padStart(2, '0')}/${String(dobMonthNum).padStart(2, '0')}/${dobYear}`
+      : undefined;
+
+    const createdAt = profile.createdAt;
+    const createdAtDate = createdAt
+      ? `${String(new Date(createdAt).getDate()).padStart(2, '0')}/${String(new Date(createdAt).getMonth() + 1).padStart(2, '0')}/${String(new Date(createdAt).getFullYear()).slice(2)}`
+      : undefined;
+
+    const parts: string[] = [];
+    if (profile.occupationDetails) parts.push(profile.occupationDetails);
+    if (profile.workingCity) parts.push(profile.workingCity);
+    if (profile.workingCountryName) parts.push(profile.workingCountryName);
+    const occupationIncomeText = parts.length > 0
+      ? parts.join(', ') + (profile.incomeAmount ? ` / ${formatCurrency(profile.incomeAmount)}` : '')
+      : profile.occupationText ?? undefined;
+
     return {
       profileId: profile.profileId ?? 0,
       userId: profile.profileId ?? 0,
       profileCode: profile.profileCode ?? String(profile.profileId ?? ''),
       fullName: profile.fullName ?? '',
+      surname: profile.surname ?? undefined,
       age: profile.age ?? undefined,
       bio: undefined,
       locationText: profile.locationText ?? undefined,
@@ -604,7 +658,15 @@ export class MemberService {
       email: '',
       religionId: profile.religionId ?? undefined,
       casteId: profile.casteId ?? undefined,
-      createdAt: new Date().toISOString(),
+      heightText,
+      thumbnailUrl: profile.thumbnailUrl ?? undefined,
+      genderId: profile.genderId ?? undefined,
+      createdAt: createdAt ? new Date(createdAt).toISOString() : new Date().toISOString(),
+      createdAtDate,
+      dobText,
+      nativeDistrictName: profile.nativeDistrictName ?? undefined,
+      educationText: profile.educationName ?? undefined,
+      occupationIncomeText,
     };
   }
 
@@ -623,9 +685,9 @@ export class MemberService {
     const pd = profile.personalDetails;
     const personal: Record<string, unknown> | undefined = pd
       ? {
-          FirstName: '',
+          FirstName: profile.fullName?.split(' ')[0] ?? '',
           MiddleName: '',
-          LastName: '',
+          LastName: profile.fullName?.split(' ').slice(1).join(' ') ?? '',
           DobDay: pd.dobDay,
           DobMonth: pd.dobMonth,
           DobYear: pd.dobYear,

@@ -145,6 +145,55 @@
               }
             </select>
           </div>
+          <div class="adv-field">
+            <label>Occupation</label>
+            <select [(ngModel)]="filters.occupationId" name="occupationId">
+              <option value="">Any</option>
+              @for (opt of occupationOptions(); track opt.id) {
+                <option [value]="opt.id">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="adv-field">
+            <label>Occupation Place</label>
+            <input type="text" [(ngModel)]="filters.occupationPlace" name="occupationPlace" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
+          </div>
+          <div class="adv-field">
+            <label>Income Range Per Annum</label>
+            <select [(ngModel)]="filters.annualIncomeFrom" name="annualIncomeFrom">
+              <option value="">Any</option>
+              <option [ngValue]="0">0+</option>
+              <option [ngValue]="200000">2L+</option>
+              <option [ngValue]="400000">4L+</option>
+              <option [ngValue]="600000">6L+</option>
+              <option [ngValue]="800000">8L+</option>
+              <option [ngValue]="1000000">10L+</option>
+              <option [ngValue]="1500000">15L+</option>
+              <option [ngValue]="2000000">20L+</option>
+              <option [ngValue]="3000000">30L+</option>
+              <option [ngValue]="5000000">50L+</option>
+              <option [ngValue]="10000000">1Cr+</option>
+            </select>
+          </div>
+          <div class="adv-field">
+            <label>Native Place</label>
+            <input type="text" [(ngModel)]="filters.nativePlace" name="nativePlace" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
+          </div>
+          <div class="adv-field">
+            <label>Height</label>
+            <select [(ngModel)]="filters.height" name="height">
+              <option value="Any">Any</option>
+              <option value="4'10&quot; - 5'0&quot;">4'10&quot; - 5'0&quot;</option>
+              <option value="5'0&quot; - 5'2&quot;">5'0&quot; - 5'2&quot;</option>
+              <option value="5'2&quot; - 5'4&quot;">5'2&quot; - 5'4&quot;</option>
+              <option value="5'4&quot; - 5'6&quot;">5'4&quot; - 5'6&quot;</option>
+              <option value="5'6&quot; - 5'8&quot;">5'6&quot; - 5'8&quot;</option>
+              <option value="5'8&quot; - 5'10&quot;">5'8&quot; - 5'10&quot;</option>
+              <option value="5'10&quot; - 6'0&quot;">5'10&quot; - 6'0&quot;</option>
+              <option value="6'0&quot; - 6'2&quot;">6'0&quot; - 6'2&quot;</option>
+              <option value="6'2&quot;+">6'2&quot;+</option>
+            </select>
+          </div>
         </div>
         <div class="adv-footer">
           <button type="button" class="btn-clear" (click)="clearFilters()">Clear All</button>
@@ -175,21 +224,52 @@
             </div>
             <div class="card-info-col">
               <div class="card-header">
-                <h2 class="card-name">{{ getDisplayName(profile) }}</h2>
-                <span class="card-age">{{ profile.age ?? '-' }} yrs</span>
-                @if (profile.profileCode) {
-                  <span class="card-id">{{ profile.profileCode }}</span>
+                <h2 class="card-name">{{ profile.profileCode }} <span class="card-surname">({{ profile.surname || '' }})</span></h2>
+              </div>
+              <div class="card-details">
+                @if (getCreatedAtText(profile)) {
+                  <div class="card-row">
+                    <span class="card-label">DOR</span>
+                    <span class="card-value">{{ getCreatedAtText(profile) }}</span>
+                  </div>
+                }
+                @if (getDobText(profile)) {
+                  <div class="card-row">
+                    <span class="card-label">Birth Date</span>
+                    <span class="card-value">{{ getDobText(profile) }}</span>
+                  </div>
+                }
+                @if (getHeightText(profile)) {
+                  <div class="card-row">
+                    <span class="card-label">Height</span>
+                    <span class="card-value">{{ getHeightText(profile) }}</span>
+                  </div>
+                }
+                @if (profile.locationText) {
+                  <div class="card-row">
+                    <span class="card-label">Residence</span>
+                    <span class="card-value">{{ profile.locationText }}</span>
+                  </div>
+                }
+                @if (profile.nativeDistrictName) {
+                  <div class="card-row">
+                    <span class="card-label">Native District</span>
+                    <span class="card-value">{{ profile.nativeDistrictName }}</span>
+                  </div>
+                }
+                @if (profile.educationName) {
+                  <div class="card-row">
+                    <span class="card-label">Education</span>
+                    <span class="card-value">{{ profile.educationName }}</span>
+                  </div>
+                }
+                @if (getOccupationIncomeText(profile)) {
+                  <div class="card-row">
+                    <span class="card-label">Occupation</span>
+                    <span class="card-value">{{ getOccupationIncomeText(profile) }}</span>
+                  </div>
                 }
               </div>
-              @if (profile.occupationText || profile.locationText) {
-                <p class="card-detail">
-                  {{ profile.occupationText || '' }}
-                  @if (profile.occupationText && profile.locationText) {
-                    <span class="sep">&bull;</span>
-                  }
-                  {{ profile.locationText || '' }}
-                </p>
-              }
               <div class="card-tags">
                 @if (getReligionLabel(profile)) {
                   <span class="tag">{{ getReligionLabel(profile) }}</span>
@@ -246,7 +326,7 @@
           <img
             class="detail-photo"
             [src]="getPhotoUrl(profile)"
-            [alt]="getDisplayName(profile)"
+            [alt]="profile.fullName"
             referrerpolicy="no-referrer"
             (error)="onPhotoError($event, profile)"
           />
@@ -256,60 +336,59 @@
         </div>
 
         <div class="detail-info">
-          <h2 class="detail-name">{{ getDisplayName(profile) }}</h2>
-          <p class="detail-age">{{ profile.age ?? '-' }} years old</p>
+          <h2 class="detail-name">{{ profile.profileCode }} <span class="detail-surname">({{ profile.surname || '' }})</span></h2>
 
           <div class="detail-grid">
-            @if (getMaritalStatusLabel(profile)) {
+            @if (getCreatedAtText(profile)) {
               <div class="detail-field">
-                <span class="detail-label">Marital Status</span>
-                <span class="detail-value">{{ getMaritalStatusLabel(profile) }}</span>
+                <span class="detail-label">DOR</span>
+                <span class="detail-value">{{ getCreatedAtText(profile) }}</span>
               </div>
             }
-            @if (profile.occupationText) {
+            @if (getDobText(profile)) {
               <div class="detail-field">
-                <span class="detail-label">Occupation</span>
-                <span class="detail-value">{{ profile.occupationText }}</span>
+                <span class="detail-label">Birth Date</span>
+                <span class="detail-value">{{ getDobText(profile) }}</span>
               </div>
             }
-            @if (getEducationLabel(profile)) {
+            @if (getHeightText(profile)) {
+              <div class="detail-field">
+                <span class="detail-label">Height</span>
+                <span class="detail-value">{{ getHeightText(profile) }}</span>
+              </div>
+            }
+            @if (profile.locationText) {
+              <div class="detail-field">
+                <span class="detail-label">Residence</span>
+                <span class="detail-value">{{ profile.locationText }}</span>
+              </div>
+            }
+            @if (profile.nativeDistrictName) {
+              <div class="detail-field">
+                <span class="detail-label">Native District</span>
+                <span class="detail-value">{{ profile.nativeDistrictName }}</span>
+              </div>
+            }
+            @if (getEducationLabel(profile) || profile.educationName) {
               <div class="detail-field">
                 <span class="detail-label">Education</span>
-                <span class="detail-value">{{ getEducationLabel(profile) }}</span>
+                <span class="detail-value">{{ profile.educationName || getEducationLabel(profile) }}</span>
               </div>
             }
-            @if (profile.locationText || getReligionLabel(profile) || getCasteLabel(profile)) {
-              @if (profile.locationText) {
-                <div class="detail-field">
-                  <span class="detail-label">Location</span>
-                  <span class="detail-value">{{ profile.locationText }}</span>
-                </div>
-              }
-              @if (getReligionLabel(profile)) {
-                <div class="detail-field">
-                  <span class="detail-label">Religion</span>
-                  <span class="detail-value">{{ getReligionLabel(profile) }}</span>
-                </div>
-              }
-              @if (getCasteLabel(profile)) {
-                <div class="detail-field">
-                  <span class="detail-label">Caste</span>
-                  <span class="detail-value">{{ getCasteLabel(profile) }}</span>
-                </div>
-              }
-            } @else {
-              @if (getStateLabel(profile)) {
-                <div class="detail-field">
-                  <span class="detail-label">State</span>
-                  <span class="detail-value">{{ getStateLabel(profile) }}</span>
-                </div>
-              }
-              @if (getDistrictLabel(profile)) {
-                <div class="detail-field">
-                  <span class="detail-label">District</span>
-                  <span class="detail-value">{{ getDistrictLabel(profile) }}</span>
-                </div>
-              }
+            @if (getOccupationIncomeText(profile)) {
+              <div class="detail-field">
+                <span class="detail-label">Occupation</span>
+                <span class="detail-value">{{ getOccupationIncomeText(profile) }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="card-tags">
+            @if (getReligionLabel(profile)) {
+              <span class="tag">{{ getReligionLabel(profile) }}</span>
+            }
+            @if (getCasteLabel(profile)) {
+              <span class="tag">{{ getCasteLabel(profile) }}</span>
             }
           </div>
         </div>

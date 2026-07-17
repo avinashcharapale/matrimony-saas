@@ -146,7 +146,7 @@
       </div>
       <div class="adv-field">
         <label>Occupation</label>
-        <select name="occupationFilter" [(ngModel)]="filters['occupation']">
+        <select name="occupationFilter" [(ngModel)]="filters['occupationId']">
           <option value="">Any</option>
           @for (opt of occupationOptions; track opt.id) {
             <option [value]="opt.id">{{ opt.label }}</option>
@@ -159,37 +159,20 @@
       </div>
       <div class="adv-field">
         <label>Income Range Per Annum</label>
-        <div class="age-range">
-          <select name="annualIncomeFrom" [(ngModel)]="filters['annualIncomeFrom']">
-            <option value="">Any</option>
-            <option [ngValue]="0">0+</option>
-            <option [ngValue]="200000">2L+</option>
-            <option [ngValue]="400000">4L+</option>
-            <option [ngValue]="600000">6L+</option>
-            <option [ngValue]="800000">8L+</option>
-            <option [ngValue]="1000000">10L+</option>
-            <option [ngValue]="1500000">15L+</option>
-            <option [ngValue]="2000000">20L+</option>
-            <option [ngValue]="3000000">30L+</option>
-            <option [ngValue]="5000000">50L+</option>
-            <option [ngValue]="10000000">1Cr+</option>
-          </select>
-          <span class="range-sep">to</span>
-          <select name="annualIncomeTo" [(ngModel)]="filters['annualIncomeTo']">
-            <option value="">Any</option>
-            <option [ngValue]="200000">2L</option>
-            <option [ngValue]="400000">4L</option>
-            <option [ngValue]="600000">6L</option>
-            <option [ngValue]="800000">8L</option>
-            <option [ngValue]="1000000">10L</option>
-            <option [ngValue]="1500000">15L</option>
-            <option [ngValue]="2000000">20L</option>
-            <option [ngValue]="3000000">30L</option>
-            <option [ngValue]="5000000">50L</option>
-            <option [ngValue]="10000000">1Cr</option>
-            <option [ngValue]="20000000">2Cr+</option>
-          </select>
-        </div>
+        <select name="annualIncomeFrom" [(ngModel)]="filters['annualIncomeFrom']">
+          <option value="">Any</option>
+          <option [ngValue]="0">0+</option>
+          <option [ngValue]="200000">2L+</option>
+          <option [ngValue]="400000">4L+</option>
+          <option [ngValue]="600000">6L+</option>
+          <option [ngValue]="800000">8L+</option>
+          <option [ngValue]="1000000">10L+</option>
+          <option [ngValue]="1500000">15L+</option>
+          <option [ngValue]="2000000">20L+</option>
+          <option [ngValue]="3000000">30L+</option>
+          <option [ngValue]="5000000">50L+</option>
+          <option [ngValue]="10000000">1Cr+</option>
+        </select>
       </div>
       <div class="adv-field">
         <label>Native Place</label>

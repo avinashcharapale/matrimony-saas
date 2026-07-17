@@ -335,6 +335,19 @@ export interface ProfileListItemDto {
   isVerified?: boolean;
   isPremiumTenant?: boolean;
   publicDisplayName?: string;
+  surname?: string;
+  createdAt?: Date;
+  dobDay?: number;
+  dobMonth?: string;
+  dobYear?: number;
+  heightFt?: number;
+  heightIn?: number;
+  nativeDistrictName?: string;
+  educationName?: string;
+  occupationName?: string;
+  occupationDetails?: string;
+  incomePeriodName?: string;
+  workingCountryName?: string;
 }
 
 export interface ProfileListItemDtoPagedResult {

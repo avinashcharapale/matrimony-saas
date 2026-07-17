@@ -41,6 +41,11 @@ export class PublicSearch implements OnInit {
     casteId: '',
     educationId: '',
     maritalStatusId: '',
+    occupationId: '',
+    occupationPlace: '',
+    annualIncomeFrom: '',
+    nativePlace: '',
+    height: 'Any',
     sortBy: 'relevance',
   };
 
@@ -50,6 +55,7 @@ export class PublicSearch implements OnInit {
   readonly casteOptions = signal<RegisterLookupOption[]>([]);
   readonly educationOptions = signal<RegisterLookupOption[]>([]);
   readonly maritalStatusOptions = signal<RegisterLookupOption[]>([]);
+  readonly occupationOptions = signal<RegisterLookupOption[]>([]);
   readonly stateOptions = signal<RegisterStateOption[]>([]);
   readonly districtOptions = signal<RegisterDistrictOption[]>([]);
 
@@ -71,6 +77,11 @@ export class PublicSearch implements OnInit {
     if (this.filters.casteId) count++;
     if (this.filters.educationId) count++;
     if (this.filters.maritalStatusId) count++;
+    if (this.filters.occupationId) count++;
+    if (this.filters.occupationPlace) count++;
+    if (this.filters.annualIncomeFrom) count++;
+    if (this.filters.nativePlace) count++;
+    if (this.filters.height !== 'Any') count++;
     return count;
   });
 
@@ -99,6 +110,10 @@ export class PublicSearch implements OnInit {
       next: (opts) => this.maritalStatusOptions.set(opts),
       error: () => {},
     });
+    this.masterData.getOccupations().subscribe({
+      next: (opts) => this.occupationOptions.set(opts),
+      error: () => {},
+    });
     this.masterData.getStates().subscribe({
       next: (opts) => this.stateOptions.set(opts),
       error: () => {},
@@ -111,7 +126,7 @@ export class PublicSearch implements OnInit {
 
     const searchGenderId = this.filters.lookingFor === 'Bride' ? 2 : this.filters.lookingFor === 'Groom' ? 1 : undefined;
 
-    this.profileClient.searchPublic({
+    const params: Record<string, unknown> = {
       genderId: searchGenderId,
       ageFrom: this.filters.ageMin,
       ageTo: this.filters.ageMax,
@@ -120,10 +135,30 @@ export class PublicSearch implements OnInit {
       casteId: this.filters.casteId ? Number(this.filters.casteId) || undefined : undefined,
       educationId: this.filters.educationId ? Number(this.filters.educationId) || undefined : undefined,
       maritalStatusId: this.filters.maritalStatusId ? Number(this.filters.maritalStatusId) || undefined : undefined,
+      occupationId: this.filters.occupationId ? Number(this.filters.occupationId) || undefined : undefined,
+      workingCity: this.filters.occupationPlace || undefined,
+      nativePlace: this.filters.nativePlace || undefined,
+      annualIncomeFrom: this.filters.annualIncomeFrom ? Number(this.filters.annualIncomeFrom) || undefined : undefined,
       searchTerm: [this.filters.name].filter(Boolean).join(' ') || undefined,
+      sortBy: this.filters.sortBy === 'age-asc' ? 'Age' : this.filters.sortBy === 'age-desc' ? 'Age' : undefined,
+      sortDescending: this.filters.sortBy === 'age-desc',
       pageNumber: this.pageNumber(),
       pageSize: this.pageSize,
-    }).subscribe({
+    };
+
+    if (this.filters.height && this.filters.height !== 'Any') {
+      const match = this.filters.height.match(/(\d+)'(\d+)/g);
+      if (match && match.length >= 2) {
+        const [fromFt, fromIn] = match[0].split("'").map(Number);
+        const [toFt, toIn] = match[1].split("'").map(Number);
+        params['heightFromFt'] = fromFt;
+        params['heightFromIn'] = fromIn || 0;
+        params['heightToFt'] = toFt;
+        params['heightToIn'] = toIn || 0;
+      }
+    }
+
+    this.profileClient.searchPublic(params as any).subscribe({
       next: (response) => {
         this.results.set(response.items ?? []);
         this.totalCount.set(response.totalCount ?? 0);
@@ -159,6 +194,11 @@ export class PublicSearch implements OnInit {
     this.filters.casteId = '';
     this.filters.educationId = '';
     this.filters.maritalStatusId = '';
+    this.filters.occupationId = '';
+    this.filters.occupationPlace = '';
+    this.filters.annualIncomeFrom = '';
+    this.filters.nativePlace = '';
+    this.filters.height = 'Any';
     this.casteOptions.set([]);
   }
 
@@ -226,6 +266,44 @@ export class PublicSearch implements OnInit {
         error: () => {},
       });
     }
+  }
+
+  getCreatedAtText(profile: ProfileListItemDto): string {
+    if (!profile.createdAt) return '';
+    const d = new Date(profile.createdAt);
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(2)}`;
+  }
+
+  getDobText(profile: ProfileListItemDto): string {
+    const day = profile.dobDay;
+    const month = profile.dobMonth;
+    const year = profile.dobYear;
+    if (day == null || month == null || year == null) return '';
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  }
+
+  getHeightText(profile: ProfileListItemDto): string {
+    if (profile.heightFt == null) return '';
+    return `${profile.heightFt}'${String(profile.heightIn ?? 0).padStart(2, '0')}"`;
+  }
+
+  getOccupationIncomeText(profile: ProfileListItemDto): string {
+    const parts: string[] = [];
+    if (profile.occupationDetails) parts.push(profile.occupationDetails);
+    if (profile.workingCity) parts.push(profile.workingCity);
+    if (profile.workingCountryName) parts.push(profile.workingCountryName);
+    if (parts.length > 0) {
+      let text = parts.join(', ');
+      if (profile.incomeAmount) text += ` / ${this.formatCurrency(profile.incomeAmount)}`;
+      return text;
+    }
+    return profile.occupationText ?? '';
+  }
+
+  private formatCurrency(amount: number): string {
+    if (amount >= 10000000) return `${(amount / 10000000).toFixed(amount % 10000000 === 0 ? 0 : 1)} Cr`;
+    if (amount >= 100000) return `${(amount / 100000).toFixed(amount % 100000 === 0 ? 0 : 1)} L`;
+    return amount.toLocaleString('en-IN');
   }
 
   closeProfileDetail(): void {
