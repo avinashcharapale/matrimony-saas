@@ -284,10 +284,7 @@ export class MyProfile implements OnInit {
   getMemberId(): string {
     const p = this.profile();
     if (!p) return '';
-    const id = p.profileId ?? 0;
-    const code = 10000 + (id % 89999);
-    const firstName = (p.fullName ?? '').split(' ')[0]?.toUpperCase() ?? '';
-    return `MBU${code} (${firstName})`;
+    return `${p.profileCode ?? ''}`;
   }
 
   private boolText(value: boolean | undefined | null): string {

@@ -46,9 +46,6 @@
         <h1>{{ profile()!.fullName }}</h1>
         <p class="member-id">{{ getMemberId() }}</p>
         <p class="member-meta">{{ profile()!.age }} years old</p>
-        @if (profile()!.locationText) {
-        <p class="member-location">{{ profile()!.locationText }}</p>
-        }
       </div>
 
       <a routerLink="/my-profile/edit" class="edit-profile-btn">Edit Profile</a>

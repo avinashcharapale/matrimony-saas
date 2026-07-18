@@ -1,12 +1,13 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { SubscriptionRepository } from './subscription.repository';
-import { SubscriptionPlanDto, SubscriptionStatusDto } from '@org/generated';
+import { SubscriptionPlanDto, SubscriptionFeatureDto, SubscriptionStatusDto } from '@org/generated';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 export interface SubscriptionState {
   plans: SubscriptionPlanDto[];
+  features: SubscriptionFeatureDto[];
   selectedPlan: SubscriptionPlanDto | null;
   status: SubscriptionStatusDto | null;
   loading: boolean;
@@ -15,6 +16,7 @@ export interface SubscriptionState {
 
 const initialState: SubscriptionState = {
   plans: [],
+  features: [],
   selectedPlan: null,
   status: null,
   loading: false,
@@ -48,7 +50,7 @@ export const SubscriptionStore = signalStore(
       );
     },
 
-    loadPlanById(id: string) {
+    loadPlanById(id: number) {
       patchState(store, { loading: true, error: null });
 
       return repository.getPlanById(id).pipe(
@@ -63,6 +65,15 @@ export const SubscriptionStore = signalStore(
           patchState(store, { loading: false, error: message });
           return of(null);
         }),
+      );
+    },
+
+    loadFeatures() {
+      return repository.getAllFeatures().pipe(
+        tap((features) => {
+          patchState(store, { features: features ?? [] });
+        }),
+        catchError(() => of([])),
       );
     },
 

@@ -687,7 +687,7 @@ export class MemberService {
       ? {
           FirstName: profile.fullName?.split(' ')[0] ?? '',
           MiddleName: '',
-          LastName: profile.fullName?.split(' ').slice(1).join(' ') ?? '',
+          LastName: profile.fullName?.split(' ').slice(-1)[0] ?? '',
           DobDay: pd.dobDay,
           DobMonth: pd.dobMonth,
           DobYear: pd.dobYear,

@@ -4,7 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { TenantService } from '../../services/tenant.service';
-import { SubscriptionPlanDto } from '@org/generated';
+import { SubscriptionPlanDto, PlanFeatureValueDto } from '@org/generated';
 import { finalize } from 'rxjs/operators';
 
 interface CheckoutResult {
@@ -33,7 +33,7 @@ export class PlansPage implements OnInit {
 
   readonly isLoading = signal(true);
   readonly isProcessing = signal(false);
-  readonly selectedPlanId = signal<string | null>(null);
+  readonly selectedPlanId = signal<number | null>(null);
   readonly checkoutResult = signal<CheckoutResult | null>(null);
   readonly error = signal<string | null>(null);
 
@@ -78,16 +78,27 @@ export class PlansPage implements OnInit {
 
   formatPrice(price?: number): string {
     if (!price) return 'Free';
-    return `₹${price.toLocaleString('en-IN')}`;
+    return `\u20B9${price.toLocaleString('en-IN')}`;
   }
 
-  formatDuration(days?: number): string {
-    if (!days) return '';
-    if (days >= 365) {
-      const years = Math.floor(days / 365);
+  formatDuration(months?: number): string {
+    if (!months) return '';
+    if (months >= 12) {
+      const years = Math.floor(months / 12);
       return years === 1 ? '1 Year' : `${years} Years`;
     }
-    const months = Math.round(days / 30);
     return months === 1 ? '1 Month' : `${months} Months`;
+  }
+
+  formatFeatureValue(feature: PlanFeatureValueDto): string {
+    if (!feature) return '';
+    const name = feature.name ?? feature.code ?? '';
+    const value = feature.value ?? '';
+    switch (feature.dataType) {
+      case 'Boolean':
+        return name;
+      default:
+        return value ? `${name}: ${value}` : name;
+    }
   }
 }

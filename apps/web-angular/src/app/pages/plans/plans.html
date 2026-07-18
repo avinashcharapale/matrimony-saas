@@ -28,36 +28,17 @@
         }
         <div class="plan-name">{{ plan.name }}</div>
         <div class="plan-price">{{ formatPrice(plan.price) }}</div>
-        <div class="plan-duration">{{ formatDuration(plan.durationInDays) }}</div>
+        <div class="plan-duration">{{ formatDuration(plan.durationMonths) }}</div>
 
         @if (plan.description) {
         <p class="plan-description">{{ plan.description }}</p>
         }
 
         <ul class="plan-features">
-          @if (plan.canViewContactDetails) {
-          <li class="feature-item included">View Contact Details</li>
-          }
-          @if (plan.canSendMessages) {
-          <li class="feature-item included">Send Messages</li>
-          }
-          @if (plan.hasAdvancedSearch) {
-          <li class="feature-item included">Advanced Search</li>
-          }
-          @if (plan.hasMatchRecommendations) {
-          <li class="feature-item included">Match Recommendations</li>
-          }
-          @if (plan.hasProfileVerification) {
-          <li class="feature-item included">Profile Verification Badge</li>
-          }
-          @if (plan.hasPrioritySupport) {
-          <li class="feature-item included">Priority Support</li>
-          }
-          @if (plan.maxProfiles) {
-          <li class="feature-item included">{{ plan.maxProfiles }} Profile Views / Day</li>
-          }
-          @if (plan.maxPhotos) {
-          <li class="feature-item included">{{ plan.maxPhotos }} Photos</li>
+          @for (feature of plan.features ?? []; track feature.code) {
+          <li class="feature-item included">
+            <span class="feature-value">{{ formatFeatureValue(feature) }}</span>
+          </li>
           }
         </ul>
 

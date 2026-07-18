@@ -245,12 +245,7 @@
                     <span class="card-value">{{ getHeightText(profile) }}</span>
                   </div>
                 }
-                @if (profile.locationText) {
-                  <div class="card-row">
-                    <span class="card-label">Residence</span>
-                    <span class="card-value">{{ profile.locationText }}</span>
-                  </div>
-                }
+
                 @if (profile.nativeDistrictName) {
                   <div class="card-row">
                     <span class="card-label">Native District</span>
@@ -355,12 +350,6 @@
               <div class="detail-field">
                 <span class="detail-label">Height</span>
                 <span class="detail-value">{{ getHeightText(profile) }}</span>
-              </div>
-            }
-            @if (profile.locationText) {
-              <div class="detail-field">
-                <span class="detail-label">Residence</span>
-                <span class="detail-value">{{ profile.locationText }}</span>
               </div>
             }
             @if (profile.nativeDistrictName) {

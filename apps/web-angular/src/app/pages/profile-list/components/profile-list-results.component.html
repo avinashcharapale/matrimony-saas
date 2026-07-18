@@ -45,7 +45,7 @@
             <span class="card-value">{{ profile.heightText }}</span>
           </div>
         }
-        @if (profile.location) {
+        @if (profile.location && isPaidUser) {
           <div class="card-row">
             <span class="card-label">Residence</span>
             <span class="card-value">{{ profile.location }}</span>

@@ -482,43 +482,72 @@ export interface ChatConversationDto {
 
 // ─── Subscription DTOs ────────────────────────────────────────────────────────
 
+export interface PlanFeatureValueDto {
+  code?: string;
+  name?: string;
+  category?: string;
+  dataType?: string;
+  value?: string;
+}
+
 export interface SubscriptionPlanDto {
-  id?: string;
+  id?: number;
+  code?: string;
   name?: string;
   description?: string;
-  code?: string;
   price?: number;
+  durationMonths?: number;
   currency?: string;
-  durationInDays?: number;
-  isActive?: boolean;
-  isPopular?: boolean;
-  maxProfiles?: number;
-  maxMatches?: number;
-  maxMessages?: number;
-  maxPhotos?: number;
-  hasPrioritySupport?: boolean;
-  hasAdvancedSearch?: boolean;
-  hasProfileVerification?: boolean;
-  hasMatchRecommendations?: boolean;
-  canViewContactDetails?: boolean;
-  canSendMessages?: boolean;
-  features?: string;
   displayOrder?: number;
+  isPopular?: boolean;
+  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
-  subscriptionFeatures?: SubscriptionFeatureDto[];
+  features?: PlanFeatureValueDto[];
 }
 
 export interface SubscriptionFeatureDto {
-  id?: string;
-  subscriptionPlanId?: string;
-  featureName?: string;
-  featureCode?: string;
+  id?: number;
+  code?: string;
+  name?: string;
   description?: string;
-  isEnabled?: boolean;
-  limit?: number;
-  configuration?: string;
+  category?: string;
+  dataType?: string;
+  defaultValue?: string;
+  isActive?: boolean;
   displayOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateSubscriptionPlanRequest {
+  code?: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  durationMonths?: number;
+  currency?: string;
+  displayOrder?: number;
+  isPopular?: boolean;
+  isActive?: boolean;
+  features?: FeatureValueRequest[];
+}
+
+export interface UpdateSubscriptionPlanRequest {
+  name?: string;
+  description?: string;
+  price?: number;
+  durationMonths?: number;
+  currency?: string;
+  displayOrder?: number;
+  isPopular?: boolean;
+  isActive?: boolean;
+  features?: FeatureValueRequest[];
+}
+
+export interface FeatureValueRequest {
+  featureCode?: string;
+  value?: string;
 }
 
 export interface SubscriptionStatusDto {
