@@ -31,17 +31,16 @@ export class PlansPage implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  readonly isLoading = signal(true);
   readonly isProcessing = signal(false);
   readonly selectedPlanId = signal<number | null>(null);
   readonly checkoutResult = signal<CheckoutResult | null>(null);
   readonly error = signal<string | null>(null);
 
   readonly plans = this.subscriptionStore.plans;
+  readonly loading = this.subscriptionStore.loading;
 
   ngOnInit(): void {
-    this.subscriptionStore.loadPlans();
-    setTimeout(() => this.isLoading.set(false), 500);
+    this.subscriptionStore.loadPlans().subscribe();
   }
 
   selectPlan(plan: SubscriptionPlanDto): void {
@@ -53,7 +52,7 @@ export class PlansPage implements OnInit {
 
     const tenantId = Number(this.tenantService.tenantHeaderId);
 
-    this.http.post<CheckoutResult>('/api/Payments/checkout', {
+    this.http.post<CheckoutResult>('/subscription/Payments/checkout', {
       planId: Number(plan.id),
     }, {
       headers: tenantId ? { 'X-Tenant-Id': String(tenantId) } : {},
