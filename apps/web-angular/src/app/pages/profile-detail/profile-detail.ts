@@ -311,8 +311,9 @@ export class ProfileDetail implements OnInit {
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
       const tenantId = Number(this.tenantService.tenantHeaderId);
-      if (tenantId) {
-        this.subscriptionStore.loadSubscriptionStatus(tenantId);
+      const userId = this.authService.getSession()?.userId ?? 0;
+      if (tenantId && userId) {
+        this.subscriptionStore.loadSubscriptionStatus(userId, tenantId);
       }
     }
 

@@ -77,8 +77,8 @@ export const SubscriptionStore = signalStore(
       );
     },
 
-    loadSubscriptionStatus(tenantId: number) {
-      return repository.getSubscriptionStatus(tenantId).pipe(
+    loadSubscriptionStatus(userId: number, tenantId: number) {
+      return repository.getUserSubscriptionStatus(userId, tenantId).pipe(
         tap((status) => {
           patchState(store, { status });
         }),

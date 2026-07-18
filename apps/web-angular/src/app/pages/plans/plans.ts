@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { TenantService } from '../../services/tenant.service';
+import { AuthService } from '../../services/auth.service';
 import { SubscriptionPlanDto, PlanFeatureValueDto } from '@org/generated';
 import { finalize } from 'rxjs/operators';
 
@@ -28,6 +29,7 @@ interface CheckoutResult {
 export class PlansPage implements OnInit {
   private readonly subscriptionStore = inject(SubscriptionStore);
   private readonly tenantService = inject(TenantService);
+  private readonly authService = inject(AuthService);
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
@@ -61,7 +63,10 @@ export class PlansPage implements OnInit {
     ).subscribe({
       next: (result) => {
         this.checkoutResult.set(result);
-        this.subscriptionStore.loadSubscriptionStatus(tenantId);
+        const userId = this.authService.getSession()?.userId ?? 0;
+        if (userId) {
+          this.subscriptionStore.loadSubscriptionStatus(userId, tenantId);
+        }
       },
       error: (err) => {
         console.error('Checkout failed:', err);

@@ -76,8 +76,9 @@ export class ProfileList implements OnInit {
     this.isAuthenticated.set(this.authService.isAuthenticated());
     if (this.isAuthenticated()) {
       const tenantId = Number(this.tenantService.tenantHeaderId);
-      if (tenantId) {
-        this.subscriptionStore.loadSubscriptionStatus(tenantId);
+      const userId = this.authService.getSession()?.userId ?? 0;
+      if (tenantId && userId) {
+        this.subscriptionStore.loadSubscriptionStatus(userId, tenantId);
       }
       this.loadMyProfile();
     } else {
