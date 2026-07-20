@@ -78,7 +78,7 @@ export class ProfileList implements OnInit {
       const tenantId = Number(this.tenantService.tenantHeaderId);
       const userId = this.authService.getSession()?.userId ?? 0;
       if (tenantId && userId) {
-        this.subscriptionStore.loadSubscriptionStatus(userId, tenantId);
+        this.subscriptionStore.loadSubscriptionStatus(userId, tenantId).subscribe();
       }
       this.loadMyProfile();
     } else {

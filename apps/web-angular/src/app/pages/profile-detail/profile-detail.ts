@@ -313,7 +313,7 @@ export class ProfileDetail implements OnInit {
       const tenantId = Number(this.tenantService.tenantHeaderId);
       const userId = this.authService.getSession()?.userId ?? 0;
       if (tenantId && userId) {
-        this.subscriptionStore.loadSubscriptionStatus(userId, tenantId);
+        this.subscriptionStore.loadSubscriptionStatus(userId, tenantId).subscribe();
       }
     }
 
@@ -559,7 +559,7 @@ export class ProfileDetail implements OnInit {
     this.isSendingInterest.set(true);
     const tenantId = Number(this.tenantService.tenantHeaderId);
 
-    this.http.post('/api/InterestRequests', {
+    this.http.post('/match/InterestRequests', {
       targetProfileId,
       message: '',
     }, {

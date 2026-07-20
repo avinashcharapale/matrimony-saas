@@ -65,7 +65,7 @@ export class PlansPage implements OnInit {
         this.checkoutResult.set(result);
         const userId = this.authService.getSession()?.userId ?? 0;
         if (userId) {
-          this.subscriptionStore.loadSubscriptionStatus(userId, tenantId);
+          this.subscriptionStore.loadSubscriptionStatus(userId, tenantId).subscribe();
         }
       },
       error: (err) => {
