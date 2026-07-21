@@ -35,6 +35,25 @@
     "changeOrigin": true,
     "logLevel": "info"
   },
+  "/notification": {
+    "target": "http://127.0.0.1:8000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info"
+  },
+  "/billing": {
+    "target": "http://127.0.0.1:8000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info"
+  },
+  "/hubs": {
+    "target": "ws://127.0.0.1:8000",
+    "secure": false,
+    "changeOrigin": true,
+    "ws": true,
+    "logLevel": "info"
+  },
   "/api": {
     "target": "http://127.0.0.1:8000",
     "secure": false,

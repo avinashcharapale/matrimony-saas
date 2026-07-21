@@ -558,6 +558,102 @@ export interface SubscriptionStatusDto {
   isTrial?: boolean;
 }
 
+// ─── Notification DTOs ──────────────────────────────────────────────────────
+
+export interface NotificationDto {
+  notificationId?: number;
+  title?: string;
+  body?: string;
+  summary?: string;
+  actionUrl?: string;
+  actionLabel?: string;
+  imageUrl?: string;
+  priority?: string;
+  isRead?: boolean;
+  readAt?: string;
+  referenceType?: string;
+  referenceId?: number;
+  typeName?: string;
+  typeCode?: string;
+  categoryName?: string;
+  categoryCode?: string;
+  createdAt?: string;
+}
+
+export interface NotificationListResponse {
+  notifications?: NotificationDto[];
+  unreadCount?: number;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface NotificationDetailResponse {
+  notificationId?: number;
+  title?: string;
+  body?: string;
+  summary?: string;
+  actionUrl?: string;
+  actionLabel?: string;
+  imageUrl?: string;
+  priority?: string;
+  isRead?: boolean;
+  readAt?: string;
+  referenceType?: string;
+  referenceId?: number;
+  metadata?: string;
+  typeName?: string;
+  typeCode?: string;
+  categoryName?: string;
+  categoryCode?: string;
+  createdAt?: string;
+}
+
+export interface SendNotificationRequestDto {
+  userId?: number;
+  typeCode?: string;
+  title?: string;
+  body?: string;
+  summary?: string;
+  actionUrl?: string;
+  actionLabel?: string;
+  imageUrl?: string;
+  referenceType?: string;
+  referenceId?: number;
+  metadata?: string;
+}
+
+// ─── Billing DTOs ─────────────────────────────────────────────────────────
+
+export interface PaymentTransactionDto {
+  paymentId?: number;
+  subscriptionId?: number;
+  tenantId?: number;
+  userId?: number;
+  amount?: number;
+  currency?: string;
+  status?: string;
+  paymentGateway?: string;
+  gatewayPaymentId?: string;
+  gatewayOrderId?: string;
+  failureReason?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CheckoutRequestDto {
+  planId?: number;
+}
+
+export interface CheckoutResponseDto {
+  success?: boolean;
+  subscriptionId?: number;
+  paymentId?: string;
+  planName?: string;
+  startDate?: string;
+  endDate?: string;
+  amount?: number;
+}
+
 // ─── Geo DTOs ─────────────────────────────────────────────────────────────────
 
 export interface GeoCountryDto {

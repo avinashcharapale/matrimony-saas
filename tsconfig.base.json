@@ -27,6 +27,13 @@
         "libs/data-access/subscription/src/index.ts"
       ],
       "@org/data-access-geo": ["libs/data-access/geo/src/index.ts"],
+      "@org/data-access-notification": [
+        "libs/data-access/notification/src/index.ts"
+      ],
+      "@org/data-access-billing": [
+        "libs/data-access/billing/src/index.ts"
+      ],
+      "@org/core-signalr": ["libs/core/signalr/src/index.ts"],
       "@org/core": ["libs/core/src/index.ts"],
       "@org/core-auth": ["libs/core/auth/src/index.ts"],
       "@org/core-tenant": ["libs/core/tenant/src/index.ts"],

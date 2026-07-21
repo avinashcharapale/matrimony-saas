@@ -1,0 +1,11 @@
+{
+  "name": "data-access-billing",
+  "sourceRoot": "libs/data-access/billing/src",
+  "projectType": "library",
+  "tags": ["scope:data-access"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
