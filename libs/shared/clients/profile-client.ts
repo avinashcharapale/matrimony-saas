@@ -2289,9 +2289,6 @@ export class PartnerPreferenceDto implements IPartnerPreferenceDto {
     expectedHeightFt?: number | undefined;
     expectedHeightIn?: number | undefined;
     divorcee?: boolean | undefined;
-    expectedCasteNoBar?: boolean;
-    expectedEducationNoBar?: boolean;
-    expectedOccupationNoBar?: boolean;
     expectedIncomeRangeId?: number | undefined;
 
     constructor(data?: IPartnerPreferenceDto) {
@@ -2310,9 +2307,6 @@ export class PartnerPreferenceDto implements IPartnerPreferenceDto {
             this.expectedHeightFt = _data["expectedHeightFt"];
             this.expectedHeightIn = _data["expectedHeightIn"];
             this.divorcee = _data["divorcee"];
-            this.expectedCasteNoBar = _data["expectedCasteNoBar"];
-            this.expectedEducationNoBar = _data["expectedEducationNoBar"];
-            this.expectedOccupationNoBar = _data["expectedOccupationNoBar"];
             this.expectedIncomeRangeId = _data["expectedIncomeRangeId"];
         }
     }
@@ -2331,9 +2325,6 @@ export class PartnerPreferenceDto implements IPartnerPreferenceDto {
         data["expectedHeightFt"] = this.expectedHeightFt;
         data["expectedHeightIn"] = this.expectedHeightIn;
         data["divorcee"] = this.divorcee;
-        data["expectedCasteNoBar"] = this.expectedCasteNoBar;
-        data["expectedEducationNoBar"] = this.expectedEducationNoBar;
-        data["expectedOccupationNoBar"] = this.expectedOccupationNoBar;
         data["expectedIncomeRangeId"] = this.expectedIncomeRangeId;
         return data;
     }
@@ -2345,9 +2336,6 @@ export interface IPartnerPreferenceDto {
     expectedHeightFt?: number | undefined;
     expectedHeightIn?: number | undefined;
     divorcee?: boolean | undefined;
-    expectedCasteNoBar?: boolean;
-    expectedEducationNoBar?: boolean;
-    expectedOccupationNoBar?: boolean;
     expectedIncomeRangeId?: number | undefined;
 }
 
@@ -2358,7 +2346,6 @@ export class PersonalDetailsDto implements IPersonalDetailsDto {
     dobDay?: number;
     dobMonth?: string | undefined;
     dobYear?: number;
-    dateOfBirth?: Date | undefined;
     genderId!: number;
     religionId!: number;
     casteId!: number;
@@ -2397,7 +2384,6 @@ export class PersonalDetailsDto implements IPersonalDetailsDto {
             this.dobDay = _data["dobDay"];
             this.dobMonth = _data["dobMonth"];
             this.dobYear = _data["dobYear"];
-            this.dateOfBirth = _data["dateOfBirth"] ? new Date(_data["dateOfBirth"].toString()) : undefined as any;
             this.genderId = _data["genderId"];
             this.religionId = _data["religionId"];
             this.casteId = _data["casteId"];
@@ -2436,7 +2422,6 @@ export class PersonalDetailsDto implements IPersonalDetailsDto {
         data["dobDay"] = this.dobDay;
         data["dobMonth"] = this.dobMonth;
         data["dobYear"] = this.dobYear;
-        data["dateOfBirth"] = this.dateOfBirth ? formatDate(this.dateOfBirth) : undefined as any;
         data["genderId"] = this.genderId;
         data["religionId"] = this.religionId;
         data["casteId"] = this.casteId;
@@ -2468,7 +2453,6 @@ export interface IPersonalDetailsDto {
     dobDay?: number;
     dobMonth?: string | undefined;
     dobYear?: number;
-    dateOfBirth?: Date | undefined;
     genderId: number;
     religionId: number;
     casteId: number;
@@ -3357,12 +3341,6 @@ export interface IProfilePhotoDtoCreate {
     fileName?: string | undefined;
     fileUrl?: string | undefined;
     isPrimary?: boolean;
-}
-
-function formatDate(d: Date) {
-    return d.getFullYear() + '-' + 
-        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
-        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
 }
 
 export interface FileParameter {

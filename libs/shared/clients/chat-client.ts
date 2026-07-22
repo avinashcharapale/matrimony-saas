@@ -412,8 +412,8 @@ export class AuthenticationMethod implements IAuthenticationMethod {
     isPrimary?: boolean;
     configuration?: string | undefined;
     totpSecret?: string | undefined;
-    failedAttempts?: number;
-    lockedUntil?: Date | undefined;
+    failedLoginAttempts?: number;
+    lockoutEnd?: Date | undefined;
     lastUsedAt?: Date | undefined;
     user?: User;
 
@@ -439,8 +439,8 @@ export class AuthenticationMethod implements IAuthenticationMethod {
             this.isPrimary = _data["isPrimary"];
             this.configuration = _data["configuration"];
             this.totpSecret = _data["totpSecret"];
-            this.failedAttempts = _data["failedAttempts"];
-            this.lockedUntil = _data["lockedUntil"] ? new Date(_data["lockedUntil"].toString()) : undefined as any;
+            this.failedLoginAttempts = _data["failedLoginAttempts"];
+            this.lockoutEnd = _data["lockoutEnd"] ? new Date(_data["lockoutEnd"].toString()) : undefined as any;
             this.lastUsedAt = _data["lastUsedAt"] ? new Date(_data["lastUsedAt"].toString()) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
         }
@@ -466,8 +466,8 @@ export class AuthenticationMethod implements IAuthenticationMethod {
         data["isPrimary"] = this.isPrimary;
         data["configuration"] = this.configuration;
         data["totpSecret"] = this.totpSecret;
-        data["failedAttempts"] = this.failedAttempts;
-        data["lockedUntil"] = this.lockedUntil ? this.lockedUntil.toISOString() : undefined as any;
+        data["failedLoginAttempts"] = this.failedLoginAttempts;
+        data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : undefined as any;
         data["lastUsedAt"] = this.lastUsedAt ? this.lastUsedAt.toISOString() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         return data;
@@ -486,8 +486,8 @@ export interface IAuthenticationMethod {
     isPrimary?: boolean;
     configuration?: string | undefined;
     totpSecret?: string | undefined;
-    failedAttempts?: number;
-    lockedUntil?: Date | undefined;
+    failedLoginAttempts?: number;
+    lockoutEnd?: Date | undefined;
     lastUsedAt?: Date | undefined;
     user?: User;
 }
@@ -1056,10 +1056,6 @@ export class ChatConversation implements IChatConversation {
     lastMessageId?: number | undefined;
     lastMessagePreview?: string | undefined;
     isArchived?: boolean;
-    isBlocked?: boolean;
-    blockedByUserId?: number | undefined;
-    blockedDate?: Date | undefined;
-    blockReason?: string | undefined;
     totalMessagesCount?: number;
     unreadMessagesCount1?: number;
     unreadMessagesCount2?: number;
@@ -1105,10 +1101,6 @@ export class ChatConversation implements IChatConversation {
             this.lastMessageId = _data["lastMessageId"];
             this.lastMessagePreview = _data["lastMessagePreview"];
             this.isArchived = _data["isArchived"];
-            this.isBlocked = _data["isBlocked"];
-            this.blockedByUserId = _data["blockedByUserId"];
-            this.blockedDate = _data["blockedDate"] ? new Date(_data["blockedDate"].toString()) : undefined as any;
-            this.blockReason = _data["blockReason"];
             this.totalMessagesCount = _data["totalMessagesCount"];
             this.unreadMessagesCount1 = _data["unreadMessagesCount1"];
             this.unreadMessagesCount2 = _data["unreadMessagesCount2"];
@@ -1166,10 +1158,6 @@ export class ChatConversation implements IChatConversation {
         data["lastMessageId"] = this.lastMessageId;
         data["lastMessagePreview"] = this.lastMessagePreview;
         data["isArchived"] = this.isArchived;
-        data["isBlocked"] = this.isBlocked;
-        data["blockedByUserId"] = this.blockedByUserId;
-        data["blockedDate"] = this.blockedDate ? this.blockedDate.toISOString() : undefined as any;
-        data["blockReason"] = this.blockReason;
         data["totalMessagesCount"] = this.totalMessagesCount;
         data["unreadMessagesCount1"] = this.unreadMessagesCount1;
         data["unreadMessagesCount2"] = this.unreadMessagesCount2;
@@ -1220,10 +1208,6 @@ export interface IChatConversation {
     lastMessageId?: number | undefined;
     lastMessagePreview?: string | undefined;
     isArchived?: boolean;
-    isBlocked?: boolean;
-    blockedByUserId?: number | undefined;
-    blockedDate?: Date | undefined;
-    blockReason?: string | undefined;
     totalMessagesCount?: number;
     unreadMessagesCount1?: number;
     unreadMessagesCount2?: number;
@@ -1971,12 +1955,12 @@ export class CompatibilityRule implements ICompatibilityRule {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     ruleId?: number;
-    tenantId?: number;
     ruleName?: string | undefined;
     scoreDimension?: ScoreDimension;
     defaultWeight?: number;
@@ -2000,12 +1984,12 @@ export class CompatibilityRule implements ICompatibilityRule {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.isDeleted = _data["isDeleted"];
             this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
             this.deletedBy = _data["deletedBy"];
             this.rowVersion = _data["rowVersion"];
             this.ruleId = _data["ruleId"];
-            this.tenantId = _data["tenantId"];
             this.ruleName = _data["ruleName"];
             this.scoreDimension = _data["scoreDimension"];
             this.defaultWeight = _data["defaultWeight"];
@@ -2029,12 +2013,12 @@ export class CompatibilityRule implements ICompatibilityRule {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["isDeleted"] = this.isDeleted;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
         data["deletedBy"] = this.deletedBy;
         data["rowVersion"] = this.rowVersion;
         data["ruleId"] = this.ruleId;
-        data["tenantId"] = this.tenantId;
         data["ruleName"] = this.ruleName;
         data["scoreDimension"] = this.scoreDimension;
         data["defaultWeight"] = this.defaultWeight;
@@ -2051,12 +2035,12 @@ export interface ICompatibilityRule {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     ruleId?: number;
-    tenantId?: number;
     ruleName?: string | undefined;
     scoreDimension?: ScoreDimension;
     defaultWeight?: number;
@@ -2455,10 +2439,10 @@ export class CouponUsage implements ICouponUsage {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     couponUsageId?: number;
     couponId?: number;
     userId?: number;
-    tenantId?: number;
     invoiceId?: number;
     discountAmount?: number;
     usedAt?: Date;
@@ -2480,10 +2464,10 @@ export class CouponUsage implements ICouponUsage {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.couponUsageId = _data["couponUsageId"];
             this.couponId = _data["couponId"];
             this.userId = _data["userId"];
-            this.tenantId = _data["tenantId"];
             this.invoiceId = _data["invoiceId"];
             this.discountAmount = _data["discountAmount"];
             this.usedAt = _data["usedAt"] ? new Date(_data["usedAt"].toString()) : undefined as any;
@@ -2505,10 +2489,10 @@ export class CouponUsage implements ICouponUsage {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["couponUsageId"] = this.couponUsageId;
         data["couponId"] = this.couponId;
         data["userId"] = this.userId;
-        data["tenantId"] = this.tenantId;
         data["invoiceId"] = this.invoiceId;
         data["discountAmount"] = this.discountAmount;
         data["usedAt"] = this.usedAt ? this.usedAt.toISOString() : undefined as any;
@@ -2523,10 +2507,10 @@ export interface ICouponUsage {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     couponUsageId?: number;
     couponId?: number;
     userId?: number;
-    tenantId?: number;
     invoiceId?: number;
     discountAmount?: number;
     usedAt?: Date;
@@ -4700,12 +4684,12 @@ export class Match implements IMatch {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     matchId?: number;
-    tenantId?: number;
     profileIdA?: number;
     profileIdB?: number;
     matchType?: MatchType;
@@ -4734,12 +4718,12 @@ export class Match implements IMatch {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.isDeleted = _data["isDeleted"];
             this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
             this.deletedBy = _data["deletedBy"];
             this.rowVersion = _data["rowVersion"];
             this.matchId = _data["matchId"];
-            this.tenantId = _data["tenantId"];
             this.profileIdA = _data["profileIdA"];
             this.profileIdB = _data["profileIdB"];
             this.matchType = _data["matchType"];
@@ -4772,12 +4756,12 @@ export class Match implements IMatch {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["isDeleted"] = this.isDeleted;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
         data["deletedBy"] = this.deletedBy;
         data["rowVersion"] = this.rowVersion;
         data["matchId"] = this.matchId;
-        data["tenantId"] = this.tenantId;
         data["profileIdA"] = this.profileIdA;
         data["profileIdB"] = this.profileIdB;
         data["matchType"] = this.matchType;
@@ -4803,12 +4787,12 @@ export interface IMatch {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     matchId?: number;
-    tenantId?: number;
     profileIdA?: number;
     profileIdB?: number;
     matchType?: MatchType;
@@ -5137,88 +5121,22 @@ export interface IMessageReadStatusDto {
     updatedAt?: Date;
 }
 
-export class MfaBackupCode implements IMfaBackupCode {
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    backupCodeId?: number;
-    userId?: number;
-    codeHash?: string | undefined;
-    isUsed?: boolean;
-    usedAt?: Date | undefined;
-    createdAt?: Date;
-    user?: User;
-
-    constructor(data?: IMfaBackupCode) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.backupCodeId = _data["backupCodeId"];
-            this.userId = _data["userId"];
-            this.codeHash = _data["codeHash"];
-            this.isUsed = _data["isUsed"];
-            this.usedAt = _data["usedAt"] ? new Date(_data["usedAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): MfaBackupCode {
-        data = typeof data === 'object' ? data : {};
-        let result = new MfaBackupCode();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["backupCodeId"] = this.backupCodeId;
-        data["userId"] = this.userId;
-        data["codeHash"] = this.codeHash;
-        data["isUsed"] = this.isUsed;
-        data["usedAt"] = this.usedAt ? this.usedAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IMfaBackupCode {
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    backupCodeId?: number;
-    userId?: number;
-    codeHash?: string | undefined;
-    isUsed?: boolean;
-    usedAt?: Date | undefined;
-    createdAt?: Date;
-    user?: User;
+export enum MfaCodeType {
+    _1 = 1,
+    _2 = 2,
 }
 
 export class MfaRecoveryCode implements IMfaRecoveryCode {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
     recoveryCodeId?: number;
     userId?: number;
     codeHash?: string | undefined;
+    codeType?: MfaCodeType;
     isUsed?: boolean;
     usedAt?: Date | undefined;
-    createdAt?: Date;
     user?: User;
 
     constructor(data?: IMfaRecoveryCode) {
@@ -5232,15 +5150,16 @@ export class MfaRecoveryCode implements IMfaRecoveryCode {
 
     init(_data?: any) {
         if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
             this.recoveryCodeId = _data["recoveryCodeId"];
             this.userId = _data["userId"];
             this.codeHash = _data["codeHash"];
+            this.codeType = _data["codeType"];
             this.isUsed = _data["isUsed"];
             this.usedAt = _data["usedAt"] ? new Date(_data["usedAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
         }
     }
@@ -5254,30 +5173,32 @@ export class MfaRecoveryCode implements IMfaRecoveryCode {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
         data["recoveryCodeId"] = this.recoveryCodeId;
         data["userId"] = this.userId;
         data["codeHash"] = this.codeHash;
+        data["codeType"] = this.codeType;
         data["isUsed"] = this.isUsed;
         data["usedAt"] = this.usedAt ? this.usedAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         return data;
     }
 }
 
 export interface IMfaRecoveryCode {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
     recoveryCodeId?: number;
     userId?: number;
     codeHash?: string | undefined;
+    codeType?: MfaCodeType;
     isUsed?: boolean;
     usedAt?: Date | undefined;
-    createdAt?: Date;
     user?: User;
 }
 
@@ -5582,8 +5503,8 @@ export class Oauth2Provider implements IOauth2Provider {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
-    providerId?: number;
     tenantId?: number;
+    providerId?: number;
     providerName?: string | undefined;
     clientId?: string | undefined;
     clientSecret?: string | undefined;
@@ -5611,8 +5532,8 @@ export class Oauth2Provider implements IOauth2Provider {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
-            this.providerId = _data["providerId"];
             this.tenantId = _data["tenantId"];
+            this.providerId = _data["providerId"];
             this.providerName = _data["providerName"];
             this.clientId = _data["clientId"];
             this.clientSecret = _data["clientSecret"];
@@ -5644,8 +5565,8 @@ export class Oauth2Provider implements IOauth2Provider {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
-        data["providerId"] = this.providerId;
         data["tenantId"] = this.tenantId;
+        data["providerId"] = this.providerId;
         data["providerName"] = this.providerName;
         data["clientId"] = this.clientId;
         data["clientSecret"] = this.clientSecret;
@@ -5670,8 +5591,8 @@ export interface IOauth2Provider {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
-    providerId?: number;
     tenantId?: number;
+    providerId?: number;
     providerName?: string | undefined;
     clientId?: string | undefined;
     clientSecret?: string | undefined;
@@ -6026,14 +5947,14 @@ export interface IOneTimePurchase {
 }
 
 export class PasswordHistory implements IPasswordHistory {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     passwordHistoryId?: number;
     userId?: number;
-    tenantId?: number;
     passwordHash?: string | undefined;
-    createdAt?: Date;
     user?: User;
 
     constructor(data?: IPasswordHistory) {
@@ -6047,14 +5968,14 @@ export class PasswordHistory implements IPasswordHistory {
 
     init(_data?: any) {
         if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.passwordHistoryId = _data["passwordHistoryId"];
             this.userId = _data["userId"];
-            this.tenantId = _data["tenantId"];
             this.passwordHash = _data["passwordHash"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
         }
     }
@@ -6068,43 +5989,43 @@ export class PasswordHistory implements IPasswordHistory {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["passwordHistoryId"] = this.passwordHistoryId;
         data["userId"] = this.userId;
-        data["tenantId"] = this.tenantId;
         data["passwordHash"] = this.passwordHash;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         return data;
     }
 }
 
 export interface IPasswordHistory {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     passwordHistoryId?: number;
     userId?: number;
-    tenantId?: number;
     passwordHash?: string | undefined;
-    createdAt?: Date;
     user?: User;
 }
 
 export class PasswordResetToken implements IPasswordResetToken {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     resetTokenId?: number;
     userId?: number;
-    tenantId?: number;
     tokenHash?: string | undefined;
     expiresAt?: Date;
     isUsed?: boolean;
     usedAt?: Date | undefined;
-    createdAt?: Date;
     user?: User;
 
     constructor(data?: IPasswordResetToken) {
@@ -6118,17 +6039,17 @@ export class PasswordResetToken implements IPasswordResetToken {
 
     init(_data?: any) {
         if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.resetTokenId = _data["resetTokenId"];
             this.userId = _data["userId"];
-            this.tenantId = _data["tenantId"];
             this.tokenHash = _data["tokenHash"];
             this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
             this.isUsed = _data["isUsed"];
             this.usedAt = _data["usedAt"] ? new Date(_data["usedAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
         }
     }
@@ -6142,191 +6063,35 @@ export class PasswordResetToken implements IPasswordResetToken {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["resetTokenId"] = this.resetTokenId;
         data["userId"] = this.userId;
-        data["tenantId"] = this.tenantId;
         data["tokenHash"] = this.tokenHash;
         data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
         data["isUsed"] = this.isUsed;
         data["usedAt"] = this.usedAt ? this.usedAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         return data;
     }
 }
 
 export interface IPasswordResetToken {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     resetTokenId?: number;
     userId?: number;
-    tenantId?: number;
     tokenHash?: string | undefined;
     expiresAt?: Date;
     isUsed?: boolean;
     usedAt?: Date | undefined;
-    createdAt?: Date;
     user?: User;
-}
-
-export class Payment implements IPayment {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    paymentId?: number;
-    userId?: number | undefined;
-    subscriptionId?: number | undefined;
-    userSubscriptionId?: number | undefined;
-    amount?: number;
-    paymentGateway?: string | undefined;
-    transactionReference?: string | undefined;
-    status?: string | undefined;
-    verifiedBy?: string | undefined;
-    notes?: string | undefined;
-    currencyCode?: string | undefined;
-    paymentIntentId?: string | undefined;
-    idempotencyKey?: string | undefined;
-    gatewayResponseCode?: string | undefined;
-    gatewayResponseJson?: string | undefined;
-    succeededAt?: Date | undefined;
-    failedAt?: Date | undefined;
-    refundedAt?: Date | undefined;
-    tenant?: Tenant;
-    tenantSubscription?: TenantSubscription;
-    user?: User;
-    userSubscription?: UserSubscription;
-
-    constructor(data?: IPayment) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.paymentId = _data["paymentId"];
-            this.userId = _data["userId"];
-            this.subscriptionId = _data["subscriptionId"];
-            this.userSubscriptionId = _data["userSubscriptionId"];
-            this.amount = _data["amount"];
-            this.paymentGateway = _data["paymentGateway"];
-            this.transactionReference = _data["transactionReference"];
-            this.status = _data["status"];
-            this.verifiedBy = _data["verifiedBy"];
-            this.notes = _data["notes"];
-            this.currencyCode = _data["currencyCode"];
-            this.paymentIntentId = _data["paymentIntentId"];
-            this.idempotencyKey = _data["idempotencyKey"];
-            this.gatewayResponseCode = _data["gatewayResponseCode"];
-            this.gatewayResponseJson = _data["gatewayResponseJson"];
-            this.succeededAt = _data["succeededAt"] ? new Date(_data["succeededAt"].toString()) : undefined as any;
-            this.failedAt = _data["failedAt"] ? new Date(_data["failedAt"].toString()) : undefined as any;
-            this.refundedAt = _data["refundedAt"] ? new Date(_data["refundedAt"].toString()) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.tenantSubscription = _data["tenantSubscription"] ? TenantSubscription.fromJS(_data["tenantSubscription"]) : undefined as any;
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
-            this.userSubscription = _data["userSubscription"] ? UserSubscription.fromJS(_data["userSubscription"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): Payment {
-        data = typeof data === 'object' ? data : {};
-        let result = new Payment();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["paymentId"] = this.paymentId;
-        data["userId"] = this.userId;
-        data["subscriptionId"] = this.subscriptionId;
-        data["userSubscriptionId"] = this.userSubscriptionId;
-        data["amount"] = this.amount;
-        data["paymentGateway"] = this.paymentGateway;
-        data["transactionReference"] = this.transactionReference;
-        data["status"] = this.status;
-        data["verifiedBy"] = this.verifiedBy;
-        data["notes"] = this.notes;
-        data["currencyCode"] = this.currencyCode;
-        data["paymentIntentId"] = this.paymentIntentId;
-        data["idempotencyKey"] = this.idempotencyKey;
-        data["gatewayResponseCode"] = this.gatewayResponseCode;
-        data["gatewayResponseJson"] = this.gatewayResponseJson;
-        data["succeededAt"] = this.succeededAt ? this.succeededAt.toISOString() : undefined as any;
-        data["failedAt"] = this.failedAt ? this.failedAt.toISOString() : undefined as any;
-        data["refundedAt"] = this.refundedAt ? this.refundedAt.toISOString() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["tenantSubscription"] = this.tenantSubscription ? this.tenantSubscription.toJSON() : undefined as any;
-        data["user"] = this.user ? this.user.toJSON() : undefined as any;
-        data["userSubscription"] = this.userSubscription ? this.userSubscription.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IPayment {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    paymentId?: number;
-    userId?: number | undefined;
-    subscriptionId?: number | undefined;
-    userSubscriptionId?: number | undefined;
-    amount?: number;
-    paymentGateway?: string | undefined;
-    transactionReference?: string | undefined;
-    status?: string | undefined;
-    verifiedBy?: string | undefined;
-    notes?: string | undefined;
-    currencyCode?: string | undefined;
-    paymentIntentId?: string | undefined;
-    idempotencyKey?: string | undefined;
-    gatewayResponseCode?: string | undefined;
-    gatewayResponseJson?: string | undefined;
-    succeededAt?: Date | undefined;
-    failedAt?: Date | undefined;
-    refundedAt?: Date | undefined;
-    tenant?: Tenant;
-    tenantSubscription?: TenantSubscription;
-    user?: User;
-    userSubscription?: UserSubscription;
 }
 
 export class PaymentAttempt implements IPaymentAttempt {
@@ -6550,8 +6315,8 @@ export class PaymentMethod implements IPaymentMethod {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
-    paymentMethodId?: number;
     tenantId?: number;
+    paymentMethodId?: number;
     userId?: number;
     paymentGatewayId?: number;
     gatewayToken?: string | undefined;
@@ -6581,8 +6346,8 @@ export class PaymentMethod implements IPaymentMethod {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
-            this.paymentMethodId = _data["paymentMethodId"];
             this.tenantId = _data["tenantId"];
+            this.paymentMethodId = _data["paymentMethodId"];
             this.userId = _data["userId"];
             this.paymentGatewayId = _data["paymentGatewayId"];
             this.gatewayToken = _data["gatewayToken"];
@@ -6612,8 +6377,8 @@ export class PaymentMethod implements IPaymentMethod {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
-        data["paymentMethodId"] = this.paymentMethodId;
         data["tenantId"] = this.tenantId;
+        data["paymentMethodId"] = this.paymentMethodId;
         data["userId"] = this.userId;
         data["paymentGatewayId"] = this.paymentGatewayId;
         data["gatewayToken"] = this.gatewayToken;
@@ -6636,8 +6401,8 @@ export interface IPaymentMethod {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
-    paymentMethodId?: number;
     tenantId?: number;
+    paymentMethodId?: number;
     userId?: number;
     paymentGatewayId?: number;
     gatewayToken?: string | undefined;
@@ -7022,8 +6787,8 @@ export class PermissionCategory implements IPermissionCategory {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
-    categoryId?: number;
     tenantId?: number;
+    categoryId?: number;
     categoryName?: string | undefined;
     displayOrder?: number;
     tenant?: Tenant;
@@ -7043,8 +6808,8 @@ export class PermissionCategory implements IPermissionCategory {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
-            this.categoryId = _data["categoryId"];
             this.tenantId = _data["tenantId"];
+            this.categoryId = _data["categoryId"];
             this.categoryName = _data["categoryName"];
             this.displayOrder = _data["displayOrder"];
             this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
@@ -7064,8 +6829,8 @@ export class PermissionCategory implements IPermissionCategory {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
-        data["categoryId"] = this.categoryId;
         data["tenantId"] = this.tenantId;
+        data["categoryId"] = this.categoryId;
         data["categoryName"] = this.categoryName;
         data["displayOrder"] = this.displayOrder;
         data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
@@ -7078,8 +6843,8 @@ export interface IPermissionCategory {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
-    categoryId?: number;
     tenantId?: number;
+    categoryId?: number;
     categoryName?: string | undefined;
     displayOrder?: number;
     tenant?: Tenant;
@@ -8414,13 +8179,13 @@ export class ProfileDomainEvent implements IProfileDomainEvent {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     eventId?: number;
     profileId?: number;
-    tenantId?: number;
     eventType?: ProfileDomainEventType;
     oldSnapshot?: string | undefined;
     newSnapshot?: string | undefined;
@@ -8443,13 +8208,13 @@ export class ProfileDomainEvent implements IProfileDomainEvent {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.isDeleted = _data["isDeleted"];
             this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
             this.deletedBy = _data["deletedBy"];
             this.rowVersion = _data["rowVersion"];
             this.eventId = _data["eventId"];
             this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
             this.eventType = _data["eventType"];
             this.oldSnapshot = _data["oldSnapshot"];
             this.newSnapshot = _data["newSnapshot"];
@@ -8472,13 +8237,13 @@ export class ProfileDomainEvent implements IProfileDomainEvent {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["isDeleted"] = this.isDeleted;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
         data["deletedBy"] = this.deletedBy;
         data["rowVersion"] = this.rowVersion;
         data["eventId"] = this.eventId;
         data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
         data["eventType"] = this.eventType;
         data["oldSnapshot"] = this.oldSnapshot;
         data["newSnapshot"] = this.newSnapshot;
@@ -8494,13 +8259,13 @@ export interface IProfileDomainEvent {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     eventId?: number;
     profileId?: number;
-    tenantId?: number;
     eventType?: ProfileDomainEventType;
     oldSnapshot?: string | undefined;
     newSnapshot?: string | undefined;
@@ -8542,9 +8307,6 @@ export class ProfileExpectation implements IProfileExpectation {
     expectedHeightFt?: number | undefined;
     expectedHeightIn?: number | undefined;
     divorcee?: boolean | undefined;
-    expectedCasteNoBar?: boolean;
-    expectedEducationNoBar?: boolean;
-    expectedOccupationNoBar?: boolean;
     expectedIncomeRangeId?: number | undefined;
     expectedIncomeRange?: IncomeRange;
     profile?: Profile;
@@ -8575,9 +8337,6 @@ export class ProfileExpectation implements IProfileExpectation {
             this.expectedHeightFt = _data["expectedHeightFt"];
             this.expectedHeightIn = _data["expectedHeightIn"];
             this.divorcee = _data["divorcee"];
-            this.expectedCasteNoBar = _data["expectedCasteNoBar"];
-            this.expectedEducationNoBar = _data["expectedEducationNoBar"];
-            this.expectedOccupationNoBar = _data["expectedOccupationNoBar"];
             this.expectedIncomeRangeId = _data["expectedIncomeRangeId"];
             this.expectedIncomeRange = _data["expectedIncomeRange"] ? IncomeRange.fromJS(_data["expectedIncomeRange"]) : undefined as any;
             this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
@@ -8608,9 +8367,6 @@ export class ProfileExpectation implements IProfileExpectation {
         data["expectedHeightFt"] = this.expectedHeightFt;
         data["expectedHeightIn"] = this.expectedHeightIn;
         data["divorcee"] = this.divorcee;
-        data["expectedCasteNoBar"] = this.expectedCasteNoBar;
-        data["expectedEducationNoBar"] = this.expectedEducationNoBar;
-        data["expectedOccupationNoBar"] = this.expectedOccupationNoBar;
         data["expectedIncomeRangeId"] = this.expectedIncomeRangeId;
         data["expectedIncomeRange"] = this.expectedIncomeRange ? this.expectedIncomeRange.toJSON() : undefined as any;
         data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
@@ -8634,9 +8390,6 @@ export interface IProfileExpectation {
     expectedHeightFt?: number | undefined;
     expectedHeightIn?: number | undefined;
     divorcee?: boolean | undefined;
-    expectedCasteNoBar?: boolean;
-    expectedEducationNoBar?: boolean;
-    expectedOccupationNoBar?: boolean;
     expectedIncomeRangeId?: number | undefined;
     expectedIncomeRange?: IncomeRange;
     profile?: Profile;
@@ -9235,11 +8988,11 @@ export class ProfileIgnore implements IProfileIgnore {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
-    tenantId?: number;
     profileId?: number;
     ignoredProfileId?: number;
     ignoredAt?: Date;
@@ -9263,11 +9016,11 @@ export class ProfileIgnore implements IProfileIgnore {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.isDeleted = _data["isDeleted"];
             this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
             this.deletedBy = _data["deletedBy"];
             this.rowVersion = _data["rowVersion"];
-            this.tenantId = _data["tenantId"];
             this.profileId = _data["profileId"];
             this.ignoredProfileId = _data["ignoredProfileId"];
             this.ignoredAt = _data["ignoredAt"] ? new Date(_data["ignoredAt"].toString()) : undefined as any;
@@ -9291,11 +9044,11 @@ export class ProfileIgnore implements IProfileIgnore {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["isDeleted"] = this.isDeleted;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
         data["deletedBy"] = this.deletedBy;
         data["rowVersion"] = this.rowVersion;
-        data["tenantId"] = this.tenantId;
         data["profileId"] = this.profileId;
         data["ignoredProfileId"] = this.ignoredProfileId;
         data["ignoredAt"] = this.ignoredAt ? this.ignoredAt.toISOString() : undefined as any;
@@ -9312,11 +9065,11 @@ export interface IProfileIgnore {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
-    tenantId?: number;
     profileId?: number;
     ignoredProfileId?: number;
     ignoredAt?: Date;
@@ -9482,7 +9235,6 @@ export class ProfilePersonalDetail implements IProfilePersonalDetail {
     disabilityDetail?: string | undefined;
     spectacles?: boolean | undefined;
     lens?: boolean | undefined;
-    dateOfBirth?: Date | undefined;
     religionId?: number | undefined;
     casteId?: number | undefined;
     subCasteId?: number | undefined;
@@ -9545,7 +9297,6 @@ export class ProfilePersonalDetail implements IProfilePersonalDetail {
             this.disabilityDetail = _data["disabilityDetail"];
             this.spectacles = _data["spectacles"];
             this.lens = _data["lens"];
-            this.dateOfBirth = _data["dateOfBirth"] ? new Date(_data["dateOfBirth"].toString()) : undefined as any;
             this.religionId = _data["religionId"];
             this.casteId = _data["casteId"];
             this.subCasteId = _data["subCasteId"];
@@ -9608,7 +9359,6 @@ export class ProfilePersonalDetail implements IProfilePersonalDetail {
         data["disabilityDetail"] = this.disabilityDetail;
         data["spectacles"] = this.spectacles;
         data["lens"] = this.lens;
-        data["dateOfBirth"] = this.dateOfBirth ? formatDate(this.dateOfBirth) : undefined as any;
         data["religionId"] = this.religionId;
         data["casteId"] = this.casteId;
         data["subCasteId"] = this.subCasteId;
@@ -9664,7 +9414,6 @@ export interface IProfilePersonalDetail {
     disabilityDetail?: string | undefined;
     spectacles?: boolean | undefined;
     lens?: boolean | undefined;
-    dateOfBirth?: Date | undefined;
     religionId?: number | undefined;
     casteId?: number | undefined;
     subCasteId?: number | undefined;
@@ -10459,12 +10208,12 @@ export class ProfileShortlist implements IProfileShortlist {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     shortlistId?: number;
-    tenantId?: number;
     profileId?: number;
     targetProfileId?: number;
     shortlistName?: string | undefined;
@@ -10489,12 +10238,12 @@ export class ProfileShortlist implements IProfileShortlist {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.isDeleted = _data["isDeleted"];
             this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
             this.deletedBy = _data["deletedBy"];
             this.rowVersion = _data["rowVersion"];
             this.shortlistId = _data["shortlistId"];
-            this.tenantId = _data["tenantId"];
             this.profileId = _data["profileId"];
             this.targetProfileId = _data["targetProfileId"];
             this.shortlistName = _data["shortlistName"];
@@ -10519,12 +10268,12 @@ export class ProfileShortlist implements IProfileShortlist {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["isDeleted"] = this.isDeleted;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
         data["deletedBy"] = this.deletedBy;
         data["rowVersion"] = this.rowVersion;
         data["shortlistId"] = this.shortlistId;
-        data["tenantId"] = this.tenantId;
         data["profileId"] = this.profileId;
         data["targetProfileId"] = this.targetProfileId;
         data["shortlistName"] = this.shortlistName;
@@ -10542,12 +10291,12 @@ export interface IProfileShortlist {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     shortlistId?: number;
-    tenantId?: number;
     profileId?: number;
     targetProfileId?: number;
     shortlistName?: string | undefined;
@@ -11839,13 +11588,13 @@ export class SavedSearch implements ISavedSearch {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     savedSearchId?: number;
     profileId?: number;
-    tenantId?: number;
     searchName?: string | undefined;
     searchCriteriaJson?: string | undefined;
     resultCount?: number | undefined;
@@ -11870,13 +11619,13 @@ export class SavedSearch implements ISavedSearch {
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
+            this.tenantId = _data["tenantId"];
             this.isDeleted = _data["isDeleted"];
             this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
             this.deletedBy = _data["deletedBy"];
             this.rowVersion = _data["rowVersion"];
             this.savedSearchId = _data["savedSearchId"];
             this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
             this.searchName = _data["searchName"];
             this.searchCriteriaJson = _data["searchCriteriaJson"];
             this.resultCount = _data["resultCount"];
@@ -11901,13 +11650,13 @@ export class SavedSearch implements ISavedSearch {
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
+        data["tenantId"] = this.tenantId;
         data["isDeleted"] = this.isDeleted;
         data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
         data["deletedBy"] = this.deletedBy;
         data["rowVersion"] = this.rowVersion;
         data["savedSearchId"] = this.savedSearchId;
         data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
         data["searchName"] = this.searchName;
         data["searchCriteriaJson"] = this.searchCriteriaJson;
         data["resultCount"] = this.resultCount;
@@ -11925,13 +11674,13 @@ export interface ISavedSearch {
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
+    tenantId?: number;
     isDeleted?: boolean;
     deletedAt?: Date | undefined;
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     savedSearchId?: number;
     profileId?: number;
-    tenantId?: number;
     searchName?: string | undefined;
     searchCriteriaJson?: string | undefined;
     resultCount?: number | undefined;
@@ -13324,7 +13073,6 @@ export class Tenant implements ITenant {
     events?: Event[] | undefined;
     interestRequests?: InterestRequest[] | undefined;
     oauth2Providers?: Oauth2Provider[] | undefined;
-    payments?: Payment[] | undefined;
     permissions?: Permission[] | undefined;
     profileBlocks?: ProfileBlock[] | undefined;
     profileFavorites?: ProfileFavorite[] | undefined;
@@ -13438,11 +13186,6 @@ export class Tenant implements ITenant {
                 this.oauth2Providers = [] as any;
                 for (let item of _data["oauth2Providers"])
                     this.oauth2Providers!.push(Oauth2Provider.fromJS(item));
-            }
-            if (Array.isArray(_data["payments"])) {
-                this.payments = [] as any;
-                for (let item of _data["payments"])
-                    this.payments!.push(Payment.fromJS(item));
             }
             if (Array.isArray(_data["permissions"])) {
                 this.permissions = [] as any;
@@ -13654,11 +13397,6 @@ export class Tenant implements ITenant {
             for (let item of this.oauth2Providers)
                 data["oauth2Providers"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.payments)) {
-            data["payments"] = [];
-            for (let item of this.payments)
-                data["payments"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.permissions)) {
             data["permissions"] = [];
             for (let item of this.permissions)
@@ -13834,7 +13572,6 @@ export interface ITenant {
     events?: Event[] | undefined;
     interestRequests?: InterestRequest[] | undefined;
     oauth2Providers?: Oauth2Provider[] | undefined;
-    payments?: Payment[] | undefined;
     permissions?: Permission[] | undefined;
     profileBlocks?: ProfileBlock[] | undefined;
     profileFavorites?: ProfileFavorite[] | undefined;
@@ -13952,16 +13689,16 @@ export interface ITenantBranding {
 }
 
 export class TenantDomain implements ITenantDomain {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
-    domainId?: number;
     tenantId?: number;
+    domainId?: number;
     domain?: string | undefined;
     isPrimary?: boolean;
     isVerified?: boolean;
     verifiedAt?: Date | undefined;
-    createdAt?: Date;
     tenant?: Tenant;
 
     constructor(data?: ITenantDomain) {
@@ -13975,16 +13712,16 @@ export class TenantDomain implements ITenantDomain {
 
     init(_data?: any) {
         if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
-            this.domainId = _data["domainId"];
             this.tenantId = _data["tenantId"];
+            this.domainId = _data["domainId"];
             this.domain = _data["domain"];
             this.isPrimary = _data["isPrimary"];
             this.isVerified = _data["isVerified"];
             this.verifiedAt = _data["verifiedAt"] ? new Date(_data["verifiedAt"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
         }
     }
@@ -13998,32 +13735,32 @@ export class TenantDomain implements ITenantDomain {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
-        data["domainId"] = this.domainId;
         data["tenantId"] = this.tenantId;
+        data["domainId"] = this.domainId;
         data["domain"] = this.domain;
         data["isPrimary"] = this.isPrimary;
         data["isVerified"] = this.isVerified;
         data["verifiedAt"] = this.verifiedAt ? this.verifiedAt.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
         return data;
     }
 }
 
 export interface ITenantDomain {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
-    domainId?: number;
     tenantId?: number;
+    domainId?: number;
     domain?: string | undefined;
     isPrimary?: boolean;
     isVerified?: boolean;
     verifiedAt?: Date | undefined;
-    createdAt?: Date;
     tenant?: Tenant;
 }
 
@@ -14711,7 +14448,6 @@ export class TenantSubscription implements ITenantSubscription {
     endDate?: Date;
     isActive?: boolean;
     rowVersion?: string | undefined;
-    payments?: Payment[] | undefined;
     plan?: Plan;
     tenant?: Tenant;
 
@@ -14737,11 +14473,6 @@ export class TenantSubscription implements ITenantSubscription {
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
             this.isActive = _data["isActive"];
             this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["payments"])) {
-                this.payments = [] as any;
-                for (let item of _data["payments"])
-                    this.payments!.push(Payment.fromJS(item));
-            }
             this.plan = _data["plan"] ? Plan.fromJS(_data["plan"]) : undefined as any;
             this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
         }
@@ -14767,11 +14498,6 @@ export class TenantSubscription implements ITenantSubscription {
         data["endDate"] = this.endDate ? formatDate(this.endDate) : undefined as any;
         data["isActive"] = this.isActive;
         data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.payments)) {
-            data["payments"] = [];
-            for (let item of this.payments)
-                data["payments"].push(item ? item.toJSON() : undefined as any);
-        }
         data["plan"] = this.plan ? this.plan.toJSON() : undefined as any;
         data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
         return data;
@@ -14790,7 +14516,6 @@ export interface ITenantSubscription {
     endDate?: Date;
     isActive?: boolean;
     rowVersion?: string | undefined;
-    payments?: Payment[] | undefined;
     plan?: Plan;
     tenant?: Tenant;
 }
@@ -14888,6 +14613,7 @@ export interface ITenantUserPlan {
 }
 
 export class TrustedDevice implements ITrustedDevice {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
@@ -14896,7 +14622,6 @@ export class TrustedDevice implements ITrustedDevice {
     deviceId?: string | undefined;
     deviceName?: string | undefined;
     trustedUntil?: Date;
-    createdAt?: Date;
     user?: User;
 
     constructor(data?: ITrustedDevice) {
@@ -14910,6 +14635,7 @@ export class TrustedDevice implements ITrustedDevice {
 
     init(_data?: any) {
         if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
@@ -14918,7 +14644,6 @@ export class TrustedDevice implements ITrustedDevice {
             this.deviceId = _data["deviceId"];
             this.deviceName = _data["deviceName"];
             this.trustedUntil = _data["trustedUntil"] ? new Date(_data["trustedUntil"].toString()) : undefined as any;
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
         }
     }
@@ -14932,6 +14657,7 @@ export class TrustedDevice implements ITrustedDevice {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
@@ -14940,13 +14666,13 @@ export class TrustedDevice implements ITrustedDevice {
         data["deviceId"] = this.deviceId;
         data["deviceName"] = this.deviceName;
         data["trustedUntil"] = this.trustedUntil ? this.trustedUntil.toISOString() : undefined as any;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         return data;
     }
 }
 
 export interface ITrustedDevice {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
@@ -14955,7 +14681,6 @@ export interface ITrustedDevice {
     deviceId?: string | undefined;
     deviceName?: string | undefined;
     trustedUntil?: Date;
-    createdAt?: Date;
     user?: User;
 }
 
@@ -15002,7 +14727,6 @@ export class User implements IUser {
     messageReadStatuses?: MessageReadStatus[] | undefined;
     notifications?: Notification[] | undefined;
     oauth2Tokens?: Oauth2Token[] | undefined;
-    payments?: Payment[] | undefined;
     profiles?: Profile[] | undefined;
     refreshTokens?: RefreshToken[] | undefined;
     tenant?: Tenant;
@@ -15014,7 +14738,6 @@ export class User implements IUser {
     userSetting?: UserSetting;
     passwordHistories?: PasswordHistory[] | undefined;
     passwordResetTokens?: PasswordResetToken[] | undefined;
-    mfaBackupCodes?: MfaBackupCode[] | undefined;
     mfaRecoveryCodes?: MfaRecoveryCode[] | undefined;
     trustedDevices?: TrustedDevice[] | undefined;
     webAuthnCredentials?: WebAuthnCredential[] | undefined;
@@ -15128,11 +14851,6 @@ export class User implements IUser {
                 for (let item of _data["oauth2Tokens"])
                     this.oauth2Tokens!.push(Oauth2Token.fromJS(item));
             }
-            if (Array.isArray(_data["payments"])) {
-                this.payments = [] as any;
-                for (let item of _data["payments"])
-                    this.payments!.push(Payment.fromJS(item));
-            }
             if (Array.isArray(_data["profiles"])) {
                 this.profiles = [] as any;
                 for (let item of _data["profiles"])
@@ -15179,11 +14897,6 @@ export class User implements IUser {
                 this.passwordResetTokens = [] as any;
                 for (let item of _data["passwordResetTokens"])
                     this.passwordResetTokens!.push(PasswordResetToken.fromJS(item));
-            }
-            if (Array.isArray(_data["mfaBackupCodes"])) {
-                this.mfaBackupCodes = [] as any;
-                for (let item of _data["mfaBackupCodes"])
-                    this.mfaBackupCodes!.push(MfaBackupCode.fromJS(item));
             }
             if (Array.isArray(_data["mfaRecoveryCodes"])) {
                 this.mfaRecoveryCodes = [] as any;
@@ -15326,11 +15039,6 @@ export class User implements IUser {
             for (let item of this.oauth2Tokens)
                 data["oauth2Tokens"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.payments)) {
-            data["payments"] = [];
-            for (let item of this.payments)
-                data["payments"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.profiles)) {
             data["profiles"] = [];
             for (let item of this.profiles)
@@ -15377,11 +15085,6 @@ export class User implements IUser {
             data["passwordResetTokens"] = [];
             for (let item of this.passwordResetTokens)
                 data["passwordResetTokens"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.mfaBackupCodes)) {
-            data["mfaBackupCodes"] = [];
-            for (let item of this.mfaBackupCodes)
-                data["mfaBackupCodes"].push(item ? item.toJSON() : undefined as any);
         }
         if (Array.isArray(this.mfaRecoveryCodes)) {
             data["mfaRecoveryCodes"] = [];
@@ -15465,7 +15168,6 @@ export interface IUser {
     messageReadStatuses?: MessageReadStatus[] | undefined;
     notifications?: Notification[] | undefined;
     oauth2Tokens?: Oauth2Token[] | undefined;
-    payments?: Payment[] | undefined;
     profiles?: Profile[] | undefined;
     refreshTokens?: RefreshToken[] | undefined;
     tenant?: Tenant;
@@ -15477,7 +15179,6 @@ export interface IUser {
     userSetting?: UserSetting;
     passwordHistories?: PasswordHistory[] | undefined;
     passwordResetTokens?: PasswordResetToken[] | undefined;
-    mfaBackupCodes?: MfaBackupCode[] | undefined;
     mfaRecoveryCodes?: MfaRecoveryCode[] | undefined;
     trustedDevices?: TrustedDevice[] | undefined;
     webAuthnCredentials?: WebAuthnCredential[] | undefined;
@@ -15982,7 +15683,6 @@ export class UserSubscription implements IUserSubscription {
     nextRenewalDate?: Date | undefined;
     renewalCount?: number;
     rowVersion?: string | undefined;
-    payments?: Payment[] | undefined;
     tenantUserPlan?: TenantUserPlan;
     user?: User;
     invoices?: Invoice[] | undefined;
@@ -16022,11 +15722,6 @@ export class UserSubscription implements IUserSubscription {
             this.nextRenewalDate = _data["nextRenewalDate"] ? new Date(_data["nextRenewalDate"].toString()) : undefined as any;
             this.renewalCount = _data["renewalCount"];
             this.rowVersion = _data["rowVersion"];
-            if (Array.isArray(_data["payments"])) {
-                this.payments = [] as any;
-                for (let item of _data["payments"])
-                    this.payments!.push(Payment.fromJS(item));
-            }
             this.tenantUserPlan = _data["tenantUserPlan"] ? TenantUserPlan.fromJS(_data["tenantUserPlan"]) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
             if (Array.isArray(_data["invoices"])) {
@@ -16078,11 +15773,6 @@ export class UserSubscription implements IUserSubscription {
         data["nextRenewalDate"] = this.nextRenewalDate ? formatDate(this.nextRenewalDate) : undefined as any;
         data["renewalCount"] = this.renewalCount;
         data["rowVersion"] = this.rowVersion;
-        if (Array.isArray(this.payments)) {
-            data["payments"] = [];
-            for (let item of this.payments)
-                data["payments"].push(item ? item.toJSON() : undefined as any);
-        }
         data["tenantUserPlan"] = this.tenantUserPlan ? this.tenantUserPlan.toJSON() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         if (Array.isArray(this.invoices)) {
@@ -16127,7 +15817,6 @@ export interface IUserSubscription {
     nextRenewalDate?: Date | undefined;
     renewalCount?: number;
     rowVersion?: string | undefined;
-    payments?: Payment[] | undefined;
     tenantUserPlan?: TenantUserPlan;
     user?: User;
     invoices?: Invoice[] | undefined;
@@ -16242,6 +15931,7 @@ export enum VisibilityLevel {
 }
 
 export class WebAuthnCredential implements IWebAuthnCredential {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
@@ -16252,7 +15942,6 @@ export class WebAuthnCredential implements IWebAuthnCredential {
     aaguid?: string | undefined;
     signCount?: number;
     isActive?: boolean;
-    createdAt?: Date;
     lastUsedAt?: Date | undefined;
     user?: User;
 
@@ -16267,6 +15956,7 @@ export class WebAuthnCredential implements IWebAuthnCredential {
 
     init(_data?: any) {
         if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
             this.createdBy = _data["createdBy"];
             this.updatedBy = _data["updatedBy"];
@@ -16277,7 +15967,6 @@ export class WebAuthnCredential implements IWebAuthnCredential {
             this.aaguid = _data["aaguid"];
             this.signCount = _data["signCount"];
             this.isActive = _data["isActive"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.lastUsedAt = _data["lastUsedAt"] ? new Date(_data["lastUsedAt"].toString()) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
         }
@@ -16292,6 +15981,7 @@ export class WebAuthnCredential implements IWebAuthnCredential {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         data["createdBy"] = this.createdBy;
         data["updatedBy"] = this.updatedBy;
@@ -16302,7 +15992,6 @@ export class WebAuthnCredential implements IWebAuthnCredential {
         data["aaguid"] = this.aaguid;
         data["signCount"] = this.signCount;
         data["isActive"] = this.isActive;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["lastUsedAt"] = this.lastUsedAt ? this.lastUsedAt.toISOString() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         return data;
@@ -16310,6 +15999,7 @@ export class WebAuthnCredential implements IWebAuthnCredential {
 }
 
 export interface IWebAuthnCredential {
+    createdAt?: Date;
     updatedAt?: Date | undefined;
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
@@ -16320,7 +16010,6 @@ export interface IWebAuthnCredential {
     aaguid?: string | undefined;
     signCount?: number;
     isActive?: boolean;
-    createdAt?: Date;
     lastUsedAt?: Date | undefined;
     user?: User;
 }
