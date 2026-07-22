@@ -1550,16 +1550,6 @@ export interface IAuthenticationMethod {
     user?: User;
 }
 
-export enum BadgeType {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-    _5 = 5,
-    _6 = 6,
-    _7 = 7,
-}
-
 export class BlockedChatUser implements IBlockedChatUser {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -3775,7 +3765,6 @@ export class Event implements IEvent {
     isVirtual?: boolean;
     meetingLink?: string | undefined;
     isActive?: boolean;
-    eventRsvps?: EventRsvp[] | undefined;
     tenant?: Tenant;
 
     constructor(data?: IEvent) {
@@ -3807,11 +3796,6 @@ export class Event implements IEvent {
             this.isVirtual = _data["isVirtual"];
             this.meetingLink = _data["meetingLink"];
             this.isActive = _data["isActive"];
-            if (Array.isArray(_data["eventRsvps"])) {
-                this.eventRsvps = [] as any;
-                for (let item of _data["eventRsvps"])
-                    this.eventRsvps!.push(EventRsvp.fromJS(item));
-            }
             this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
         }
     }
@@ -3843,11 +3827,6 @@ export class Event implements IEvent {
         data["isVirtual"] = this.isVirtual;
         data["meetingLink"] = this.meetingLink;
         data["isActive"] = this.isActive;
-        if (Array.isArray(this.eventRsvps)) {
-            data["eventRsvps"] = [];
-            for (let item of this.eventRsvps)
-                data["eventRsvps"].push(item ? item.toJSON() : undefined as any);
-        }
         data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
         return data;
     }
@@ -3872,100 +3851,7 @@ export interface IEvent {
     isVirtual?: boolean;
     meetingLink?: string | undefined;
     isActive?: boolean;
-    eventRsvps?: EventRsvp[] | undefined;
     tenant?: Tenant;
-}
-
-export class EventRsvp implements IEventRsvp {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    eventRsvpId?: number;
-    eventId?: number;
-    profileId?: number;
-    rsvpStatus?: string | undefined;
-    event?: Event;
-    profile?: Profile;
-
-    constructor(data?: IEventRsvp) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.eventRsvpId = _data["eventRsvpId"];
-            this.eventId = _data["eventId"];
-            this.profileId = _data["profileId"];
-            this.rsvpStatus = _data["rsvpStatus"];
-            this.event = _data["event"] ? Event.fromJS(_data["event"]) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): EventRsvp {
-        data = typeof data === 'object' ? data : {};
-        let result = new EventRsvp();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["eventRsvpId"] = this.eventRsvpId;
-        data["eventId"] = this.eventId;
-        data["profileId"] = this.profileId;
-        data["rsvpStatus"] = this.rsvpStatus;
-        data["event"] = this.event ? this.event.toJSON() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IEventRsvp {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    eventRsvpId?: number;
-    eventId?: number;
-    profileId?: number;
-    rsvpStatus?: string | undefined;
-    event?: Event;
-    profile?: Profile;
 }
 
 export class ExternalLogin implements IExternalLogin {
@@ -4440,12 +4326,6 @@ export interface IGender {
     profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
 }
 
-export enum IgnoreReason {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-}
-
 export class IncomePeriod implements IIncomePeriod {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -4860,13 +4740,6 @@ export interface IInterestRequest {
     profile?: Profile;
     profileNavigation?: Profile;
     tenant?: Tenant;
-}
-
-export enum InterestRequestPermission {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
 }
 
 export class Invoice implements IInvoice {
@@ -5659,20 +5532,6 @@ export enum MatchStatus {
 }
 
 export enum MatchType {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-}
-
-export enum MediaCategory {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-}
-
-export enum MediaType {
     _1 = 1,
     _2 = 2,
     _3 = 3,
@@ -7700,106 +7559,6 @@ export interface IPersonality {
     profilePersonalDetails?: ProfilePersonalDetail[] | undefined;
 }
 
-export class Plan implements IPlan {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    planId?: number;
-    planName?: string | undefined;
-    price?: number;
-    durationMonths?: number;
-    isActive?: boolean;
-    tenantSubscriptions?: TenantSubscription[] | undefined;
-
-    constructor(data?: IPlan) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.planId = _data["planId"];
-            this.planName = _data["planName"];
-            this.price = _data["price"];
-            this.durationMonths = _data["durationMonths"];
-            this.isActive = _data["isActive"];
-            if (Array.isArray(_data["tenantSubscriptions"])) {
-                this.tenantSubscriptions = [] as any;
-                for (let item of _data["tenantSubscriptions"])
-                    this.tenantSubscriptions!.push(TenantSubscription.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): Plan {
-        data = typeof data === 'object' ? data : {};
-        let result = new Plan();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["planId"] = this.planId;
-        data["planName"] = this.planName;
-        data["price"] = this.price;
-        data["durationMonths"] = this.durationMonths;
-        data["isActive"] = this.isActive;
-        if (Array.isArray(this.tenantSubscriptions)) {
-            data["tenantSubscriptions"] = [];
-            for (let item of this.tenantSubscriptions)
-                data["tenantSubscriptions"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface IPlan {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    planId?: number;
-    planName?: string | undefined;
-    price?: number;
-    durationMonths?: number;
-    isActive?: boolean;
-    tenantSubscriptions?: TenantSubscription[] | undefined;
-}
-
 export class PlanPrice implements IPlanPrice {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -7900,7 +7659,6 @@ export class Profile implements IProfile {
     chatConversationProfiles?: ChatConversation[] | undefined;
     chatMessages?: ChatMessage[] | undefined;
     chatParticipants?: ChatParticipant[] | undefined;
-    eventRsvps?: EventRsvp[] | undefined;
     interestRequestProfileNavigations?: InterestRequest[] | undefined;
     interestRequestProfiles?: InterestRequest[] | undefined;
     interests?: Interest[] | undefined;
@@ -7919,21 +7677,12 @@ export class Profile implements IProfile {
     profilePersonalDetail?: ProfilePersonalDetail;
     profilePhoneNumbers?: ProfilePhoneNumber[] | undefined;
     profilePhotos?: ProfilePhoto[] | undefined;
-    profileMedia?: ProfileMedium[] | undefined;
-    profileBadges?: ProfileBadge[] | undefined;
     profileDomainEvents?: ProfileDomainEvent[] | undefined;
     profilePreferredCities?: ProfilePreferredCity[] | undefined;
     profileProfessionalDetail?: ProfileProfessionalDetail;
-    profilePreference?: ProfilePreference;
-    profileVisibilitySetting?: ProfileVisibilitySetting;
     profileRelatives?: ProfileRelative[] | undefined;
-    profileReportProfileNavigations?: ProfileReport[] | undefined;
-    profileReportProfiles?: ProfileReport[] | undefined;
-    profileVerifications?: ProfileVerification[] | undefined;
     profileViewViewedProfiles?: ProfileView[] | undefined;
     profileViewViewerProfiles?: ProfileView[] | undefined;
-    successStoryProfileNavigations?: SuccessStory[] | undefined;
-    successStoryProfiles?: SuccessStory[] | undefined;
     tenant?: Tenant;
     user?: User;
     userOnlineStatuses?: UserOnlineStatus[] | undefined;
@@ -7941,15 +7690,8 @@ export class Profile implements IProfile {
     matchProfilesB?: Match[] | undefined;
     profileShortlists?: ProfileShortlist[] | undefined;
     profileShortlistTargets?: ProfileShortlist[] | undefined;
-    profileIgnores?: ProfileIgnore[] | undefined;
-    profileIgnoredBy?: ProfileIgnore[] | undefined;
-    savedSearches?: SavedSearch[] | undefined;
-    searchHistories?: SearchHistory[] | undefined;
-    searchHistoryClicked?: SearchHistory[] | undefined;
     recommendations?: Recommendation[] | undefined;
     recommendedBy?: Recommendation[] | undefined;
-    recommendationHistories?: RecommendationHistory[] | undefined;
-    recommendationHistoryBy?: RecommendationHistory[] | undefined;
 
     constructor(data?: IProfile) {
         if (data) {
@@ -8012,11 +7754,6 @@ export class Profile implements IProfile {
                 this.chatParticipants = [] as any;
                 for (let item of _data["chatParticipants"])
                     this.chatParticipants!.push(ChatParticipant.fromJS(item));
-            }
-            if (Array.isArray(_data["eventRsvps"])) {
-                this.eventRsvps = [] as any;
-                for (let item of _data["eventRsvps"])
-                    this.eventRsvps!.push(EventRsvp.fromJS(item));
             }
             if (Array.isArray(_data["interestRequestProfileNavigations"])) {
                 this.interestRequestProfileNavigations = [] as any;
@@ -8088,16 +7825,6 @@ export class Profile implements IProfile {
                 for (let item of _data["profilePhotos"])
                     this.profilePhotos!.push(ProfilePhoto.fromJS(item));
             }
-            if (Array.isArray(_data["profileMedia"])) {
-                this.profileMedia = [] as any;
-                for (let item of _data["profileMedia"])
-                    this.profileMedia!.push(ProfileMedium.fromJS(item));
-            }
-            if (Array.isArray(_data["profileBadges"])) {
-                this.profileBadges = [] as any;
-                for (let item of _data["profileBadges"])
-                    this.profileBadges!.push(ProfileBadge.fromJS(item));
-            }
             if (Array.isArray(_data["profileDomainEvents"])) {
                 this.profileDomainEvents = [] as any;
                 for (let item of _data["profileDomainEvents"])
@@ -8109,27 +7836,10 @@ export class Profile implements IProfile {
                     this.profilePreferredCities!.push(ProfilePreferredCity.fromJS(item));
             }
             this.profileProfessionalDetail = _data["profileProfessionalDetail"] ? ProfileProfessionalDetail.fromJS(_data["profileProfessionalDetail"]) : undefined as any;
-            this.profilePreference = _data["profilePreference"] ? ProfilePreference.fromJS(_data["profilePreference"]) : undefined as any;
-            this.profileVisibilitySetting = _data["profileVisibilitySetting"] ? ProfileVisibilitySetting.fromJS(_data["profileVisibilitySetting"]) : undefined as any;
             if (Array.isArray(_data["profileRelatives"])) {
                 this.profileRelatives = [] as any;
                 for (let item of _data["profileRelatives"])
                     this.profileRelatives!.push(ProfileRelative.fromJS(item));
-            }
-            if (Array.isArray(_data["profileReportProfileNavigations"])) {
-                this.profileReportProfileNavigations = [] as any;
-                for (let item of _data["profileReportProfileNavigations"])
-                    this.profileReportProfileNavigations!.push(ProfileReport.fromJS(item));
-            }
-            if (Array.isArray(_data["profileReportProfiles"])) {
-                this.profileReportProfiles = [] as any;
-                for (let item of _data["profileReportProfiles"])
-                    this.profileReportProfiles!.push(ProfileReport.fromJS(item));
-            }
-            if (Array.isArray(_data["profileVerifications"])) {
-                this.profileVerifications = [] as any;
-                for (let item of _data["profileVerifications"])
-                    this.profileVerifications!.push(ProfileVerification.fromJS(item));
             }
             if (Array.isArray(_data["profileViewViewedProfiles"])) {
                 this.profileViewViewedProfiles = [] as any;
@@ -8140,16 +7850,6 @@ export class Profile implements IProfile {
                 this.profileViewViewerProfiles = [] as any;
                 for (let item of _data["profileViewViewerProfiles"])
                     this.profileViewViewerProfiles!.push(ProfileView.fromJS(item));
-            }
-            if (Array.isArray(_data["successStoryProfileNavigations"])) {
-                this.successStoryProfileNavigations = [] as any;
-                for (let item of _data["successStoryProfileNavigations"])
-                    this.successStoryProfileNavigations!.push(SuccessStory.fromJS(item));
-            }
-            if (Array.isArray(_data["successStoryProfiles"])) {
-                this.successStoryProfiles = [] as any;
-                for (let item of _data["successStoryProfiles"])
-                    this.successStoryProfiles!.push(SuccessStory.fromJS(item));
             }
             this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
@@ -8178,31 +7878,6 @@ export class Profile implements IProfile {
                 for (let item of _data["profileShortlistTargets"])
                     this.profileShortlistTargets!.push(ProfileShortlist.fromJS(item));
             }
-            if (Array.isArray(_data["profileIgnores"])) {
-                this.profileIgnores = [] as any;
-                for (let item of _data["profileIgnores"])
-                    this.profileIgnores!.push(ProfileIgnore.fromJS(item));
-            }
-            if (Array.isArray(_data["profileIgnoredBy"])) {
-                this.profileIgnoredBy = [] as any;
-                for (let item of _data["profileIgnoredBy"])
-                    this.profileIgnoredBy!.push(ProfileIgnore.fromJS(item));
-            }
-            if (Array.isArray(_data["savedSearches"])) {
-                this.savedSearches = [] as any;
-                for (let item of _data["savedSearches"])
-                    this.savedSearches!.push(SavedSearch.fromJS(item));
-            }
-            if (Array.isArray(_data["searchHistories"])) {
-                this.searchHistories = [] as any;
-                for (let item of _data["searchHistories"])
-                    this.searchHistories!.push(SearchHistory.fromJS(item));
-            }
-            if (Array.isArray(_data["searchHistoryClicked"])) {
-                this.searchHistoryClicked = [] as any;
-                for (let item of _data["searchHistoryClicked"])
-                    this.searchHistoryClicked!.push(SearchHistory.fromJS(item));
-            }
             if (Array.isArray(_data["recommendations"])) {
                 this.recommendations = [] as any;
                 for (let item of _data["recommendations"])
@@ -8212,16 +7887,6 @@ export class Profile implements IProfile {
                 this.recommendedBy = [] as any;
                 for (let item of _data["recommendedBy"])
                     this.recommendedBy!.push(Recommendation.fromJS(item));
-            }
-            if (Array.isArray(_data["recommendationHistories"])) {
-                this.recommendationHistories = [] as any;
-                for (let item of _data["recommendationHistories"])
-                    this.recommendationHistories!.push(RecommendationHistory.fromJS(item));
-            }
-            if (Array.isArray(_data["recommendationHistoryBy"])) {
-                this.recommendationHistoryBy = [] as any;
-                for (let item of _data["recommendationHistoryBy"])
-                    this.recommendationHistoryBy!.push(RecommendationHistory.fromJS(item));
             }
         }
     }
@@ -8285,11 +7950,6 @@ export class Profile implements IProfile {
             data["chatParticipants"] = [];
             for (let item of this.chatParticipants)
                 data["chatParticipants"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.eventRsvps)) {
-            data["eventRsvps"] = [];
-            for (let item of this.eventRsvps)
-                data["eventRsvps"].push(item ? item.toJSON() : undefined as any);
         }
         if (Array.isArray(this.interestRequestProfileNavigations)) {
             data["interestRequestProfileNavigations"] = [];
@@ -8361,16 +8021,6 @@ export class Profile implements IProfile {
             for (let item of this.profilePhotos)
                 data["profilePhotos"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.profileMedia)) {
-            data["profileMedia"] = [];
-            for (let item of this.profileMedia)
-                data["profileMedia"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileBadges)) {
-            data["profileBadges"] = [];
-            for (let item of this.profileBadges)
-                data["profileBadges"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.profileDomainEvents)) {
             data["profileDomainEvents"] = [];
             for (let item of this.profileDomainEvents)
@@ -8382,27 +8032,10 @@ export class Profile implements IProfile {
                 data["profilePreferredCities"].push(item ? item.toJSON() : undefined as any);
         }
         data["profileProfessionalDetail"] = this.profileProfessionalDetail ? this.profileProfessionalDetail.toJSON() : undefined as any;
-        data["profilePreference"] = this.profilePreference ? this.profilePreference.toJSON() : undefined as any;
-        data["profileVisibilitySetting"] = this.profileVisibilitySetting ? this.profileVisibilitySetting.toJSON() : undefined as any;
         if (Array.isArray(this.profileRelatives)) {
             data["profileRelatives"] = [];
             for (let item of this.profileRelatives)
                 data["profileRelatives"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileReportProfileNavigations)) {
-            data["profileReportProfileNavigations"] = [];
-            for (let item of this.profileReportProfileNavigations)
-                data["profileReportProfileNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileReportProfiles)) {
-            data["profileReportProfiles"] = [];
-            for (let item of this.profileReportProfiles)
-                data["profileReportProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileVerifications)) {
-            data["profileVerifications"] = [];
-            for (let item of this.profileVerifications)
-                data["profileVerifications"].push(item ? item.toJSON() : undefined as any);
         }
         if (Array.isArray(this.profileViewViewedProfiles)) {
             data["profileViewViewedProfiles"] = [];
@@ -8413,16 +8046,6 @@ export class Profile implements IProfile {
             data["profileViewViewerProfiles"] = [];
             for (let item of this.profileViewViewerProfiles)
                 data["profileViewViewerProfiles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.successStoryProfileNavigations)) {
-            data["successStoryProfileNavigations"] = [];
-            for (let item of this.successStoryProfileNavigations)
-                data["successStoryProfileNavigations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.successStoryProfiles)) {
-            data["successStoryProfiles"] = [];
-            for (let item of this.successStoryProfiles)
-                data["successStoryProfiles"].push(item ? item.toJSON() : undefined as any);
         }
         data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
@@ -8451,31 +8074,6 @@ export class Profile implements IProfile {
             for (let item of this.profileShortlistTargets)
                 data["profileShortlistTargets"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.profileIgnores)) {
-            data["profileIgnores"] = [];
-            for (let item of this.profileIgnores)
-                data["profileIgnores"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.profileIgnoredBy)) {
-            data["profileIgnoredBy"] = [];
-            for (let item of this.profileIgnoredBy)
-                data["profileIgnoredBy"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.savedSearches)) {
-            data["savedSearches"] = [];
-            for (let item of this.savedSearches)
-                data["savedSearches"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.searchHistories)) {
-            data["searchHistories"] = [];
-            for (let item of this.searchHistories)
-                data["searchHistories"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.searchHistoryClicked)) {
-            data["searchHistoryClicked"] = [];
-            for (let item of this.searchHistoryClicked)
-                data["searchHistoryClicked"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.recommendations)) {
             data["recommendations"] = [];
             for (let item of this.recommendations)
@@ -8485,16 +8083,6 @@ export class Profile implements IProfile {
             data["recommendedBy"] = [];
             for (let item of this.recommendedBy)
                 data["recommendedBy"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.recommendationHistories)) {
-            data["recommendationHistories"] = [];
-            for (let item of this.recommendationHistories)
-                data["recommendationHistories"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.recommendationHistoryBy)) {
-            data["recommendationHistoryBy"] = [];
-            for (let item of this.recommendationHistoryBy)
-                data["recommendationHistoryBy"].push(item ? item.toJSON() : undefined as any);
         }
         return data;
     }
@@ -8528,7 +8116,6 @@ export interface IProfile {
     chatConversationProfiles?: ChatConversation[] | undefined;
     chatMessages?: ChatMessage[] | undefined;
     chatParticipants?: ChatParticipant[] | undefined;
-    eventRsvps?: EventRsvp[] | undefined;
     interestRequestProfileNavigations?: InterestRequest[] | undefined;
     interestRequestProfiles?: InterestRequest[] | undefined;
     interests?: Interest[] | undefined;
@@ -8547,21 +8134,12 @@ export interface IProfile {
     profilePersonalDetail?: ProfilePersonalDetail;
     profilePhoneNumbers?: ProfilePhoneNumber[] | undefined;
     profilePhotos?: ProfilePhoto[] | undefined;
-    profileMedia?: ProfileMedium[] | undefined;
-    profileBadges?: ProfileBadge[] | undefined;
     profileDomainEvents?: ProfileDomainEvent[] | undefined;
     profilePreferredCities?: ProfilePreferredCity[] | undefined;
     profileProfessionalDetail?: ProfileProfessionalDetail;
-    profilePreference?: ProfilePreference;
-    profileVisibilitySetting?: ProfileVisibilitySetting;
     profileRelatives?: ProfileRelative[] | undefined;
-    profileReportProfileNavigations?: ProfileReport[] | undefined;
-    profileReportProfiles?: ProfileReport[] | undefined;
-    profileVerifications?: ProfileVerification[] | undefined;
     profileViewViewedProfiles?: ProfileView[] | undefined;
     profileViewViewerProfiles?: ProfileView[] | undefined;
-    successStoryProfileNavigations?: SuccessStory[] | undefined;
-    successStoryProfiles?: SuccessStory[] | undefined;
     tenant?: Tenant;
     user?: User;
     userOnlineStatuses?: UserOnlineStatus[] | undefined;
@@ -8569,127 +8147,8 @@ export interface IProfile {
     matchProfilesB?: Match[] | undefined;
     profileShortlists?: ProfileShortlist[] | undefined;
     profileShortlistTargets?: ProfileShortlist[] | undefined;
-    profileIgnores?: ProfileIgnore[] | undefined;
-    profileIgnoredBy?: ProfileIgnore[] | undefined;
-    savedSearches?: SavedSearch[] | undefined;
-    searchHistories?: SearchHistory[] | undefined;
-    searchHistoryClicked?: SearchHistory[] | undefined;
     recommendations?: Recommendation[] | undefined;
     recommendedBy?: Recommendation[] | undefined;
-    recommendationHistories?: RecommendationHistory[] | undefined;
-    recommendationHistoryBy?: RecommendationHistory[] | undefined;
-}
-
-export class ProfileBadge implements IProfileBadge {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    badgeId?: number;
-    profileId?: number;
-    badgeType?: BadgeType;
-    badgeName?: string | undefined;
-    badgeDescription?: string | undefined;
-    iconUrl?: string | undefined;
-    earnedAt?: Date;
-    expiresAt?: Date | undefined;
-    isActive?: boolean;
-    awardedBy?: number | undefined;
-    profile?: Profile;
-
-    constructor(data?: IProfileBadge) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.badgeId = _data["badgeId"];
-            this.profileId = _data["profileId"];
-            this.badgeType = _data["badgeType"];
-            this.badgeName = _data["badgeName"];
-            this.badgeDescription = _data["badgeDescription"];
-            this.iconUrl = _data["iconUrl"];
-            this.earnedAt = _data["earnedAt"] ? new Date(_data["earnedAt"].toString()) : undefined as any;
-            this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
-            this.isActive = _data["isActive"];
-            this.awardedBy = _data["awardedBy"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileBadge {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileBadge();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["badgeId"] = this.badgeId;
-        data["profileId"] = this.profileId;
-        data["badgeType"] = this.badgeType;
-        data["badgeName"] = this.badgeName;
-        data["badgeDescription"] = this.badgeDescription;
-        data["iconUrl"] = this.iconUrl;
-        data["earnedAt"] = this.earnedAt ? this.earnedAt.toISOString() : undefined as any;
-        data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
-        data["isActive"] = this.isActive;
-        data["awardedBy"] = this.awardedBy;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileBadge {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    badgeId?: number;
-    profileId?: number;
-    badgeType?: BadgeType;
-    badgeName?: string | undefined;
-    badgeDescription?: string | undefined;
-    iconUrl?: string | undefined;
-    earnedAt?: Date;
-    expiresAt?: Date | undefined;
-    isActive?: boolean;
-    awardedBy?: number | undefined;
-    profile?: Profile;
 }
 
 export class ProfileBlock implements IProfileBlock {
@@ -9661,234 +9120,6 @@ export interface IProfileHoroscopeDetail {
     rashi?: Rashi;
 }
 
-export class ProfileIgnore implements IProfileIgnore {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    profileId?: number;
-    ignoredProfileId?: number;
-    ignoredAt?: Date;
-    ignoreReason?: IgnoreReason;
-    profile?: Profile;
-    ignoredProfile?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: IProfileIgnore) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.profileId = _data["profileId"];
-            this.ignoredProfileId = _data["ignoredProfileId"];
-            this.ignoredAt = _data["ignoredAt"] ? new Date(_data["ignoredAt"].toString()) : undefined as any;
-            this.ignoreReason = _data["ignoreReason"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.ignoredProfile = _data["ignoredProfile"] ? Profile.fromJS(_data["ignoredProfile"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileIgnore {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileIgnore();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["profileId"] = this.profileId;
-        data["ignoredProfileId"] = this.ignoredProfileId;
-        data["ignoredAt"] = this.ignoredAt ? this.ignoredAt.toISOString() : undefined as any;
-        data["ignoreReason"] = this.ignoreReason;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["ignoredProfile"] = this.ignoredProfile ? this.ignoredProfile.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileIgnore {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    profileId?: number;
-    ignoredProfileId?: number;
-    ignoredAt?: Date;
-    ignoreReason?: IgnoreReason;
-    profile?: Profile;
-    ignoredProfile?: Profile;
-    tenant?: Tenant;
-}
-
-export class ProfileMedium implements IProfileMedium {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    mediaId?: number;
-    profileId?: number;
-    mediaType?: MediaType;
-    mediaCategory?: MediaCategory;
-    fileName?: string | undefined;
-    fileUrl?: string | undefined;
-    fileSize?: number | undefined;
-    contentType?: string | undefined;
-    mediaMetadata?: string | undefined;
-    isPrimary?: boolean;
-    sortOrder?: number;
-    isApproved?: boolean;
-    approvedAt?: Date | undefined;
-    approvedBy?: number | undefined;
-    rejectionReason?: string | undefined;
-    profile?: Profile;
-
-    constructor(data?: IProfileMedium) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.mediaId = _data["mediaId"];
-            this.profileId = _data["profileId"];
-            this.mediaType = _data["mediaType"];
-            this.mediaCategory = _data["mediaCategory"];
-            this.fileName = _data["fileName"];
-            this.fileUrl = _data["fileUrl"];
-            this.fileSize = _data["fileSize"];
-            this.contentType = _data["contentType"];
-            this.mediaMetadata = _data["mediaMetadata"];
-            this.isPrimary = _data["isPrimary"];
-            this.sortOrder = _data["sortOrder"];
-            this.isApproved = _data["isApproved"];
-            this.approvedAt = _data["approvedAt"] ? new Date(_data["approvedAt"].toString()) : undefined as any;
-            this.approvedBy = _data["approvedBy"];
-            this.rejectionReason = _data["rejectionReason"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileMedium {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileMedium();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["mediaId"] = this.mediaId;
-        data["profileId"] = this.profileId;
-        data["mediaType"] = this.mediaType;
-        data["mediaCategory"] = this.mediaCategory;
-        data["fileName"] = this.fileName;
-        data["fileUrl"] = this.fileUrl;
-        data["fileSize"] = this.fileSize;
-        data["contentType"] = this.contentType;
-        data["mediaMetadata"] = this.mediaMetadata;
-        data["isPrimary"] = this.isPrimary;
-        data["sortOrder"] = this.sortOrder;
-        data["isApproved"] = this.isApproved;
-        data["approvedAt"] = this.approvedAt ? this.approvedAt.toISOString() : undefined as any;
-        data["approvedBy"] = this.approvedBy;
-        data["rejectionReason"] = this.rejectionReason;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileMedium {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    mediaId?: number;
-    profileId?: number;
-    mediaType?: MediaType;
-    mediaCategory?: MediaCategory;
-    fileName?: string | undefined;
-    fileUrl?: string | undefined;
-    fileSize?: number | undefined;
-    contentType?: string | undefined;
-    mediaMetadata?: string | undefined;
-    isPrimary?: boolean;
-    sortOrder?: number;
-    isApproved?: boolean;
-    approvedAt?: Date | undefined;
-    approvedBy?: number | undefined;
-    rejectionReason?: string | undefined;
-    profile?: Profile;
-}
-
 export class ProfilePersonalDetail implements IProfilePersonalDetail {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -10305,190 +9536,6 @@ export interface IProfilePhoto {
     profile?: Profile;
 }
 
-export class ProfilePreference implements IProfilePreference {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    profileId?: number;
-    minAge?: number | undefined;
-    maxAge?: number | undefined;
-    minHeightFt?: number | undefined;
-    minHeightIn?: number | undefined;
-    maxHeightFt?: number | undefined;
-    maxHeightIn?: number | undefined;
-    acceptDivorcee?: boolean | undefined;
-    acceptWidow?: boolean | undefined;
-    casteNoBar?: boolean;
-    preferredReligionIds?: string | undefined;
-    preferredCasteIds?: string | undefined;
-    preferredSubCasteIds?: string | undefined;
-    educationNoBar?: boolean;
-    occupationNoBar?: boolean;
-    preferredEducationIds?: string | undefined;
-    preferredOccupationIds?: string | undefined;
-    minIncome?: number | undefined;
-    maxIncome?: number | undefined;
-    incomePeriodId?: number | undefined;
-    preferredCountryIds?: string | undefined;
-    preferredStateIds?: string | undefined;
-    preferredCityNames?: string | undefined;
-    preferredResidencyStatus?: string | undefined;
-    manglikPreference?: number | undefined;
-    preferredRashiIds?: string | undefined;
-    preferredNakshatraIds?: string | undefined;
-    smoking?: boolean | undefined;
-    drinking?: boolean | undefined;
-    preferredDietIds?: string | undefined;
-    preferredComplexionIds?: string | undefined;
-    profile?: Profile;
-    incomePeriod?: IncomePeriod;
-
-    constructor(data?: IProfilePreference) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.profileId = _data["profileId"];
-            this.minAge = _data["minAge"];
-            this.maxAge = _data["maxAge"];
-            this.minHeightFt = _data["minHeightFt"];
-            this.minHeightIn = _data["minHeightIn"];
-            this.maxHeightFt = _data["maxHeightFt"];
-            this.maxHeightIn = _data["maxHeightIn"];
-            this.acceptDivorcee = _data["acceptDivorcee"];
-            this.acceptWidow = _data["acceptWidow"];
-            this.casteNoBar = _data["casteNoBar"];
-            this.preferredReligionIds = _data["preferredReligionIds"];
-            this.preferredCasteIds = _data["preferredCasteIds"];
-            this.preferredSubCasteIds = _data["preferredSubCasteIds"];
-            this.educationNoBar = _data["educationNoBar"];
-            this.occupationNoBar = _data["occupationNoBar"];
-            this.preferredEducationIds = _data["preferredEducationIds"];
-            this.preferredOccupationIds = _data["preferredOccupationIds"];
-            this.minIncome = _data["minIncome"];
-            this.maxIncome = _data["maxIncome"];
-            this.incomePeriodId = _data["incomePeriodId"];
-            this.preferredCountryIds = _data["preferredCountryIds"];
-            this.preferredStateIds = _data["preferredStateIds"];
-            this.preferredCityNames = _data["preferredCityNames"];
-            this.preferredResidencyStatus = _data["preferredResidencyStatus"];
-            this.manglikPreference = _data["manglikPreference"];
-            this.preferredRashiIds = _data["preferredRashiIds"];
-            this.preferredNakshatraIds = _data["preferredNakshatraIds"];
-            this.smoking = _data["smoking"];
-            this.drinking = _data["drinking"];
-            this.preferredDietIds = _data["preferredDietIds"];
-            this.preferredComplexionIds = _data["preferredComplexionIds"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.incomePeriod = _data["incomePeriod"] ? IncomePeriod.fromJS(_data["incomePeriod"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfilePreference {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfilePreference();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["profileId"] = this.profileId;
-        data["minAge"] = this.minAge;
-        data["maxAge"] = this.maxAge;
-        data["minHeightFt"] = this.minHeightFt;
-        data["minHeightIn"] = this.minHeightIn;
-        data["maxHeightFt"] = this.maxHeightFt;
-        data["maxHeightIn"] = this.maxHeightIn;
-        data["acceptDivorcee"] = this.acceptDivorcee;
-        data["acceptWidow"] = this.acceptWidow;
-        data["casteNoBar"] = this.casteNoBar;
-        data["preferredReligionIds"] = this.preferredReligionIds;
-        data["preferredCasteIds"] = this.preferredCasteIds;
-        data["preferredSubCasteIds"] = this.preferredSubCasteIds;
-        data["educationNoBar"] = this.educationNoBar;
-        data["occupationNoBar"] = this.occupationNoBar;
-        data["preferredEducationIds"] = this.preferredEducationIds;
-        data["preferredOccupationIds"] = this.preferredOccupationIds;
-        data["minIncome"] = this.minIncome;
-        data["maxIncome"] = this.maxIncome;
-        data["incomePeriodId"] = this.incomePeriodId;
-        data["preferredCountryIds"] = this.preferredCountryIds;
-        data["preferredStateIds"] = this.preferredStateIds;
-        data["preferredCityNames"] = this.preferredCityNames;
-        data["preferredResidencyStatus"] = this.preferredResidencyStatus;
-        data["manglikPreference"] = this.manglikPreference;
-        data["preferredRashiIds"] = this.preferredRashiIds;
-        data["preferredNakshatraIds"] = this.preferredNakshatraIds;
-        data["smoking"] = this.smoking;
-        data["drinking"] = this.drinking;
-        data["preferredDietIds"] = this.preferredDietIds;
-        data["preferredComplexionIds"] = this.preferredComplexionIds;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["incomePeriod"] = this.incomePeriod ? this.incomePeriod.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfilePreference {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    profileId?: number;
-    minAge?: number | undefined;
-    maxAge?: number | undefined;
-    minHeightFt?: number | undefined;
-    minHeightIn?: number | undefined;
-    maxHeightFt?: number | undefined;
-    maxHeightIn?: number | undefined;
-    acceptDivorcee?: boolean | undefined;
-    acceptWidow?: boolean | undefined;
-    casteNoBar?: boolean;
-    preferredReligionIds?: string | undefined;
-    preferredCasteIds?: string | undefined;
-    preferredSubCasteIds?: string | undefined;
-    educationNoBar?: boolean;
-    occupationNoBar?: boolean;
-    preferredEducationIds?: string | undefined;
-    preferredOccupationIds?: string | undefined;
-    minIncome?: number | undefined;
-    maxIncome?: number | undefined;
-    incomePeriodId?: number | undefined;
-    preferredCountryIds?: string | undefined;
-    preferredStateIds?: string | undefined;
-    preferredCityNames?: string | undefined;
-    preferredResidencyStatus?: string | undefined;
-    manglikPreference?: number | undefined;
-    preferredRashiIds?: string | undefined;
-    preferredNakshatraIds?: string | undefined;
-    smoking?: boolean | undefined;
-    drinking?: boolean | undefined;
-    preferredDietIds?: string | undefined;
-    preferredComplexionIds?: string | undefined;
-    profile?: Profile;
-    incomePeriod?: IncomePeriod;
-}
-
 export class ProfilePreferredCity implements IProfilePreferredCity {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -10801,86 +9848,6 @@ export interface IProfileRelative {
     profile?: Profile;
 }
 
-export class ProfileReport implements IProfileReport {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    reportId?: number;
-    reporterProfileId?: number | undefined;
-    reportedProfileId?: number | undefined;
-    reason?: string | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: IProfileReport) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.reportId = _data["reportId"];
-            this.reporterProfileId = _data["reporterProfileId"];
-            this.reportedProfileId = _data["reportedProfileId"];
-            this.reason = _data["reason"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileReport {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileReport();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["reportId"] = this.reportId;
-        data["reporterProfileId"] = this.reporterProfileId;
-        data["reportedProfileId"] = this.reportedProfileId;
-        data["reason"] = this.reason;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileReport {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    reportId?: number;
-    reporterProfileId?: number | undefined;
-    reportedProfileId?: number | undefined;
-    reason?: string | undefined;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-}
-
 export class ProfileShortlist implements IProfileShortlist {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -10985,142 +9952,6 @@ export interface IProfileShortlist {
     tenant?: Tenant;
 }
 
-export class ProfileVerification implements IProfileVerification {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    verificationId?: number;
-    profileId?: number;
-    verificationType?: VerificationType;
-    status?: VerificationStatus;
-    requestedAt?: Date | undefined;
-    submittedAt?: Date | undefined;
-    verificationCode?: string | undefined;
-    verificationPassed?: boolean;
-    verifiedAt?: Date | undefined;
-    reviewedBy?: number | undefined;
-    reviewedAt?: Date | undefined;
-    rejectionReason?: string | undefined;
-    submittedMediaId?: number | undefined;
-    validUntil?: Date | undefined;
-    notes?: string | undefined;
-    profile?: Profile;
-    submittedMedia?: ProfileMedium;
-
-    constructor(data?: IProfileVerification) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.verificationId = _data["verificationId"];
-            this.profileId = _data["profileId"];
-            this.verificationType = _data["verificationType"];
-            this.status = _data["status"];
-            this.requestedAt = _data["requestedAt"] ? new Date(_data["requestedAt"].toString()) : undefined as any;
-            this.submittedAt = _data["submittedAt"] ? new Date(_data["submittedAt"].toString()) : undefined as any;
-            this.verificationCode = _data["verificationCode"];
-            this.verificationPassed = _data["verificationPassed"];
-            this.verifiedAt = _data["verifiedAt"] ? new Date(_data["verifiedAt"].toString()) : undefined as any;
-            this.reviewedBy = _data["reviewedBy"];
-            this.reviewedAt = _data["reviewedAt"] ? new Date(_data["reviewedAt"].toString()) : undefined as any;
-            this.rejectionReason = _data["rejectionReason"];
-            this.submittedMediaId = _data["submittedMediaId"];
-            this.validUntil = _data["validUntil"] ? new Date(_data["validUntil"].toString()) : undefined as any;
-            this.notes = _data["notes"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.submittedMedia = _data["submittedMedia"] ? ProfileMedium.fromJS(_data["submittedMedia"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileVerification {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileVerification();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["verificationId"] = this.verificationId;
-        data["profileId"] = this.profileId;
-        data["verificationType"] = this.verificationType;
-        data["status"] = this.status;
-        data["requestedAt"] = this.requestedAt ? this.requestedAt.toISOString() : undefined as any;
-        data["submittedAt"] = this.submittedAt ? this.submittedAt.toISOString() : undefined as any;
-        data["verificationCode"] = this.verificationCode;
-        data["verificationPassed"] = this.verificationPassed;
-        data["verifiedAt"] = this.verifiedAt ? this.verifiedAt.toISOString() : undefined as any;
-        data["reviewedBy"] = this.reviewedBy;
-        data["reviewedAt"] = this.reviewedAt ? this.reviewedAt.toISOString() : undefined as any;
-        data["rejectionReason"] = this.rejectionReason;
-        data["submittedMediaId"] = this.submittedMediaId;
-        data["validUntil"] = this.validUntil ? this.validUntil.toISOString() : undefined as any;
-        data["notes"] = this.notes;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["submittedMedia"] = this.submittedMedia ? this.submittedMedia.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileVerification {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    verificationId?: number;
-    profileId?: number;
-    verificationType?: VerificationType;
-    status?: VerificationStatus;
-    requestedAt?: Date | undefined;
-    submittedAt?: Date | undefined;
-    verificationCode?: string | undefined;
-    verificationPassed?: boolean;
-    verifiedAt?: Date | undefined;
-    reviewedBy?: number | undefined;
-    reviewedAt?: Date | undefined;
-    rejectionReason?: string | undefined;
-    submittedMediaId?: number | undefined;
-    validUntil?: Date | undefined;
-    notes?: string | undefined;
-    profile?: Profile;
-    submittedMedia?: ProfileMedium;
-}
-
 export class ProfileView implements IProfileView {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -11211,108 +10042,6 @@ export interface IProfileView {
     viewedAt?: Date;
     viewedProfile?: Profile;
     viewerProfile?: Profile;
-}
-
-export enum ProfileVisibilityMode {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-}
-
-export class ProfileVisibilitySetting implements IProfileVisibilitySetting {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    profileId?: number;
-    photoVisibility?: VisibilityLevel;
-    contactVisibility?: VisibilityLevel;
-    horoscopeVisibility?: VisibilityLevel;
-    familyVisibility?: VisibilityLevel;
-    professionalVisibility?: VisibilityLevel;
-    showOnlineStatus?: boolean;
-    showLastSeen?: boolean;
-    interestRequestPermission?: InterestRequestPermission;
-    profileVisibility?: ProfileVisibilityMode;
-    profile?: Profile;
-
-    constructor(data?: IProfileVisibilitySetting) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.profileId = _data["profileId"];
-            this.photoVisibility = _data["photoVisibility"];
-            this.contactVisibility = _data["contactVisibility"];
-            this.horoscopeVisibility = _data["horoscopeVisibility"];
-            this.familyVisibility = _data["familyVisibility"];
-            this.professionalVisibility = _data["professionalVisibility"];
-            this.showOnlineStatus = _data["showOnlineStatus"];
-            this.showLastSeen = _data["showLastSeen"];
-            this.interestRequestPermission = _data["interestRequestPermission"];
-            this.profileVisibility = _data["profileVisibility"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ProfileVisibilitySetting {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProfileVisibilitySetting();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["profileId"] = this.profileId;
-        data["photoVisibility"] = this.photoVisibility;
-        data["contactVisibility"] = this.contactVisibility;
-        data["horoscopeVisibility"] = this.horoscopeVisibility;
-        data["familyVisibility"] = this.familyVisibility;
-        data["professionalVisibility"] = this.professionalVisibility;
-        data["showOnlineStatus"] = this.showOnlineStatus;
-        data["showLastSeen"] = this.showLastSeen;
-        data["interestRequestPermission"] = this.interestRequestPermission;
-        data["profileVisibility"] = this.profileVisibility;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IProfileVisibilitySetting {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    profileId?: number;
-    photoVisibility?: VisibilityLevel;
-    contactVisibility?: VisibilityLevel;
-    horoscopeVisibility?: VisibilityLevel;
-    familyVisibility?: VisibilityLevel;
-    professionalVisibility?: VisibilityLevel;
-    showOnlineStatus?: boolean;
-    showLastSeen?: boolean;
-    interestRequestPermission?: InterestRequestPermission;
-    profileVisibility?: ProfileVisibilityMode;
-    profile?: Profile;
 }
 
 export class Rashi implements IRashi {
@@ -11595,114 +10324,6 @@ export interface IRecommendation {
     createdBy?: number | undefined;
     updatedBy?: number | undefined;
     recommendationId?: number;
-    profileId?: number;
-    tenantId?: number;
-    recommendedProfileId?: number;
-    score?: number;
-    reasonCode?: RecommendationReason;
-    reasonDescription?: string | undefined;
-    algorithmVersion?: string | undefined;
-    isViewed?: boolean;
-    isClicked?: boolean;
-    generatedAt?: Date;
-    expiresAt?: Date | undefined;
-    profile?: Profile;
-    recommendedProfile?: Profile;
-    tenant?: Tenant;
-}
-
-export class RecommendationHistory implements IRecommendationHistory {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    recommendationHistoryId?: number;
-    profileId?: number;
-    tenantId?: number;
-    recommendedProfileId?: number;
-    score?: number;
-    reasonCode?: RecommendationReason;
-    reasonDescription?: string | undefined;
-    algorithmVersion?: string | undefined;
-    isViewed?: boolean;
-    isClicked?: boolean;
-    generatedAt?: Date;
-    expiresAt?: Date | undefined;
-    profile?: Profile;
-    recommendedProfile?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: IRecommendationHistory) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.recommendationHistoryId = _data["recommendationHistoryId"];
-            this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
-            this.recommendedProfileId = _data["recommendedProfileId"];
-            this.score = _data["score"];
-            this.reasonCode = _data["reasonCode"];
-            this.reasonDescription = _data["reasonDescription"];
-            this.algorithmVersion = _data["algorithmVersion"];
-            this.isViewed = _data["isViewed"];
-            this.isClicked = _data["isClicked"];
-            this.generatedAt = _data["generatedAt"] ? new Date(_data["generatedAt"].toString()) : undefined as any;
-            this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.recommendedProfile = _data["recommendedProfile"] ? Profile.fromJS(_data["recommendedProfile"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): RecommendationHistory {
-        data = typeof data === 'object' ? data : {};
-        let result = new RecommendationHistory();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["recommendationHistoryId"] = this.recommendationHistoryId;
-        data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
-        data["recommendedProfileId"] = this.recommendedProfileId;
-        data["score"] = this.score;
-        data["reasonCode"] = this.reasonCode;
-        data["reasonDescription"] = this.reasonDescription;
-        data["algorithmVersion"] = this.algorithmVersion;
-        data["isViewed"] = this.isViewed;
-        data["isClicked"] = this.isClicked;
-        data["generatedAt"] = this.generatedAt ? this.generatedAt.toISOString() : undefined as any;
-        data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["recommendedProfile"] = this.recommendedProfile ? this.recommendedProfile.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IRecommendationHistory {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    recommendationHistoryId?: number;
     profileId?: number;
     tenantId?: number;
     recommendedProfileId?: number;
@@ -12297,114 +10918,6 @@ export interface IRolePermission {
     grantedByNavigation?: User;
 }
 
-export class SavedSearch implements ISavedSearch {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    savedSearchId?: number;
-    profileId?: number;
-    searchName?: string | undefined;
-    searchCriteriaJson?: string | undefined;
-    resultCount?: number | undefined;
-    notifyOnNew?: boolean;
-    frequency?: number | undefined;
-    lastExecutedAt?: Date | undefined;
-    profile?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: ISavedSearch) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.savedSearchId = _data["savedSearchId"];
-            this.profileId = _data["profileId"];
-            this.searchName = _data["searchName"];
-            this.searchCriteriaJson = _data["searchCriteriaJson"];
-            this.resultCount = _data["resultCount"];
-            this.notifyOnNew = _data["notifyOnNew"];
-            this.frequency = _data["frequency"];
-            this.lastExecutedAt = _data["lastExecutedAt"] ? new Date(_data["lastExecutedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): SavedSearch {
-        data = typeof data === 'object' ? data : {};
-        let result = new SavedSearch();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["savedSearchId"] = this.savedSearchId;
-        data["profileId"] = this.profileId;
-        data["searchName"] = this.searchName;
-        data["searchCriteriaJson"] = this.searchCriteriaJson;
-        data["resultCount"] = this.resultCount;
-        data["notifyOnNew"] = this.notifyOnNew;
-        data["frequency"] = this.frequency;
-        data["lastExecutedAt"] = this.lastExecutedAt ? this.lastExecutedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ISavedSearch {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    savedSearchId?: number;
-    profileId?: number;
-    searchName?: string | undefined;
-    searchCriteriaJson?: string | undefined;
-    resultCount?: number | undefined;
-    notifyOnNew?: boolean;
-    frequency?: number | undefined;
-    lastExecutedAt?: Date | undefined;
-    profile?: Profile;
-    tenant?: Tenant;
-}
-
 export enum ScoreDimension {
     _1 = 1,
     _2 = 2,
@@ -12420,194 +10933,6 @@ export enum ScoreDimension {
     _12 = 12,
     _13 = 13,
     _14 = 14,
-}
-
-export class SearchAnalytic implements ISearchAnalytic {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    analyticsId?: number;
-    tenantId?: number;
-    date?: Date;
-    totalSearches?: number;
-    totalResultsClicked?: number;
-    distinctSearchers?: number;
-    avgSearchDurationMs?: number;
-    topFiltersJson?: string | undefined;
-    zeroResultSearches?: number;
-    clickThroughRate?: number | undefined;
-    tenant?: Tenant;
-
-    constructor(data?: ISearchAnalytic) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.analyticsId = _data["analyticsId"];
-            this.tenantId = _data["tenantId"];
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : undefined as any;
-            this.totalSearches = _data["totalSearches"];
-            this.totalResultsClicked = _data["totalResultsClicked"];
-            this.distinctSearchers = _data["distinctSearchers"];
-            this.avgSearchDurationMs = _data["avgSearchDurationMs"];
-            this.topFiltersJson = _data["topFiltersJson"];
-            this.zeroResultSearches = _data["zeroResultSearches"];
-            this.clickThroughRate = _data["clickThroughRate"];
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): SearchAnalytic {
-        data = typeof data === 'object' ? data : {};
-        let result = new SearchAnalytic();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["analyticsId"] = this.analyticsId;
-        data["tenantId"] = this.tenantId;
-        data["date"] = this.date ? formatDate(this.date) : undefined as any;
-        data["totalSearches"] = this.totalSearches;
-        data["totalResultsClicked"] = this.totalResultsClicked;
-        data["distinctSearchers"] = this.distinctSearchers;
-        data["avgSearchDurationMs"] = this.avgSearchDurationMs;
-        data["topFiltersJson"] = this.topFiltersJson;
-        data["zeroResultSearches"] = this.zeroResultSearches;
-        data["clickThroughRate"] = this.clickThroughRate;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ISearchAnalytic {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    analyticsId?: number;
-    tenantId?: number;
-    date?: Date;
-    totalSearches?: number;
-    totalResultsClicked?: number;
-    distinctSearchers?: number;
-    avgSearchDurationMs?: number;
-    topFiltersJson?: string | undefined;
-    zeroResultSearches?: number;
-    clickThroughRate?: number | undefined;
-    tenant?: Tenant;
-}
-
-export class SearchHistory implements ISearchHistory {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    searchHistoryId?: number;
-    profileId?: number | undefined;
-    tenantId?: number;
-    searchCriteriaJson?: string | undefined;
-    resultCount?: number;
-    clickedProfileId?: number | undefined;
-    sessionId?: string | undefined;
-    searchDurationMs?: number | undefined;
-    searchedAt?: Date;
-    profile?: Profile;
-    clickedProfile?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: ISearchHistory) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.searchHistoryId = _data["searchHistoryId"];
-            this.profileId = _data["profileId"];
-            this.tenantId = _data["tenantId"];
-            this.searchCriteriaJson = _data["searchCriteriaJson"];
-            this.resultCount = _data["resultCount"];
-            this.clickedProfileId = _data["clickedProfileId"];
-            this.sessionId = _data["sessionId"];
-            this.searchDurationMs = _data["searchDurationMs"];
-            this.searchedAt = _data["searchedAt"] ? new Date(_data["searchedAt"].toString()) : undefined as any;
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.clickedProfile = _data["clickedProfile"] ? Profile.fromJS(_data["clickedProfile"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): SearchHistory {
-        data = typeof data === 'object' ? data : {};
-        let result = new SearchHistory();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["searchHistoryId"] = this.searchHistoryId;
-        data["profileId"] = this.profileId;
-        data["tenantId"] = this.tenantId;
-        data["searchCriteriaJson"] = this.searchCriteriaJson;
-        data["resultCount"] = this.resultCount;
-        data["clickedProfileId"] = this.clickedProfileId;
-        data["sessionId"] = this.sessionId;
-        data["searchDurationMs"] = this.searchDurationMs;
-        data["searchedAt"] = this.searchedAt ? this.searchedAt.toISOString() : undefined as any;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["clickedProfile"] = this.clickedProfile ? this.clickedProfile.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ISearchHistory {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    searchHistoryId?: number;
-    profileId?: number | undefined;
-    tenantId?: number;
-    searchCriteriaJson?: string | undefined;
-    resultCount?: number;
-    clickedProfileId?: number | undefined;
-    sessionId?: string | undefined;
-    searchDurationMs?: number | undefined;
-    searchedAt?: Date;
-    profile?: Profile;
-    clickedProfile?: Profile;
-    tenant?: Tenant;
 }
 
 export class SendInterestRequest implements ISendInterestRequest {
@@ -13123,18 +11448,15 @@ export interface ISubscriptionFeature {
 }
 
 export class SubscriptionLifecycleEvent implements ISubscriptionLifecycleEvent {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
     lifecycleEventId?: number;
+    tenantId?: number;
     userSubscriptionId?: number;
     fromStatus?: string | undefined;
     toStatus?: string | undefined;
     triggerReason?: string | undefined;
     triggeredByUserId?: number | undefined;
     metadataJson?: string | undefined;
+    createdAt?: Date;
     userSubscription?: UserSubscription;
 
     constructor(data?: ISubscriptionLifecycleEvent) {
@@ -13148,18 +11470,15 @@ export class SubscriptionLifecycleEvent implements ISubscriptionLifecycleEvent {
 
     init(_data?: any) {
         if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
             this.lifecycleEventId = _data["lifecycleEventId"];
+            this.tenantId = _data["tenantId"];
             this.userSubscriptionId = _data["userSubscriptionId"];
             this.fromStatus = _data["fromStatus"];
             this.toStatus = _data["toStatus"];
             this.triggerReason = _data["triggerReason"];
             this.triggeredByUserId = _data["triggeredByUserId"];
             this.metadataJson = _data["metadataJson"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
             this.userSubscription = _data["userSubscription"] ? UserSubscription.fromJS(_data["userSubscription"]) : undefined as any;
         }
     }
@@ -13173,36 +11492,30 @@ export class SubscriptionLifecycleEvent implements ISubscriptionLifecycleEvent {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
         data["lifecycleEventId"] = this.lifecycleEventId;
+        data["tenantId"] = this.tenantId;
         data["userSubscriptionId"] = this.userSubscriptionId;
         data["fromStatus"] = this.fromStatus;
         data["toStatus"] = this.toStatus;
         data["triggerReason"] = this.triggerReason;
         data["triggeredByUserId"] = this.triggeredByUserId;
         data["metadataJson"] = this.metadataJson;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
         data["userSubscription"] = this.userSubscription ? this.userSubscription.toJSON() : undefined as any;
         return data;
     }
 }
 
 export interface ISubscriptionLifecycleEvent {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
     lifecycleEventId?: number;
+    tenantId?: number;
     userSubscriptionId?: number;
     fromStatus?: string | undefined;
     toStatus?: string | undefined;
     triggerReason?: string | undefined;
     triggeredByUserId?: number | undefined;
     metadataJson?: string | undefined;
+    createdAt?: Date;
     userSubscription?: UserSubscription;
 }
 
@@ -13550,118 +11863,6 @@ export interface ISubscriptionPlanVersion {
     subscriptionPlan?: SubscriptionPlan;
 }
 
-export class SuccessStory implements ISuccessStory {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    storyId?: number;
-    brideProfileId?: number | undefined;
-    groomProfileId?: number | undefined;
-    title?: string | undefined;
-    storyText?: string | undefined;
-    coverImageUrl?: string | undefined;
-    publishedAt?: Date | undefined;
-    isPublished?: boolean;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-
-    constructor(data?: ISuccessStory) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.isDeleted = _data["isDeleted"];
-            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
-            this.deletedBy = _data["deletedBy"];
-            this.rowVersion = _data["rowVersion"];
-            this.storyId = _data["storyId"];
-            this.brideProfileId = _data["brideProfileId"];
-            this.groomProfileId = _data["groomProfileId"];
-            this.title = _data["title"];
-            this.storyText = _data["storyText"];
-            this.coverImageUrl = _data["coverImageUrl"];
-            this.publishedAt = _data["publishedAt"] ? new Date(_data["publishedAt"].toString()) : undefined as any;
-            this.isPublished = _data["isPublished"];
-            this.profile = _data["profile"] ? Profile.fromJS(_data["profile"]) : undefined as any;
-            this.profileNavigation = _data["profileNavigation"] ? Profile.fromJS(_data["profileNavigation"]) : undefined as any;
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): SuccessStory {
-        data = typeof data === 'object' ? data : {};
-        let result = new SuccessStory();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["isDeleted"] = this.isDeleted;
-        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
-        data["deletedBy"] = this.deletedBy;
-        data["rowVersion"] = this.rowVersion;
-        data["storyId"] = this.storyId;
-        data["brideProfileId"] = this.brideProfileId;
-        data["groomProfileId"] = this.groomProfileId;
-        data["title"] = this.title;
-        data["storyText"] = this.storyText;
-        data["coverImageUrl"] = this.coverImageUrl;
-        data["publishedAt"] = this.publishedAt ? this.publishedAt.toISOString() : undefined as any;
-        data["isPublished"] = this.isPublished;
-        data["profile"] = this.profile ? this.profile.toJSON() : undefined as any;
-        data["profileNavigation"] = this.profileNavigation ? this.profileNavigation.toJSON() : undefined as any;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ISuccessStory {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    isDeleted?: boolean;
-    deletedAt?: Date | undefined;
-    deletedBy?: number | undefined;
-    rowVersion?: string | undefined;
-    storyId?: number;
-    brideProfileId?: number | undefined;
-    groomProfileId?: number | undefined;
-    title?: string | undefined;
-    storyText?: string | undefined;
-    coverImageUrl?: string | undefined;
-    publishedAt?: Date | undefined;
-    isPublished?: boolean;
-    profile?: Profile;
-    profileNavigation?: Profile;
-    tenant?: Tenant;
-}
-
 export class Taluka implements ITaluka {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -13834,10 +12035,8 @@ export class Tenant implements ITenant {
     permissions?: Permission[] | undefined;
     profileBlocks?: ProfileBlock[] | undefined;
     profileFavorites?: ProfileFavorite[] | undefined;
-    profileReports?: ProfileReport[] | undefined;
     profiles?: Profile[] | undefined;
     roles?: Role[] | undefined;
-    successStories?: SuccessStory[] | undefined;
     tenantDomains?: TenantDomain[] | undefined;
     tenantBranding?: TenantBranding;
     tenantSecuritySetting?: TenantSecuritySetting;
@@ -13854,12 +12053,7 @@ export class Tenant implements ITenant {
     matches?: Match[] | undefined;
     compatibilityRules?: CompatibilityRule[] | undefined;
     profileShortlists?: ProfileShortlist[] | undefined;
-    profileIgnores?: ProfileIgnore[] | undefined;
-    savedSearches?: SavedSearch[] | undefined;
-    searchHistories?: SearchHistory[] | undefined;
-    searchAnalytics?: SearchAnalytic[] | undefined;
     recommendations?: Recommendation[] | undefined;
-    recommendationHistories?: RecommendationHistory[] | undefined;
     profileSequence?: TenantProfileSequence;
 
     constructor(data?: ITenant) {
@@ -13960,11 +12154,6 @@ export class Tenant implements ITenant {
                 for (let item of _data["profileFavorites"])
                     this.profileFavorites!.push(ProfileFavorite.fromJS(item));
             }
-            if (Array.isArray(_data["profileReports"])) {
-                this.profileReports = [] as any;
-                for (let item of _data["profileReports"])
-                    this.profileReports!.push(ProfileReport.fromJS(item));
-            }
             if (Array.isArray(_data["profiles"])) {
                 this.profiles = [] as any;
                 for (let item of _data["profiles"])
@@ -13974,11 +12163,6 @@ export class Tenant implements ITenant {
                 this.roles = [] as any;
                 for (let item of _data["roles"])
                     this.roles!.push(Role.fromJS(item));
-            }
-            if (Array.isArray(_data["successStories"])) {
-                this.successStories = [] as any;
-                for (let item of _data["successStories"])
-                    this.successStories!.push(SuccessStory.fromJS(item));
             }
             if (Array.isArray(_data["tenantDomains"])) {
                 this.tenantDomains = [] as any;
@@ -14040,35 +12224,10 @@ export class Tenant implements ITenant {
                 for (let item of _data["profileShortlists"])
                     this.profileShortlists!.push(ProfileShortlist.fromJS(item));
             }
-            if (Array.isArray(_data["profileIgnores"])) {
-                this.profileIgnores = [] as any;
-                for (let item of _data["profileIgnores"])
-                    this.profileIgnores!.push(ProfileIgnore.fromJS(item));
-            }
-            if (Array.isArray(_data["savedSearches"])) {
-                this.savedSearches = [] as any;
-                for (let item of _data["savedSearches"])
-                    this.savedSearches!.push(SavedSearch.fromJS(item));
-            }
-            if (Array.isArray(_data["searchHistories"])) {
-                this.searchHistories = [] as any;
-                for (let item of _data["searchHistories"])
-                    this.searchHistories!.push(SearchHistory.fromJS(item));
-            }
-            if (Array.isArray(_data["searchAnalytics"])) {
-                this.searchAnalytics = [] as any;
-                for (let item of _data["searchAnalytics"])
-                    this.searchAnalytics!.push(SearchAnalytic.fromJS(item));
-            }
             if (Array.isArray(_data["recommendations"])) {
                 this.recommendations = [] as any;
                 for (let item of _data["recommendations"])
                     this.recommendations!.push(Recommendation.fromJS(item));
-            }
-            if (Array.isArray(_data["recommendationHistories"])) {
-                this.recommendationHistories = [] as any;
-                for (let item of _data["recommendationHistories"])
-                    this.recommendationHistories!.push(RecommendationHistory.fromJS(item));
             }
             this.profileSequence = _data["profileSequence"] ? TenantProfileSequence.fromJS(_data["profileSequence"]) : undefined as any;
         }
@@ -14170,11 +12329,6 @@ export class Tenant implements ITenant {
             for (let item of this.profileFavorites)
                 data["profileFavorites"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.profileReports)) {
-            data["profileReports"] = [];
-            for (let item of this.profileReports)
-                data["profileReports"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.profiles)) {
             data["profiles"] = [];
             for (let item of this.profiles)
@@ -14184,11 +12338,6 @@ export class Tenant implements ITenant {
             data["roles"] = [];
             for (let item of this.roles)
                 data["roles"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.successStories)) {
-            data["successStories"] = [];
-            for (let item of this.successStories)
-                data["successStories"].push(item ? item.toJSON() : undefined as any);
         }
         if (Array.isArray(this.tenantDomains)) {
             data["tenantDomains"] = [];
@@ -14250,35 +12399,10 @@ export class Tenant implements ITenant {
             for (let item of this.profileShortlists)
                 data["profileShortlists"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.profileIgnores)) {
-            data["profileIgnores"] = [];
-            for (let item of this.profileIgnores)
-                data["profileIgnores"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.savedSearches)) {
-            data["savedSearches"] = [];
-            for (let item of this.savedSearches)
-                data["savedSearches"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.searchHistories)) {
-            data["searchHistories"] = [];
-            for (let item of this.searchHistories)
-                data["searchHistories"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.searchAnalytics)) {
-            data["searchAnalytics"] = [];
-            for (let item of this.searchAnalytics)
-                data["searchAnalytics"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.recommendations)) {
             data["recommendations"] = [];
             for (let item of this.recommendations)
                 data["recommendations"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.recommendationHistories)) {
-            data["recommendationHistories"] = [];
-            for (let item of this.recommendationHistories)
-                data["recommendationHistories"].push(item ? item.toJSON() : undefined as any);
         }
         data["profileSequence"] = this.profileSequence ? this.profileSequence.toJSON() : undefined as any;
         return data;
@@ -14333,10 +12457,8 @@ export interface ITenant {
     permissions?: Permission[] | undefined;
     profileBlocks?: ProfileBlock[] | undefined;
     profileFavorites?: ProfileFavorite[] | undefined;
-    profileReports?: ProfileReport[] | undefined;
     profiles?: Profile[] | undefined;
     roles?: Role[] | undefined;
-    successStories?: SuccessStory[] | undefined;
     tenantDomains?: TenantDomain[] | undefined;
     tenantBranding?: TenantBranding;
     tenantSecuritySetting?: TenantSecuritySetting;
@@ -14353,12 +12475,7 @@ export interface ITenant {
     matches?: Match[] | undefined;
     compatibilityRules?: CompatibilityRule[] | undefined;
     profileShortlists?: ProfileShortlist[] | undefined;
-    profileIgnores?: ProfileIgnore[] | undefined;
-    savedSearches?: SavedSearch[] | undefined;
-    searchHistories?: SearchHistory[] | undefined;
-    searchAnalytics?: SearchAnalytic[] | undefined;
     recommendations?: Recommendation[] | undefined;
-    recommendationHistories?: RecommendationHistory[] | undefined;
     profileSequence?: TenantProfileSequence;
 }
 
@@ -15206,7 +13323,7 @@ export class TenantSubscription implements ITenantSubscription {
     endDate?: Date;
     isActive?: boolean;
     rowVersion?: string | undefined;
-    plan?: Plan;
+    plan?: SubscriptionPlan;
     tenant?: Tenant;
 
     constructor(data?: ITenantSubscription) {
@@ -15231,7 +13348,7 @@ export class TenantSubscription implements ITenantSubscription {
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
             this.isActive = _data["isActive"];
             this.rowVersion = _data["rowVersion"];
-            this.plan = _data["plan"] ? Plan.fromJS(_data["plan"]) : undefined as any;
+            this.plan = _data["plan"] ? SubscriptionPlan.fromJS(_data["plan"]) : undefined as any;
             this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
         }
     }
@@ -15274,7 +13391,7 @@ export interface ITenantSubscription {
     endDate?: Date;
     isActive?: boolean;
     rowVersion?: string | undefined;
-    plan?: Plan;
+    plan?: SubscriptionPlan;
     tenant?: Tenant;
 }
 
@@ -16732,32 +14849,6 @@ export interface IUserTenant {
     roleAssignment?: string | undefined;
     user?: User;
     tenant?: Tenant;
-}
-
-export enum VerificationStatus {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-    _5 = 5,
-}
-
-export enum VerificationType {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-    _5 = 5,
-    _6 = 6,
-    _7 = 7,
-    _8 = 8,
-}
-
-export enum VisibilityLevel {
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
 }
 
 export class WebAuthnCredential implements IWebAuthnCredential {
