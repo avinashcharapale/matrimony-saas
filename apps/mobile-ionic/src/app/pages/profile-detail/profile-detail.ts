@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { AuthStore } from '@org/data-access-auth';
+import { finalize } from 'rxjs/operators';
 
 interface ProfileField {
   label: string;
@@ -37,6 +38,7 @@ export class ProfileDetail implements OnInit {
   readonly showUpgradePrompt = signal(false);
   readonly isSendingInterest = signal(false);
   readonly interestSent = signal(false);
+  readonly isLoading = signal(true);
 
   readonly isVisitor = computed(() => !this.authStore.isAuthenticated());
   readonly isFreeUser = computed(() => this.authStore.isAuthenticated());
@@ -44,14 +46,21 @@ export class ProfileDetail implements OnInit {
 
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
-    const photos: string[] = [this.getProfilePhoto()];
-    if ((p?.registrationDetails?.photos.length ?? 0) > 1) {
-      photos.push(this.getProfilePhoto(true));
+    const photos = p?.registrationDetails?.photos ?? [];
+    const genderId = p?.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null;
+    const seed = encodeURIComponent((p?.email || p?.id || p?.name || '').toLowerCase());
+    const urls: string[] = [];
+    for (let i = 0; i < Math.min(photos.length, 3); i++) {
+      const photo = photos[i] as any;
+      const url = photo.fileUrl ?? photo.FileUrl;
+      if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+        urls.push(url);
+      } else {
+        urls.push(`https://i.pravatar.cc/300?u=${seed}-${i}`);
+      }
     }
-    if ((p?.registrationDetails?.photos.length ?? 0) > 2 && photos.length < 3) {
-      photos.push(this.getProfilePhoto());
-    }
-    return photos.slice(0, 3);
+    if (urls.length === 0) urls.push(`https://i.pravatar.cc/300?u=${seed}`);
+    return urls.slice(0, 3);
   });
 
   readonly sections = computed(() => {
@@ -136,15 +145,47 @@ export class ProfileDetail implements OnInit {
   ngOnInit(): void {
     const profileId = this.route.snapshot.paramMap.get('id');
     if (profileId) {
-      this.profile.set(this.memberService.getProfileById(profileId));
+      this.isLoading.set(true);
+      const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
+      if (!isNaN(numericId)) {
+        this.memberService.getProfileByIdFromApi(numericId).pipe(
+          finalize(() => this.isLoading.set(false)),
+        ).subscribe({
+          next: (record) => {
+            if (record) {
+              this.profile.set(record);
+            } else {
+              this.profile.set(this.memberService.getProfileById(profileId));
+            }
+          },
+          error: () => {
+            this.profile.set(this.memberService.getProfileById(profileId));
+          },
+        });
+      } else {
+        this.profile.set(this.memberService.getProfileById(profileId));
+        this.isLoading.set(false);
+      }
     }
   }
 
   getProfilePhoto(secondary = false): string {
     const p = this.profile();
     if (!p) return '';
+    const photos = p.registrationDetails?.photos ?? [];
+    const genderId = p.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null;
     const seed = encodeURIComponent((p.email || p.id || p.name).toLowerCase());
-    return `https://i.pravatar.cc/300?u=${seed}${secondary ? '-alt' : ''}`;
+
+    if (secondary && photos.length > 1) {
+      const url = (photos[1] as any).fileUrl ?? (photos[1] as any).FileUrl;
+      if (url && (url.startsWith('http://') || url.startsWith('https://'))) return url;
+      return `https://i.pravatar.cc/300?u=${seed}-alt`;
+    }
+    if (photos.length > 0) {
+      const url = (photos[0] as any).fileUrl ?? (photos[0] as any).FileUrl;
+      if (url && (url.startsWith('http://') || url.startsWith('https://'))) return url;
+    }
+    return `https://i.pravatar.cc/300?u=${seed}`;
   }
 
   getMemberId(): string {

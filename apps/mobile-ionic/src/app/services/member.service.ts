@@ -1,6 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { MemberRecord, RegisterFormDetails, SAMPLE_PROFILES } from '@org/models';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, catchError, map } from 'rxjs';
+import { MemberRecord, RegisterFormDetails, SAMPLE_PROFILES, createEmptyRegisterFormDetails } from '@org/models';
 import { TenantService } from './tenant.service';
+import { ProfileDetailDto } from '@org/generated';
 
 export type { MemberRecord, RegisterFormDetails } from '@org/models';
 
@@ -20,6 +23,7 @@ const LEGACY_SESSION_KEY = 'matrimony_session_user';
 })
 export class MemberService {
   private readonly tenantService = inject(TenantService);
+  private readonly http = inject(HttpClient);
 
   private get tenantId(): string {
     return this.tenantService.tenant.id || 'default';
@@ -134,5 +138,123 @@ export class MemberService {
   getProfileById(profileId: string): MemberRecord | null {
     const source = [...this.getMembers(), ...SAMPLE_PROFILES];
     return source.find((item) => item.id === profileId) ?? null;
+  }
+
+  getProfileByIdFromApi(profileId: number): Observable<MemberRecord | null> {
+    return this.http.get<ProfileDetailDto>(`/api/UserProfiles/public/${profileId}`).pipe(
+      map((dto) => this.mapDtoToMemberRecord(dto)),
+      catchError(() => of(null)),
+    );
+  }
+
+  private mapDtoToMemberRecord(dto: ProfileDetailDto): MemberRecord {
+    const pd = dto.personalDetails;
+    const photos = (dto.photos ?? []).map((p) => ({
+      photoSlot: p.photoSlot ?? 0,
+      fileName: p.fileName ?? '',
+      fileUrl: p.fileUrl ?? p.fileName ?? '',
+      isPrimary: p.isPrimary ?? false,
+    }));
+
+    return {
+      id: `${dto.profileId ?? 0}`,
+      profileCode: dto.profileCode ?? String(dto.profileId ?? ''),
+      email: dto.contact?.contactEmail ?? '',
+      name: dto.fullName ?? '',
+      age: dto.age ?? undefined,
+      occupation: dto.occupationText ?? undefined,
+      location: dto.locationText ?? undefined,
+      bio: dto.bio ?? undefined,
+      createdAt: dto.lastActiveAt ?? new Date().toISOString(),
+      password: '',
+      registrationDetails: {
+        ...createEmptyRegisterFormDetails(),
+        personal: {
+          firstName: dto.fullName?.split(' ')[0] ?? '',
+          middleName: '',
+          lastName: dto.fullName?.split(' ').slice(1).join(' ') ?? '',
+          dobDay: `${pd?.dobDay ?? ''}`,
+          dobMonth: pd?.dobMonth ?? '',
+          dobYear: `${pd?.dobYear ?? ''}`,
+          gender: `${pd?.genderId ?? ''}`,
+          religion: pd?.religionName ?? '',
+          caste: pd?.casteName ?? '',
+          subCast: pd?.subCasteName ?? '',
+          maritalStatus: pd?.maritalStatusName ?? '',
+          heightFt: `${pd?.heightFt ?? ''}`,
+          heightIn: `${pd?.heightIn ?? ''}`,
+          weightKg: `${pd?.weightKg ?? ''}`,
+          bloodGroup: pd?.bloodGroupName ?? '',
+          complexion: pd?.complexionName ?? '',
+          physicalDisability: pd?.physicalDisability ? 'Yes' : 'No',
+          disabilityDetail: pd?.disabilityDetail ?? '',
+          diet: pd?.dietName ?? '',
+          spectacles: pd?.spectacles ? 'Yes' : 'No',
+          lens: pd?.lens ? 'Yes' : 'No',
+          personality: pd?.personalityName ?? '',
+        },
+        horoscope: {
+          manglik: dto.horoscope?.manglik ? 'Yes' : 'No',
+          rashi: dto.horoscope?.rashiName ?? '',
+          nakshatra: dto.horoscope?.nakshatraName ?? '',
+          charan: dto.horoscope?.charanName ?? '',
+          nadi: dto.horoscope?.nadiName ?? '',
+          gan: dto.horoscope?.ganName ?? '',
+          birthHour: `${dto.horoscope?.birthHour ?? ''}`,
+          birthMinute: `${dto.horoscope?.birthMinute ?? ''}`,
+          birthPeriod: dto.horoscope?.birthPeriod ?? '',
+          birthDistrict: dto.horoscope?.birthDistrictName ?? '',
+          devak: dto.horoscope?.devak ?? '',
+        },
+        professional: {
+          educationArea: dto.career?.educationAreaName ?? '',
+          education: dto.career?.educationName ?? '',
+          occupationType: dto.career?.occupationName ?? '',
+          occupationDetails: dto.career?.occupationDetails ?? '',
+          workingCityCountry: [dto.career?.workingCity, dto.career?.workingStateName, dto.career?.workingCountryName].filter(Boolean).join(', '),
+          incomeAmount: `${dto.career?.incomeAmount ?? ''}`,
+          incomePeriod: dto.career?.incomePeriodName ?? '',
+        },
+        contact: {
+          idProofNumber: dto.contact?.idProofNumber ?? '',
+          residenceAddress: dto.contact?.residenceAddress ?? '',
+          contactEmail: dto.contact?.contactEmail ?? '',
+          smsMobile: dto.phoneNumbers?.[0]?.phoneNumber ?? '',
+          mobileSecondary: dto.phoneNumbers?.[1]?.phoneNumber ?? '',
+          phonePrimary: dto.phoneNumbers?.[2]?.phoneNumber ?? '',
+          phoneSecondary: dto.phoneNumbers?.[3]?.phoneNumber ?? '',
+        },
+        family: {
+          fatherStatus: dto.familyInfo?.fatherStatus ? 'Yes' : 'No',
+          motherStatus: dto.familyInfo?.motherStatus ? 'Yes' : 'No',
+          brothers: `${dto.familyInfo?.brothers ?? ''}`,
+          marriedBrothers: `${dto.familyInfo?.marriedBrothers ?? ''}`,
+          sisters: `${dto.familyInfo?.sisters ?? ''}`,
+          marriedSisters: `${dto.familyInfo?.marriedSisters ?? ''}`,
+          parentsFullName: dto.familyInfo?.parentsFullName ?? '',
+          parentsOccupation: dto.familyInfo?.parentsOccupation ?? '',
+          parentsResidentCity: dto.familyInfo?.parentsResidentCity ?? '',
+          relativesSurnames: (dto.relativeSurnames ?? []).join(', '),
+          familyWealth: dto.familyInfo?.familyWealth ?? '',
+          mamaSurnamePlace: dto.familyInfo?.mamaSurnamePlace ?? '',
+          nativeDistrict: dto.familyInfo?.nativeDistrictName ?? '',
+          nativeTaluka: dto.familyInfo?.nativeTalukaName ?? '',
+          intercastMarriage: dto.familyInfo?.intercastMarriage ? 'Yes' : 'No',
+          intercastRelation: dto.familyInfo?.intercastRelation ?? '',
+        },
+        expectations: {
+          preferredCities: (dto.preferredCities ?? []).join(', '),
+          expectedManglik: dto.partnerPreference?.expectedManglik ? 'Yes' : 'No',
+          expectedCaste: '',
+          maxAgeDifference: `${dto.partnerPreference?.maxAgeDifference ?? ''}`,
+          expectedHeightFt: `${dto.partnerPreference?.expectedHeightFt ?? ''}`,
+          expectedHeightIn: `${dto.partnerPreference?.expectedHeightIn ?? ''}`,
+          expectedEducation: '',
+          expectedOccupationIncome: '',
+          divorcee: dto.partnerPreference?.divorcee ? 'Yes' : 'No',
+        },
+        photos,
+      },
+    };
   }
 }
