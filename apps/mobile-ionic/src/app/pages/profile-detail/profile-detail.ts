@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inj
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { MemberRecord, MemberService } from '../../services/member.service';
+import { TenantService } from '../../services/tenant.service';
 import { AuthStore } from '@org/data-access-auth';
 import { finalize } from 'rxjs/operators';
 
@@ -30,6 +32,8 @@ export class ProfileDetail implements OnInit {
   private readonly router = inject(Router);
   private readonly memberService = inject(MemberService);
   private readonly authStore = inject(AuthStore);
+  private readonly http = inject(HttpClient);
+  private readonly tenantService = inject(TenantService);
 
   readonly profile = signal<MemberRecord | null>(null);
   readonly currentPhotoIndex = signal(0);
@@ -234,10 +238,32 @@ export class ProfileDetail implements OnInit {
       this.router.navigate(['/register']);
       return;
     }
-    if (this.isFreeUser()) {
-      this.showUpgradePrompt.set(true);
+    if (this.interestSent()) {
       return;
     }
+
+    const p = this.profile();
+    if (!p) return;
+
+    const targetProfileId = parseInt(p.id, 10);
+    if (isNaN(targetProfileId)) return;
+
+    this.isSendingInterest.set(true);
+    const tenantId = this.tenantService.tenant.id;
+
+    this.http.post('/match/InterestRequests', {
+      targetProfileId,
+      message: '',
+    }, {
+      headers: tenantId ? { 'X-Tenant-Id': String(tenantId) } : {},
+    }).pipe(
+      finalize(() => this.isSendingInterest.set(false)),
+    ).subscribe({
+      next: () => this.interestSent.set(true),
+      error: (err: unknown) => {
+        console.error('Failed to send interest:', err);
+      },
+    });
   }
 
   dismissUpgradePrompt(): void {
@@ -245,7 +271,7 @@ export class ProfileDetail implements OnInit {
   }
 
   goToPlans(): void {
-    this.router.navigate(['/search']);
+    this.router.navigate(['/plans']);
   }
 
   private field(label: string, value: unknown): ProfileField {

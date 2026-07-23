@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@ang
 import { TenantService } from '../../services/tenant.service';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
+import { MatchClient } from '@org/generated';
 import { HomeSidebarComponent } from './components/home-sidebar.component';
 import { HomeHeaderComponent } from './components/home-header.component';
 import { HomeStatsComponent } from './components/home-stats.component';
@@ -27,6 +28,7 @@ export class Home implements OnInit {
   readonly tenant = inject(TenantService).tenant;
   private readonly memberService = inject(MemberService);
   private readonly authService = inject(AuthService);
+  private readonly matchClient = inject(MatchClient);
 
   get brandMark(): string {
     return this.tenant.logoText
@@ -52,7 +54,6 @@ export class Home implements OnInit {
     this.currentDate.set(this.formatDate(new Date()));
     this.loadMyProfile();
     this.loadTopMatches();
-    this.loadRecentActivity();
   }
 
   private formatDate(date: Date): string {
@@ -68,6 +69,10 @@ export class Home implements OnInit {
         const firstName = fullName.split(' ')[0] ?? '';
         this.userName.set(fullName);
         this.userFirstName.set(firstName);
+
+        if (profile.profileId) {
+          this.loadInterests(profile.profileId);
+        }
       },
       error: () => {},
     });
@@ -89,14 +94,18 @@ export class Home implements OnInit {
     });
   }
 
-  private loadRecentActivity(): void {
-    this.memberService.searchProfiles({ name: '', location: '', occupation: '', pageNumber: 1, pageSize: 3 }).subscribe({
-      next: (profiles) => {
-        const interests: InterestItem[] = profiles.map((p) => ({
-          name: p.name,
-          detail: p.bio ?? 'Viewed your profile',
+  private loadInterests(profileId: number): void {
+    this.matchClient.getInterestRequestsByTarget(profileId).subscribe({
+      next: (requests) => {
+        const interests: InterestItem[] = requests.map((r) => ({
+          id: String(r.interestRequestId ?? ''),
+          name: r.requesterName ?? 'Unknown',
+          detail: r.status === 'Pending'
+            ? (r.message ?? 'Sent you an interest')
+            : `${r.status}${r.message ? ' — ' + r.message : ''}`,
+          profileId: r.requesterProfileId,
         }));
-        this.interests.set(interests);
+        this.interests.set(interests.slice(0, 5));
       },
       error: () => {},
     });

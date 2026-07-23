@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { MatchClient, InterestRequestDto } from '@org/generated';
+import { MemberService } from '../../services/member.service';
+import { finalize } from 'rxjs/operators';
 
 interface InterestCard {
   id: string;
@@ -29,7 +32,9 @@ interface InterestCard {
       </div>
 
       <section class="cards">
-        @if (visibleInterests().length > 0) {
+        @if (isLoading()) {
+          <div class="empty-state">Loading...</div>
+        } @else if (visibleInterests().length > 0) {
           @for (item of visibleInterests(); track item.id) {
           <article class="card">
             <div>
@@ -41,8 +46,8 @@ interface InterestCard {
                 {{ item.status }}
               </span>
               @if (activeTab() === 'received' && item.status === 'pending') {
-              <button type="button" class="accept" (click)="updateStatus(item.id, 'accepted')">Accept</button>
-              <button type="button" class="decline" (click)="updateStatus(item.id, 'declined')">Decline</button>
+              <button type="button" class="accept" (click)="respondToInterest(item.id, 'accepted')">Accept</button>
+              <button type="button" class="decline" (click)="respondToInterest(item.id, 'declined')">Decline</button>
               }
             </div>
           </article>
@@ -81,8 +86,12 @@ interface InterestCard {
     `,
   ],
 })
-export class Interests {
+export class Interests implements OnInit {
+  private readonly matchClient = inject(MatchClient);
+  private readonly memberService = inject(MemberService);
+
   readonly activeTab = signal<'received' | 'sent'>('received');
+  readonly isLoading = signal(true);
 
   private readonly interests = signal<InterestCard[]>([]);
 
@@ -90,9 +99,80 @@ export class Interests {
     this.interests().filter((item) => item.type === this.activeTab())
   );
 
-  updateStatus(id: string, status: InterestCard['status']): void {
-    this.interests.update(items =>
-      items.map((item) => (item.id === id ? { ...item, status } : item))
-    );
+  ngOnInit(): void {
+    this.memberService.getMyProfile().subscribe({
+      next: (profile) => {
+        if (profile.profileId) {
+          this.loadInterests(profile.profileId);
+        } else {
+          this.isLoading.set(false);
+        }
+      },
+      error: () => this.isLoading.set(false),
+    });
+  }
+
+  private loadInterests(profileId: number): void {
+    this.isLoading.set(true);
+
+    let receivedCount = 0;
+    let sentCount = 0;
+    const allCards: InterestCard[] = [];
+
+    const checkDone = () => {
+      receivedCount++;
+      if (receivedCount >= 2) {
+        this.interests.set(allCards);
+        this.isLoading.set(false);
+      }
+    };
+
+    this.matchClient.getInterestRequestsByTarget(profileId).pipe(
+      finalize(() => checkDone()),
+    ).subscribe({
+      next: (requests) => {
+        const cards = requests.map((r) => this.mapToCard(r, 'received'));
+        allCards.push(...cards);
+      },
+      error: () => {},
+    });
+
+    this.matchClient.getInterestRequestsByRequester(profileId).pipe(
+      finalize(() => checkDone()),
+    ).subscribe({
+      next: (requests) => {
+        const cards = requests.map((r) => this.mapToCard(r, 'sent'));
+        allCards.push(...cards);
+      },
+      error: () => {},
+    });
+  }
+
+  private mapToCard(r: InterestRequestDto, type: 'received' | 'sent'): InterestCard {
+    const name = type === 'received' ? (r.requesterName ?? 'Unknown') : (r.targetName ?? 'Unknown');
+    const status = (r.status ?? 'pending').toLowerCase() as InterestCard['status'];
+    return {
+      id: String(r.interestRequestId ?? ''),
+      name,
+      detail: r.message ?? `Interest ${r.status?.toLowerCase() ?? 'pending'}`,
+      status,
+      type,
+    };
+  }
+
+  respondToInterest(id: string, newStatus: 'accepted' | 'declined'): void {
+    const numId = Number(id);
+    if (isNaN(numId)) return;
+
+    this.matchClient.respondToInterestRequest(numId, { status: newStatus }).subscribe({
+      next: () => {
+        this.interests.update(items =>
+          items.map((item) => (item.id === id ? { ...item, status: newStatus } : item))
+        );
+      },
+      error: (err: unknown) => {
+        console.error('Failed to respond to interest:', err);
+      },
+    });
   }
 }

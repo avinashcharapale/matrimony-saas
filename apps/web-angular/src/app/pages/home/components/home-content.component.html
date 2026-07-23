@@ -35,7 +35,7 @@
       </div>
       @if (interests.length > 0) {
         <div class="simple-list">
-          @for (item of interests; track item.name) {
+          @for (item of interests; track item.id) {
           <div>
             <strong>{{ item.name }}</strong>
             <p>{{ item.detail }}</p>

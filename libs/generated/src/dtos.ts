@@ -793,7 +793,9 @@ export interface UpdateMatchStatusRequest {
 export interface InterestRequestDto {
   interestRequestId?: number;
   requesterProfileId?: number;
+  requesterName?: string;
   targetProfileId?: number;
+  targetName?: string;
   status?: string;
   message?: string;
   respondedAt?: string;

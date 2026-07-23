@@ -37,6 +37,11 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'plans',
+    loadComponent: () =>
+      import('./pages/plans/plans').then((m) => m.Plans),
+  },
+  {
     path: 'search',
     canActivate: [authGuard],
     loadComponent: () =>

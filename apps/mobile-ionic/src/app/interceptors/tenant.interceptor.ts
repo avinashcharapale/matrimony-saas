@@ -10,8 +10,15 @@ export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const absoluteApiPrefix = `${window.location.origin}/api`;
-  const isApiRequest = req.url.startsWith('/api') || req.url.startsWith(absoluteApiPrefix);
+  const isApiRequest =
+    req.url.startsWith('/api') ||
+    req.url.startsWith('/profile') ||
+    req.url.startsWith('/identity') ||
+    req.url.startsWith('/tenant') ||
+    req.url.startsWith('/subscription') ||
+    req.url.startsWith('/match') ||
+    req.url.startsWith('/chat') ||
+    req.url.startsWith('/gateway');
 
   if (!isApiRequest || req.headers.has('x-tenant-id')) {
     return next(req);

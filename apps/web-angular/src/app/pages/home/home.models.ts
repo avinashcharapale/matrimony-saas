@@ -14,8 +14,10 @@ export interface MatchItem {
 }
 
 export interface InterestItem {
+  id: string;
   name: string;
   detail: string;
+  profileId?: number;
 }
 
 export interface ActivityItem {
