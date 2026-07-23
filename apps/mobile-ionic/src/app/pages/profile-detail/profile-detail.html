@@ -34,11 +34,29 @@
         <h1>{{ profile()!.name }}</h1>
         <p class="member-id">{{ getMemberId() }}</p>
         <p class="member-meta">{{ profile()!.age }} years • {{ profile()!.location }}</p>
-        <button class="connect-btn">Connect Now</button>
+        <button class="connect-btn" [class.sent]="interestSent()" [disabled]="isSendingInterest()" (click)="onConnect()">
+          @if (isVisitor()) {
+            Register to Connect
+          } @else if (isFreeUser() && !interestSent()) {
+            Upgrade to Connect
+          } @else if (interestSent()) {
+            Interest Sent
+          } @else if (isSendingInterest()) {
+            Sending...
+          } @else {
+            &#x2764; Connect
+          }
+        </button>
       </div>
 
       <!-- Sections -->
       @for (section of sections(); track section.title) {
+      @if (section.title === 'Address & Contact' && isVisitor()) {
+      <div class="detail-section contact-gated">
+        <h2>{{ section.title }}</h2>
+        <p class="gate-message">Register to view contact details</p>
+      </div>
+      } @else {
       <div class="detail-section">
         <h2>{{ section.title }}</h2>
         <div class="fields-list">
@@ -50,6 +68,7 @@
           }
         </div>
       </div>
+      }
       }
     </div>
 
@@ -96,6 +115,21 @@
           <p>The selected profile is unavailable.</p>
         </ion-card-content>
       </ion-card>
+    </div>
+    }
+
+    <!-- Upgrade Prompt Modal -->
+    @if (showUpgradePrompt()) {
+    <div class="upgrade-overlay" (click)="dismissUpgradePrompt()">
+      <div class="upgrade-modal" (click)="$event.stopPropagation()">
+        <button class="upgrade-close" (click)="dismissUpgradePrompt()">&#x2715;</button>
+        <div class="upgrade-content">
+          <h2>Upgrade to Connect</h2>
+          <p>You need an active subscription to send interests and view contact details.</p>
+          <button class="upgrade-cta" (click)="goToPlans()">View Plans</button>
+          <button class="upgrade-cancel" (click)="dismissUpgradePrompt()">Maybe Later</button>
+        </div>
+      </div>
     </div>
     }
   </ion-content>

@@ -334,3 +334,104 @@
 .profile-photo:active {
   opacity: 0.9;
 }
+
+/* Contact Gated */
+.contact-gated {
+  position: relative;
+}
+
+.gate-message {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #9a8f86;
+  text-align: center;
+  font-style: italic;
+  padding: 0.5rem 0;
+}
+
+/* Connect Button States */
+.connect-btn.sent {
+  background: #6b8f71;
+}
+
+/* Upgrade Prompt Modal */
+.upgrade-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeInMobile 0.2s ease-in;
+}
+
+.upgrade-modal {
+  position: relative;
+  background: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.upgrade-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #9a8f86;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.upgrade-content h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+  color: #1f2230;
+}
+
+.upgrade-content p {
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+  color: #6d7285;
+  line-height: 1.5;
+}
+
+.upgrade-cta {
+  display: block;
+  background: #9a5e45;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.upgrade-cta:active {
+  background: #7d4a37;
+}
+
+.upgrade-cancel {
+  display: block;
+  background: none;
+  border: none;
+  color: #9a8f86;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 100%;
+}

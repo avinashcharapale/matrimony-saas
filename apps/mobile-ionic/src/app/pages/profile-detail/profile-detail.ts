@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MemberRecord, MemberService } from '../../services/member.service';
+import { AuthStore } from '@org/data-access-auth';
 
 interface ProfileField {
   label: string;
@@ -25,12 +26,21 @@ interface ProfileSection {
 })
 export class ProfileDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly memberService = inject(MemberService);
+  private readonly authStore = inject(AuthStore);
 
   readonly profile = signal<MemberRecord | null>(null);
   readonly currentPhotoIndex = signal(0);
   readonly isGalleryOpen = signal(false);
   readonly currentGalleryIndex = signal(0);
+  readonly showUpgradePrompt = signal(false);
+  readonly isSendingInterest = signal(false);
+  readonly interestSent = signal(false);
+
+  readonly isVisitor = computed(() => !this.authStore.isAuthenticated());
+  readonly isFreeUser = computed(() => this.authStore.isAuthenticated());
+  readonly isPaidUser = computed(() => false);
 
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
@@ -176,6 +186,25 @@ export class ProfileDetail implements OnInit {
 
   goToGalleryPhoto(index: number): void {
     this.currentGalleryIndex.set(index);
+  }
+
+  onConnect(): void {
+    if (this.isVisitor()) {
+      this.router.navigate(['/register']);
+      return;
+    }
+    if (this.isFreeUser()) {
+      this.showUpgradePrompt.set(true);
+      return;
+    }
+  }
+
+  dismissUpgradePrompt(): void {
+    this.showUpgradePrompt.set(false);
+  }
+
+  goToPlans(): void {
+    this.router.navigate(['/search']);
   }
 
   private field(label: string, value: unknown): ProfileField {

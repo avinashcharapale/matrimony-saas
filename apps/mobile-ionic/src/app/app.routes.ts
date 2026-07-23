@@ -31,7 +31,6 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'profiles/:id',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/profile-detail/profile-detail').then(
         (m) => m.ProfileDetail,

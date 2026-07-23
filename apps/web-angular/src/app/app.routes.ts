@@ -40,7 +40,6 @@ export const appRoutes: Route[] = [
           import('./pages/profile-detail/profile-detail').then(
             (m) => m.ProfileDetail,
           ),
-        canActivate: [authGuard],
       },
       {
         path: 'my-profile',
