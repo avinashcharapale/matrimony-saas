@@ -1,11 +1,9 @@
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { SubscriptionClient, SubscriptionPlanDto, PlanFeatureValueDto } from '@org/generated';
-import { TenantService } from '../../services/tenant.service';
-import { AuthStore } from '@org/data-access-auth';
+import { SubscriptionPlanDto, PlanFeatureValueDto } from '@org/generated';
 import { finalize } from 'rxjs/operators';
 
 interface CheckoutResult {
@@ -30,8 +28,6 @@ interface CheckoutResult {
 export class Plans implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly tenantService = inject(TenantService);
-  private readonly authStore = inject(AuthStore);
 
   readonly plans = signal<SubscriptionPlanDto[]>([]);
   readonly loading = signal(true);
@@ -41,11 +37,8 @@ export class Plans implements OnInit {
   readonly error = signal<string | null>(null);
 
   ngOnInit(): void {
-    const tenantId = Number(this.tenantService.tenantHeaderId) || undefined;
     this.loading.set(true);
-    this.http.get<SubscriptionPlanDto[]>('/subscription/SubscriptionPlans', {
-      params: tenantId ? { tenantId: String(tenantId) } : {},
-    }).pipe(
+    this.http.get<SubscriptionPlanDto[]>('/subscription/SubscriptionPlans').pipe(
       finalize(() => this.loading.set(false)),
     ).subscribe({
       next: (plans) => this.plans.set(plans ?? []),
@@ -63,12 +56,8 @@ export class Plans implements OnInit {
     this.isProcessing.set(true);
     this.error.set(null);
 
-    const tenantId = Number(this.tenantService.tenantHeaderId) || 0;
-
     this.http.post<CheckoutResult>('/subscription/Payments/checkout', {
       planId: Number(plan.id),
-    }, {
-      headers: tenantId ? { 'X-Tenant-Id': String(tenantId) } : {},
     }).pipe(
       finalize(() => this.isProcessing.set(false)),
     ).subscribe({
