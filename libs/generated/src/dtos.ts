@@ -413,8 +413,8 @@ export enum MessageType {
 }
 
 export interface ChatAttachmentDto {
-  attachmentId?: string;
-  messageId?: string;
+  attachmentId?: number;
+  messageId?: number;
   fileName?: string;
   contentType?: string;
   fileSize?: number;
@@ -422,26 +422,26 @@ export interface ChatAttachmentDto {
 }
 
 export interface ChatMessageDto {
-  id?: string;
-  conversationId?: string;
-  senderProfileId?: string;
-  senderUserId?: string;
-  tenantId?: string;
+  messageId?: number;
+  conversationId?: number;
+  senderProfileId?: number;
+  senderUserId?: number;
+  tenantId?: number;
   content?: string;
-  type?: MessageType;
-  status?: MessageStatus;
+  type?: string;
+  status?: string;
   sentDate?: string;
   deliveredDate?: string;
   readDate?: string;
   editedDate?: string;
   isEdited?: boolean;
-  isDeleted?: boolean;
   deletedDate?: string;
-  deletedByUserId?: string;
-  replyToMessageId?: string;
+  deletedByUserId?: number;
+  replyToMessageId?: number;
   metadata?: string;
   isEncrypted?: boolean;
   createdAt?: string;
+  updatedAt?: string;
   replyToMessage?: ChatMessageDto;
   attachments?: ChatAttachmentDto[];
   readStatuses?: MessageReadStatusDto[];
@@ -449,26 +449,58 @@ export interface ChatMessageDto {
   senderPhotoUrl?: string;
 }
 
-export interface ChatParticipantDto {}
+export interface ChatParticipantDto {
+  participantId?: number;
+  conversationId?: number;
+  profileId?: number;
+  userId?: number;
+  tenantId?: number;
+  role?: string;
+  status?: string;
+  joinedDate?: string;
+  leftDate?: string;
+  lastSeenDate?: string;
+  isOnline?: boolean;
+  receiveNotifications?: boolean;
+  isTyping?: boolean;
+  typingStarted?: string;
+  displayName?: string;
+  profilePhotoUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
-export interface MessageReadStatusDto {}
+export interface MessageReadStatusDto {
+  readStatusId?: number;
+  messageId?: number;
+  conversationId?: number;
+  profileId?: number;
+  userId?: number;
+  tenantId?: number;
+  isRead?: boolean;
+  readDate?: string;
+  isDelivered?: boolean;
+  deliveredDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export interface ChatConversationDto {
-  id?: string;
-  profileId1?: string;
-  profileId2?: string;
-  userId1?: string;
-  userId2?: string;
-  tenantId?: string;
+  conversationId?: number;
+  profileId1?: number;
+  profileId2?: number;
+  userId1?: number;
+  userId2?: number;
+  tenantId?: number;
   conversationName?: string;
-  type?: ConversationType;
-  status?: ConversationStatus;
+  type?: string;
+  status?: string;
   lastMessageDate?: string;
-  lastMessageId?: string;
+  lastMessageId?: number;
   lastMessagePreview?: string;
   isArchived?: boolean;
   isBlocked?: boolean;
-  blockedByUserId?: string;
+  blockedByUserId?: number;
   blockedDate?: string;
   blockReason?: string;
   totalMessagesCount?: number;
@@ -478,6 +510,78 @@ export interface ChatConversationDto {
   updatedAt?: string;
   lastMessage?: ChatMessageDto;
   participants?: ChatParticipantDto[];
+}
+
+export interface SendMessageRequest {
+  conversationId?: number;
+  senderProfileId?: number;
+  senderUserId?: number;
+  tenantId?: number;
+  content?: string;
+  type?: string;
+  replyToMessageId?: number;
+  metadata?: string;
+}
+
+export interface CreateConversationRequest {
+  profileId1?: number;
+  profileId2?: number;
+  userId1?: number;
+  userId2?: number;
+  tenantId?: number;
+  conversationName?: string;
+  type?: string;
+  initialMessage?: string;
+}
+
+export interface UpdateMessageRequest {
+  content?: string;
+}
+
+export interface MarkMessagesAsReadRequest {
+  conversationId?: number;
+  profileId?: number;
+  userId?: number;
+  messageIds?: number[];
+}
+
+export interface BlockUserRequest {
+  blockedUserId?: number;
+  blockedProfileId?: number;
+  reason?: string;
+  description?: string;
+}
+
+export interface AddChatParticipantRequest {
+  conversationId?: number;
+  profileId?: number;
+  userId?: number;
+  displayName?: string;
+  profilePhotoUrl?: string;
+}
+
+export interface UpdateChatParticipantRequest {
+  displayName?: string;
+  profilePhotoUrl?: string;
+  receiveNotifications?: boolean;
+  status?: string;
+}
+
+export interface BlockedChatUserDto {
+  blockId?: number;
+  blockerUserId?: number;
+  blockerProfileId?: number;
+  blockedUserId?: number;
+  blockedProfileId?: number;
+  tenantId?: number;
+  reason?: string;
+  description?: string;
+  blockedDate?: string;
+  isActive?: boolean;
+  unblockedDate?: string;
+  unblockReason?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // ─── Subscription DTOs ────────────────────────────────────────────────────────
@@ -501,6 +605,7 @@ export interface SubscriptionPlanDto {
   displayOrder?: number;
   isPopular?: boolean;
   isActive?: boolean;
+  tenantId?: number;
   createdAt?: string;
   updatedAt?: string;
   features?: PlanFeatureValueDto[];
@@ -530,6 +635,7 @@ export interface CreateSubscriptionPlanRequest {
   displayOrder?: number;
   isPopular?: boolean;
   isActive?: boolean;
+  tenantId?: number;
   features?: FeatureValueRequest[];
 }
 
@@ -550,12 +656,224 @@ export interface FeatureValueRequest {
   value?: string;
 }
 
+export interface CreateSubscriptionFeatureRequest {
+  code?: string;
+  name?: string;
+  description?: string;
+  category?: string;
+  dataType?: string;
+  defaultValue?: string;
+  isActive?: boolean;
+}
+
+export interface UpdateSubscriptionFeatureRequest {
+  name?: string;
+  description?: string;
+  category?: string;
+  dataType?: string;
+  defaultValue?: string;
+  isActive?: boolean;
+}
+
 export interface SubscriptionStatusDto {
   isActive?: boolean;
   isExpired?: boolean;
   planName?: string;
   expiresAt?: string;
   isTrial?: boolean;
+  effectiveFeatures?: PlanFeatureValueDto[];
+}
+
+export interface TenantPlanFeatureOverrideDto {
+  tenantPlanFeatureOverrideId?: number;
+  subscriptionPlanId?: number;
+  subscriptionFeatureId?: number;
+  tenantId?: number;
+  value?: string;
+}
+
+export interface SetTenantFeatureOverridesRequest {
+  overrides?: TenantPlanFeatureOverrideDto[];
+}
+
+export interface TenantPlanExclusionDto {
+  tenantPlanExclusionId?: number;
+  subscriptionPlanId?: number;
+  tenantId?: number;
+  createdAt?: string;
+}
+
+// ─── Match DTOs ───────────────────────────────────────────────────────────────
+
+export enum MatchType {
+  SystemGenerated = 1,
+  Mutual = 2,
+  PremiumBoost = 3,
+  AiRecommended = 4,
+}
+
+export enum MatchStatus {
+  Pending = 1,
+  Viewed = 2,
+  Interested = 3,
+  Accepted = 4,
+  Declined = 5,
+  Expired = 6,
+}
+
+export enum ScoreDimension {
+  Age = 1,
+  Height = 2,
+  Religion = 3,
+  Caste = 4,
+  Education = 5,
+  Occupation = 6,
+  Income = 7,
+  Location = 8,
+  Lifestyle = 9,
+  Family = 10,
+  Horoscope = 11,
+  Language = 12,
+  Behavior = 13,
+  AiCompatibility = 14,
+}
+
+export enum RecommendationReason {
+  HighCompatibility = 1,
+  SimilarProfile = 2,
+  RecentlyJoined = 3,
+  Trending = 4,
+  PremiumBoost = 5,
+  AiRecommended = 6,
+  CollaborativeFilter = 7,
+}
+
+export interface MatchEntityDto {
+  matchId?: number;
+  profileIdA?: number;
+  profileIdB?: number;
+  matchType?: MatchType;
+  matchStatus?: MatchStatus;
+  compatibilityScore?: number;
+  matchingFactors?: string;
+  expiresAt?: string;
+  generatedAt?: string;
+  tenantId?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MatchScoreDto {
+  matchScoreId?: number;
+  matchId?: number;
+  scoreDimension?: ScoreDimension;
+  scoreWeight?: number;
+  rawScore?: number;
+  weightedScore?: number;
+  scoreExplanation?: string;
+  algorithmVersion?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateMatchRequest {
+  profileIdA?: number;
+  profileIdB?: number;
+  matchType?: MatchType;
+  compatibilityScore?: number;
+}
+
+export interface UpdateMatchStatusRequest {
+  status?: MatchStatus;
+}
+
+export interface InterestRequestDto {
+  interestRequestId?: number;
+  requesterProfileId?: number;
+  targetProfileId?: number;
+  status?: string;
+  message?: string;
+  respondedAt?: string;
+  tenantId?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SendInterestRequestDto {
+  targetProfileId?: number;
+  message?: string;
+}
+
+export interface RespondToInterestRequest {
+  status?: string;
+}
+
+export interface CompatibilityRuleDto {
+  ruleId?: number;
+  ruleName?: string;
+  scoreDimension?: ScoreDimension;
+  defaultWeight?: number;
+  tenantWeightOverride?: number;
+  isActive?: boolean;
+  priorityRank?: number;
+  tenantId?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateCompatibilityRuleRequest {
+  ruleName?: string;
+  scoreDimension?: ScoreDimension;
+  defaultWeight?: number;
+  priorityRank?: number;
+}
+
+export interface UpdateRuleWeightRequest {
+  weight?: number;
+}
+
+export interface ProfileShortlistDto {
+  shortlistId?: number;
+  profileId?: number;
+  targetProfileId?: number;
+  shortlistName?: string;
+  notes?: string;
+  addedAt?: string;
+  tenantId?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AddShortlistRequest {
+  profileId?: number;
+  targetProfileId?: number;
+  shortlistName?: string;
+  notes?: string;
+}
+
+export interface RecommendationDto {
+  recommendationId?: number;
+  profileId?: number;
+  tenantId?: number;
+  recommendedProfileId?: number;
+  score?: number;
+  reasonCode?: RecommendationReason;
+  reasonDescription?: string;
+  algorithmVersion?: string;
+  isViewed?: boolean;
+  isClicked?: boolean;
+  generatedAt?: string;
+  expiresAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateRecommendationRequest {
+  profileId?: number;
+  recommendedProfileId?: number;
+  score?: number;
+  reasonCode?: RecommendationReason;
+  algorithmVersion?: string;
 }
 
 // ─── Notification DTOs ──────────────────────────────────────────────────────
@@ -625,17 +943,25 @@ export interface SendNotificationRequestDto {
 // ─── Billing DTOs ─────────────────────────────────────────────────────────
 
 export interface PaymentTransactionDto {
-  paymentId?: number;
-  subscriptionId?: number;
-  tenantId?: number;
+  paymentTransactionId?: number;
   userId?: number;
+  userSubscriptionId?: number;
+  invoiceId?: number;
   amount?: number;
-  currency?: string;
-  status?: string;
-  paymentGateway?: string;
+  currencyCode?: string;
+  paymentGatewayId?: number;
   gatewayPaymentId?: string;
   gatewayOrderId?: string;
+  status?: string;
+  idempotencyKey?: string;
+  description?: string;
+  succeededAt?: string;
+  failedAt?: string;
   failureReason?: string;
+  failureCode?: string;
+  refundedAmount?: number;
+  metadataJson?: string;
+  tenantId?: number;
   createdAt?: string;
   updatedAt?: string;
 }

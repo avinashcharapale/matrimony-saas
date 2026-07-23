@@ -110,7 +110,7 @@ export class Messages implements OnInit {
     this.chatClient.getByUser(String(session.userId)).subscribe({
       next: (convos) => {
         const mapped: Conversation[] = (convos ?? []).map((c) => ({
-          id: c.id ?? '',
+          id: String(c.conversationId ?? ''),
           name: c.conversationName ?? 'Unknown',
           messages: c.lastMessage
             ? [{ byMe: false, text: c.lastMessage.content ?? '', time: c.lastMessage.sentDate ?? '' }]
