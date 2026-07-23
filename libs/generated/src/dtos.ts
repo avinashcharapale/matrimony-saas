@@ -321,6 +321,7 @@ export interface ProfileListItemDto {
   occupationText?: string;
   genderId?: number;
   maritalStatusId?: number;
+  maritalStatusName?: string;
   religionId?: number;
   casteId?: number;
   subCasteId?: number;
@@ -343,6 +344,8 @@ export interface ProfileListItemDto {
   heightFt?: number;
   heightIn?: number;
   nativeDistrictName?: string;
+  religionName?: string;
+  casteName?: string;
   educationName?: string;
   occupationName?: string;
   occupationDetails?: string;

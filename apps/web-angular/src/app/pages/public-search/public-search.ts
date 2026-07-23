@@ -271,7 +271,8 @@ export class PublicSearch implements OnInit {
   getCreatedAtText(profile: ProfileListItemDto): string {
     if (!profile.createdAt) return '';
     const d = new Date(profile.createdAt);
-    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(2)}`;
+    if (isNaN(d.getTime()) || d.getFullYear() < 100) return '';
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
   }
 
   getDobText(profile: ProfileListItemDto): string {

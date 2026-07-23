@@ -1,10 +1,12 @@
 /**
  * Authentication & Authorization Middleware
+ *
+ * Validates .NET Backend JWT tokens and attaches user context to req.auth.
+ * Password checking is NOT done here — it's handled by the .NET Backend.
  */
 
 import { Request, Response, NextFunction } from 'express';
 import { JwtUtil } from './jwt.util';
-import { CryptoUtil } from './crypto.util';
 import { AuthDatabase } from './database';
 import { AuthContext } from './types';
 
@@ -38,7 +40,7 @@ export function resolveTenantId(req: Request): number {
 
 /**
  * JWT Authentication Middleware
- * Validates JWT token from Authorization header
+ * Verifies .NET Backend JWT token from Authorization header
  */
 export function authMiddleware(db: AuthDatabase) {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -53,19 +55,22 @@ export function authMiddleware(db: AuthDatabase) {
         });
       }
 
-      // Verify token
-      const payload = JwtUtil.verifyAccessToken(token);
+      // Verify .NET JWT token
+      const verified = JwtUtil.verifyAccessToken(token);
 
-      // Get user permissions
-      const permissions = await db.getUserPermissions(payload.userId, payload.tenantId);
+      // Load permissions and roles from DB
+      const [permissions, roles] = await Promise.all([
+        db.getUserPermissions(verified.userId, verified.tenantId),
+        db.getUserRoles(verified.userId, verified.tenantId),
+      ]);
 
       // Set auth context
       req.auth = {
-        userId: payload.userId,
-        email: payload.email,
-        tenantId: payload.tenantId,
+        userId: verified.userId,
+        email: verified.email,
+        tenantId: verified.tenantId,
         permissions,
-        roles: [], // TODO: implement role loading
+        roles,
       };
 
       next();
@@ -73,64 +78,6 @@ export function authMiddleware(db: AuthDatabase) {
       return res.status(401).json({
         error: `Authentication failed: ${(error as Error).message}`,
         code: 'AUTH_FAILED',
-      });
-    }
-  };
-}
-
-/**
- * API Key Authentication Middleware
- * Validates API key from X-API-Key header
- */
-export function apiKeyMiddleware(db: AuthDatabase) {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const apiKey = req.headers['x-api-key'] as string;
-
-      if (!apiKey) {
-        return res.status(401).json({
-          error: 'Missing X-API-Key header',
-          code: 'NO_API_KEY',
-        });
-      }
-
-      // Verify API key
-      const keyHash = CryptoUtil.hashToken(apiKey);
-      // TODO: Get tenantId from context
-      const keyRecord = await db.verifyApiKey(keyHash, 1);
-
-      if (!keyRecord) {
-        return res.status(401).json({
-          error: 'Invalid or revoked API key',
-          code: 'INVALID_API_KEY',
-        });
-      }
-
-      // Get user permissions
-      const user = await db.getUserById(keyRecord.userId);
-      if (!user) {
-        return res.status(401).json({
-          error: 'User not found',
-          code: 'USER_NOT_FOUND',
-        });
-      }
-
-      const permissions = keyRecord.scope ? keyRecord.scope.split(',') : [];
-
-      // Set auth context
-      req.auth = {
-        userId: keyRecord.userId,
-        email: user.email,
-        tenantId: keyRecord.tenantId,
-        permissions,
-        roles: [],
-      };
-
-      next();
-    } catch (error) {
-      return res.status(401).json({
-        error: `API key validation failed: ${(error as Error).message}`,
-        code: 'API_KEY_FAILED',
       });
     }
   };
@@ -147,15 +94,18 @@ export function optionalAuthMiddleware(db: AuthDatabase) {
       const token = JwtUtil.extractTokenFromHeader(authHeader);
 
       if (token) {
-        const payload = JwtUtil.verifyAccessToken(token);
-        const permissions = await db.getUserPermissions(payload.userId, payload.tenantId);
+        const verified = JwtUtil.verifyAccessToken(token);
+        const [permissions, roles] = await Promise.all([
+          db.getUserPermissions(verified.userId, verified.tenantId),
+          db.getUserRoles(verified.userId, verified.tenantId),
+        ]);
 
         req.auth = {
-          userId: payload.userId,
-          email: payload.email,
-          tenantId: payload.tenantId,
+          userId: verified.userId,
+          email: verified.email,
+          tenantId: verified.tenantId,
           permissions,
-          roles: [],
+          roles,
         };
       }
 
@@ -222,7 +172,6 @@ export function requireTenantAccess(req: Request, res: Response, next: NextFunct
 
 /**
  * Rate Limiting Middleware (basic implementation)
- * Limits requests per IP or API key
  */
 export function rateLimitMiddleware(maxRequests: number = 100, windowMs: number = 60000) {
   const requests = new Map<string, { count: number; resetAt: number }>();
@@ -260,13 +209,11 @@ export function rateLimitMiddleware(maxRequests: number = 100, windowMs: number 
  * CORS & Security Headers Middleware
  */
 export function securityMiddleware(req: Request, res: Response, next: NextFunction) {
-  // Security headers
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key, X-Tenant-Id');
@@ -282,7 +229,7 @@ export function securityMiddleware(req: Request, res: Response, next: NextFuncti
 /**
  * Error Handler Middleware
  */
-export function errorHandlerMiddleware(err: any, req: Request, res: Response, next: NextFunction) {
+export function errorHandlerMiddleware(err: any, req: Request, res: Response, _next: NextFunction) {
   console.error('Error:', err);
 
   const statusCode = err.statusCode || 500;

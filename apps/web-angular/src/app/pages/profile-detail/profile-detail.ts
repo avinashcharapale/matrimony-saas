@@ -469,7 +469,8 @@ export class ProfileDetail implements OnInit {
     const p = this.profile();
     if (!p?.createdAt) return '';
     const d = new Date(p.createdAt);
-    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(2)}`;
+    if (isNaN(d.getTime()) || d.getFullYear() < 100) return '';
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
   }
 
   getOccupationIncomeText(): string {

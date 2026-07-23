@@ -1,15 +1,13 @@
 import express from 'express';
 import mssql from 'mssql';
-import type { SignOptions } from 'jsonwebtoken';
 import {
-  AuthenticationService,
-  OAuth2Service,
   AuthorizationService,
   AuthDatabase,
   createAuthRoutes,
   securityMiddleware,
   errorHandlerMiddleware,
   loadAuthConfig,
+  JwtUtil,
 } from './auth';
 import { createProfileRoutes } from './profiles';
 import { createGeoRoutes } from './geo';
@@ -21,8 +19,13 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3333;
 
 const app = express();
 
-// Configuration
+// Load config and initialize JWT verification against .NET Backend
 const authConfig = loadAuthConfig();
+JwtUtil.initialize({
+  secret: authConfig.dotnetJwtSecret,
+  issuer: authConfig.dotnetJwtIssuer,
+  audience: authConfig.dotnetJwtAudience,
+});
 
 // Database configuration
 const dbConfig: mssql.config = {
@@ -46,7 +49,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(securityMiddleware);
 
-// Legacy CORS configuration (can extract to middleware function)
+// CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
@@ -63,54 +66,24 @@ app.use((req, res, next) => {
 });
 
 // Initialize database and services
-let authServices: {
-  authService: AuthenticationService;
-  oauth2Service: OAuth2Service;
-  authzService: AuthorizationService;
+let services: {
   authDb: AuthDatabase;
+  authzService: AuthorizationService;
   pool: mssql.ConnectionPool;
 } | null = null;
 
 async function initializeServices() {
   try {
-    // Connect to database
     const pool = new mssql.ConnectionPool(dbConfig);
     await pool.connect();
     console.log('✓ Database connected');
 
-    // Initialize services
     const authDb = new AuthDatabase(pool);
-
-    const authService = new AuthenticationService(authDb, {
-      jwtSecret: authConfig.jwt.secret,
-      jwtExpiresIn: authConfig.jwt.expiresIn as SignOptions['expiresIn'],
-      refreshTokenSecret: authConfig.refreshToken.secret,
-      refreshTokenExpiresIn: authConfig.refreshToken.expiresIn as SignOptions['expiresIn'],
-      encryptionKey: authConfig.encryption.key,
-      sessionExpiresInMs: authConfig.session.expiresInMs,
-    });
-
-    const oauth2Service = new OAuth2Service(authDb, {
-      jwtSecret: authConfig.jwt.secret,
-      jwtExpiresIn: authConfig.jwt.expiresIn as SignOptions['expiresIn'],
-      refreshTokenSecret: authConfig.refreshToken.secret,
-      refreshTokenExpiresIn: authConfig.refreshToken.expiresIn as SignOptions['expiresIn'],
-      sessionExpiresInMs: authConfig.session.expiresInMs,
-    });
-
     const authzService = new AuthorizationService(authDb);
 
-    authServices = {
-      authService,
-      oauth2Service,
-      authzService,
-      authDb,
-      pool,
-    };
+    services = { authDb, authzService, pool };
 
-    console.log('✓ Authentication services initialized');
-
-    // Setup routes
+    console.log('✓ Services initialized (.NET JWT verification ready)');
     setupRoutes();
   } catch (error) {
     console.error('Failed to initialize services:', error);
@@ -119,58 +92,47 @@ async function initializeServices() {
 }
 
 function setupRoutes() {
-  if (!authServices) {
+  if (!services) {
     throw new Error('Services not initialized');
   }
 
   // Health check
-  app.get('/health', (req, res) => {
+  app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   // API info
-  app.get('/', (req, res) => {
+  app.get('/', (_req, res) => {
     res.json({
       message: 'Matrimony SaaS API',
       version: '1.0.0',
+      auth: 'Delegated to .NET Backend (/identity/Auth/*)',
       endpoints: {
         auth: '/api/auth',
+        profiles: '/api/profiles',
+        master: '/api/master',
+        geo: '/api/geo',
         health: '/health',
       },
     });
   });
 
-  // Authentication routes
-  const authRoutes = createAuthRoutes(
-    authServices.authDb,
-    authServices.authService,
-    authServices.oauth2Service,
-    authServices.authzService
-  );
-  app.use('/api/auth', authRoutes);
+  // Auth routes (minimal — just /me, /health)
+  app.use('/api/auth', createAuthRoutes());
 
-  // Profile routes
-  const profileRoutes = createProfileRoutes(authServices.pool, authServices.authDb);
-  app.use('/api/profiles', profileRoutes);
-
-  // Geographic lookup routes (public)
-  const geoRoutes = createGeoRoutes(authServices.pool);
-  app.use('/api/geo', geoRoutes);
-
-  // Master data lookup routes (public read, admin write)
-  const masterRoutes = createMasterRoutes(authServices.pool, authServices.authDb);
-  app.use('/api/master', masterRoutes);
-
-  // Profile-service compatible master-data lookups used by registration flows
-  const masterDataRoutes = createMasterDataRoutes(authServices.pool);
-  app.use('/api/master-data', masterDataRoutes);
+  // Protected routes
+  const { authDb, pool } = services;
+  app.use('/api/profiles', createProfileRoutes(pool, authDb));
+  app.use('/api/geo', createGeoRoutes(pool));
+  app.use('/api/master', createMasterRoutes(pool, authDb));
+  app.use('/api/master-data', createMasterDataRoutes(pool));
 
   // 404 handler
-  app.use((req, res) => {
+  app.use((_req, res) => {
     res.status(404).json({
       error: 'Endpoint not found',
       code: 'NOT_FOUND',
-      path: req.path,
+      path: _req.path,
     });
   });
 
@@ -193,10 +155,9 @@ process.on('SIGINT', () => {
 async function start() {
   try {
     await initializeServices();
-
     app.listen(port, host, () => {
       console.log(`✓ Server running at http://${host}:${port}`);
-      console.log(`✓ API documentation: http://${host}:${port}/api-docs (when available)`);
+      console.log(`  Auth: delegated to .NET Backend`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

@@ -245,6 +245,12 @@
                     <span class="card-value">{{ getHeightText(profile) }}</span>
                   </div>
                 }
+                @if (profile.maritalStatusName) {
+                  <div class="card-row">
+                    <span class="card-label">Marital Status</span>
+                    <span class="card-value">{{ profile.maritalStatusName }}</span>
+                  </div>
+                }
 
                 @if (profile.nativeDistrictName) {
                   <div class="card-row">
@@ -266,11 +272,11 @@
                 }
               </div>
               <div class="card-tags">
-                @if (getReligionLabel(profile)) {
-                  <span class="tag">{{ getReligionLabel(profile) }}</span>
+                @if (profile.religionName) {
+                  <span class="tag">{{ profile.religionName }}</span>
                 }
-                @if (getCasteLabel(profile)) {
-                  <span class="tag">{{ getCasteLabel(profile) }}</span>
+                @if (profile.casteName) {
+                  <span class="tag">{{ profile.casteName }}</span>
                 }
               </div>
             </div>
@@ -352,6 +358,12 @@
                 <span class="detail-value">{{ getHeightText(profile) }}</span>
               </div>
             }
+            @if (profile.maritalStatusName) {
+              <div class="detail-field">
+                <span class="detail-label">Marital Status</span>
+                <span class="detail-value">{{ profile.maritalStatusName }}</span>
+              </div>
+            }
             @if (profile.nativeDistrictName) {
               <div class="detail-field">
                 <span class="detail-label">Native District</span>
@@ -373,11 +385,11 @@
           </div>
 
           <div class="card-tags">
-            @if (getReligionLabel(profile)) {
-              <span class="tag">{{ getReligionLabel(profile) }}</span>
+            @if (profile.religionName) {
+              <span class="tag">{{ profile.religionName }}</span>
             }
-            @if (getCasteLabel(profile)) {
-              <span class="tag">{{ getCasteLabel(profile) }}</span>
+            @if (profile.casteName) {
+              <span class="tag">{{ profile.casteName }}</span>
             }
           </div>
         </div>

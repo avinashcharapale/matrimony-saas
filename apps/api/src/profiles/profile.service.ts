@@ -999,7 +999,7 @@ export class ProfileService {
         p.CreatedAt,
         COUNT(*) OVER() AS TotalCount
       FROM dbo.Profiles p
-      INNER JOIN dbo.Users u ON p.UserId = u.Id AND p.TenantId = u.TenantId
+      INNER JOIN [Identity].[Users] u ON p.UserId = u.Id AND p.TenantId = u.TenantId
       LEFT JOIN dbo.ProfilePersonalDetails pp ON p.ProfileId = pp.ProfileId
       LEFT JOIN dbo.ProfileProfessionalDetails pd ON p.ProfileId = pd.ProfileId
       WHERE p.TenantId = @tenantId
@@ -1104,7 +1104,7 @@ export class ProfileService {
         u.Email,
         p.CreatedAt
       FROM dbo.Profiles p
-      INNER JOIN dbo.Users u ON p.UserId = u.Id AND p.TenantId = u.TenantId
+      INNER JOIN [Identity].[Users] u ON p.UserId = u.Id AND p.TenantId = u.TenantId
       WHERE p.TenantId = @tenantId
         AND p.ProfileId = @profileId
         AND u.IsActive = 1

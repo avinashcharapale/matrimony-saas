@@ -25,7 +25,7 @@ export class SubscriptionRepository {
     return this.subscription.getSubscriptionPlanByCode(code);
   }
 
-  createPlan(body: CreateSubscriptionPlanRequest): Observable<void> {
+  createPlan(body: CreateSubscriptionPlanRequest): Observable<SubscriptionPlanDto> {
     return this.subscription.createSubscriptionPlan(body);
   }
 
