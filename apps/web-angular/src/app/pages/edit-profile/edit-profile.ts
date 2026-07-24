@@ -33,6 +33,7 @@ export class EditProfile implements OnInit {
   readonly isLoading = signal(true);
   readonly isSaving = signal(false);
   readonly error = signal<string | null>(null);
+  readonly validationErrors = signal<string[]>([]);
   readonly successMessage = signal<string | null>(null);
   readonly openSections = signal<Set<number>>(new Set([0]));
 
@@ -796,6 +797,7 @@ export class EditProfile implements OnInit {
 
     this.isSaving.set(true);
     this.error.set(null);
+    this.validationErrors.set([]);
     this.successMessage.set(null);
 
     const formValue = this.profileForm.getRawValue();
@@ -931,7 +933,19 @@ export class EditProfile implements OnInit {
       },
       error: (err) => {
         console.error('Update profile error:', err);
-        this.error.set('Failed to update profile. Please try again.');
+        if (err.status === 400 && err.error?.errors) {
+          const fieldErrors: Record<string, string[]> = err.error.errors;
+          const messages: string[] = [];
+          for (const [field, msgs] of Object.entries(fieldErrors)) {
+            const label = field.replace(/^[^.]+\./, '').replace(/([A-Z])/g, ' $1').trim();
+            for (const msg of msgs) {
+              messages.push(`${label}: ${msg}`);
+            }
+          }
+          this.validationErrors.set(messages);
+        } else {
+          this.error.set('Failed to update profile. Please try again.');
+        }
       },
     });
   }

@@ -709,6 +709,14 @@
     @if (successMessage()) {
     <div class="form-message success">{{ successMessage() }}</div>
     }
+    @if (validationErrors().length > 0) {
+    <div class="form-message error">
+      <strong>Please fix the following:</strong>
+      <ul style="margin:4px 0 0 16px;">
+        @for (msg of validationErrors(); track msg) { <li>{{ msg }}</li> }
+      </ul>
+    </div>
+    }
     @if (error() && !successMessage()) {
     <div class="form-message error">{{ error() }}</div>
     }
