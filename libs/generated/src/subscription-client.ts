@@ -82,9 +82,8 @@ export class SubscriptionClient {
     return this.http.get<SubscriptionStatusDto>(`/subscription/subscription/status/${tenantId}`);
   }
 
-  getUserSubscriptionStatus(userId: number, tenantId: number): Observable<SubscriptionStatusDto> {
-    const params = new HttpParams().set('tenantId', tenantId);
-    return this.http.get<SubscriptionStatusDto>(`/subscription/subscription/user-status/${userId}`, { params });
+  getUserSubscriptionStatus(userId: number): Observable<SubscriptionStatusDto> {
+    return this.http.get<SubscriptionStatusDto>(`/subscription/subscription/user-status/${userId}`);
   }
 
   // ─── Payments ─────────────────────────────────────────────────────────────

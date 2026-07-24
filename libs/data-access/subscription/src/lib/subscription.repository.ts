@@ -49,7 +49,7 @@ export class SubscriptionRepository {
     return this.subscription.getSubscriptionStatus(tenantId);
   }
 
-  getUserSubscriptionStatus(userId: number, tenantId: number): Observable<SubscriptionStatusDto> {
-    return this.subscription.getUserSubscriptionStatus(userId, tenantId);
+  getUserSubscriptionStatus(userId: number): Observable<SubscriptionStatusDto> {
+    return this.subscription.getUserSubscriptionStatus(userId);
   }
 }

@@ -75,10 +75,9 @@ export class ProfileList implements OnInit {
   ngOnInit(): void {
     this.isAuthenticated.set(this.authService.isAuthenticated());
     if (this.isAuthenticated()) {
-      const tenantId = Number(this.tenantService.tenantHeaderId);
       const userId = this.authService.getSession()?.userId ?? 0;
-      if (tenantId && userId) {
-        this.subscriptionStore.loadSubscriptionStatus(userId, tenantId).subscribe();
+      if (userId) {
+        this.subscriptionStore.loadSubscriptionStatus(userId).subscribe();
       }
       this.loadMyProfile();
     } else {
