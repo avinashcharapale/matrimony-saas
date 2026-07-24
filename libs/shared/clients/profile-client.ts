@@ -3020,6 +3020,7 @@ export class ProfileListItemDto implements IProfileListItemDto {
     occupationText?: string | undefined;
     genderId?: number | undefined;
     maritalStatusId?: number | undefined;
+    maritalStatusName?: string | undefined;
     religionId?: number | undefined;
     casteId?: number | undefined;
     subCasteId?: number | undefined;
@@ -3042,6 +3043,8 @@ export class ProfileListItemDto implements IProfileListItemDto {
     heightFt?: number | undefined;
     heightIn?: number | undefined;
     nativeDistrictName?: string | undefined;
+    religionName?: string | undefined;
+    casteName?: string | undefined;
     educationName?: string | undefined;
     occupationName?: string | undefined;
     occupationDetails?: string | undefined;
@@ -3067,6 +3070,7 @@ export class ProfileListItemDto implements IProfileListItemDto {
             this.occupationText = _data["occupationText"];
             this.genderId = _data["genderId"];
             this.maritalStatusId = _data["maritalStatusId"];
+            this.maritalStatusName = _data["maritalStatusName"];
             this.religionId = _data["religionId"];
             this.casteId = _data["casteId"];
             this.subCasteId = _data["subCasteId"];
@@ -3089,6 +3093,8 @@ export class ProfileListItemDto implements IProfileListItemDto {
             this.heightFt = _data["heightFt"];
             this.heightIn = _data["heightIn"];
             this.nativeDistrictName = _data["nativeDistrictName"];
+            this.religionName = _data["religionName"];
+            this.casteName = _data["casteName"];
             this.educationName = _data["educationName"];
             this.occupationName = _data["occupationName"];
             this.occupationDetails = _data["occupationDetails"];
@@ -3114,6 +3120,7 @@ export class ProfileListItemDto implements IProfileListItemDto {
         data["occupationText"] = this.occupationText;
         data["genderId"] = this.genderId;
         data["maritalStatusId"] = this.maritalStatusId;
+        data["maritalStatusName"] = this.maritalStatusName;
         data["religionId"] = this.religionId;
         data["casteId"] = this.casteId;
         data["subCasteId"] = this.subCasteId;
@@ -3136,6 +3143,8 @@ export class ProfileListItemDto implements IProfileListItemDto {
         data["heightFt"] = this.heightFt;
         data["heightIn"] = this.heightIn;
         data["nativeDistrictName"] = this.nativeDistrictName;
+        data["religionName"] = this.religionName;
+        data["casteName"] = this.casteName;
         data["educationName"] = this.educationName;
         data["occupationName"] = this.occupationName;
         data["occupationDetails"] = this.occupationDetails;
@@ -3154,6 +3163,7 @@ export interface IProfileListItemDto {
     occupationText?: string | undefined;
     genderId?: number | undefined;
     maritalStatusId?: number | undefined;
+    maritalStatusName?: string | undefined;
     religionId?: number | undefined;
     casteId?: number | undefined;
     subCasteId?: number | undefined;
@@ -3176,6 +3186,8 @@ export interface IProfileListItemDto {
     heightFt?: number | undefined;
     heightIn?: number | undefined;
     nativeDistrictName?: string | undefined;
+    religionName?: string | undefined;
+    casteName?: string | undefined;
     educationName?: string | undefined;
     occupationName?: string | undefined;
     occupationDetails?: string | undefined;

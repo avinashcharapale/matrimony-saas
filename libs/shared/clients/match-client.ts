@@ -306,7 +306,7 @@ export class InterestRequestsClient {
     /**
      * @return OK
      */
-    getByRequester(requesterProfileId: number): Promise<InterestRequest[]> {
+    getByRequester(requesterProfileId: number): Promise<InterestRequestWithProfileDto[]> {
         let url_ = this.baseUrl + "/api/InterestRequests/by-requester/{requesterProfileId}";
         if (requesterProfileId === undefined || requesterProfileId === null)
             throw new globalThis.Error("The parameter 'requesterProfileId' must be defined.");
@@ -325,7 +325,7 @@ export class InterestRequestsClient {
         });
     }
 
-    protected processGetByRequester(response: Response): Promise<InterestRequest[]> {
+    protected processGetByRequester(response: Response): Promise<InterestRequestWithProfileDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -335,7 +335,7 @@ export class InterestRequestsClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(InterestRequest.fromJS(item));
+                    result200!.push(InterestRequestWithProfileDto.fromJS(item));
             }
             else {
                 result200 = null as any;
@@ -347,13 +347,13 @@ export class InterestRequestsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<InterestRequest[]>(null as any);
+        return Promise.resolve<InterestRequestWithProfileDto[]>(null as any);
     }
 
     /**
      * @return OK
      */
-    getByTarget(targetProfileId: number): Promise<InterestRequest[]> {
+    getByTarget(targetProfileId: number): Promise<InterestRequestWithProfileDto[]> {
         let url_ = this.baseUrl + "/api/InterestRequests/by-target/{targetProfileId}";
         if (targetProfileId === undefined || targetProfileId === null)
             throw new globalThis.Error("The parameter 'targetProfileId' must be defined.");
@@ -372,7 +372,7 @@ export class InterestRequestsClient {
         });
     }
 
-    protected processGetByTarget(response: Response): Promise<InterestRequest[]> {
+    protected processGetByTarget(response: Response): Promise<InterestRequestWithProfileDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -382,7 +382,7 @@ export class InterestRequestsClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(InterestRequest.fromJS(item));
+                    result200!.push(InterestRequestWithProfileDto.fromJS(item));
             }
             else {
                 result200 = null as any;
@@ -394,7 +394,7 @@ export class InterestRequestsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<InterestRequest[]>(null as any);
+        return Promise.resolve<InterestRequestWithProfileDto[]>(null as any);
     }
 
     /**
@@ -4740,6 +4740,70 @@ export interface IInterestRequest {
     profile?: Profile;
     profileNavigation?: Profile;
     tenant?: Tenant;
+}
+
+export class InterestRequestWithProfileDto implements IInterestRequestWithProfileDto {
+    interestRequestId?: number;
+    requesterProfileId?: number;
+    requesterName?: string | undefined;
+    targetProfileId?: number;
+    targetName?: string | undefined;
+    status?: string | undefined;
+    message?: string | undefined;
+    createdAt?: Date;
+
+    constructor(data?: IInterestRequestWithProfileDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.interestRequestId = _data["interestRequestId"];
+            this.requesterProfileId = _data["requesterProfileId"];
+            this.requesterName = _data["requesterName"];
+            this.targetProfileId = _data["targetProfileId"];
+            this.targetName = _data["targetName"];
+            this.status = _data["status"];
+            this.message = _data["message"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): InterestRequestWithProfileDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new InterestRequestWithProfileDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["interestRequestId"] = this.interestRequestId;
+        data["requesterProfileId"] = this.requesterProfileId;
+        data["requesterName"] = this.requesterName;
+        data["targetProfileId"] = this.targetProfileId;
+        data["targetName"] = this.targetName;
+        data["status"] = this.status;
+        data["message"] = this.message;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        return data;
+    }
+}
+
+export interface IInterestRequestWithProfileDto {
+    interestRequestId?: number;
+    requesterProfileId?: number;
+    requesterName?: string | undefined;
+    targetProfileId?: number;
+    targetName?: string | undefined;
+    status?: string | undefined;
+    message?: string | undefined;
+    createdAt?: Date;
 }
 
 export class Invoice implements IInvoice {
