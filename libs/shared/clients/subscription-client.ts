@@ -7,6 +7,50 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
+export class MatrimonialSaaS_Services_Subscription_APIClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @return OK
+     */
+    gET_diag_plans(): Promise<void> {
+        let url_ = this.baseUrl + "/diag/plans";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGET_diag_plans(_response);
+        });
+    }
+
+    protected processGET_diag_plans(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
 export class PaymentsClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -624,18 +668,13 @@ export class SubscriptionStatusClient {
     }
 
     /**
-     * @param tenantId (optional) 
      * @return OK
      */
-    getUserSubscriptionStatus(userId: number, tenantId: number | undefined): Promise<UserSubscriptionStatusDto> {
-        let url_ = this.baseUrl + "/api/subscription/user-status/{userId}?";
+    getUserSubscriptionStatus(userId: number): Promise<UserSubscriptionStatusDto> {
+        let url_ = this.baseUrl + "/api/subscription/user-status/{userId}";
         if (userId === undefined || userId === null)
             throw new globalThis.Error("The parameter 'userId' must be defined.");
         url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
-        if (tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' cannot be null.");
-        else if (tenantId !== undefined)
-            url_ += "tenantId=" + encodeURIComponent("" + tenantId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1716,6 +1755,7 @@ export interface IUpdateSubscriptionPlanRequest {
 export class UserSubscriptionStatusDto implements IUserSubscriptionStatusDto {
     isActive?: boolean;
     isExpired?: boolean;
+    isTrial?: boolean;
     planName?: string | undefined;
     expiresAt?: Date | undefined;
     effectiveFeatures?: PlanFeatureValueDto[] | undefined;
@@ -1733,6 +1773,7 @@ export class UserSubscriptionStatusDto implements IUserSubscriptionStatusDto {
         if (_data) {
             this.isActive = _data["isActive"];
             this.isExpired = _data["isExpired"];
+            this.isTrial = _data["isTrial"];
             this.planName = _data["planName"];
             this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
             if (Array.isArray(_data["effectiveFeatures"])) {
@@ -1754,6 +1795,7 @@ export class UserSubscriptionStatusDto implements IUserSubscriptionStatusDto {
         data = typeof data === 'object' ? data : {};
         data["isActive"] = this.isActive;
         data["isExpired"] = this.isExpired;
+        data["isTrial"] = this.isTrial;
         data["planName"] = this.planName;
         data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
         if (Array.isArray(this.effectiveFeatures)) {
@@ -1768,6 +1810,7 @@ export class UserSubscriptionStatusDto implements IUserSubscriptionStatusDto {
 export interface IUserSubscriptionStatusDto {
     isActive?: boolean;
     isExpired?: boolean;
+    isTrial?: boolean;
     planName?: string | undefined;
     expiresAt?: Date | undefined;
     effectiveFeatures?: PlanFeatureValueDto[] | undefined;

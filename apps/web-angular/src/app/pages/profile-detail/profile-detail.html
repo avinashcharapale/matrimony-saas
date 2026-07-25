@@ -53,6 +53,10 @@
         }
       </button>
 
+      @if (interestError()) {
+      <p class="interest-error">{{ interestError() }}</p>
+      }
+
       @if (!isContactUnlocked() && !isVisitor()) {
       <p class="unlock-hint">Subscribe to view contact details</p>
       }

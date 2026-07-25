@@ -189,6 +189,7 @@ export class ProfileDetail implements OnInit {
   readonly showUpgradePrompt = signal(false);
   readonly isSendingInterest = signal(false);
   readonly interestSent = signal(false);
+  readonly interestError = signal<string | null>(null);
 
   readonly educationMap = signal<Map<number, string>>(new Map());
   readonly occupationMap = signal<Map<number, string>>(new Map());
@@ -557,6 +558,7 @@ export class ProfileDetail implements OnInit {
     if (isNaN(targetProfileId)) return;
 
     this.isSendingInterest.set(true);
+    this.interestError.set(null);
     const tenantId = Number(this.tenantService.tenantHeaderId);
 
     this.http.post('/match/InterestRequests', {
@@ -569,9 +571,23 @@ export class ProfileDetail implements OnInit {
     ).subscribe({
       next: () => this.interestSent.set(true),
       error: (err: unknown) => {
-        console.error('Failed to send interest:', err);
+        const message = this.extractErrorMessage(err);
+        this.interestError.set(message);
       },
     });
+  }
+
+  private extractErrorMessage(err: unknown): string {
+    if (err && typeof err === 'object' && 'error' in err) {
+      const httpErr = err as { error: unknown };
+      if (httpErr.error && typeof httpErr.error === 'object' && 'message' in httpErr.error) {
+        return (httpErr.error as { message: string }).message;
+      }
+      if (typeof httpErr.error === 'string') {
+        return httpErr.error;
+      }
+    }
+    return 'Failed to send interest. Please try again.';
   }
 
   private hashSeed(profile: MemberRecord): number {
