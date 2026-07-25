@@ -104,7 +104,6 @@ export const appRoutes: Route[] = [
         path: 'plans',
         loadComponent: () =>
           import('./pages/plans/plans').then((m) => m.PlansPage),
-        canActivate: [authGuard],
       },
       {
         path: 'search',

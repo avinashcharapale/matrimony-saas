@@ -162,6 +162,23 @@
   cursor: not-allowed;
 }
 
+.plan-select-btn.register {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.plan-select-btn.register.primary {
+  background: #9a5e45;
+  color: #fff;
+}
+
+.plan-select-btn.register.primary:hover {
+  background: #7d4a37;
+}
+
 /* Checkout Success */
 .checkout-success {
   background: #fff;

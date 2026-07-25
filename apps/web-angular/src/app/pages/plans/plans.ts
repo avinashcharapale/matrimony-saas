@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -38,6 +38,7 @@ export class PlansPage implements OnInit {
   readonly checkoutResult = signal<CheckoutResult | null>(null);
   readonly error = signal<string | null>(null);
 
+  readonly isLoggedIn = computed(() => this.authService.isAuthenticated());
   readonly plans = this.subscriptionStore.plans;
   readonly loading = this.subscriptionStore.loading;
 
@@ -47,6 +48,11 @@ export class PlansPage implements OnInit {
 
   selectPlan(plan: SubscriptionPlanDto): void {
     if (this.isProcessing() || this.checkoutResult()) return;
+
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/register']);
+      return;
+    }
 
     this.selectedPlanId.set(plan.id ?? null);
     this.isProcessing.set(true);

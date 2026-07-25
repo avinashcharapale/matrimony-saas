@@ -2,10 +2,14 @@
   <div class="plans-container">
     <div class="plans-header">
       <h1>Choose Your Plan</h1>
+      @if (isLoggedIn()) {
       <p>Unlock premium features to find your perfect match</p>
+      } @else {
+      <p>Simple, transparent pricing for every family. Register to get started.</p>
+      }
     </div>
 
-    @if (checkoutResult()) {
+    @if (isLoggedIn() && checkoutResult()) {
     <div class="checkout-success">
       <div class="success-icon">&#x2713;</div>
       <h2>Payment Successful!</h2>
@@ -42,6 +46,7 @@
           }
         </ul>
 
+        @if (isLoggedIn()) {
         <button
           class="plan-select-btn"
           [class.primary]="plan.isPopular"
@@ -53,11 +58,16 @@
           Select Plan
           }
         </button>
+        } @else {
+        <a routerLink="/register" class="plan-select-btn register" [class.primary]="plan.isPopular">
+          Register to Subscribe
+        </a>
+        }
       </div>
       }
     </div>
 
-    @if (error()) {
+    @if (isLoggedIn() && error()) {
     <div class="checkout-error">
       <p>{{ error() }}</p>
     </div>
