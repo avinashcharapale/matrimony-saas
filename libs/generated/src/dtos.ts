@@ -850,7 +850,6 @@ export interface ProfileShortlistDto {
   targetProfileId?: number;
   shortlistName?: string;
   notes?: string;
-  addedAt?: string;
   tenantId?: number;
   createdAt?: string;
   updatedAt?: string;

@@ -121,8 +121,6 @@ export class Shortlists implements OnInit {
     const checkDone = () => {
       completed++;
       if (completed >= 2) {
-        this.savedCount.set(this.savedItemsRaw().length);
-        this.viewedCount.set(this.viewedItemsRaw().length);
         this.isLoading.set(false);
       }
     };
@@ -134,9 +132,9 @@ export class Shortlists implements OnInit {
         const items = shortlists.map(s => ({
           profileId: s.targetProfileId ?? 0,
           name: '',
-          date: s.addedAt ? this.formatDate(s.addedAt) : '',
+          date: s.createdAt ? this.formatDate(s.createdAt) : '',
         }));
-        this.resolveNamesAndSet(items, this.savedItemsRaw);
+        this.resolveNamesAndSet(items, this.savedItemsRaw, this.savedCount);
       },
       error: () => {},
     });
@@ -150,25 +148,32 @@ export class Shortlists implements OnInit {
           name: '',
           date: v.viewedAt ? this.formatDate(v.viewedAt) : '',
         }));
-        this.resolveNamesAndSet(items, this.viewedItemsRaw);
+        this.resolveNamesAndSet(items, this.viewedItemsRaw, this.viewedCount);
       },
       error: () => {},
     });
   }
 
-  private resolveNamesAndSet(items: ShortlistItem[], target: ReturnType<typeof signal<ShortlistItem[]>>): void {
+  private resolveNamesAndSet(items: ShortlistItem[], target: ReturnType<typeof signal<ShortlistItem[]>>, countSignal?: ReturnType<typeof signal<number>>): void {
     if (items.length === 0) {
       target.set([]);
+      countSignal?.set(0);
       return;
     }
 
     let resolved = 0;
     const results = [...items];
 
+    const finalize = () => {
+      const filtered = results.filter(i => i.profileId);
+      target.set(filtered);
+      countSignal?.set(filtered.length);
+    };
+
     results.forEach((item, index) => {
       if (!item.profileId) {
         resolved++;
-        if (resolved >= results.length) target.set(results.filter(i => i.profileId));
+        if (resolved >= results.length) finalize();
         return;
       }
 
@@ -176,12 +181,12 @@ export class Shortlists implements OnInit {
         next: (profile) => {
           results[index] = { ...item, name: profile.fullName ?? profile.profileCode ?? `Profile #${item.profileId}` };
           resolved++;
-          if (resolved >= results.length) target.set(results.filter(i => i.profileId));
+          if (resolved >= results.length) finalize();
         },
         error: () => {
           results[index] = { ...item, name: `Profile #${item.profileId}` };
           resolved++;
-          if (resolved >= results.length) target.set(results.filter(i => i.profileId));
+          if (resolved >= results.length) finalize();
         },
       });
     });

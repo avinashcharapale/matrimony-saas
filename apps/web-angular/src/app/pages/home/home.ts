@@ -161,7 +161,7 @@ export class Home implements OnInit {
         const items: ShortlistItem[] = shortlists.slice(0, 5).map(s => ({
           profileId: s.targetProfileId ?? 0,
           name: '',
-          detail: s.addedAt ? `Saved ${this.formatShortDate(s.addedAt)}` : 'Saved',
+          detail: s.createdAt ? `Saved ${this.formatShortDate(s.createdAt)}` : 'Saved',
         }));
 
         let resolved = 0;
