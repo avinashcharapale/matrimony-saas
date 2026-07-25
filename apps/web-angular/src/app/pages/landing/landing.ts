@@ -29,6 +29,7 @@ export class Landing implements OnInit {
 
   ngOnInit(): void {
     this.loadRecentProfiles();
+    this.loadStats();
   }
 
   private loadRecentProfiles(): void {
@@ -44,8 +45,19 @@ export class Landing implements OnInit {
           photoUrl: p.thumbnailUrl,
         }));
         this.recentProfiles.set(profiles);
+      },
+      error: () => {},
+    });
+  }
+
+  private loadStats(): void {
+    this.profileClient.getProfileStats().subscribe({
+      next: (s) => {
         this.stats.set([
-          { value: String(response.totalCount ?? 0), label: 'Total Profiles', icon: '👥', accent: 'stat-blue' },
+          { value: String(s.brideCount ?? 0), label: 'Brides', icon: '💍', accent: 'stat-pink' },
+          { value: String(s.groomCount ?? 0), label: 'Grooms', icon: '🤵', accent: 'stat-blue' },
+          { value: String(s.unmarriedCount ?? 0), label: 'Unmarried', icon: '💛', accent: 'stat-gold' },
+          { value: String(s.divorcedCount ?? 0), label: 'Divorced', icon: '💜', accent: 'stat-purple' },
         ]);
       },
       error: () => {},

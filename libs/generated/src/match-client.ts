@@ -14,6 +14,8 @@ import {
   UpdateRuleWeightRequest,
   ProfileShortlistDto,
   AddShortlistRequest,
+  ProfileViewDto,
+  RecordProfileViewRequest,
   RecommendationDto,
   CreateRecommendationRequest,
 } from './dtos';
@@ -120,6 +122,24 @@ export class MatchClient {
 
   deleteShortlist(id: number): Observable<void> {
     return this.http.delete<void>(`/match/ProfileShortlists/${id}`);
+  }
+
+  // ─── Profile Views ────────────────────────────────────────────────────────
+
+  getProfileView(id: number): Observable<ProfileViewDto> {
+    return this.http.get<ProfileViewDto>(`/match/ProfileViews/${id}`);
+  }
+
+  getViewsByViewer(viewerProfileId: number): Observable<ProfileViewDto[]> {
+    return this.http.get<ProfileViewDto[]>(`/match/ProfileViews/by-viewer/${viewerProfileId}`);
+  }
+
+  getViewsByViewed(viewedProfileId: number): Observable<ProfileViewDto[]> {
+    return this.http.get<ProfileViewDto[]>(`/match/ProfileViews/by-viewed/${viewedProfileId}`);
+  }
+
+  recordProfileView(body: RecordProfileViewRequest): Observable<void> {
+    return this.http.post<void>('/match/ProfileViews', body);
   }
 
   // ─── Recommendations ──────────────────────────────────────────────────────

@@ -155,6 +155,11 @@
   background: #af5a3b;
 }
 
+.stat-tile.stat-pink { background: #c2547a; }
+.stat-tile.stat-blue { background: #4a7fb5; }
+.stat-tile.stat-gold { background: #b89234; }
+.stat-tile.stat-purple { background: #7e5eb5; }
+
 .stat-value {
   font-size: 1.65rem;
   font-weight: 800;

@@ -8,7 +8,9 @@ import { HomeHeaderComponent } from './components/home-header.component';
 import { HomeStatsComponent } from './components/home-stats.component';
 import { HomeContentComponent } from './components/home-content.component';
 import { HomeBottomComponent } from './components/home-bottom.component';
-import { ActivityItem, EventItem, InterestItem, MatchItem, MessageItem, NotificationCard } from './home.models';
+import { ActivityItem, EventItem, InterestItem, MatchItem, MessageItem, NotificationCard, ShortlistItem } from './home.models';
+import { finalize, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,11 +51,13 @@ export class Home implements OnInit {
   readonly messages = signal<MessageItem[]>([]);
   readonly upcomingEvents = signal<EventItem[]>([]);
   readonly horoscopeTags = signal<string[]>([]);
+  readonly recentlyShortlisted = signal<ShortlistItem[]>([]);
 
   ngOnInit(): void {
     this.currentDate.set(this.formatDate(new Date()));
     this.loadMyProfile();
     this.loadTopMatches();
+    this.loadQuickStats();
   }
 
   private formatDate(date: Date): string {
@@ -72,6 +76,7 @@ export class Home implements OnInit {
 
         if (profile.profileId) {
           this.loadInterests(profile.profileId);
+          this.loadShortlists(profile.profileId);
         }
       },
       error: () => {},
@@ -94,6 +99,44 @@ export class Home implements OnInit {
     });
   }
 
+  private loadQuickStats(): void {
+    this.memberService.getMyProfile().pipe(
+      switchMap((profile) => {
+        const profileId = profile.profileId;
+        if (!profileId) return of({ interests: 0, shortlists: 0 });
+
+        let interestsCount = 0;
+        let shortlistsCount = 0;
+        let completed = 0;
+
+        return new Promise<{ interests: number; shortlists: number }>((resolve) => {
+          const done = () => {
+            completed++;
+            if (completed >= 2) resolve({ interests: interestsCount, shortlists: shortlistsCount });
+          };
+
+          this.matchClient.getInterestRequestsByTarget(profileId).subscribe({
+            next: (r) => { interestsCount = r.length; done(); },
+            error: () => done(),
+          });
+
+          this.matchClient.getShortlistsByProfile(profileId).subscribe({
+            next: (s) => { shortlistsCount = s.length; done(); },
+            error: () => done(),
+          });
+        });
+      }),
+    ).subscribe({
+      next: (counts) => {
+        this.quickStats.set([
+          { label: 'Interests', value: String(counts.interests), hint: 'received', tone: 'orange' },
+          { label: 'Shortlisted', value: String(counts.shortlists), hint: 'saved profiles', tone: 'gold' },
+        ]);
+      },
+      error: () => {},
+    });
+  }
+
   private loadInterests(profileId: number): void {
     this.matchClient.getInterestRequestsByTarget(profileId).subscribe({
       next: (requests) => {
@@ -109,5 +152,46 @@ export class Home implements OnInit {
       },
       error: () => {},
     });
+  }
+
+  private loadShortlists(profileId: number): void {
+    this.matchClient.getShortlistsByProfile(profileId).pipe(
+      switchMap((shortlists) => {
+        if (shortlists.length === 0) return of([]);
+        const items: ShortlistItem[] = shortlists.slice(0, 5).map(s => ({
+          profileId: s.targetProfileId ?? 0,
+          name: '',
+          detail: s.addedAt ? `Saved ${this.formatShortDate(s.addedAt)}` : 'Saved',
+        }));
+
+        let resolved = 0;
+        return new Promise<ShortlistItem[]>((resolve) => {
+          items.forEach((item, index) => {
+            this.memberService.getProfiles(1, 1).subscribe({
+              next: () => {
+                items[index] = { ...item, name: `Profile #${item.profileId}` };
+                resolved++;
+                if (resolved >= items.length) resolve(items);
+              },
+              error: () => {
+                items[index] = { ...item, name: `Profile #${item.profileId}` };
+                resolved++;
+                if (resolved >= items.length) resolve(items);
+              },
+            });
+          });
+        });
+      }),
+    ).subscribe({
+      next: (items) => this.recentlyShortlisted.set(items),
+      error: () => {},
+    });
+  }
+
+  private formatShortDate(iso: string): string {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getDate()} ${months[d.getMonth()]}`;
   }
 }

@@ -37,3 +37,9 @@ export interface EventItem {
   title: string;
   time: string;
 }
+
+export interface ShortlistItem {
+  profileId: number;
+  name: string;
+  detail: string;
+}

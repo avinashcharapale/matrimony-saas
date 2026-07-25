@@ -57,6 +57,21 @@
       <p class="interest-error">{{ interestError() }}</p>
       }
 
+      @if (!isVisitor()) {
+      <button class="shortlist-button" [class.active]="isShortlisted()" [disabled]="isTogglingShortlist()" (click)="toggleShortlist()">
+        @if (isTogglingShortlist()) {
+          Saving...
+        } @else if (isShortlisted()) {
+          &#9733; Saved
+        } @else {
+          &#9734; Save Profile
+        }
+      </button>
+      @if (shortlistError()) {
+      <p class="interest-error">{{ shortlistError() }}</p>
+      }
+      }
+
       @if (!isContactUnlocked() && !isVisitor()) {
       <p class="unlock-hint">Subscribe to view contact details</p>
       }

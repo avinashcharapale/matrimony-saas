@@ -101,6 +101,7 @@ interface InterestCard {
   ],
 })
 export class Interests implements OnInit {
+  readonly InterestRequestStatus = InterestRequestStatus;
   private readonly matchClient = inject(MatchClient);
   private readonly memberService = inject(MemberService);
 

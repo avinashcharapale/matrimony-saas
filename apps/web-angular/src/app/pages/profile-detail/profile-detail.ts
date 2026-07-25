@@ -5,11 +5,13 @@ import { HttpClient } from '@angular/common/http';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { RegisterFormDetails, createEmptyRegisterFormDetails } from '@org/models';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { TenantService } from '../../services/tenant.service';
 import { RegisterMasterDataService } from '../../services/register-master-data.service';
+import { MatchClient } from '@org/generated';
 
 interface ProfileField {
   label: string;
@@ -179,6 +181,7 @@ export class ProfileDetail implements OnInit {
   private readonly tenantService = inject(TenantService);
   private readonly http = inject(HttpClient);
   private readonly masterData = inject(RegisterMasterDataService);
+  private readonly matchClient = inject(MatchClient);
 
   readonly profile = signal<MemberRecord | null>(null);
   readonly isGalleryOpen = signal(false);
@@ -190,6 +193,10 @@ export class ProfileDetail implements OnInit {
   readonly isSendingInterest = signal(false);
   readonly interestSent = signal(false);
   readonly interestError = signal<string | null>(null);
+  readonly isShortlisted = signal(false);
+  readonly isTogglingShortlist = signal(false);
+  readonly shortlistError = signal<string | null>(null);
+  private myProfileId = 0;
 
   readonly educationMap = signal<Map<number, string>>(new Map());
   readonly occupationMap = signal<Map<number, string>>(new Map());
@@ -392,11 +399,36 @@ export class ProfileDetail implements OnInit {
             error: () => {},
           });
         }
+
+        this.recordViewAndCheckShortlist(numericId);
       },
       error: (error: unknown) => {
         console.error('Failed to load profile:', error);
         this.error.set('Failed to load profile. Please try again.');
       },
+    });
+  }
+
+  private recordViewAndCheckShortlist(targetProfileId: number): void {
+    if (!this.authService.isAuthenticated()) return;
+
+    this.memberService.getMyProfile().pipe(
+      switchMap((myProfile) => {
+        const myId = (myProfile as any).profileId ?? (myProfile as any).userId ?? 0;
+        this.myProfileId = myId;
+        if (!myId || myId === targetProfileId) return of(null);
+
+        this.matchClient.recordProfileView({ viewedProfileId: targetProfileId }).subscribe({ error: () => {} });
+
+        return this.matchClient.getShortlistsByProfile(myId);
+      }),
+    ).subscribe({
+      next: (shortlists) => {
+        if (shortlists) {
+          this.isShortlisted.set(shortlists.some((s: { targetProfileId?: number }) => s.targetProfileId === targetProfileId));
+        }
+      },
+      error: () => {},
     });
   }
 
@@ -588,6 +620,47 @@ export class ProfileDetail implements OnInit {
       }
     }
     return 'Failed to send interest. Please try again.';
+  }
+
+  toggleShortlist(): void {
+    if (this.isVisitor()) {
+      this.router.navigate(['/register']);
+      return;
+    }
+    if (this.isTogglingShortlist()) return;
+
+    const targetProfileId = parseInt(this.profile()?.id ?? '', 10);
+    if (isNaN(targetProfileId) || !this.myProfileId) return;
+
+    this.isTogglingShortlist.set(true);
+    this.shortlistError.set(null);
+
+    if (this.isShortlisted()) {
+      this.matchClient.getShortlistsByProfile(this.myProfileId).pipe(
+        finalize(() => this.isTogglingShortlist.set(false)),
+      ).subscribe({
+        next: (shortlists) => {
+          const existing = shortlists.find(s => s.targetProfileId === targetProfileId);
+          if (existing?.shortlistId) {
+            this.matchClient.deleteShortlist(existing.shortlistId).subscribe({
+              next: () => this.isShortlisted.set(false),
+              error: (err: unknown) => this.shortlistError.set(this.extractErrorMessage(err)),
+            });
+          }
+        },
+        error: (err: unknown) => this.shortlistError.set(this.extractErrorMessage(err)),
+      });
+    } else {
+      this.matchClient.addShortlist({
+        profileId: this.myProfileId,
+        targetProfileId,
+      }).pipe(
+        finalize(() => this.isTogglingShortlist.set(false)),
+      ).subscribe({
+        next: () => this.isShortlisted.set(true),
+        error: (err: unknown) => this.shortlistError.set(this.extractErrorMessage(err)),
+      });
+    }
   }
 
   private hashSeed(profile: MemberRecord): number {

@@ -7,6 +7,7 @@ import {
   ProfileDetailDto,
   ProfileListItemDto,
   ProfileListItemDtoPagedResult,
+  ProfileStatsDto,
   CreateProfileDto,
   GeoStateDto,
   GeoDistrictDto,
@@ -271,5 +272,9 @@ export class ProfileClient {
 
   deletePhoto(slot: number): Observable<void> {
     return this.http.delete<void>(`/profile/UserProfiles/my/photos/${slot}`);
+  }
+
+  getProfileStats(): Observable<ProfileStatsDto> {
+    return this.http.get<ProfileStatsDto>('/profile/UserProfiles/stats');
   }
 }

@@ -863,6 +863,26 @@ export interface AddShortlistRequest {
   notes?: string;
 }
 
+export interface ProfileViewDto {
+  viewId?: number;
+  viewerProfileId?: number;
+  viewedProfileId?: number;
+  viewedAt?: string;
+}
+
+export interface RecordProfileViewRequest {
+  viewerProfileId?: number;
+  viewedProfileId?: number;
+}
+
+export interface ProfileStatsDto {
+  totalProfiles?: number;
+  brideCount?: number;
+  groomCount?: number;
+  unmarriedCount?: number;
+  divorcedCount?: number;
+}
+
 export interface RecommendationDto {
   recommendationId?: number;
   profileId?: number;

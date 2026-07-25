@@ -60,6 +60,12 @@ export const appRoutes: Route[] = [
         canActivate: [authGuard],
       },
       {
+        path: 'shortlists',
+        loadComponent: () =>
+          import('./pages/shortlists/shortlists').then((m) => m.Shortlists),
+        canActivate: [authGuard],
+      },
+      {
         path: 'messages',
         loadComponent: () =>
           import('./pages/messages/messages').then((m) => m.Messages),

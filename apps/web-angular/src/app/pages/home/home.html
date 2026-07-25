@@ -7,7 +7,7 @@
       @if (quickStats().length > 0) {
         <app-home-stats [stats]="quickStats()"></app-home-stats>
       }
-      <app-home-content [topMatches]="topMatches()" [interests]="interests()" [activities]="activities()"></app-home-content>
+      <app-home-content [topMatches]="topMatches()" [interests]="interests()" [activities]="activities()" [shortlists]="recentlyShortlisted()"></app-home-content>
       <app-home-bottom [horoscopeTags]="horoscopeTags()" [messages]="messages()" [upcomingEvents]="upcomingEvents()"></app-home-bottom>
     </section>
   </div>

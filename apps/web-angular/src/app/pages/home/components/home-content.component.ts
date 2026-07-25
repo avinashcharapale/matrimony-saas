@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ActivityItem, InterestItem, MatchItem } from '../home.models';
+import { ActivityItem, InterestItem, MatchItem, ShortlistItem } from '../home.models';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,4 +15,5 @@ export class HomeContentComponent {
   @Input({ required: true }) topMatches!: MatchItem[];
   @Input({ required: true }) interests!: InterestItem[];
   @Input({ required: true }) activities!: ActivityItem[];
+  @Input() shortlists: ShortlistItem[] = [];
 }

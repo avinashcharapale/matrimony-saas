@@ -147,6 +147,37 @@
   background: #6b8f71;
 }
 
+.shortlist-button {
+  background: transparent;
+  color: #9a5e45;
+  border: 2px solid #9a5e45;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.shortlist-button:hover:not(:disabled) {
+  background: #f4ede8;
+}
+
+.shortlist-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.shortlist-button.active {
+  background: #9a5e45;
+  color: #fff;
+}
+
+.shortlist-button.active:hover:not(:disabled) {
+  background: #7d4a37;
+}
+
 .unlock-hint {
   margin: 0;
   font-size: 0.8rem;

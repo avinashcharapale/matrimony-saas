@@ -65,5 +65,24 @@
         <p class="empty-hint">No recent activity.</p>
       }
     </article>
+
+    <article class="panel compact-panel">
+      <div class="panel-title">
+        <h3>Recently Shortlisted</h3>
+        <a routerLink="/shortlists">View All</a>
+      </div>
+      @if (shortlists.length > 0) {
+        <div class="simple-list">
+          @for (item of shortlists; track item.profileId) {
+          <div>
+            <strong>{{ item.name }}</strong>
+            <p>{{ item.detail }}</p>
+          </div>
+          }
+        </div>
+      } @else {
+        <p class="empty-hint">No profiles shortlisted yet.</p>
+      }
+    </article>
   </div>
 </section>
