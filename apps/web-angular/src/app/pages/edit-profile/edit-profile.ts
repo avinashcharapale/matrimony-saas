@@ -562,7 +562,7 @@ export class EditProfile implements OnInit {
       middleName,
       lastName,
       dobDay: this.num(personal?.['DobDay'] ?? personal?.['dobDay']),
-      dobMonth: personal?.['DobMonth'] ?? personal?.['dobMonth'] ?? '',
+      dobMonth: this.normalizeMonth((personal?.['DobMonth'] ?? personal?.['dobMonth']) as string),
       dobYear: this.num(personal?.['DobYear'] ?? personal?.['dobYear']),
       genderId: this.num(personal?.['GenderId'] ?? personal?.['genderId']),
       religionId: this.num(personal?.['ReligionId'] ?? personal?.['religionId']),
@@ -970,6 +970,22 @@ export class EditProfile implements OnInit {
     if (value === null || value === undefined || value === '') return null;
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private normalizeMonth(raw: string | null | undefined): string {
+    if (!raw) return '';
+    const lower = raw.trim().toLowerCase();
+    if (/^[a-z]{3}$/.test(lower)) return raw.trim().slice(0, 3);
+    const n = Number(lower);
+    if (Number.isFinite(n) && n >= 1 && n <= 12) {
+      return this.months[n - 1];
+    }
+    const fullMap: Record<string, string> = {
+      january: 'Jan', february: 'Feb', march: 'Mar', april: 'Apr',
+      may: 'May', june: 'Jun', july: 'Jul', august: 'Aug',
+      september: 'Sep', october: 'Oct', november: 'Nov', december: 'Dec',
+    };
+    return fullMap[lower] ?? '';
   }
 
   private toStringList(value: unknown): string {

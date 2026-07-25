@@ -9,8 +9,10 @@ interface InterestCard {
   id: string;
   name: string;
   detail: string;
-  status: 'pending' | 'accepted' | 'declined';
+  status: 'pending' | 'accepted' | 'declined' | 'withdrawn';
   type: 'received' | 'sent';
+  profileId: number;
+  date: string;
 }
 
 @Component({
@@ -27,8 +29,8 @@ interface InterestCard {
       </header>
 
       <div class="tabs">
-        <button type="button" [class.active]="activeTab() === 'received'" (click)="activeTab.set('received')">Received</button>
-        <button type="button" [class.active]="activeTab() === 'sent'" (click)="activeTab.set('sent')">Sent</button>
+        <button type="button" [class.active]="activeTab() === 'received'" (click)="activeTab.set('received')">Received ({{ receivedCount() }})</button>
+        <button type="button" [class.active]="activeTab() === 'sent'" (click)="activeTab.set('sent')">Sent ({{ sentCount() }})</button>
       </div>
 
       <section class="cards">
@@ -37,17 +39,23 @@ interface InterestCard {
         } @else if (visibleInterests().length > 0) {
           @for (item of visibleInterests(); track item.id) {
           <article class="card">
-            <div>
-              <h2>{{ item.name }}</h2>
+            <div class="card-body">
+              <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name }}</a></h2>
               <p>{{ item.detail }}</p>
+              @if (item.date) {
+                <p class="card-date">{{ item.date }}</p>
+              }
             </div>
             <div class="card-actions">
-              <span class="status" [class.accepted]="item.status === 'accepted'" [class.declined]="item.status === 'declined'">
+              <span class="status" [class.accepted]="item.status === 'accepted'" [class.declined]="item.status === 'declined'" [class.withdrawn]="item.status === 'withdrawn'">
                 {{ item.status }}
               </span>
               @if (activeTab() === 'received' && item.status === 'pending') {
               <button type="button" class="accept" (click)="respondToInterest(item.id, 'accepted')">Accept</button>
               <button type="button" class="decline" (click)="respondToInterest(item.id, 'declined')">Decline</button>
+              }
+              @if (activeTab() === 'sent' && item.status === 'pending') {
+              <button type="button" class="withdraw" (click)="withdrawInterest(item.id)">Withdraw</button>
               }
             </div>
           </article>
@@ -72,15 +80,21 @@ interface InterestCard {
       .tabs button.active { background: #9a5e45; color: #fff; border-color: #9a5e45; }
       .cards { display: grid; gap: 0.7rem; }
       .card { display: flex; justify-content: space-between; gap: 1rem; border: 1px solid #efe2d9; border-radius: 0.8rem; padding: 0.8rem; background: #fcf8f5; }
+      .card-body { min-width: 0; }
       .card h2 { margin: 0; font-size: 1rem; color: #2c3042; }
+      .profile-link { color: #9a5e45; text-decoration: none; }
+      .profile-link:hover { text-decoration: underline; }
       .card p { margin: 0.35rem 0 0; color: #6c7285; }
-      .card-actions { display: flex; align-items: center; gap: 0.45rem; }
+      .card-date { font-size: 0.78rem; color: #9a9ab0; }
+      .card-actions { display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0; }
       .status { text-transform: capitalize; font-size: 0.8rem; color: #8a5d49; background: #f4e7df; padding: 0.25rem 0.55rem; border-radius: 999px; }
       .status.accepted { background: #e2f4e8; color: #1f7c3d; }
       .status.declined { background: #f8e3e3; color: #9e2c2c; }
-      .accept, .decline { border: none; border-radius: 0.5rem; padding: 0.45rem 0.7rem; cursor: pointer; font-weight: 600; }
+      .status.withdrawn { background: #e8e8f0; color: #5a5a7a; }
+      .accept, .decline, .withdraw { border: none; border-radius: 0.5rem; padding: 0.45rem 0.7rem; cursor: pointer; font-weight: 600; }
       .accept { background: #2f8d4e; color: #fff; }
       .decline { background: #be4343; color: #fff; }
+      .withdraw { background: #6f7486; color: #fff; }
       .empty-state { text-align: center; padding: 2rem; color: #6f7486; }
       @media (max-width: 700px) { .card { flex-direction: column; } }
     `,
@@ -92,6 +106,8 @@ export class Interests implements OnInit {
 
   readonly activeTab = signal<'received' | 'sent'>('received');
   readonly isLoading = signal(true);
+  readonly receivedCount = signal(0);
+  readonly sentCount = signal(0);
 
   private readonly interests = signal<InterestCard[]>([]);
 
@@ -115,13 +131,14 @@ export class Interests implements OnInit {
   private loadInterests(profileId: number): void {
     this.isLoading.set(true);
 
-    let receivedCount = 0;
-    let sentCount = 0;
+    let completedCount = 0;
     const allCards: InterestCard[] = [];
 
     const checkDone = () => {
-      receivedCount++;
-      if (receivedCount >= 2) {
+      completedCount++;
+      if (completedCount >= 2) {
+        this.receivedCount.set(allCards.filter((c) => c.type === 'received').length);
+        this.sentCount.set(allCards.filter((c) => c.type === 'sent').length);
         this.interests.set(allCards);
         this.isLoading.set(false);
       }
@@ -151,13 +168,24 @@ export class Interests implements OnInit {
   private mapToCard(r: InterestRequestDto, type: 'received' | 'sent'): InterestCard {
     const name = type === 'received' ? (r.requesterName ?? 'Unknown') : (r.targetName ?? 'Unknown');
     const status = (r.status ?? 'pending').toLowerCase() as InterestCard['status'];
+    const profileId = type === 'received' ? (r.requesterProfileId ?? 0) : (r.targetProfileId ?? 0);
+    const date = r.createdAt ? this.formatDate(r.createdAt) : '';
     return {
       id: String(r.interestRequestId ?? ''),
       name,
       detail: r.message ?? `Interest ${r.status?.toLowerCase() ?? 'pending'}`,
       status,
       type,
+      profileId,
+      date,
     };
+  }
+
+  private formatDate(iso: string): string {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   }
 
   respondToInterest(id: string, newStatus: 'accepted' | 'declined'): void {
@@ -172,6 +200,26 @@ export class Interests implements OnInit {
       },
       error: (err: unknown) => {
         console.error('Failed to respond to interest:', err);
+      },
+    });
+  }
+
+  withdrawInterest(id: string): void {
+    const numId = Number(id);
+    if (isNaN(numId)) return;
+
+    this.matchClient.withdrawInterestRequest(numId).subscribe({
+      next: () => {
+        this.interests.update(items => {
+          const updated = items.map((item) =>
+            item.id === id ? { ...item, status: 'withdrawn' as const } : item
+          );
+          this.sentCount.set(updated.filter((c) => c.type === 'sent').length);
+          return updated;
+        });
+      },
+      error: (err: unknown) => {
+        console.error('Failed to withdraw interest:', err);
       },
     });
   }
