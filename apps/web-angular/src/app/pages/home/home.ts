@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@ang
 import { TenantService } from '../../services/tenant.service';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
-import { MatchClient } from '@org/generated';
+import { MatchClient, InterestRequestStatus } from '@org/generated';
 import { HomeSidebarComponent } from './components/home-sidebar.component';
 import { HomeHeaderComponent } from './components/home-header.component';
 import { HomeStatsComponent } from './components/home-stats.component';
@@ -100,7 +100,7 @@ export class Home implements OnInit {
         const interests: InterestItem[] = requests.map((r) => ({
           id: String(r.interestRequestId ?? ''),
           name: r.requesterName ?? 'Unknown',
-          detail: r.status === 'Pending'
+          detail: r.status === InterestRequestStatus.Pending
             ? (r.message ?? 'Sent you an interest')
             : `${r.status}${r.message ? ' — ' + r.message : ''}`,
           profileId: r.requesterProfileId,

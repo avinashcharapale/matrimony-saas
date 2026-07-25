@@ -724,6 +724,13 @@ export enum MatchStatus {
   Expired = 6,
 }
 
+export enum InterestRequestStatus {
+  Pending = 'Pending',
+  Accepted = 'Accepted',
+  Declined = 'Declined',
+  Withdrawn = 'Withdrawn',
+}
+
 export enum ScoreDimension {
   Age = 1,
   Height = 2,
@@ -796,7 +803,7 @@ export interface InterestRequestDto {
   requesterName?: string;
   targetProfileId?: number;
   targetName?: string;
-  status?: string;
+  status?: InterestRequestStatus;
   message?: string;
   respondedAt?: string;
   tenantId?: number;
@@ -810,7 +817,7 @@ export interface SendInterestRequestDto {
 }
 
 export interface RespondToInterestRequest {
-  status?: string;
+  status?: InterestRequestStatus;
 }
 
 export interface CompatibilityRuleDto {

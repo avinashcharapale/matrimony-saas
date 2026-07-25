@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { MatchClient, InterestRequestDto } from '@org/generated';
+import { MatchClient, InterestRequestDto, InterestRequestStatus } from '@org/generated';
 import { MemberService } from '../../services/member.service';
 import { finalize } from 'rxjs/operators';
 
@@ -9,7 +9,7 @@ interface InterestCard {
   id: string;
   name: string;
   detail: string;
-  status: 'pending' | 'accepted' | 'declined' | 'withdrawn';
+  status: InterestRequestStatus;
   type: 'received' | 'sent';
   profileId: number;
   date: string;
@@ -47,14 +47,14 @@ interface InterestCard {
               }
             </div>
             <div class="card-actions">
-              <span class="status" [class.accepted]="item.status === 'accepted'" [class.declined]="item.status === 'declined'" [class.withdrawn]="item.status === 'withdrawn'">
+              <span class="status" [class.accepted]="item.status === 'Accepted'" [class.declined]="item.status === 'Declined'" [class.withdrawn]="item.status === 'Withdrawn'">
                 {{ item.status }}
               </span>
-              @if (activeTab() === 'received' && item.status === 'pending') {
-              <button type="button" class="accept" (click)="respondToInterest(item.id, 'accepted')">Accept</button>
-              <button type="button" class="decline" (click)="respondToInterest(item.id, 'declined')">Decline</button>
+              @if (activeTab() === 'received' && item.status === 'Pending') {
+              <button type="button" class="accept" (click)="respondToInterest(item.id, InterestRequestStatus.Accepted)">Accept</button>
+              <button type="button" class="decline" (click)="respondToInterest(item.id, InterestRequestStatus.Declined)">Decline</button>
               }
-              @if (activeTab() === 'sent' && item.status === 'pending') {
+              @if (activeTab() === 'sent' && item.status === 'Pending') {
               <button type="button" class="withdraw" (click)="withdrawInterest(item.id)">Withdraw</button>
               }
             </div>
@@ -167,13 +167,13 @@ export class Interests implements OnInit {
 
   private mapToCard(r: InterestRequestDto, type: 'received' | 'sent'): InterestCard {
     const name = type === 'received' ? (r.requesterName ?? 'Unknown') : (r.targetName ?? 'Unknown');
-    const status = (r.status ?? 'pending').toLowerCase() as InterestCard['status'];
+    const status = r.status ?? InterestRequestStatus.Pending;
     const profileId = type === 'received' ? (r.requesterProfileId ?? 0) : (r.targetProfileId ?? 0);
     const date = r.createdAt ? this.formatDate(r.createdAt) : '';
     return {
       id: String(r.interestRequestId ?? ''),
       name,
-      detail: r.message ?? `Interest ${r.status?.toLowerCase() ?? 'pending'}`,
+      detail: r.message ?? `Interest ${status}`,
       status,
       type,
       profileId,
@@ -188,7 +188,7 @@ export class Interests implements OnInit {
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   }
 
-  respondToInterest(id: string, newStatus: 'accepted' | 'declined'): void {
+  respondToInterest(id: string, newStatus: InterestRequestStatus): void {
     const numId = Number(id);
     if (isNaN(numId)) return;
 
@@ -212,7 +212,7 @@ export class Interests implements OnInit {
       next: () => {
         this.interests.update(items => {
           const updated = items.map((item) =>
-            item.id === id ? { ...item, status: 'withdrawn' as const } : item
+            item.id === id ? { ...item, status: InterestRequestStatus.Withdrawn } : item
           );
           this.sentCount.set(updated.filter((c) => c.type === 'sent').length);
           return updated;
