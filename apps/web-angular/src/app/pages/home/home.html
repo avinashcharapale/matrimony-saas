@@ -1,14 +1,18 @@
 <main class="dashboard-page">
   <div class="dashboard-shell">
+    <div class="sidebar-backdrop" [class.visible]="sidebarOpen()" (click)="closeSidebar()"></div>
     <app-home-sidebar
+      [class.open]="sidebarOpen()"
       [brandMark]="brandMark"
       [tenantDisplayName]="tenant.displayName"
       [subscriptionStatus]="subscriptionStatus()"
-      [subscriptionLoading]="subscriptionLoading()">
+      [subscriptionLoading]="subscriptionLoading()"
+      [open]="sidebarOpen()"
+      (closeSidebar)="closeSidebar()">
     </app-home-sidebar>
 
     <section class="dashboard-main">
-      <app-home-header [userName]="userFirstName()" [currentDate]="currentDate()"></app-home-header>
+      <app-home-header [userName]="userFirstName()" [currentDate]="currentDate()" [sidebarOpen]="sidebarOpen()" (toggleSidebar)="toggleSidebar()"></app-home-header>
       @if (quickStats().length > 0) {
         <app-home-stats [stats]="quickStats()"></app-home-stats>
       }

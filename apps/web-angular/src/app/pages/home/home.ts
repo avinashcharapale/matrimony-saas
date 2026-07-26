@@ -57,6 +57,7 @@ export class Home implements OnInit {
   readonly messages = signal<MessageItem[]>([]);
   readonly horoscopeTags = signal<string[]>([]);
   readonly recentlyShortlisted = signal<ShortlistItem[]>([]);
+  readonly sidebarOpen = signal(false);
 
   private myProfileId: number | null = null;
   private myUserId: number | null = null;
@@ -422,6 +423,14 @@ export class Home implements OnInit {
     if (horoscope.devak) tags.push(`Devak: ${horoscope.devak}`);
     if (horoscope.manglik) tags.push('Manglik');
     this.horoscopeTags.set(tags);
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update((v) => !v);
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen.set(false);
   }
 
   private loadSubscriptionStatus(): void {

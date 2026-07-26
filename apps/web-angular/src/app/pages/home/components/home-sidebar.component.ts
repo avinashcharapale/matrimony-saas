@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, EventEmitter, Input, Output, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { SubscriptionStatusDto } from '@org/generated';
@@ -17,6 +17,8 @@ export class HomeSidebarComponent {
   @Input({ required: true }) tenantDisplayName!: string;
   @Input() subscriptionStatus: SubscriptionStatusDto | null = null;
   @Input() subscriptionLoading = false;
+  @Input() open = false;
+  @Output() closeSidebar = new EventEmitter<void>();
 
   private readonly authService = inject(AuthService);
 

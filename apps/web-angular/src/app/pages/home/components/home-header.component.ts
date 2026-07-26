@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -12,4 +12,6 @@ import { RouterModule } from '@angular/router';
 export class HomeHeaderComponent {
   @Input() userName = '';
   @Input() currentDate = '';
+  @Input() sidebarOpen = false;
+  @Output() toggleSidebar = new EventEmitter<void>();
 }

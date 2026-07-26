@@ -4,3 +4,113 @@
 * {
 	box-sizing: border-box;
 }
+
+/* ── Dashboard Mobile Drawer (global, no Angular encapsulation) ───────────── */
+
+.sidebar-toggle-btn {
+  display: none;
+  border: 1px solid var(--line, #e0e0e0);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--text-main, #333);
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--accent-soft, rgba(0,0,0,0.04));
+  color: var(--accent, #6c3fb5);
+}
+
+.sidebar-close-btn {
+  display: none;
+  border: 1px solid var(--line, #e0e0e0);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--text-main, #333);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.3rem 0.45rem;
+  cursor: pointer;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+}
+
+.sidebar-close-btn:hover {
+  background: var(--accent-soft, rgba(0,0,0,0.04));
+  color: var(--accent, #6c3fb5);
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    border-radius: 0 !important;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    padding-top: 1.25rem;
+  }
+
+  .dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-close-btn {
+    display: block;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.32);
+    z-index: 199;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sidebar-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dashboard-header {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-sidebar {
+    width: 240px;
+  }
+}

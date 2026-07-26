@@ -1,12 +1,9 @@
 <header class="dashboard-header">
+  <button type="button" class="sidebar-toggle-btn" [class.active]="sidebarOpen" (click)="toggleSidebar.emit()" aria-label="Toggle sidebar menu">
+    {{ sidebarOpen ? '&#10005;' : '&#9776;' }}
+  </button>
   <div class="header-left">
     <p class="header-eyebrow">{{ currentDate }}</p>
     <h1>Namaste, {{ userName || 'User' }}</h1>
-  </div>
-
-  <div class="header-right">
-    <div class="search-box">
-      <span>Search by ID, caste, city...</span>
-    </div>
   </div>
 </header>

@@ -1,4 +1,7 @@
-<aside class="dashboard-sidebar">
+<aside class="dashboard-sidebar" [class.open]="open">
+  <button type="button" class="sidebar-close-btn" (click)="closeSidebar.emit()" aria-label="Close sidebar">
+    &#10005;
+  </button>
   <div class="sidebar-brand">
     <div class="brand-mark">{{ brandMark }}</div>
     <div>
@@ -8,15 +11,15 @@
   </div>
 
   <nav class="sidebar-nav">
-    <a routerLink="/home"             routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="nav-icon" aria-hidden="true">&#8962;</span><span>Dashboard</span></a>
-    <a routerLink="/my-profile"       routerLinkActive="active"><span class="nav-icon" aria-hidden="true">&#128100;</span><span>My Profile</span></a>
-    <a routerLink="/profiles"         routerLinkActive="active"><span class="nav-icon" aria-hidden="true">&#8981;</span><span>Search Matches</span></a>
-    <a routerLink="/interests" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">&#9825;</span><span>Interests</span></a>
-    <a routerLink="/shortlists" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">&#9733;</span><span>Shortlists</span></a>
-    <a routerLink="/messages" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">&#9993;</span><span>Messages</span></a>
-    <a routerLink="/events" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">&#9783;</span><span>Events & Meets</span></a>
-    <a routerLink="/settings" routerLinkActive="active"><span class="nav-icon" aria-hidden="true">&#9881;</span><span>Settings</span></a>
-    <button type="button" class="sidebar-logout" (click)="logout()"><span class="nav-icon" aria-hidden="true">&#8618;</span><span>Logout</span></button>
+    <a routerLink="/home"             routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#8962;</span><span>Dashboard</span></a>
+    <a routerLink="/my-profile"       routerLinkActive="active" (click)="closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#128100;</span><span>My Profile</span></a>
+    <a routerLink="/profiles"         routerLinkActive="active" (click)="closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#8981;</span><span>Search Matches</span></a>
+    <a routerLink="/interests" routerLinkActive="active" (click)="closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#9825;</span><span>Interests</span></a>
+    <a routerLink="/shortlists" routerLinkActive="active" (click)="closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#9733;</span><span>Shortlists</span></a>
+    <a routerLink="/messages" routerLinkActive="active" (click)="closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#9993;</span><span>Messages</span></a>
+    <a routerLink="/events" routerLinkActive="active" (click)="closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#9783;</span><span>Events & Meets</span></a>
+    <a routerLink="/settings" routerLinkActive="active" (click)="closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#9881;</span><span>Settings</span></a>
+    <button type="button" class="sidebar-logout" (click)="logout(); closeSidebar.emit()"><span class="nav-icon" aria-hidden="true">&#8618;</span><span>Logout</span></button>
   </nav>
 
   <app-subscription-status-card
