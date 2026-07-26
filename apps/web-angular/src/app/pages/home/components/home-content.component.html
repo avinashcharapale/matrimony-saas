@@ -8,7 +8,7 @@
     @if (topMatches.length > 0) {
       <div class="match-list">
         @for (match of topMatches; track match.id) {
-        <div class="match-item">
+        <div class="match-item" [routerLink]="['/profiles', match.profileId]">
           <div class="avatar">
             @if (match.photoUrl) {
               <img [src]="match.photoUrl" alt="" (error)="match.photoUrl = undefined" />
@@ -48,7 +48,7 @@
       @if (interests.length > 0) {
         <div class="simple-list">
           @for (item of interests; track item.id) {
-          <div class="interest-row">
+          <div class="interest-row" [routerLink]="['/profiles', item.profileId]">
             <div class="avatar avatar-sm">
               @if (item.photoUrl) {
                 <img [src]="item.photoUrl" alt="" (error)="item.photoUrl = undefined" />
@@ -85,7 +85,7 @@
       @if (shortlists.length > 0) {
         <div class="simple-list">
           @for (item of shortlists; track item.profileId) {
-          <div class="shortlist-row">
+          <div class="shortlist-row" [routerLink]="['/profiles', item.profileId]">
             <div class="avatar avatar-sm">
               @if (item.photoUrl) {
                 <img [src]="item.photoUrl" alt="" (error)="item.photoUrl = undefined" />

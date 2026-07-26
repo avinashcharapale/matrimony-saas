@@ -163,6 +163,7 @@ export class Home implements OnInit {
               const score = rec.score ? Math.round(rec.score) : 0;
               return {
                 id: p.profileCode ?? String(p.profileId),
+                profileId: p.profileId,
                 name: p.fullName ?? 'Unknown',
                 detail: [p.age ? `${p.age} y` : '', p.locationText, p.occupationText]
                   .filter(Boolean)
@@ -186,6 +187,7 @@ export class Home implements OnInit {
       next: (response) => {
         const matches: MatchItem[] = response.profiles.map((p) => ({
           id: p.profileCode ?? String(p.profileId),
+          profileId: p.profileId,
           name: p.fullName,
           detail: [p.age ? `${p.age} y` : '', p.locationText, p.occupationText]
             .filter(Boolean)

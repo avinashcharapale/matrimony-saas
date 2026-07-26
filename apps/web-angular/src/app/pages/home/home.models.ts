@@ -8,6 +8,7 @@ export interface NotificationCard {
 
 export interface MatchItem {
   id: string;
+  profileId?: number;
   name: string;
   detail: string;
   score: number;
