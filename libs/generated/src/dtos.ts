@@ -682,6 +682,7 @@ export interface SubscriptionStatusDto {
   isActive?: boolean;
   isExpired?: boolean;
   planName?: string;
+  startDate?: string;
   expiresAt?: string;
   isTrial?: boolean;
   effectiveFeatures?: PlanFeatureValueDto[];

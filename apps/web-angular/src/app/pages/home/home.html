@@ -1,6 +1,11 @@
 <main class="dashboard-page">
   <div class="dashboard-shell">
-    <app-home-sidebar [brandMark]="brandMark" [tenantDisplayName]="tenant.displayName"></app-home-sidebar>
+    <app-home-sidebar
+      [brandMark]="brandMark"
+      [tenantDisplayName]="tenant.displayName"
+      [subscriptionStatus]="subscriptionStatus()"
+      [subscriptionLoading]="subscriptionLoading()">
+    </app-home-sidebar>
 
     <section class="dashboard-main">
       <app-home-header [userName]="userFirstName()" [currentDate]="currentDate()"></app-home-header>

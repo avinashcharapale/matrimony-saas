@@ -2,6 +2,7 @@ export interface NotificationCard {
   label: string;
   value: string;
   hint: string;
+  icon: string;
   tone: 'orange' | 'gold' | 'green' | 'purple';
 }
 

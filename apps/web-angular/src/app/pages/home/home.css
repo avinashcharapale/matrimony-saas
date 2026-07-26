@@ -167,6 +167,234 @@
   background: var(--accent-dark);
 }
 
+/* ── Subscription Status Card ─────────────────────────────────────────────── */
+
+.subscription-card {
+  margin-top: 0.5rem;
+  border-radius: 14px;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  display: grid;
+  gap: 0.55rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.subscription-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(98, 81, 58, 0.08);
+}
+
+.subscription-card--active {
+  border-left: 3px solid #5f9f63;
+}
+
+.subscription-card--active:hover {
+  border-color: #5f9f63;
+  box-shadow: 0 8px 20px rgba(95, 159, 99, 0.12);
+}
+
+.subscription-card--trial {
+  border-left: 3px solid #e6a817;
+}
+
+.subscription-card--trial:hover {
+  border-color: #e6a817;
+  box-shadow: 0 8px 20px rgba(230, 168, 23, 0.12);
+}
+
+.subscription-card--expired {
+  border-left: 3px solid #d44;
+  background: color-mix(in srgb, #d44 3%, #ffffff);
+}
+
+.subscription-card--expired:hover {
+  border-color: #d44;
+  box-shadow: 0 8px 20px rgba(221, 68, 68, 0.12);
+}
+
+.subscription-card--none {
+  border-left: 3px solid #ccc;
+}
+
+.subscription-card--none:hover {
+  border-color: #aaa;
+}
+
+.sub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sub-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.subscription-card--active .sub-icon { color: #5f9f63; }
+.subscription-card--trial .sub-icon { color: #e6a817; }
+.subscription-card--expired .sub-icon { color: #d44; }
+.subscription-card--none .sub-icon { color: #aaa; }
+
+.sub-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.sub-badge--active {
+  background: #e8f5e9;
+  color: #3a7d3e;
+}
+
+.sub-badge--trial {
+  background: #fdf3d0;
+  color: #946b00;
+}
+
+.sub-badge--expired {
+  background: #fde8e8;
+  color: #b33;
+}
+
+.sub-badge--none {
+  background: #f0f0f0;
+  color: #888;
+}
+
+.sub-plan-name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.sub-details {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.sub-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+}
+
+.sub-label {
+  color: var(--text-soft);
+  font-weight: 500;
+}
+
+.sub-value {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.sub-countdown {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 6%, #ffffff);
+}
+
+.sub-countdown.urgent {
+  background: #fde8e8;
+}
+
+.sub-countdown-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.sub-countdown.urgent .sub-countdown-value {
+  color: #d44;
+}
+
+.sub-countdown-label {
+  font-size: 0.68rem;
+  color: var(--text-soft);
+  font-weight: 500;
+}
+
+.sub-cta {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.sub-cta--alert {
+  background: var(--accent);
+  color: #fff;
+}
+
+.sub-cta--alert:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 25%, transparent);
+  background: var(--accent-dark);
+}
+
+.sub-cta--soft {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+
+.sub-cta--soft:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  border-color: var(--accent);
+}
+
+.sub-empty-text {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-soft);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Loading dots */
+.sub-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 1rem 0;
+}
+
+.sub-loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  opacity: 0.4;
+  animation: sub-dot-pulse 1.2s ease-in-out infinite;
+}
+
+.sub-loading-dot:nth-child(2) { animation-delay: 0.15s; }
+.sub-loading-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes sub-dot-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
 .dashboard-main {
   display: grid;
   gap: 0.85rem;
@@ -264,14 +492,17 @@
 .stats-grid {
   display: grid;
   gap: 0.7rem;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .stat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: var(--card);
-  padding: 0.75rem;
+  padding: 1rem 1.1rem;
   box-shadow: 0 12px 30px rgba(98, 81, 58, 0.07);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
@@ -282,21 +513,53 @@
   box-shadow: 0 18px 38px rgba(98, 81, 58, 0.1);
 }
 
-.stat-head {
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   display: flex;
-  justify-content: space-between;
-  gap: 0.4rem;
-  font-size: 0.74rem;
-  color: var(--text-soft);
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
 }
 
-.stat-head p {
+.stat-card.orange .stat-icon {
+  background: #fff3e0;
+}
+
+.stat-card.gold .stat-icon {
+  background: #fdf6e3;
+}
+
+.stat-card.green .stat-icon {
+  background: #e8f5e9;
+}
+
+.stat-card.purple .stat-icon {
+  background: #ede7f6;
+}
+
+.stat-info {
+  min-width: 0;
+}
+
+.stat-info h2 {
   margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.2;
 }
 
-.stat-card h2 {
-  margin: 0.25rem 0 0;
-  font-size: 1.7rem;
+.stat-info p {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-soft, #4f566b);
+}
+
+.stat-info span {
+  font-size: 0.68rem;
+  color: #9a9ab0;
 }
 
 .stat-card.orange {

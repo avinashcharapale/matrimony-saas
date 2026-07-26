@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed } from '@angular/core';
 import { TenantService } from '../../services/tenant.service';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
 import { MatchClient, InterestRequestStatus } from '@org/generated';
+import { SubscriptionStore } from '@org/data-access-subscription';
 import { HomeSidebarComponent } from './components/home-sidebar.component';
 import { HomeHeaderComponent } from './components/home-header.component';
 import { HomeStatsComponent } from './components/home-stats.component';
@@ -31,6 +32,10 @@ export class Home implements OnInit {
   private readonly memberService = inject(MemberService);
   private readonly authService = inject(AuthService);
   private readonly matchClient = inject(MatchClient);
+  private readonly subscriptionStore = inject(SubscriptionStore);
+
+  readonly subscriptionStatus = this.subscriptionStore.status;
+  readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
 
   get brandMark(): string {
     return this.tenant.logoText
@@ -58,6 +63,7 @@ export class Home implements OnInit {
     this.loadMyProfile();
     this.loadTopMatches();
     this.loadQuickStats();
+    this.loadSubscriptionStatus();
   }
 
   private formatDate(date: Date): string {
@@ -129,12 +135,20 @@ export class Home implements OnInit {
     ).subscribe({
       next: (counts) => {
         this.quickStats.set([
-          { label: 'Interests', value: String(counts.interests), hint: 'received', tone: 'orange' },
-          { label: 'Shortlisted', value: String(counts.shortlists), hint: 'saved profiles', tone: 'gold' },
+          { label: 'Interests Received', value: String(counts.interests), hint: 'from other profiles', icon: '💌', tone: 'orange' },
+          { label: 'Saved Profiles', value: String(counts.shortlists), hint: 'in your shortlist', icon: '⭐', tone: 'gold' },
         ]);
       },
       error: () => {},
     });
+  }
+
+  private loadSubscriptionStatus(): void {
+    const session = this.authService.getSession();
+    const userId = session?.userId;
+    if (userId) {
+      this.subscriptionStore.loadSubscriptionStatus(userId).subscribe();
+    }
   }
 
   private loadInterests(profileId: number): void {
