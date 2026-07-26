@@ -87,10 +87,12 @@ export class Home implements OnInit {
       '1': 'Accepted',
       '2': 'Declined',
       '3': 'Withdrawn',
+      '4': 'Rejected',
       Pending: 'Pending',
       Accepted: 'Accepted',
       Declined: 'Declined',
       Withdrawn: 'Withdrawn',
+      Rejected: 'Rejected',
     };
     return map[val] ?? val;
   }
@@ -267,11 +269,7 @@ export class Home implements OnInit {
   }
 
   private getInterestDetail(status: unknown, message?: string | null): string {
-    const friendly = this.mapInterestStatus(status);
-    if (friendly === 'Pending') {
-      return message || 'Sent you an interest';
-    }
-    return friendly + (message ? ' — ' + message : '');
+    return '';
   }
 
   private loadShortlists(profileId: number): void {

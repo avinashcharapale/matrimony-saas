@@ -22,7 +22,7 @@ import { SubscriptionStatusDto } from '@org/generated';
           <span class="sub-badge" [class]="badgeClass()">{{ badgeLabel() }}</span>
         </div>
 
-        <p class="sub-plan-name">{{ status!.planName ?? 'Unknown Plan' }}</p>
+        <p class="sub-plan-name">{{ status!.planName ?? (status!.isActive || status!.isTrial ? 'Active Plan' : 'No plan') }}</p>
 
         <div class="sub-details">
           @if (status!.startDate) {
