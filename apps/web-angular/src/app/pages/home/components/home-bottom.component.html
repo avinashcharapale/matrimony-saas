@@ -10,9 +10,13 @@
         }
       </div>
     } @else {
-      <p class="empty-hint">No horoscope data yet.</p>
+      <div class="empty-state">
+        <span class="empty-icon">&#9788;</span>
+        <p>No horoscope data yet.</p>
+        <a routerLink="/my-profile" class="empty-cta">Add Horoscope</a>
+      </div>
     }
-    <a routerLink="/home" class="panel-link">View Full Report</a>
+    <a routerLink="/my-profile" class="panel-link">View Full Report</a>
   </article>
 
   <article class="panel small-panel">
@@ -21,43 +25,32 @@
     </div>
     @if (messages.length > 0) {
       <div class="message-list">
-        @for (item of messages; track item.name) {
-        <div>
-          <div class="message-head">
-            <strong>{{ item.name }}</strong>
-            @if (item.unread) { <span>{{ item.unread }}</span> }
+        @for (item of messages; track item.conversationId ?? item.name) {
+        <div class="message-row">
+          <div class="avatar avatar-sm">
+            @if (item.photoUrl) {
+              <img [src]="item.photoUrl" alt="" (error)="item.photoUrl = undefined" />
+            }
+            @if (!item.photoUrl) {
+              <span class="avatar-initials">{{ item.name.charAt(0) }}</span>
+            }
           </div>
-          <p>{{ item.text }}</p>
-        </div>
-        }
-      </div>
-    } @else {
-      <p class="empty-hint">No messages yet.</p>
-    }
-  </article>
-
-  <article class="panel small-panel">
-    <div class="panel-title">
-      <h3>Upcoming Events</h3>
-    </div>
-    @if (upcomingEvents.length > 0) {
-      <div class="event-list">
-        @for (event of upcomingEvents; track event.title) {
-        <div class="event-item">
-          <div class="event-date">
-            <strong>{{ event.day }}</strong>
-            <span>{{ event.month }}</span>
-          </div>
-          <div>
-            <h4>{{ event.title }}</h4>
-            <p>{{ event.time }}</p>
+          <div class="message-body">
+            <div class="message-head">
+              <strong>{{ item.name }}</strong>
+              @if (item.unread) { <span class="unread-badge">{{ item.unread }}</span> }
+            </div>
+            <p>{{ item.text }}</p>
           </div>
         </div>
         }
       </div>
     } @else {
-      <p class="empty-hint">No upcoming events.</p>
+      <div class="empty-state">
+        <span class="empty-icon">&#9993;</span>
+        <p>No messages yet.</p>
+        <p class="empty-hint-sm">Start a conversation from a profile.</p>
+      </div>
     }
   </article>
 </section>
-

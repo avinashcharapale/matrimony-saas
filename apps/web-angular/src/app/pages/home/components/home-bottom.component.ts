@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { EventItem, MessageItem } from '../home.models';
+import { MessageItem } from '../home.models';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,5 +14,4 @@ import { EventItem, MessageItem } from '../home.models';
 export class HomeBottomComponent {
   @Input({ required: true }) horoscopeTags!: string[];
   @Input({ required: true }) messages!: MessageItem[];
-  @Input({ required: true }) upcomingEvents!: EventItem[];
 }

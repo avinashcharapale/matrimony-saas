@@ -39,11 +39,19 @@
         </div>
       </div>
 
-      <button class="connect-button" [class.sent]="interestSent()" [disabled]="isSendingInterest()" (click)="onConnect()">
+      <button class="connect-button" [class.sent]="interestSent() || (existingInterestStatus() === 'Pending')" [class.declined]="existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" [disabled]="isSendingInterest() || existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" (click)="onConnect()">
         @if (isVisitor()) {
           Register to Connect
-        } @else if (isFreeUser()) {
+        } @else if (isFreeUser() && !existingInterestStatus()) {
           Upgrade to Connect
+        } @else if (existingInterestStatus() === 'Pending') {
+          Interest Sent
+        } @else if (existingInterestStatus() === 'Accepted') {
+          Accepted &#10003;
+        } @else if (existingInterestStatus() === 'Declined') {
+          Interest Declined
+        } @else if (existingInterestStatus() === 'Withdrawn') {
+          Interest Withdrawn
         } @else if (interestSent()) {
           Interest Sent
         } @else if (isSendingInterest()) {

@@ -34,11 +34,19 @@
         <h1>{{ profile()!.name }}</h1>
         <p class="member-id">{{ getMemberId() }}</p>
         <p class="member-meta">{{ profile()!.age }} years • {{ profile()!.location }}</p>
-        <button class="connect-btn" [class.sent]="interestSent()" [disabled]="isSendingInterest()" (click)="onConnect()">
+        <button class="connect-btn" [class.sent]="interestSent() || (existingInterestStatus() === 'Pending')" [class.declined]="existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" [disabled]="isSendingInterest() || existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" (click)="onConnect()">
           @if (isVisitor()) {
             Register to Connect
-          } @else if (isFreeUser() && !interestSent()) {
+          } @else if (isFreeUser() && !existingInterestStatus()) {
             Upgrade to Connect
+          } @else if (existingInterestStatus() === 'Pending') {
+            Interest Sent
+          } @else if (existingInterestStatus() === 'Accepted') {
+            Accepted &#10003;
+          } @else if (existingInterestStatus() === 'Declined') {
+            Interest Declined
+          } @else if (existingInterestStatus() === 'Withdrawn') {
+            Interest Withdrawn
           } @else if (interestSent()) {
             Interest Sent
           } @else if (isSendingInterest()) {

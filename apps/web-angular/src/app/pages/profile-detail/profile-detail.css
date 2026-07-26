@@ -147,6 +147,11 @@
   background: #6b8f71;
 }
 
+.connect-button.declined {
+  background: #b0b0b0;
+  color: #fff;
+}
+
 .shortlist-button {
   background: transparent;
   color: #9a5e45;

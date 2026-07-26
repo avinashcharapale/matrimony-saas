@@ -354,6 +354,11 @@
   background: #6b8f71;
 }
 
+.connect-btn.declined {
+  background: #b0b0b0;
+  color: #fff;
+}
+
 /* Upgrade Prompt Modal */
 .upgrade-overlay {
   position: fixed;

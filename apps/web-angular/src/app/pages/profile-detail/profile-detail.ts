@@ -193,6 +193,7 @@ export class ProfileDetail implements OnInit {
   readonly isSendingInterest = signal(false);
   readonly interestSent = signal(false);
   readonly interestError = signal<string | null>(null);
+  readonly existingInterestStatus = signal<string | null>(null);
   readonly isShortlisted = signal(false);
   readonly isTogglingShortlist = signal(false);
   readonly shortlistError = signal<string | null>(null);
@@ -430,6 +431,26 @@ export class ProfileDetail implements OnInit {
       },
       error: () => {},
     });
+
+    this.checkExistingInterest(targetProfileId);
+  }
+
+  private checkExistingInterest(targetProfileId: number): void {
+    if (!this.myProfileId) return;
+
+    this.matchClient.getInterestRequestsByRequester(this.myProfileId).subscribe({
+      next: (requests) => {
+        const existing = requests.find((r) => r.targetProfileId === targetProfileId);
+        if (existing) {
+          const status = String(existing.status ?? 'Pending');
+          this.existingInterestStatus.set(status);
+          if (status !== 'Declined' && status !== 'Withdrawn') {
+            this.interestSent.set(true);
+          }
+        }
+      },
+      error: () => {},
+    });
   }
 
   getProfilePhoto(secondary = false): string {
@@ -584,7 +605,7 @@ export class ProfileDetail implements OnInit {
 
   private sendInterest(): void {
     const p = this.profile();
-    if (!p || this.isSendingInterest() || this.interestSent()) return;
+    if (!p || this.isSendingInterest() || this.interestSent() || this.existingInterestStatus()) return;
 
     const targetProfileId = parseInt(p.id, 10);
     if (isNaN(targetProfileId)) return;
@@ -601,7 +622,10 @@ export class ProfileDetail implements OnInit {
     }).pipe(
       finalize(() => this.isSendingInterest.set(false)),
     ).subscribe({
-      next: () => this.interestSent.set(true),
+      next: () => {
+        this.interestSent.set(true);
+        this.existingInterestStatus.set('Pending');
+      },
       error: (err: unknown) => {
         const message = this.extractErrorMessage(err);
         this.interestError.set(message);

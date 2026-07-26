@@ -16,28 +16,79 @@
     </div>
     <aside class="profile-sidebar">
       <div class="photo-section">
-        <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden-file-input" />
+        <!-- Hidden file inputs -->
+        <input #addFileInput type="file" accept="image/*" (change)="onAddPhotoSelected($event)" class="hidden-file-input" />
+        <input #replaceFileInput type="file" accept="image/*" (change)="onReplacePhotoSelected($event)" class="hidden-file-input" />
+
         <div class="photo-wrapper">
           <img
             [src]="getProfilePhoto()"
             [alt]="profile()!.fullName"
             class="profile-main-photo"
-            (click)="openGallery()"
+            (click)="openGallery(0)"
             title="Click to view gallery"
           />
-          <button class="change-photo-btn" (click)="triggerFileInput()" [disabled]="isUploading()" title="Change photo">
-            @if (isUploading()) {
-              ⏳
+          <button class="change-photo-btn" (click)="triggerReplacePhoto(photos()[0]?.photoSlot ?? 1, $event)" [disabled]="isUploading()" title="Change main photo">
+            @if (isUploading() && replacingSlot() === photos()[0]?.photoSlot) {
+              <span class="upload-spinner"></span>
             } @else {
-              📷
+              &#x1F4F7;
             }
           </button>
         </div>
-        @if (galleryPhotos().length > 1) {
-        <div class="photo-thumbnails">
-          @for (photo of galleryPhotos().slice(0, 2); track $index) {
-          <img [src]="photo" [alt]="profile()!.fullName + ' - ' + ($index + 1)" (click)="openGallery()" />
+
+        <!-- Photo thumbnails grid -->
+        @if (photos().length > 0) {
+        <div class="photo-grid">
+          @for (photo of photos(); track photo.photoSlot; let i = $index) {
+          <div class="photo-thumb" [class.primary]="i === 0" (click)="openGallery(i)">
+            <img [src]="getPhotoUrl(photo)" [alt]="profile()!.fullName + ' - photo ' + (i + 1)" />
+            <div class="photo-thumb-actions">
+              <button
+                class="thumb-action-btn thumb-edit"
+                (click)="triggerReplacePhoto(photo.photoSlot!, $event)"
+                [disabled]="isUploading()"
+                title="Replace photo"
+              >
+                @if (isUploading() && replacingSlot() === photo.photoSlot) {
+                  <span class="upload-spinner-sm"></span>
+                } @else {
+                  &#x270F;
+                }
+              </button>
+              <button
+                class="thumb-action-btn thumb-delete"
+                (click)="deletePhoto(photo.photoSlot!, $event)"
+                [disabled]="deletingSlot() === photo.photoSlot"
+                title="Delete photo"
+              >
+                @if (deletingSlot() === photo.photoSlot) {
+                  <span class="upload-spinner-sm"></span>
+                } @else {
+                  &#x2715;
+                }
+              </button>
+            </div>
+            @if (i === 0) {
+            <span class="photo-primary-badge">Primary</span>
+            }
+          </div>
           }
+
+          <!-- Add Photo button -->
+          @if (canAddPhoto()) {
+          <div class="photo-thumb photo-add" (click)="triggerAddPhoto()" [class.disabled]="isUploading()">
+            <span class="photo-add-icon">+</span>
+            <span class="photo-add-label">Add Photo</span>
+          </div>
+          }
+        </div>
+        } @else {
+        <!-- No photos yet -->
+        <div class="photo-empty">
+          <button class="photo-add-btn" (click)="triggerAddPhoto()" [disabled]="isUploading()">
+            + Add Your First Photo
+          </button>
         </div>
         }
       </div>

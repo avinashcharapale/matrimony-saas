@@ -9,22 +9,33 @@
       <div class="match-list">
         @for (match of topMatches; track match.id) {
         <div class="match-item">
+          <div class="avatar">
+            @if (match.photoUrl) {
+              <img [src]="match.photoUrl" alt="" (error)="match.photoUrl = undefined" />
+            }
+            @if (!match.photoUrl) {
+              <span class="avatar-initials">{{ match.name.charAt(0) }}</span>
+            }
+          </div>
           <div class="match-main">
-            <p class="match-id">{{ match.id }}</p>
             <h4>{{ match.name }}</h4>
             <p class="match-detail">{{ match.detail }}</p>
           </div>
           @if (match.score > 0) {
             <div class="match-side">
               <strong>{{ match.score }}%</strong>
-              <span>{{ match.badge }}</span>
+              <span class="match-badge">{{ match.badge }}</span>
             </div>
           }
         </div>
         }
       </div>
     } @else {
-      <p class="empty-hint">No matches found yet. Try searching for profiles.</p>
+      <div class="empty-state">
+        <span class="empty-icon">&#9825;</span>
+        <p>No matches found yet.</p>
+        <a routerLink="/profiles" class="empty-cta">Search Profiles</a>
+      </div>
     }
   </article>
 
@@ -37,32 +48,32 @@
       @if (interests.length > 0) {
         <div class="simple-list">
           @for (item of interests; track item.id) {
-          <div>
-            <strong>{{ item.name }}</strong>
-            <p>{{ item.detail }}</p>
+          <div class="interest-row">
+            <div class="avatar avatar-sm">
+              @if (item.photoUrl) {
+                <img [src]="item.photoUrl" alt="" (error)="item.photoUrl = undefined" />
+              }
+              @if (!item.photoUrl) {
+                <span class="avatar-initials">{{ item.name.charAt(0) }}</span>
+              }
+            </div>
+            <div class="interest-info">
+              <strong>{{ item.name }}</strong>
+              <div class="interest-detail-row">
+                @if (item.status) {
+                  <span class="status-badge" [class]="'status-badge--' + (item.status | lowercase)">{{ item.status }}</span>
+                }
+                <p>{{ item.detail }}</p>
+              </div>
+            </div>
           </div>
           }
         </div>
       } @else {
-        <p class="empty-hint">No interests received yet.</p>
-      }
-    </article>
-
-    <article class="panel compact-panel">
-      <div class="panel-title">
-        <h3>Recent Activity</h3>
-      </div>
-      @if (activities.length > 0) {
-        <div class="simple-list">
-          @for (item of activities; track item.text) {
-          <div>
-            <strong>{{ item.text }}</strong>
-            <p>{{ item.time }}</p>
-          </div>
-          }
+        <div class="empty-state empty-state--compact">
+          <span class="empty-icon">&#128140;</span>
+          <p>No interests received yet.</p>
         </div>
-      } @else {
-        <p class="empty-hint">No recent activity.</p>
       }
     </article>
 
@@ -74,14 +85,27 @@
       @if (shortlists.length > 0) {
         <div class="simple-list">
           @for (item of shortlists; track item.profileId) {
-          <div>
-            <strong>{{ item.name }}</strong>
-            <p>{{ item.detail }}</p>
+          <div class="shortlist-row">
+            <div class="avatar avatar-sm">
+              @if (item.photoUrl) {
+                <img [src]="item.photoUrl" alt="" (error)="item.photoUrl = undefined" />
+              }
+              @if (!item.photoUrl) {
+                <span class="avatar-initials">{{ item.name.charAt(0) }}</span>
+              }
+            </div>
+            <div class="shortlist-info">
+              <strong>{{ item.name }}</strong>
+              <p>{{ item.detail }}</p>
+            </div>
           </div>
           }
         </div>
       } @else {
-        <p class="empty-hint">No profiles shortlisted yet.</p>
+        <div class="empty-state empty-state--compact">
+          <span class="empty-icon">&#9733;</span>
+          <p>No profiles shortlisted yet.</p>
+        </div>
       }
     </article>
   </div>

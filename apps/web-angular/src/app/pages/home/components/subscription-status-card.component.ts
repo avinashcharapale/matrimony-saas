@@ -16,25 +16,25 @@ import { SubscriptionStatusDto } from '@org/generated';
           <span class="sub-loading-dot"></span>
           <span class="sub-loading-dot"></span>
         </div>
-      } @else if (status()) {
+      } @else if (status) {
         <div class="sub-header">
           <span class="sub-icon">{{ icon() }}</span>
           <span class="sub-badge" [class]="badgeClass()">{{ badgeLabel() }}</span>
         </div>
 
-        <p class="sub-plan-name">{{ status()!.planName ?? 'Unknown Plan' }}</p>
+        <p class="sub-plan-name">{{ status!.planName ?? 'Unknown Plan' }}</p>
 
         <div class="sub-details">
-          @if (status()!.startDate) {
+          @if (status!.startDate) {
             <div class="sub-row">
               <span class="sub-label">Effective</span>
-              <span class="sub-value">{{ formatDate(status()!.startDate!) }}</span>
+              <span class="sub-value">{{ formatDate(status!.startDate!) }}</span>
             </div>
           }
-          @if (status()!.expiresAt) {
+          @if (status!.expiresAt) {
             <div class="sub-row">
               <span class="sub-label">Expires</span>
-              <span class="sub-value">{{ formatDate(status()!.expiresAt!) }}</span>
+              <span class="sub-value">{{ formatDate(status!.expiresAt!) }}</span>
             </div>
           }
           @if (daysRemaining() !== null) {
@@ -43,7 +43,7 @@ import { SubscriptionStatusDto } from '@org/generated';
               <span class="sub-countdown-label">days remaining</span>
             </div>
           }
-          @if (status()!.isTrial && status()!.expiresAt) {
+          @if (status!.isTrial && status!.expiresAt) {
             <div class="sub-countdown">
               <span class="sub-countdown-value">{{ daysUntilTrialEnd() }}</span>
               <span class="sub-countdown-label">days trial left</span>
@@ -51,9 +51,9 @@ import { SubscriptionStatusDto } from '@org/generated';
           }
         </div>
 
-        @if (!status()!.isActive && !status()!.isTrial) {
+        @if (!status!.isActive && !status!.isTrial) {
           <a routerLink="/plans" class="sub-cta sub-cta--alert">
-            {{ status()!.isExpired ? 'Renew Now' : 'Choose a Plan' }} &rarr;
+            {{ status!.isExpired ? 'Renew Now' : 'Choose a Plan' }} &rarr;
           </a>
         } @else {
           <a routerLink="/plans" class="sub-cta sub-cta--soft">Manage Plan &rarr;</a>

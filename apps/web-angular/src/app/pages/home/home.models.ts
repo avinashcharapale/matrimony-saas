@@ -12,6 +12,7 @@ export interface MatchItem {
   detail: string;
   score: number;
   badge: string;
+  photoUrl?: string;
 }
 
 export interface InterestItem {
@@ -19,6 +20,8 @@ export interface InterestItem {
   name: string;
   detail: string;
   profileId?: number;
+  photoUrl?: string;
+  status?: string;
 }
 
 export interface ActivityItem {
@@ -30,17 +33,13 @@ export interface MessageItem {
   name: string;
   text: string;
   unread?: number;
-}
-
-export interface EventItem {
-  day: string;
-  month: string;
-  title: string;
-  time: string;
+  photoUrl?: string;
+  conversationId?: number;
 }
 
 export interface ShortlistItem {
   profileId: number;
   name: string;
   detail: string;
+  photoUrl?: string;
 }

@@ -4,9 +4,11 @@ import { RouterModule } from '@angular/router';
 import { MemberService } from '../../services/member.service';
 import { RegisterMasterDataService } from '../../services/register-master-data.service';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
-import { ProfileClient, ProfileDetailDto } from '@org/generated';
+import { ProfileClient, ProfileDetailDto, ProfilePhotoDto } from '@org/generated';
 import { finalize } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
+
+const MAX_PHOTOS = 6;
 
 interface ProfileField {
   label: string;
@@ -31,7 +33,8 @@ export class MyProfile implements OnInit {
   private readonly masterData = inject(RegisterMasterDataService);
   private readonly profileClient = inject(ProfileClient);
 
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('replaceFileInput') replaceFileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('addFileInput') addFileInput!: ElementRef<HTMLInputElement>;
 
   readonly profile = signal<ProfileDetailDto | null>(null);
   readonly isLoading = signal(true);
@@ -40,11 +43,31 @@ export class MyProfile implements OnInit {
   readonly currentGalleryIndex = signal(0);
   readonly openSections = signal<Set<number>>(new Set([0]));
   readonly isUploading = signal(false);
+  readonly replacingSlot = signal<number | null>(null);
+  readonly deletingSlot = signal<number | null>(null);
 
   private casteMap = new Map<number, string>();
   private educationMap = new Map<number, string>();
   private occupationMap = new Map<number, string>();
   private incomeRangeMap = new Map<number, string>();
+
+  readonly photos = computed(() => {
+    const p = this.profile();
+    if (!p) return [] as ProfilePhotoDto[];
+    return (p.photos ?? []).sort((a, b) => (a.photoSlot ?? 0) - (b.photoSlot ?? 0));
+  });
+
+  readonly photoCount = computed(() => this.photos().length);
+  readonly canAddPhoto = computed(() => this.photoCount() < MAX_PHOTOS);
+
+  readonly nextSlot = computed(() => {
+    const slots = this.photos().map(p => p.photoSlot ?? 0);
+    if (slots.length === 0) return 1;
+    for (let i = 1; i <= MAX_PHOTOS; i++) {
+      if (!slots.includes(i)) return i;
+    }
+    return MAX_PHOTOS;
+  });
 
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
@@ -234,18 +257,17 @@ export class MyProfile implements OnInit {
     return photos.length > 0 ? resolvePhotoUrl(photos[0].fileUrl, p.fullName, genderId) : getDefaultAvatar(p.fullName, genderId);
   }
 
-  getProfilePhotoSecondary(): string {
+  getPhotoUrl(photo: ProfilePhotoDto): string {
     const p = this.profile();
     if (!p) return '';
     const genderId = p.personalDetails?.genderId ?? null;
-    const photos = (p.photos ?? []).filter(ph => ph.fileUrl);
-    return photos.length > 1 ? resolvePhotoUrl(photos[1].fileUrl, p.fullName, genderId) : getDefaultAvatar(p.fullName, genderId);
+    return resolvePhotoUrl(photo.fileUrl, p.fullName, genderId);
   }
 
-  openGallery(): void {
+  openGallery(index?: number): void {
     if (this.galleryPhotos().length > 0) {
       this.isGalleryOpen.set(true);
-      this.currentGalleryIndex.set(0);
+      this.currentGalleryIndex.set(index ?? 0);
     }
   }
 
@@ -285,6 +307,90 @@ export class MyProfile implements OnInit {
     const p = this.profile();
     if (!p) return '';
     return `${p.profileCode ?? ''}`;
+  }
+
+  triggerAddPhoto(): void {
+    if (!this.canAddPhoto() || this.isUploading()) return;
+    this.addFileInput.nativeElement.click();
+  }
+
+  triggerReplacePhoto(slot: number, event: Event): void {
+    event.stopPropagation();
+    if (this.isUploading()) return;
+    this.replacingSlot.set(slot);
+    this.replaceFileInput.nativeElement.click();
+  }
+
+  deletePhoto(slot: number, event: Event): void {
+    event.stopPropagation();
+    if (this.deletingSlot() !== null) return;
+
+    this.deletingSlot.set(slot);
+    this.error.set(null);
+
+    this.profileClient.deletePhoto(slot)
+      .pipe(finalize(() => this.deletingSlot.set(null)))
+      .subscribe({
+        next: () => this.loadMyProfile(),
+        error: (err) => {
+          console.error('Photo delete failed', err);
+          this.error.set('Failed to delete photo. Please try again.');
+        },
+      });
+  }
+
+  onAddPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.error.set('Please select a valid image file.');
+      input.value = '';
+      return;
+    }
+
+    const slot = this.nextSlot();
+    this.uploadPhoto(slot, file, input);
+  }
+
+  onReplacePhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    const slot = this.replacingSlot();
+    if (!file || slot === null) {
+      this.replacingSlot.set(null);
+      input.value = '';
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.error.set('Please select a valid image file.');
+      this.replacingSlot.set(null);
+      input.value = '';
+      return;
+    }
+
+    this.uploadPhoto(slot, file, input);
+    this.replacingSlot.set(null);
+  }
+
+  private uploadPhoto(slot: number, file: File, input: HTMLInputElement): void {
+    this.isUploading.set(true);
+    this.error.set(null);
+
+    this.profileClient.uploadPhoto(slot, file)
+      .pipe(finalize(() => {
+        this.isUploading.set(false);
+        input.value = '';
+      }))
+      .subscribe({
+        next: () => this.loadMyProfile(),
+        error: (err) => {
+          console.error('Photo upload failed', err);
+          this.error.set('Failed to upload photo. Please try again.');
+        },
+      });
   }
 
   private boolText(value: boolean | undefined | null): string {
@@ -327,40 +433,5 @@ export class MyProfile implements OnInit {
     const year = personal.dobYear;
     if (!day && !month && !year) return '-';
     return `${day ?? '?'}/${month ?? '?'}/${year ?? '?'}`;
-  }
-
-  triggerFileInput(): void {
-    this.fileInput.nativeElement.click();
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      this.error.set('Please select a valid image file.');
-      return;
-    }
-
-    this.isUploading.set(true);
-    this.error.set(null);
-
-    const slot = 1;
-
-    this.profileClient.uploadPhoto(slot, file)
-      .pipe(finalize(() => {
-        this.isUploading.set(false);
-        input.value = '';
-      }))
-      .subscribe({
-        next: () => {
-          this.loadMyProfile();
-        },
-        error: (err) => {
-          console.error('Photo upload failed', err);
-          this.error.set('Failed to upload photo. Please try again.');
-        },
-      });
   }
 }

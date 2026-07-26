@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { TenantService } from '../../services/tenant.service';
 import { AuthStore } from '@org/data-access-auth';
+import { MatchClient } from '@org/generated';
 import { finalize } from 'rxjs/operators';
 
 interface ProfileField {
@@ -34,6 +35,7 @@ export class ProfileDetail implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly http = inject(HttpClient);
   private readonly tenantService = inject(TenantService);
+  private readonly matchClient = inject(MatchClient);
 
   readonly profile = signal<MemberRecord | null>(null);
   readonly currentPhotoIndex = signal(0);
@@ -42,11 +44,14 @@ export class ProfileDetail implements OnInit {
   readonly showUpgradePrompt = signal(false);
   readonly isSendingInterest = signal(false);
   readonly interestSent = signal(false);
+  readonly existingInterestStatus = signal<string | null>(null);
   readonly isLoading = signal(true);
 
   readonly isVisitor = computed(() => !this.authStore.isAuthenticated());
   readonly isFreeUser = computed(() => this.authStore.isAuthenticated());
   readonly isPaidUser = computed(() => false);
+
+  private myProfileId = 0;
 
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
@@ -158,6 +163,7 @@ export class ProfileDetail implements OnInit {
           next: (record) => {
             if (record) {
               this.profile.set(record);
+              this.checkExistingInterest(numericId);
             } else {
               this.profile.set(this.memberService.getProfileById(profileId));
             }
@@ -171,6 +177,30 @@ export class ProfileDetail implements OnInit {
         this.isLoading.set(false);
       }
     }
+  }
+
+  private checkExistingInterest(targetProfileId: number): void {
+    if (!this.authStore.isAuthenticated()) return;
+
+    const userId = this.authStore.userId();
+    if (!userId || userId === targetProfileId) return;
+
+    this.myProfileId = userId;
+
+    this.matchClient.getInterestRequestsByRequester(userId).subscribe({
+      next: (requests: any[]) => {
+        if (!requests) return;
+        const existing = requests.find((r: any) => r.targetProfileId === targetProfileId);
+        if (existing) {
+          const status = String(existing.status ?? 'Pending');
+          this.existingInterestStatus.set(status);
+          if (status !== 'Declined' && status !== 'Withdrawn') {
+            this.interestSent.set(true);
+          }
+        }
+      },
+      error: () => {},
+    });
   }
 
   getProfilePhoto(secondary = false): string {
@@ -238,7 +268,7 @@ export class ProfileDetail implements OnInit {
       this.router.navigate(['/register']);
       return;
     }
-    if (this.interestSent()) {
+    if (this.interestSent() || this.existingInterestStatus()) {
       return;
     }
 
@@ -259,7 +289,10 @@ export class ProfileDetail implements OnInit {
     }).pipe(
       finalize(() => this.isSendingInterest.set(false)),
     ).subscribe({
-      next: () => this.interestSent.set(true),
+      next: () => {
+        this.interestSent.set(true);
+        this.existingInterestStatus.set('Pending');
+      },
       error: (err: unknown) => {
         console.error('Failed to send interest:', err);
       },
