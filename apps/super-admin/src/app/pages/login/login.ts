@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { patchState } from '@ngrx/signals';
 import { AuthStore } from '@org/data-access-auth';
 import { PlatformAuthService } from '../../services/platform-auth.service';
 
@@ -207,7 +208,7 @@ export class Login {
     this.platformAuthService.login({ email, password }).subscribe({
       next: (response) => {
         this.loading.set(false);
-        this.authStore['patchState'](this.authStore, {
+        patchState(this.authStore as never, {
           accessToken: response.accessToken,
           storedRefreshToken: response.refreshToken,
           userId: response.userId,

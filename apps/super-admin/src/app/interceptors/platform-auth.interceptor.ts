@@ -7,12 +7,13 @@ import {
   AuthStore,
   ACCESS_TOKEN_KEY,
   REFRESH_TOKEN_KEY,
-  USER_ID_KEY,
-  TENANT_ID_KEY,
-  ROLE_KEY,
-  EXPIRES_AT_KEY,
 } from '@org/data-access-auth';
 import { PlatformAuthService } from '../services/platform-auth.service';
+
+const USER_ID_KEY = 'auth_user_id';
+const TENANT_ID_KEY = 'auth_tenant_id';
+const ROLE_KEY = 'auth_role';
+const EXPIRES_AT_KEY = 'auth_expires_at';
 
 const PLATFORM_AUTH_PATHS = [
   '/identity/PlatformAuth/login',
@@ -91,7 +92,7 @@ export const platformAuthInterceptor: HttpInterceptorFn = (req: HttpRequest<unkn
               expiresAt: response.expiresAt,
             };
 
-            patchState(authStore, partialState);
+            (patchState as never)(authStore, partialState);
             persistAuthToStorage({
               accessToken: response.accessToken,
               refreshToken: response.refreshToken,

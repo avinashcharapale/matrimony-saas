@@ -24,6 +24,18 @@ import { PlatformAuthService } from '../services/platform-auth.service';
             <span class="nav-icon">T</span>
             Tenants
           </a>
+          <a routerLink="/platform-admins" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">A</span>
+            Admins
+          </a>
+          <a routerLink="/platform-roles" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">R</span>
+            Roles
+          </a>
+          <a routerLink="/platform-permissions" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">P</span>
+            Permissions
+          </a>
           <a routerLink="/analytics" routerLinkActive="active" class="nav-item">
             <span class="nav-icon">A</span>
             Analytics

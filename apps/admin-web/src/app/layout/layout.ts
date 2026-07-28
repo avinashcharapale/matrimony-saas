@@ -27,6 +27,14 @@ import { MatButtonModule } from '@angular/material/button';
               <mat-icon>people</mat-icon>
               <span>Users</span>
             </a>
+            <a routerLink="/roles" routerLinkActive="active" class="nav-item">
+              <mat-icon>admin_panel_settings</mat-icon>
+              <span>Roles</span>
+            </a>
+            <a routerLink="/permissions" routerLinkActive="active" class="nav-item">
+              <mat-icon>vpn_key</mat-icon>
+              <span>Permissions</span>
+            </a>
             <a routerLink="/tenants" routerLinkActive="active" class="nav-item">
               <mat-icon>business</mat-icon>
               <span>Tenants</span>

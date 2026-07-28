@@ -38,6 +38,16 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./pages/subscriptions/subscriptions').then((m) => m.Subscriptions),
       },
+      {
+        path: 'permissions',
+        loadComponent: () =>
+          import('./pages/permissions/permissions').then((m) => m.Permissions),
+      },
+      {
+        path: 'roles',
+        loadComponent: () =>
+          import('./pages/roles/roles').then((m) => m.Roles),
+      },
     ],
   },
   {
