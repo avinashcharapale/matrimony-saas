@@ -9,9 +9,8 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { ConnectionPool } from 'mssql';
 import { MasterDataService } from './master.service';
 import { authMiddleware, resolveTenantId } from '../auth/middleware';
-import { AuthDatabase } from '../auth/database';
 
-export function createMasterRoutes(pool: ConnectionPool, db: AuthDatabase): Router {
+export function createMasterRoutes(pool: ConnectionPool): Router {
   const router = Router();
   const svc = new MasterDataService(pool);
 
@@ -51,7 +50,7 @@ export function createMasterRoutes(pool: ConnectionPool, db: AuthDatabase): Rout
    */
   router.post(
     '/',
-    authMiddleware(db),
+    authMiddleware(),
     handle(async (req, res) => {
       const { category, valueCode, translations, sortOrder, tenantId } = req.body as {
         category?: string;
@@ -76,7 +75,7 @@ export function createMasterRoutes(pool: ConnectionPool, db: AuthDatabase): Rout
    */
   router.put(
     '/:id/deactivate',
-    authMiddleware(db),
+    authMiddleware(),
     handle(async (req, res) => {
       const id = parseInt(req.params.id, 10);
       if (isNaN(id)) {

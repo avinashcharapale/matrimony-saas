@@ -151,18 +151,6 @@ export class AuthorizationService {
   }
 
   /**
-   * Check if user is super admin
-   */
-  async isSuperAdmin(userId: number): Promise<boolean> {
-    try {
-      const user = await this.db.getUserById(userId);
-      return user?.isSuperAdmin ?? false;
-    } catch {
-      return false;
-    }
-  }
-
-  /**
    * Can access tenant resource
    */
   async canAccessTenant(userId: number, tenantId: number): Promise<boolean> {
@@ -170,11 +158,6 @@ export class AuthorizationService {
       const user = await this.db.getUserById(userId);
       if (!user) {
         return false;
-      }
-
-      // Super admin can access all tenants
-      if (user.isSuperAdmin) {
-        return true;
       }
 
       // User can access their own tenant

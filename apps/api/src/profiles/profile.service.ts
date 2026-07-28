@@ -3,7 +3,6 @@
  */
 
 import { ConnectionPool, Request } from 'mssql';
-import { AuthDatabase } from '../auth/database';
 
 export interface ProfileSearchResult {
   profileId: number;
@@ -48,7 +47,7 @@ export interface ProfileSearchFilters {
 export class ProfileService {
   private readonly columnExistsCache = new Map<string, boolean>();
 
-  constructor(private pool: ConnectionPool, private db: AuthDatabase) {}
+  constructor(private pool: ConnectionPool) {}
 
   private normalizeString(value: unknown): string | null {
     if (value === null || value === undefined) {

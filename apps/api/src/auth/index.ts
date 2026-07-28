@@ -2,7 +2,7 @@
  * Authentication Module Exports
  *
  * Password hashing and JWT generation are handled by the .NET Backend.
- * This module only provides: token verification, permission lookups, middleware.
+ * This module only provides: token verification, permission lookups via HTTP, middleware.
  */
 
 export * from './types';
@@ -17,3 +17,4 @@ export { AuthDatabase } from './database';
 export { CryptoUtil } from './crypto.util';
 export { JwtUtil } from './jwt.util';
 export { AuthorizationService } from './authorization.service';
+export { setAuthDatabase } from './middleware';

@@ -1,7 +1,6 @@
 import express from 'express';
 import mssql from 'mssql';
 import {
-  AuthorizationService,
   AuthDatabase,
   createAuthRoutes,
   securityMiddleware,
@@ -9,6 +8,7 @@ import {
   loadAuthConfig,
   JwtUtil,
 } from './auth';
+import { setAuthDatabase } from './auth/middleware';
 import { createProfileRoutes } from './profiles';
 import { createGeoRoutes } from './geo';
 import { createMasterRoutes } from './master';
@@ -27,7 +27,7 @@ JwtUtil.initialize({
   audience: authConfig.dotnetJwtAudience,
 });
 
-// Database configuration
+// Database configuration for profile/master data queries
 const dbConfig: mssql.config = {
   server: process.env.DB_SERVER || 'localhost',
   database: process.env.DB_NAME || 'MatrimonySaaS',
@@ -65,23 +65,26 @@ app.use((req, res, next) => {
   }
 });
 
-// Initialize database and services
+// Initialize services
 let services: {
   authDb: AuthDatabase;
-  authzService: AuthorizationService;
   pool: mssql.ConnectionPool;
 } | null = null;
 
 async function initializeServices() {
   try {
+    // Auth database client — calls .NET Backend via Gateway (no direct SQL)
+    const authDb = new AuthDatabase(authConfig.gatewayUrl);
+
+    // Register auth database for middleware access
+    setAuthDatabase(authDb);
+
+    // Profile/master data still use direct SQL
     const pool = new mssql.ConnectionPool(dbConfig);
     await pool.connect();
     console.log('✓ Database connected');
 
-    const authDb = new AuthDatabase(pool);
-    const authzService = new AuthorizationService(authDb);
-
-    services = { authDb, authzService, pool };
+    services = { authDb, pool };
 
     console.log('✓ Services initialized (.NET JWT verification ready)');
     setupRoutes();
@@ -121,10 +124,10 @@ function setupRoutes() {
   app.use('/api/auth', createAuthRoutes());
 
   // Protected routes
-  const { authDb, pool } = services;
-  app.use('/api/profiles', createProfileRoutes(pool, authDb));
+  const { pool } = services;
+  app.use('/api/profiles', createProfileRoutes(pool));
   app.use('/api/geo', createGeoRoutes(pool));
-  app.use('/api/master', createMasterRoutes(pool, authDb));
+  app.use('/api/master', createMasterRoutes(pool));
   app.use('/api/master-data', createMasterDataRoutes(pool));
 
   // 404 handler

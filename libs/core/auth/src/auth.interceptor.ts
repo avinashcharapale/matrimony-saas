@@ -4,7 +4,10 @@ import { Router } from '@angular/router';
 import { Observable, catchError, switchMap, throwError, take, filter, of } from 'rxjs';
 import { AuthStore, ACCESS_TOKEN_KEY } from '@org/data-access-auth';
 
-const AUTH_PATHS = ['/identity/Auth/login', '/identity/Auth/refresh', '/identity/Auth/logout'];
+const AUTH_PATHS = [
+  '/identity/Auth/login', '/identity/Auth/refresh', '/identity/Auth/logout',
+  '/identity/PlatformAuth/login', '/identity/PlatformAuth/refresh', '/identity/PlatformAuth/logout',
+];
 
 let refreshInProgress$: Observable<boolean> | null = null;
 

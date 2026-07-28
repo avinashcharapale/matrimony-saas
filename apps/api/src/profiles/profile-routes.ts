@@ -5,21 +5,19 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { ConnectionPool } from 'mssql';
 import { ProfileService, ProfileSearchFilters } from './profile.service';
-import { AuthDatabase } from '../auth/database';
 import { authMiddleware } from '../auth/middleware';
 
 export function createProfileRoutes(
-  pool: ConnectionPool,
-  db: AuthDatabase
+  pool: ConnectionPool
 ): Router {
   const router = Router();
-  const profileService = new ProfileService(pool, db);
+  const profileService = new ProfileService(pool);
 
   /**
    * GET /profiles
    * List all profiles with pagination
    */
-  router.get('/', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
+  router.get('/', authMiddleware(), async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tenantId = req.auth!.tenantId;
       const filters: ProfileSearchFilters = {
@@ -57,7 +55,7 @@ export function createProfileRoutes(
    * GET /profiles/search
    * Search profiles with advanced filters
    */
-  router.get('/search', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
+  router.get('/search', authMiddleware(), async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tenantId = req.auth!.tenantId;
       const filters: ProfileSearchFilters = {
@@ -95,7 +93,7 @@ export function createProfileRoutes(
    * GET /profiles/:id
    * Get profile details
    */
-  router.get('/:id', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
+  router.get('/:id', authMiddleware(), async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tenantId = req.auth!.tenantId;
       const profileId = parseInt(req.params.id);
@@ -129,7 +127,7 @@ export function createProfileRoutes(
    * GET /profiles/user/:userId
    * Get profile by user ID
    */
-  router.get('/user/:userId', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
+  router.get('/user/:userId', authMiddleware(), async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tenantId = req.auth!.tenantId;
       const userId = parseInt(req.params.userId);
@@ -163,7 +161,7 @@ export function createProfileRoutes(
    * POST /profiles
    * Create or update profile
    */
-  router.post('/', authMiddleware(db), async (req: Request, res: Response, next: NextFunction) => {
+  router.post('/', authMiddleware(), async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tenantId = req.auth!.tenantId;
       const userId = req.auth?.userId;

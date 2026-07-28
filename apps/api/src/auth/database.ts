@@ -1,34 +1,29 @@
 /**
- * Database access layer for permission lookups
+ * Auth API client — calls .NET Backend via Gateway for user/permission/role lookups.
  *
- * User management, password hashing, token generation, and session handling
- * are all handled by the .NET Backend. This module only queries permissions
- * and user info needed by the Node.js API's middleware.
+ * All SQL queries live in the .NET Backend (Identity service).
+ * This module only makes HTTP calls through the YARP API Gateway.
+ *
+ * Gateway routing:  /identity/{**}  →  Identity service /api/{**}
  */
 
-import mssql, { ConnectionPool } from 'mssql';
-import { PermissionRecord } from './types';
-
 export class AuthDatabase {
-  constructor(private pool: ConnectionPool) {}
+  private readonly gatewayUrl: string;
+
+  constructor(gatewayUrl: string) {
+    this.gatewayUrl = gatewayUrl.replace(/\/+$/, '');
+  }
 
   /**
    * Get basic user info by ID
    */
-  async getUserById(userId: number): Promise<{ id: number; email: string; tenantId: number; isActive: boolean; isSuperAdmin: boolean } | null> {
+  async getUserById(userId: number): Promise<{ id: number; email: string; tenantId: number; isActive: boolean } | null> {
     try {
-      const result = await this.pool
-        .request()
-        .input('userId', mssql.Int, userId)
-        .query(`
-          SELECT Id, Email, TenantId, IsActive, IsSuperAdmin
-          FROM [Identity].[Users]
-          WHERE Id = @userId AND IsDeleted = 0
-        `);
-
-      return result.recordset[0] || null;
-    } catch (error) {
-      throw new Error(`Failed to get user by ID: ${(error as Error).message}`);
+      const res = await fetch(`${this.gatewayUrl}/identity/Users/${userId}/basic-info`);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
     }
   }
 
@@ -37,23 +32,12 @@ export class AuthDatabase {
    */
   async getUserPermissions(userId: number, tenantId: number): Promise<string[]> {
     try {
-      const result = await this.pool
-        .request()
-        .input('userId', mssql.Int, userId)
-        .input('tenantId', mssql.Int, tenantId)
-        .query(`
-          SELECT p.PermissionCode
-          FROM [Identity].[UserPermissions] up
-          INNER JOIN [Identity].[Permissions] p ON up.PermissionId = p.PermissionId
-          WHERE up.UserId = @userId
-            AND p.TenantId = @tenantId
-            AND p.IsActive = 1
-            AND (up.ExpiresAt IS NULL OR up.ExpiresAt > SYSUTCDATETIME())
-        `);
-
-      return result.recordset.map((r: any) => r.PermissionCode);
-    } catch (error) {
-      throw new Error(`Failed to get user permissions: ${(error as Error).message}`);
+      const res = await fetch(`${this.gatewayUrl}/identity/Users/${userId}/permissions?tenantId=${tenantId}`);
+      if (!res.ok) return [];
+      const data: { permissionCode: string }[] = await res.json();
+      return data.map(p => p.permissionCode);
+    } catch {
+      return [];
     }
   }
 
@@ -61,27 +45,8 @@ export class AuthDatabase {
    * Check if user has a specific permission
    */
   async hasPermission(userId: number, permissionCode: string, tenantId: number): Promise<boolean> {
-    try {
-      const result = await this.pool
-        .request()
-        .input('userId', mssql.Int, userId)
-        .input('permissionCode', mssql.NVarChar(100), permissionCode)
-        .input('tenantId', mssql.Int, tenantId)
-        .query(`
-          SELECT COUNT(*) as Count
-          FROM [Identity].[UserPermissions] up
-          INNER JOIN [Identity].[Permissions] p ON up.PermissionId = p.PermissionId
-          WHERE up.UserId = @userId
-            AND p.PermissionCode = @permissionCode
-            AND p.TenantId = @tenantId
-            AND p.IsActive = 1
-            AND (up.ExpiresAt IS NULL OR up.ExpiresAt > SYSUTCDATETIME())
-        `);
-
-      return result.recordset[0]?.Count > 0;
-    } catch (error) {
-      throw new Error(`Failed to check permission: ${(error as Error).message}`);
-    }
+    const permissions = await this.getUserPermissions(userId, tenantId);
+    return permissions.includes(permissionCode);
   }
 
   /**
@@ -89,20 +54,12 @@ export class AuthDatabase {
    */
   async getUserRoles(userId: number, tenantId: number): Promise<string[]> {
     try {
-      const result = await this.pool
-        .request()
-        .input('userId', mssql.Int, userId)
-        .input('tenantId', mssql.Int, tenantId)
-        .query(`
-          SELECT r.RoleName
-          FROM [Identity].[UserRoles] ur
-          INNER JOIN [Identity].[Roles] r ON ur.RoleId = r.RoleId AND r.TenantId = ur.TenantId
-          WHERE ur.UserId = @userId AND ur.TenantId = @tenantId
-        `);
-
-      return result.recordset.map((r: any) => r.RoleName);
-    } catch (error) {
-      throw new Error(`Failed to get user roles: ${(error as Error).message}`);
+      const res = await fetch(`${this.gatewayUrl}/identity/Users/${userId}/roles?tenantId=${tenantId}`);
+      if (!res.ok) return [];
+      const data: { roleName: string }[] = await res.json();
+      return data.map(r => r.roleName);
+    } catch {
+      return [];
     }
   }
 }

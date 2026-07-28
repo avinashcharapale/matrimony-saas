@@ -10,6 +10,18 @@ import { JwtUtil } from './jwt.util';
 import { AuthDatabase } from './database';
 import { AuthContext } from './types';
 
+// Shared instance set during startup — avoids parameter passing
+let _authDb: AuthDatabase | null = null;
+
+export function setAuthDatabase(db: AuthDatabase): void {
+  _authDb = db;
+}
+
+function getAuthDb(): AuthDatabase {
+  if (!_authDb) throw new Error('AuthDatabase not initialized. Call setAuthDatabase() first.');
+  return _authDb;
+}
+
 // Extend Express Request to include auth context
 declare global {
   namespace Express {
@@ -42,7 +54,7 @@ export function resolveTenantId(req: Request): number {
  * JWT Authentication Middleware
  * Verifies .NET Backend JWT token from Authorization header
  */
-export function authMiddleware(db: AuthDatabase) {
+export function authMiddleware() {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const authHeader = req.headers.authorization;
@@ -58,7 +70,8 @@ export function authMiddleware(db: AuthDatabase) {
       // Verify .NET JWT token
       const verified = JwtUtil.verifyAccessToken(token);
 
-      // Load permissions and roles from DB
+      // Load permissions and roles from .NET Backend API
+      const db = getAuthDb();
       const [permissions, roles] = await Promise.all([
         db.getUserPermissions(verified.userId, verified.tenantId),
         db.getUserRoles(verified.userId, verified.tenantId),
@@ -87,7 +100,7 @@ export function authMiddleware(db: AuthDatabase) {
  * Optional Authentication Middleware
  * Authenticates if token is present, but doesn't fail if missing
  */
-export function optionalAuthMiddleware(db: AuthDatabase) {
+export function optionalAuthMiddleware() {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const authHeader = req.headers.authorization;
@@ -95,6 +108,7 @@ export function optionalAuthMiddleware(db: AuthDatabase) {
 
       if (token) {
         const verified = JwtUtil.verifyAccessToken(token);
+        const db = getAuthDb();
         const [permissions, roles] = await Promise.all([
           db.getUserPermissions(verified.userId, verified.tenantId),
           db.getUserRoles(verified.userId, verified.tenantId),

@@ -9,11 +9,11 @@ import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
 import {
   tenantInterceptor,
-  authInterceptor,
   correlationInterceptor,
   loadingInterceptor,
   errorInterceptor,
 } from '@org/core';
+import { platformAuthInterceptor } from './interceptors/platform-auth.interceptor';
 import { TenantService } from './services/tenant.service';
 
 export const appConfig: ApplicationConfig = {
@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
         loadingInterceptor,
         correlationInterceptor,
         tenantInterceptor,
-        authInterceptor,
+        platformAuthInterceptor,
       ]),
     ),
     provideAppInitializer(() => inject(TenantService).initialize()),

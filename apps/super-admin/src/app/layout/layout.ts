@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthStore } from '@org/data-access-auth';
+import { PlatformAuthService } from '../services/platform-auth.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,11 +86,25 @@ import { AuthStore } from '@org/data-access-auth';
 })
 export class Layout {
   private readonly authStore = inject(AuthStore);
+  private readonly platformAuthService = inject(PlatformAuthService);
   private readonly router = inject(Router);
 
   logout(): void {
-    this.authStore.logout().subscribe(() => {
+    const refreshToken = this.authStore.storedRefreshToken();
+    if (refreshToken) {
+      this.platformAuthService.logout(refreshToken).subscribe({
+        next: () => {
+          this.authStore.clearSession();
+          this.router.navigate(['/login']);
+        },
+        error: () => {
+          this.authStore.clearSession();
+          this.router.navigate(['/login']);
+        },
+      });
+    } else {
+      this.authStore.clearSession();
       this.router.navigate(['/login']);
-    });
+    }
   }
 }

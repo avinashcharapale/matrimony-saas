@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthStore } from '@org/data-access-auth';
+import { PlatformAuthService } from '../../services/platform-auth.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -185,6 +186,7 @@ import { AuthStore } from '@org/data-access-auth';
 export class Login {
   private readonly fb = inject(FormBuilder);
   private readonly authStore = inject(AuthStore);
+  private readonly platformAuthService = inject(PlatformAuthService);
   private readonly router = inject(Router);
 
   readonly loading = signal(false);
@@ -202,18 +204,29 @@ export class Login {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    this.authStore.login(email, password).subscribe({
-      next: (result) => {
+    this.platformAuthService.login({ email, password }).subscribe({
+      next: (response) => {
         this.loading.set(false);
-        if (result.ok) {
-          this.router.navigate(['/tenants']);
-        } else {
-          this.errorMessage.set(result.message);
-        }
+        this.authStore['patchState'](this.authStore, {
+          accessToken: response.accessToken,
+          storedRefreshToken: response.refreshToken,
+          userId: response.userId,
+          tenantId: response.tenantId,
+          role: response.role,
+          expiresAt: response.expiresAt,
+        });
+        localStorage.setItem('auth_token', response.accessToken);
+        localStorage.setItem('refresh_token', response.refreshToken);
+        localStorage.setItem('auth_user_id', String(response.userId));
+        localStorage.setItem('auth_tenant_id', String(response.tenantId));
+        localStorage.setItem('auth_role', response.role);
+        localStorage.setItem('auth_expires_at', response.expiresAt);
+        this.router.navigate(['/tenants']);
       },
-      error: () => {
+      error: (error) => {
         this.loading.set(false);
-        this.errorMessage.set('An unexpected error occurred.');
+        const message = error?.error?.message ?? error?.error ?? 'Invalid email or password.';
+        this.errorMessage.set(typeof message === 'string' ? message : 'Invalid email or password.');
       },
     });
   }

@@ -34,7 +34,6 @@ interface UserRow extends Record<string, unknown> {
   id?: number;
   email?: string;
   isActive?: boolean;
-  isSuperAdmin?: boolean;
   createdAt?: string;
   isActiveLabel: string;
   roleLabel: string;
@@ -90,12 +89,6 @@ interface UserRow extends Record<string, unknown> {
             Active
           </mat-slide-toggle>
         </div>
-
-        <div class="toggle-row">
-          <mat-slide-toggle formControlName="isSuperAdmin" color="primary">
-            Super Admin
-          </mat-slide-toggle>
-        </div>
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -140,7 +133,6 @@ export class UserFormDialogComponent {
       this.data.mode === 'create' ? [Validators.required, Validators.minLength(6)] : [],
     ],
     isActive: [this.data.user?.isActive ?? true],
-    isSuperAdmin: [this.data.user?.isSuperAdmin ?? false],
   });
 
   submit(): void {
@@ -151,13 +143,11 @@ export class UserFormDialogComponent {
         email: val.email,
         password: val.password,
         isActive: val.isActive,
-        isSuperAdmin: val.isSuperAdmin,
       });
     } else {
       this.dialogRef.close({
         email: val.email,
         isActive: val.isActive,
-        isSuperAdmin: val.isSuperAdmin,
       });
     }
   }
@@ -263,10 +253,9 @@ export class Users implements OnInit {
       id: user.id,
       email: user.email,
       isActive: user.isActive,
-      isSuperAdmin: user.isSuperAdmin,
       createdAt: user.createdAt,
       isActiveLabel: user.isActive ? 'Active' : 'Inactive',
-      roleLabel: user.isSuperAdmin ? 'Super Admin' : 'User',
+      roleLabel: 'User',
       createdAtFormatted: user.createdAt
         ? new Date(user.createdAt).toLocaleDateString()
         : '-',
