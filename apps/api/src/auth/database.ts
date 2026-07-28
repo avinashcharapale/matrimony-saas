@@ -28,11 +28,25 @@ export class AuthDatabase {
   }
 
   /**
-   * Get all permission codes for a user
+   * Get all permission codes for a tenant user
    */
   async getUserPermissions(userId: number, tenantId: number): Promise<string[]> {
     try {
-      const res = await fetch(`${this.gatewayUrl}/identity/Users/${userId}/permissions?tenantId=${tenantId}`);
+      const res = await fetch(`${this.gatewayUrl}/identity/Users/${userId}/permissions`);
+      if (!res.ok) return [];
+      const data: { permissionCode: string }[] = await res.json();
+      return data.map(p => p.permissionCode);
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Get all permission codes for a platform admin
+   */
+  async getPlatformPermissions(platformAdminId: number): Promise<string[]> {
+    try {
+      const res = await fetch(`${this.gatewayUrl}/identity/PlatformAuth/${platformAdminId}/permissions`);
       if (!res.ok) return [];
       const data: { permissionCode: string }[] = await res.json();
       return data.map(p => p.permissionCode);
@@ -54,7 +68,21 @@ export class AuthDatabase {
    */
   async getUserRoles(userId: number, tenantId: number): Promise<string[]> {
     try {
-      const res = await fetch(`${this.gatewayUrl}/identity/Users/${userId}/roles?tenantId=${tenantId}`);
+      const res = await fetch(`${this.gatewayUrl}/identity/Users/${userId}/roles`);
+      if (!res.ok) return [];
+      const data: { roleName: string }[] = await res.json();
+      return data.map(r => r.roleName);
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Get platform admin roles
+   */
+  async getPlatformRoles(platformAdminId: number): Promise<string[]> {
+    try {
+      const res = await fetch(`${this.gatewayUrl}/identity/PlatformAuth/${platformAdminId}/roles`);
       if (!res.ok) return [];
       const data: { roleName: string }[] = await res.json();
       return data.map(r => r.roleName);

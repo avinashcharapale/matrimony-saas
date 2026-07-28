@@ -22,6 +22,35 @@ function getAuthDb(): AuthDatabase {
   return _authDb;
 }
 
+// --- Permission/Role Cache (1-minute TTL, per user+tenant) ---
+interface CacheEntry {
+  permissions: string[];
+  roles: string[];
+  expiresAt: number;
+}
+
+const authCache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 1 * 60 * 1000;
+
+function getCacheKey(userId: number, tenantId: number, permVersion: number): string {
+  return `${userId}:${tenantId}:${permVersion}`;
+}
+
+function getCachedAuth(userId: number, tenantId: number, permVersion: number): CacheEntry | null {
+  const entry = authCache.get(getCacheKey(userId, tenantId, permVersion));
+  if (entry && entry.expiresAt > Date.now()) return entry;
+  if (entry) authCache.delete(getCacheKey(userId, tenantId, permVersion));
+  return null;
+}
+
+function setCachedAuth(userId: number, tenantId: number, permVersion: number, permissions: string[], roles: string[]): void {
+  authCache.set(getCacheKey(userId, tenantId, permVersion), {
+    permissions,
+    roles,
+    expiresAt: Date.now() + CACHE_TTL_MS,
+  });
+}
+
 // Extend Express Request to include auth context
 declare global {
   namespace Express {
@@ -51,6 +80,33 @@ export function resolveTenantId(req: Request): number {
 }
 
 /**
+ * Load permissions and roles with in-memory cache (1-min TTL)
+ * For platform admins (tenantId=0), fetches from platform-specific endpoints
+ * Cache key includes permVersion so permission changes invalidate cache on next token refresh
+ */
+async function loadAuthData(userId: number, tenantId: number, permVersion: number): Promise<{ permissions: string[]; roles: string[] }> {
+  const cached = getCachedAuth(userId, tenantId, permVersion);
+  if (cached) return { permissions: cached.permissions, roles: cached.roles };
+
+  const db = getAuthDb();
+
+  // Platform admins (tenantId=0) use different endpoints
+  const isPlatformAdmin = tenantId === 0;
+
+  const [permissions, roles] = await Promise.all([
+    isPlatformAdmin
+      ? db.getPlatformPermissions(userId)
+      : db.getUserPermissions(userId, tenantId),
+    isPlatformAdmin
+      ? db.getPlatformRoles(userId)
+      : db.getUserRoles(userId, tenantId),
+  ]);
+
+  setCachedAuth(userId, tenantId, permVersion, permissions, roles);
+  return { permissions, roles };
+}
+
+/**
  * JWT Authentication Middleware
  * Verifies .NET Backend JWT token from Authorization header
  */
@@ -70,20 +126,17 @@ export function authMiddleware() {
       // Verify .NET JWT token
       const verified = JwtUtil.verifyAccessToken(token);
 
-      // Load permissions and roles from .NET Backend API
-      const db = getAuthDb();
-      const [permissions, roles] = await Promise.all([
-        db.getUserPermissions(verified.userId, verified.tenantId),
-        db.getUserRoles(verified.userId, verified.tenantId),
-      ]);
+      // Load permissions and roles (with cache, keyed by permVersion)
+      const { permissions, roles } = await loadAuthData(verified.userId, verified.tenantId, verified.permVersion);
 
-      // Set auth context
+      // Set auth context — prefer roles from HTTP endpoint, fall back to JWT roles
+      const allRoles = roles.length > 0 ? roles : verified.roles;
       req.auth = {
         userId: verified.userId,
         email: verified.email,
         tenantId: verified.tenantId,
         permissions,
-        roles,
+        roles: allRoles,
       };
 
       next();
@@ -108,18 +161,15 @@ export function optionalAuthMiddleware() {
 
       if (token) {
         const verified = JwtUtil.verifyAccessToken(token);
-        const db = getAuthDb();
-        const [permissions, roles] = await Promise.all([
-          db.getUserPermissions(verified.userId, verified.tenantId),
-          db.getUserRoles(verified.userId, verified.tenantId),
-        ]);
+        const { permissions, roles } = await loadAuthData(verified.userId, verified.tenantId, verified.permVersion);
+        const allRoles = roles.length > 0 ? roles : verified.roles;
 
         req.auth = {
           userId: verified.userId,
           email: verified.email,
           tenantId: verified.tenantId,
           permissions,
-          roles,
+          roles: allRoles,
         };
       }
 

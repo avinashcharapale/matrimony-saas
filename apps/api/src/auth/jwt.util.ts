@@ -13,10 +13,11 @@ export interface DotNetJwtPayload {
   sub?: string;
   /** http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress */
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'?: string;
-  /** http://schemas.microsoft.com/ws/2008/06/identity/claims/role */
-  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string;
+  /** http://schemas.microsoft.com/ws/2008/06/identity/claims/role — may be string or string[] */
+  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string | string[];
   nameid?: string;
   tenantId?: string;
+  permVersion?: string;
   iat?: number;
   exp?: number;
 }
@@ -25,8 +26,9 @@ export interface DotNetJwtPayload {
 export interface VerifiedUser {
   userId: number;
   email: string;
-  role: string;
+  roles: string[];
   tenantId: number;
+  permVersion: number;
 }
 
 let secret = '';
@@ -59,14 +61,19 @@ export class JwtUtil {
       decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || decoded.nameid || decoded.sub
     );
     const email = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || '';
-    const role = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '';
+
+    // Handle multi-role claim — .NET may serialize as string or string[]
+    const rawRole = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    const roles = Array.isArray(rawRole) ? rawRole : rawRole ? [rawRole] : [];
+
     const tenantId = Number(decoded.tenantId || 0);
+    const permVersion = Number(decoded.permVersion || 0);
 
     if (!userId || !email) {
       throw new Error('Token missing required claims (userId, email)');
     }
 
-    return { userId, email, role, tenantId };
+    return { userId, email, roles, tenantId, permVersion };
   }
 
   /**

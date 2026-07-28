@@ -115,10 +115,10 @@ export class AuthorizationService {
     try {
       const permissions = await this.db.getUserPermissions(userId, tenantId);
 
-      // Cache for 5 minutes
+      // Cache for 1 minute
       this.permissionCache.set(cacheKey, {
         permissions,
-        expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 1 * 60 * 1000),
       });
 
       return permissions;
