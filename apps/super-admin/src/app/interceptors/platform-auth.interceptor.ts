@@ -92,7 +92,7 @@ export const platformAuthInterceptor: HttpInterceptorFn = (req: HttpRequest<unkn
               expiresAt: response.expiresAt,
             };
 
-            (patchState as never)(authStore, partialState);
+            patchState(authStore as never, partialState);
             persistAuthToStorage({
               accessToken: response.accessToken,
               refreshToken: response.refreshToken,
