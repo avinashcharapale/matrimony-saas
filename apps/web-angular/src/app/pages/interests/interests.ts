@@ -3,6 +3,10 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } 
 import { RouterModule } from '@angular/router';
 import { MatchClient, InterestRequestDto, InterestRequestStatus } from '@org/generated';
 import { MemberService } from '../../services/member.service';
+import { AuthService } from '../../services/auth.service';
+import { SubscriptionStore } from '@org/data-access-subscription';
+import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
+import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 import { finalize } from 'rxjs/operators';
 
 interface InterestCard {
@@ -19,58 +23,93 @@ interface InterestCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-interests',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SharedSidebarComponent],
   template: `
-    <section class="page-shell">
-      <header class="page-header">
-        <p class="eyebrow">My Activity</p>
-        <h1>Interests</h1>
-        <p>Review who connected with you and track requests you sent.</p>
-      </header>
+    <section class="search-page">
+      <div class="search-shell">
+        <app-shared-sidebar
+          [userName]="userName()"
+          [userPhotoUrl]="userPhotoUrl()"
+          [userOccupation]="userOccupation()"
+          [subscriptionStatus]="subscriptionStatus()"
+          [subscriptionLoading]="subscriptionLoading()">
+        </app-shared-sidebar>
 
-      <div class="tabs">
-        <button type="button" [class.active]="activeTab() === 'received'" (click)="activeTab.set('received')">Received ({{ receivedCount() }})</button>
-        <button type="button" [class.active]="activeTab() === 'sent'" (click)="activeTab.set('sent')">Sent ({{ sentCount() }})</button>
-      </div>
+        <div class="page-content">
+          <header class="page-header">
+            <p class="eyebrow">My Activity</p>
+            <h1>Interests</h1>
+            <p>Review who connected with you and track requests you sent.</p>
+          </header>
 
-      <section class="cards">
-        @if (isLoading()) {
-          <div class="empty-state">Loading...</div>
-        } @else if (visibleInterests().length > 0) {
-          @for (item of visibleInterests(); track item.id) {
-          <article class="card">
-            <div class="card-body">
-              <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name }}</a></h2>
-              <p>{{ item.detail }}</p>
-              @if (item.date) {
-                <p class="card-date">{{ item.date }}</p>
-              }
-            </div>
-            <div class="card-actions">
-              <span class="status" [class.accepted]="item.status === 'Accepted'" [class.declined]="item.status === 'Declined'" [class.withdrawn]="item.status === 'Withdrawn'">
-                {{ item.status }}
-              </span>
-              @if (activeTab() === 'received' && item.status === 'Pending') {
-              <button type="button" class="accept" (click)="respondToInterest(item.id, InterestRequestStatus.Accepted)">Accept</button>
-              <button type="button" class="decline" (click)="respondToInterest(item.id, InterestRequestStatus.Declined)">Decline</button>
-              }
-              @if (activeTab() === 'sent' && item.status === 'Pending') {
-              <button type="button" class="withdraw" (click)="withdrawInterest(item.id)">Withdraw</button>
-              }
-            </div>
-          </article>
-          }
-        } @else {
-          <div class="empty-state">
-            <p>No {{ activeTab() }} interests yet.</p>
+          <div class="tabs">
+            <button type="button" [class.active]="activeTab() === 'received'" (click)="activeTab.set('received')">Received ({{ receivedCount() }})</button>
+            <button type="button" [class.active]="activeTab() === 'sent'" (click)="activeTab.set('sent')">Sent ({{ sentCount() }})</button>
           </div>
-        }
-      </section>
+
+          <section class="cards">
+            @if (isLoading()) {
+              <div class="empty-state">Loading...</div>
+            } @else if (visibleInterests().length > 0) {
+              @for (item of visibleInterests(); track item.id) {
+              <article class="card">
+                <div class="card-body">
+                  <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name }}</a></h2>
+                  <p>{{ item.detail }}</p>
+                  @if (item.date) {
+                    <p class="card-date">{{ item.date }}</p>
+                  }
+                </div>
+                <div class="card-actions">
+                  <span class="status" [class.accepted]="item.status === 'Accepted'" [class.declined]="item.status === 'Declined'" [class.withdrawn]="item.status === 'Withdrawn'">
+                    {{ item.status }}
+                  </span>
+                  @if (activeTab() === 'received' && item.status === 'Pending') {
+                  <button type="button" class="accept" (click)="respondToInterest(item.id, InterestRequestStatus.Accepted)">Accept</button>
+                  <button type="button" class="decline" (click)="respondToInterest(item.id, InterestRequestStatus.Declined)">Decline</button>
+                  }
+                  @if (activeTab() === 'sent' && item.status === 'Pending') {
+                  <button type="button" class="withdraw" (click)="withdrawInterest(item.id)">Withdraw</button>
+                  }
+                </div>
+              </article>
+              }
+            } @else {
+              <div class="empty-state">
+                <p>No {{ activeTab() }} interests yet.</p>
+              </div>
+            }
+          </section>
+        </div>
+      </div>
     </section>
   `,
   styles: [
     `
-      .page-shell { width: min(100%, 980px); margin: 0 auto; display: grid; gap: 1rem; }
+      :host {
+        --bg-soft: #f7f4f1;
+        --card: #ffffff;
+        --line: #e5e0db;
+        --text-main: #1f2230;
+        --text-soft: #6d7285;
+        --text-muted: #9ca3af;
+        --accent: var(--tenant-primary);
+        --accent-dark: var(--tenant-accent);
+        --accent-soft: color-mix(in srgb, var(--tenant-primary) 8%, #ffffff);
+        --accent-border: color-mix(in srgb, var(--tenant-primary) 25%, #ffffff);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        display: block;
+      }
+      .search-page { width: 100%; color: var(--text-main); }
+      .search-shell {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 1.25rem;
+        align-items: start;
+      }
+      .page-content { display: grid; gap: 1rem; }
       .page-header, .tabs, .cards { background: #fff; border: 1px solid #eadfd7; border-radius: 1rem; padding: 1rem; }
       .eyebrow { margin: 0; color: #9a5e45; text-transform: uppercase; font-size: 0.74rem; font-weight: 700; }
       h1 { margin: 0.35rem 0 0; color: #24283a; }
@@ -96,6 +135,9 @@ interface InterestCard {
       .decline { background: #be4343; color: #fff; }
       .withdraw { background: #6f7486; color: #fff; }
       .empty-state { text-align: center; padding: 2rem; color: #6f7486; }
+      @media (max-width: 900px) {
+        .search-shell { grid-template-columns: 1fr; }
+      }
       @media (max-width: 700px) { .card { flex-direction: column; } }
     `,
   ],
@@ -104,6 +146,15 @@ export class Interests implements OnInit {
   readonly InterestRequestStatus = InterestRequestStatus;
   private readonly matchClient = inject(MatchClient);
   private readonly memberService = inject(MemberService);
+  private readonly authService = inject(AuthService);
+  private readonly subscriptionStore = inject(SubscriptionStore);
+
+  readonly subscriptionStatus = this.subscriptionStore.status;
+  readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
+
+  readonly userName = signal('');
+  readonly userPhotoUrl = signal('');
+  readonly userOccupation = signal('');
 
   readonly activeTab = signal<'received' | 'sent'>('received');
   readonly isLoading = signal(true);
@@ -117,8 +168,24 @@ export class Interests implements OnInit {
   );
 
   ngOnInit(): void {
+    const userId = this.authService.getSession()?.userId ?? 0;
+    if (userId) {
+      this.subscriptionStore.loadSubscriptionStatus(userId).subscribe();
+    }
+
     this.memberService.getMyProfile().subscribe({
       next: (profile) => {
+        const fullName = profile.fullName ?? '';
+        const genderId = profile.personalDetails?.genderId ?? null;
+        const primaryPhoto = (profile.photos ?? []).find(ph => ph.isPrimary) ?? profile.photos?.[0];
+        const photoUrl = primaryPhoto
+          ? resolvePhotoUrl(primaryPhoto.fileUrl, fullName, genderId)
+          : getDefaultAvatar(fullName, genderId);
+
+        this.userName.set(fullName);
+        this.userPhotoUrl.set(photoUrl);
+        this.userOccupation.set(profile.occupationText ?? '');
+
         if (profile.profileId) {
           this.loadInterests(profile.profileId);
         } else {

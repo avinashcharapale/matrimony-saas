@@ -39,6 +39,8 @@ export class ErrorService {
         return 'Bad request. Please check your input.';
       case 401:
         return 'Session expired. Please log in again.';
+      case 402:
+        return 'Your subscription has expired. Please renew to continue.';
       case 403:
         return 'You do not have permission to perform this action.';
       case 404:

@@ -2,14 +2,16 @@ import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed } 
 import { TenantService } from '../../services/tenant.service';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
+import { SidebarService } from '../../services/sidebar.service';
 import { MatchClient, RecommendationReason } from '@org/generated';
 import { ChatClient } from '@org/generated';
 import { SubscriptionStore } from '@org/data-access-subscription';
-import { HomeSidebarComponent } from './components/home-sidebar.component';
+import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
 import { HomeHeaderComponent } from './components/home-header.component';
 import { HomeStatsComponent } from './components/home-stats.component';
 import { HomeContentComponent } from './components/home-content.component';
 import { HomeBottomComponent } from './components/home-bottom.component';
+import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 import { ActivityItem, InterestItem, MatchItem, MessageItem, NotificationCard, ShortlistItem } from './home.models';
 import { forkJoin } from 'rxjs';
 
@@ -18,7 +20,7 @@ import { forkJoin } from 'rxjs';
   selector: 'app-home',
   standalone: true,
   imports: [
-    HomeSidebarComponent,
+    SharedSidebarComponent,
     HomeHeaderComponent,
     HomeStatsComponent,
     HomeContentComponent,
@@ -31,6 +33,7 @@ export class Home implements OnInit {
   readonly tenant = inject(TenantService).tenant;
   private readonly memberService = inject(MemberService);
   private readonly authService = inject(AuthService);
+  private readonly sidebarService = inject(SidebarService);
   private readonly matchClient = inject(MatchClient);
   private readonly chatClient = inject(ChatClient);
   private readonly subscriptionStore = inject(SubscriptionStore);
@@ -49,6 +52,8 @@ export class Home implements OnInit {
 
   readonly userName = signal('');
   readonly userFirstName = signal('');
+  readonly userPhotoUrl = signal('');
+  readonly userOccupation = signal('');
   readonly currentDate = signal('');
   readonly quickStats = signal<NotificationCard[]>([]);
   readonly topMatches = signal<MatchItem[]>([]);
@@ -57,7 +62,7 @@ export class Home implements OnInit {
   readonly messages = signal<MessageItem[]>([]);
   readonly horoscopeTags = signal<string[]>([]);
   readonly recentlyShortlisted = signal<ShortlistItem[]>([]);
-  readonly sidebarOpen = signal(false);
+  readonly sidebarOpen = this.sidebarService.isOpen;
 
   private myProfileId: number | null = null;
   private myUserId: number | null = null;
@@ -120,8 +125,16 @@ export class Home implements OnInit {
       next: (profile) => {
         const fullName = profile.fullName ?? '';
         const firstName = fullName.split(' ')[0] ?? '';
+        const genderId = profile.personalDetails?.genderId ?? null;
+        const primaryPhoto = (profile.photos ?? []).find(ph => ph.isPrimary) ?? profile.photos?.[0];
+        const photoUrl = primaryPhoto
+          ? resolvePhotoUrl(primaryPhoto.fileUrl, fullName, genderId)
+          : getDefaultAvatar(fullName, genderId);
+
         this.userName.set(fullName);
         this.userFirstName.set(firstName);
+        this.userPhotoUrl.set(photoUrl);
+        this.userOccupation.set(profile.occupationText ?? '');
         this.myProfileId = profile.profileId ?? null;
 
         const session = this.authService.getSession();
@@ -426,11 +439,11 @@ export class Home implements OnInit {
   }
 
   toggleSidebar(): void {
-    this.sidebarOpen.update((v) => !v);
+    this.sidebarService.toggle();
   }
 
   closeSidebar(): void {
-    this.sidebarOpen.set(false);
+    this.sidebarService.close();
   }
 
   private loadSubscriptionStatus(): void {

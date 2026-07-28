@@ -7,7 +7,7 @@ import { RegisterMasterDataService, RegisterLookupOption } from '../../services/
 import { AuthService } from '../../services/auth.service';
 import { TenantService } from '../../services/tenant.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
-import { ProfileListSidebarComponent } from './components/profile-list-sidebar.component';
+import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
 import { ProfileListTitleComponent } from './components/profile-list-title.component';
 import { ProfileListSearchPanelComponent } from './components/profile-list-search-panel.component';
 import { ProfileListResultsComponent } from './components/profile-list-results.component';
@@ -17,7 +17,7 @@ import { ProfileListResultsComponent } from './components/profile-list-results.c
   selector: 'app-profile-list',
   standalone: true,
   imports: [
-    ProfileListSidebarComponent,
+    SharedSidebarComponent,
     ProfileListTitleComponent,
     ProfileListSearchPanelComponent,
     ProfileListResultsComponent,
@@ -35,6 +35,8 @@ export class ProfileList implements OnInit {
 
   readonly isAuthenticated = signal(false);
   readonly isPaidUser = computed(() => this.subscriptionStore.isActive());
+  readonly subscriptionStatus = this.subscriptionStore.status;
+  readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
   readonly userName = signal('');
   readonly userFirstName = signal('');
   readonly userPhotoUrl = signal('');

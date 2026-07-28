@@ -1,10 +1,12 @@
 <section class="search-page">
   <div class="search-shell">
-    <app-profile-list-sidebar
+    <app-shared-sidebar
       [userName]="userName()"
       [userPhotoUrl]="userPhotoUrl()"
-      [userOccupation]="userOccupation()">
-    </app-profile-list-sidebar>
+      [userOccupation]="userOccupation()"
+      [subscriptionStatus]="subscriptionStatus()"
+      [subscriptionLoading]="subscriptionLoading()">
+    </app-shared-sidebar>
 
     <div class="search-main">
       <app-profile-list-title [userFirstName]="userFirstName()"></app-profile-list-title>

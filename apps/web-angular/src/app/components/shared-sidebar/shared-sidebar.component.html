@@ -1,0 +1,35 @@
+<aside class="dashboard-sidebar" [class.open]="isOpen()">
+  <button type="button" class="sidebar-close-btn" (click)="closeSidebar()" aria-label="Close sidebar">
+    &#10005;
+  </button>
+  <div class="sidebar-brand">
+    <img
+      class="brand-photo"
+      [src]="userPhotoUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTAiIGhlaWdodD0iOTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjkwIiBoZWlnaHQ9IjkwIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNDUiIHk9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1zaXplPSI0MCIgZmlsbD0iI2MwYzBjMCI+8J+UkDwvdGV4dD48L3N2Zz4='"
+      [alt]="userName"
+      loading="lazy"
+      referrerpolicy="no-referrer"
+    />
+    <div>
+      <span class="brand-label">{{ userName || 'Loading...' }}</span>
+      <p>{{ userOccupation || '' }}</p>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/home"             routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8962;</span><span>Dashboard</span></a>
+    <a routerLink="/my-profile"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128100;</span><span>My Profile</span></a>
+    <a routerLink="/profiles"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8981;</span><span>Search Matches</span></a>
+    <a routerLink="/interests"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9825;</span><span>Interests</span></a>
+    <a routerLink="/shortlists"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9733;</span><span>Shortlists</span></a>
+    <a routerLink="/messages"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9993;</span><span>Messages</span></a>
+    <a routerLink="/events"           routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9783;</span><span>Events &amp; Meets</span></a>
+    <a routerLink="/settings"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9881;</span><span>Settings</span></a>
+    <button type="button" class="sidebar-logout" (click)="logout(); closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8618;</span><span>Logout</span></button>
+  </nav>
+
+  <app-subscription-status-card
+    [status]="subscriptionStatus"
+    [loading]="subscriptionLoading">
+  </app-subscription-status-card>
+</aside>

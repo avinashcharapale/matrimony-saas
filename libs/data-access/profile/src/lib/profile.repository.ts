@@ -10,9 +10,9 @@ import {
 export interface ProfileSearchParams {
   ageFrom?: number;
   ageTo?: number;
-  religionId?: string;
-  casteId?: string;
-  maritalStatusId?: string;
+  religionId?: number;
+  casteId?: number;
+  maritalStatusId?: number;
   city?: string;
   pageNumber?: number;
   pageSize?: number;
@@ -38,6 +38,6 @@ export class ProfileRepository {
   }
 
   getProfileById(id: number): Observable<ProfileDetailDto> {
-    return this.profile.getProfileById(id);
+    return this.profile.getById(id);
   }
 }

@@ -68,7 +68,7 @@ import { SubscriptionStatusDto } from '@org/generated';
       }
     </div>
   `,
-  styleUrl: '../home.css',
+  styleUrl: '../../../components/shared-sidebar/shared-sidebar.css',
 })
 export class SubscriptionStatusCardComponent {
   @Input() status: SubscriptionStatusDto | null = null;

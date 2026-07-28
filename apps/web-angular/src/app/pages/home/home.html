@@ -1,15 +1,12 @@
 <main class="dashboard-page">
   <div class="dashboard-shell">
-    <div class="sidebar-backdrop" [class.visible]="sidebarOpen()" (click)="closeSidebar()"></div>
-    <app-home-sidebar
-      [class.open]="sidebarOpen()"
-      [brandMark]="brandMark"
-      [tenantDisplayName]="tenant.displayName"
+    <app-shared-sidebar
+      [userName]="userName()"
+      [userPhotoUrl]="userPhotoUrl()"
+      [userOccupation]="userOccupation()"
       [subscriptionStatus]="subscriptionStatus()"
-      [subscriptionLoading]="subscriptionLoading()"
-      [open]="sidebarOpen()"
-      (closeSidebar)="closeSidebar()">
-    </app-home-sidebar>
+      [subscriptionLoading]="subscriptionLoading()">
+    </app-shared-sidebar>
 
     <section class="dashboard-main">
       <app-home-header [userName]="userFirstName()" [currentDate]="currentDate()" [sidebarOpen]="sidebarOpen()" (toggleSidebar)="toggleSidebar()"></app-home-header>

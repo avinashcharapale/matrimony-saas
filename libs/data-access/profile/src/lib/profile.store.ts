@@ -60,13 +60,15 @@ export const ProfileStore = signalStore(
 
       return repository.searchPublicProfiles(params).pipe(
         map((response) => {
+          const pageSize = response.pageSize ?? params.pageSize ?? 20;
+          const totalCount = response.totalCount ?? 0;
           patchState(store, {
             search: {
               results: response.items ?? [],
-              total: response.total ?? 0,
+              total: totalCount,
               pageNumber: response.pageNumber ?? params.pageNumber ?? 1,
-              pageSize: response.pageSize ?? params.pageSize ?? 20,
-              totalPages: response.totalPages ?? 0,
+              pageSize,
+              totalPages: Math.ceil(totalCount / pageSize),
               loading: false,
               error: null,
             },

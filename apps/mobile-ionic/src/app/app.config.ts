@@ -11,6 +11,7 @@ import { IonicModule } from '@ionic/angular';
 import { appRoutes } from './app.routes';
 import { tenantInterceptor } from './interceptors/tenant.interceptor';
 import { authInterceptor } from '@org/core-auth';
+import { errorInterceptor } from '@org/core';
 import { TenantService } from './services/tenant.service';
 
 export const appConfig: ApplicationConfig = {
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
     importProvidersFrom(IonicModule.forRoot()),
-    provideHttpClient(withInterceptors([tenantInterceptor, authInterceptor])),
+    provideHttpClient(withInterceptors([errorInterceptor, tenantInterceptor, authInterceptor])),
     provideAppInitializer(() => inject(TenantService).initialize()),
   ],
 };

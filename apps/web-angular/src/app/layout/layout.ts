@@ -1,8 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject, computed, HostListener } from '@angular/core';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { TenantService } from '../services/tenant.service';
 import { AuthService } from '../services/auth.service';
+import { SidebarService } from '../services/sidebar.service';
 import { LoaderComponent } from '../components/loader/loader.component';
+import { filter, map } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,18 +18,27 @@ import { LoaderComponent } from '../components/loader/loader.component';
 export class Layout {
   private readonly tenantService = inject(TenantService);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly sidebarService = inject(SidebarService);
   readonly tenant = this.tenantService.tenant;
 
   readonly isLoggedIn = computed(() => this.authService.isAuthenticated());
 
-  isMobileMenuOpen = false;
+  readonly sidebarOpen = this.sidebarService.isOpen;
 
   toggleMobileMenu(): void {
-    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    this.sidebarService.toggle();
   }
 
   closeMobileMenu(): void {
-    this.isMobileMenuOpen = false;
+    this.sidebarService.close();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (window.innerWidth > 900) {
+      this.sidebarService.close();
+    }
   }
 
   logout(): void {

@@ -3,6 +3,10 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } 
 import { FormsModule } from '@angular/forms';
 import { ChatClient } from '@org/generated';
 import { AuthService } from '../../services/auth.service';
+import { MemberService } from '../../services/member.service';
+import { SubscriptionStore } from '@org/data-access-subscription';
+import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
+import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 
 interface Conversation {
   id: string;
@@ -14,55 +18,86 @@ interface Conversation {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SharedSidebarComponent],
   template: `
-    <section class="page-shell">
-      <header class="page-header">
-        <p class="eyebrow">Communication</p>
-        <h1>Messages</h1>
-      </header>
+    <section class="search-page">
+      <div class="search-shell">
+        <app-shared-sidebar
+          [userName]="userName()"
+          [userPhotoUrl]="userPhotoUrl()"
+          [userOccupation]="userOccupation()"
+          [subscriptionStatus]="subscriptionStatus()"
+          [subscriptionLoading]="subscriptionLoading()">
+        </app-shared-sidebar>
 
-      <section class="chat-layout">
-        <aside class="chat-list">
-          @if (conversations().length > 0) {
-            @for (chat of conversations(); track chat.id) {
-            <button type="button" [class.active]="chat.id === activeId()" (click)="activeId.set(chat.id)">
-              <strong>{{ chat.name }}</strong>
-              <span>{{ chat.messages[chat.messages.length - 1]?.text }}</span>
-            </button>
-            }
-          } @else {
-            <p class="empty-hint">No conversations yet.</p>
-          }
-        </aside>
+        <div class="page-content">
+          <header class="page-header">
+            <p class="eyebrow">Communication</p>
+            <h1>Messages</h1>
+          </header>
 
-        <main class="chat-panel">
-          @if (activeConversation()) {
-            <h2>{{ activeConversation()?.name }}</h2>
-            <div class="messages-box">
-              @for (msg of activeConversation()?.messages || []; track $index) {
-              <div class="bubble" [class.me]="msg.byMe">
-                <p>{{ msg.text }}</p>
-                <small>{{ msg.time }}</small>
-              </div>
+          <section class="chat-layout">
+            <aside class="chat-list">
+              @if (conversations().length > 0) {
+                @for (chat of conversations(); track chat.id) {
+                <button type="button" [class.active]="chat.id === activeId()" (click)="activeId.set(chat.id)">
+                  <strong>{{ chat.name }}</strong>
+                  <span>{{ chat.messages[chat.messages.length - 1]?.text }}</span>
+                </button>
+                }
+              } @else {
+                <p class="empty-hint">No conversations yet.</p>
               }
-            </div>
-            <form class="composer" (ngSubmit)="sendMessage()">
-              <input type="text" name="message" [ngModel]="draft()" (ngModelChange)="draft.set($event)" placeholder="Type message" />
-              <button type="submit" [disabled]="!draft().trim()">Send</button>
-            </form>
-          } @else {
-            <div class="empty-chat">
-              <p>Select a conversation to start messaging.</p>
-            </div>
-          }
-        </main>
-      </section>
+            </aside>
+
+            <main class="chat-panel">
+              @if (activeConversation()) {
+                <h2>{{ activeConversation()?.name }}</h2>
+                <div class="messages-box">
+                  @for (msg of activeConversation()?.messages || []; track $index) {
+                  <div class="bubble" [class.me]="msg.byMe">
+                    <p>{{ msg.text }}</p>
+                    <small>{{ msg.time }}</small>
+                  </div>
+                  }
+                </div>
+                <form class="composer" (ngSubmit)="sendMessage()">
+                  <input type="text" name="message" [ngModel]="draft()" (ngModelChange)="draft.set($event)" placeholder="Type message" />
+                  <button type="submit" [disabled]="!draft().trim()">Send</button>
+                </form>
+              } @else {
+                <div class="empty-chat">
+                  <p>Select a conversation to start messaging.</p>
+                </div>
+              }
+            </main>
+          </section>
+        </div>
+      </div>
     </section>
   `,
   styles: [
     `
-      .page-shell { width: min(100%, 980px); margin: 0 auto; display: grid; gap: 1rem; }
+      :host { display: block; }
+      :host {
+        --bg-soft: #f7f4f1;
+        --card: #ffffff;
+        --line: #e5e0db;
+        --text-main: #1f2230;
+        --text-soft: #6d7285;
+        --text-muted: #9ca3af;
+        --accent: var(--tenant-primary);
+        --accent-dark: var(--tenant-accent);
+        --accent-soft: color-mix(in srgb, var(--tenant-primary) 8%, #ffffff);
+        --accent-border: color-mix(in srgb, var(--tenant-primary) 25%, #ffffff);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        display: block;
+      }
+      .search-page { width: 100%; color: var(--text-main); }
+      .search-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+      .page-content { display: grid; gap: 1rem; }
       .page-header, .chat-layout { background: #fff; border: 1px solid #eadfd7; border-radius: 1rem; padding: 1rem; }
       .eyebrow { margin: 0; color: #9a5e45; text-transform: uppercase; font-size: 0.74rem; font-weight: 700; }
       h1 { margin: 0.35rem 0 0; color: #24283a; }
@@ -83,6 +118,7 @@ interface Conversation {
       .composer button { border: none; border-radius: 0.6rem; background: #9a5e45; color: #fff; padding: 0.6rem 0.9rem; font-weight: 700; }
       .empty-hint { color: #6f7486; font-size: 0.85rem; text-align: center; padding: 1rem; }
       .empty-chat { display: grid; place-items: center; height: 100%; color: #6f7486; }
+      @media (max-width: 900px) { .search-shell { grid-template-columns: 1fr; } }
       @media (max-width: 780px) { .chat-layout { grid-template-columns: 1fr; } .messages-box { height: 260px; } }
     `,
   ],
@@ -94,12 +130,41 @@ export class Messages implements OnInit {
 
   private readonly chatClient = inject(ChatClient);
   private readonly authService = inject(AuthService);
+  private readonly memberService = inject(MemberService);
+  private readonly subscriptionStore = inject(SubscriptionStore);
+
+  readonly userName = signal('');
+  readonly userPhotoUrl = signal('');
+  readonly userOccupation = signal('');
+  readonly subscriptionStatus = this.subscriptionStore.status;
+  readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
 
   readonly activeConversation = computed(() =>
     this.conversations().find((item) => item.id === this.activeId())
   );
 
   ngOnInit(): void {
+    const userId = this.authService.getSession()?.userId ?? 0;
+    if (userId) {
+      this.subscriptionStore.loadSubscriptionStatus(userId).subscribe();
+    }
+
+    this.memberService.getMyProfile().subscribe({
+      next: (profile) => {
+        const fullName = profile.fullName ?? '';
+        const genderId = profile.personalDetails?.genderId ?? null;
+        const primaryPhoto = (profile.photos ?? []).find(ph => ph.isPrimary) ?? profile.photos?.[0];
+        const photoUrl = primaryPhoto
+          ? resolvePhotoUrl(primaryPhoto.fileUrl, fullName, genderId)
+          : getDefaultAvatar(fullName, genderId);
+
+        this.userName.set(fullName);
+        this.userPhotoUrl.set(photoUrl);
+        this.userOccupation.set(profile.occupationText ?? '');
+      },
+      error: () => {},
+    });
+
     this.loadConversations();
   }
 

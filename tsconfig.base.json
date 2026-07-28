@@ -33,12 +33,14 @@
       "@org/data-access-billing": [
         "libs/data-access/billing/src/index.ts"
       ],
+      "@org/data-access-user": ["libs/data-access/user/src/index.ts"],
       "@org/core-signalr": ["libs/core/signalr/src/index.ts"],
       "@org/core": ["libs/core/src/index.ts"],
       "@org/core-auth": ["libs/core/auth/src/index.ts"],
       "@org/core-tenant": ["libs/core/tenant/src/index.ts"],
       "@org/generated": ["libs/generated/src/index.ts"],
-      "@org/shared-utils": ["libs/shared/utils/src/index.ts"]
+      "@org/shared-utils": ["libs/shared/utils/src/index.ts"],
+      "@org/shared-ui": ["libs/shared/ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

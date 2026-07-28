@@ -88,9 +88,9 @@
 
 .toolbar-right {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.4rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .menu-toggle {
@@ -100,7 +100,40 @@
   background: var(--surface-soft);
   color: var(--accent-strong);
   font-weight: 700;
-  padding: 0.45rem 0.75rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 20px;
+  height: 20px;
+}
+
+.hamburger-icon span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.hamburger-icon.open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-icon.open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 .main-nav {
@@ -195,74 +228,174 @@
   padding: 1.25rem 1rem 2.5rem;
 }
 
-@media (max-width: 768px) {
+/* ── Sidebar Backdrop (universal, all pages) ─── */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Public Mobile Drawer (logged-out pages) ─── */
+.public-mobile-drawer {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .app-header {
+    border-radius: 0;
+    position: relative;
+    z-index: 100;
+  }
+
+  .toolbar-contact {
+    display: none;
+  }
+
   .app-toolbar {
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 1rem;
+    justify-content: space-between;
+    position: relative;
+    padding: 0.75rem 1rem;
   }
 
   .brand-block {
     min-width: 0;
     flex: 1;
+    max-width: none;
+  }
+
+  .brand-title {
+    font-size: 1rem;
+  }
+
+  .brand-subtitle {
+    font-size: 0.68rem;
   }
 
   .toolbar-center {
-    width: 100%;
-    justify-content: flex-start;
     display: none;
-  }
-
-  .toolbar-center.open {
-    display: flex;
-  }
-
-  .toolbar-contact {
-    font-size: 0.72rem;
   }
 
   .toolbar-right {
     display: none;
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.55rem;
-  }
-
-  .toolbar-right.open {
-    display: flex;
   }
 
   .menu-toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    z-index: 10;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .main-nav {
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  .public-mobile-drawer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.45rem 0.7rem;
+    background: var(--surface-card);
+    border-left: 1px solid var(--border-soft);
+    z-index: 200;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    pointer-events: none;
+    padding-top: 4.5rem;
   }
 
-  .main-nav a {
-    width: 100%;
-    text-align: left;
-    padding: 0.32rem 0;
+  .public-mobile-drawer.open {
+    transform: translateX(0);
+    pointer-events: auto;
   }
 
-  .auth-actions {
-    width: 100%;
+  .public-drawer-nav {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
   }
 
-  .register-btn {
+  .public-drawer-nav a {
+    display: block;
+    padding: 0.75rem 1.25rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-left: 3px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .public-drawer-nav a:hover,
+  .public-drawer-nav a.active {
+    color: var(--tenant-primary);
+    background: color-mix(in srgb, var(--tenant-primary) 8%, var(--surface-card));
+    border-left-color: var(--tenant-primary);
+  }
+
+  .public-drawer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border-soft);
+    margin-top: auto;
+  }
+
+  .public-drawer-actions .login-link {
+    text-align: center;
+    padding: 0.6rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 0.6rem;
+    background: var(--surface-soft);
+  }
+
+  .public-drawer-actions .register-btn {
     display: block;
     text-align: center;
+    padding: 0.7rem 1rem;
   }
 
   .app-content {
     padding: 1rem 0.85rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-toolbar {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .brand-icon {
+    width: 1.85rem;
+    height: 1.85rem;
+    font-size: 0.95rem;
+  }
+
+  .brand-title {
+    font-size: 0.9rem;
+  }
+
+  .brand-subtitle {
+    display: none;
   }
 }

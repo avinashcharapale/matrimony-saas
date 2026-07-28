@@ -17,17 +17,7 @@
       </a>
     </div>
 
-    <button
-      type="button"
-      class="menu-toggle"
-      [attr.aria-expanded]="isMobileMenuOpen"
-      aria-label="Toggle navigation menu"
-      (click)="toggleMobileMenu()"
-    >
-      {{ isMobileMenuOpen ? 'Close' : 'Menu' }}
-    </button>
-
-    <div class="toolbar-center" [class.open]="isMobileMenuOpen">
+    <div class="toolbar-center">
       @if (isLoggedIn()) {
       <nav class="main-nav auth-nav">
         <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Dashboard</a>
@@ -48,7 +38,7 @@
       }
     </div>
 
-    <div class="toolbar-right" [class.open]="isMobileMenuOpen">
+    <div class="toolbar-right">
       @if (isLoggedIn()) {
         <button class="logout-btn" (click)="logout(); closeMobileMenu()">Logout</button>
       } @else {
@@ -59,8 +49,42 @@
         </div>
       }
     </div>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      [attr.aria-expanded]="sidebarOpen()"
+      aria-label="Toggle navigation menu"
+      (click)="toggleMobileMenu()"
+    >
+      <span class="hamburger-icon" [class.open]="sidebarOpen()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
   </div>
 </header>
+
+@if (isLoggedIn()) {
+  <div class="sidebar-backdrop" [class.visible]="sidebarOpen()" (click)="closeMobileMenu()"></div>
+} @else {
+  <div class="sidebar-backdrop" [class.visible]="sidebarOpen()" (click)="closeMobileMenu()"></div>
+  <div class="public-mobile-drawer" [class.open]="sidebarOpen()">
+    <nav class="public-drawer-nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Home</a>
+      <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
+      <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">How It Works</a>
+      <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileMenu()">Plans</a>
+      <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Contact</a>
+    </nav>
+    <div class="public-drawer-actions">
+      <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">Login</a>
+      <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">Register Now</a>
+    </div>
+  </div>
+}
+
 <main class="app-content">
   <router-outlet></router-outlet>
 </main>
