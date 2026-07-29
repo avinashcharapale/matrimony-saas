@@ -64,8 +64,8 @@ import { TenantClient, SubscriptionClient, TenantDto, SubscriptionPlanDto } from
               @for (tenant of tenants(); track tenant.tenantId) {
                 <div class="overview-item">
                   <div class="overview-item-info">
-                    <span class="overview-name">{{ tenant.tenantName }}</span>
-                    <span class="overview-domain">{{ tenant.domainName }}</span>
+                    <span class="overview-name">{{ tenant.name || tenant.tenantCode }}</span>
+                    <span class="overview-domain">{{ tenant.domain }}</span>
                   </div>
                   <div class="overview-item-meta">
                     <span class="badge" [class.active]="tenant.isActive" [class.inactive]="!tenant.isActive">

@@ -25,8 +25,8 @@ import {
     <div class="page">
       <div class="page-header">
         <div>
-          <h1>Subscription Plans</h1>
-          <p class="subtitle">Manage subscription plans available across the platform.</p>
+          <h1>Tenant Subscription Plans</h1>
+          <p class="subtitle">Manage subscription plans available for tenants across the platform.</p>
         </div>
         <button class="btn-primary" (click)="openDialog()">
           <span class="btn-icon">+</span> Add Plan

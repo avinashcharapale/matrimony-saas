@@ -15,6 +15,21 @@ export const appRoutes: Route[] = [
           import('./pages/tenants/tenants').then((m) => m.Tenants),
       },
       {
+        path: 'tenants/:tenantId/permissions',
+        loadComponent: () =>
+          import('./pages/tenant-permissions/tenant-permissions').then((m) => m.TenantPermissions),
+      },
+      {
+        path: 'tenants/:tenantId/roles',
+        loadComponent: () =>
+          import('./pages/tenant-roles/tenant-roles').then((m) => m.TenantRoles),
+      },
+      {
+        path: 'tenants/:tenantId/plan',
+        loadComponent: () =>
+          import('./pages/tenant-plan/tenant-plan').then((m) => m.TenantPlan),
+      },
+      {
         path: 'platform-admins',
         loadComponent: () =>
           import('./pages/platform-admins/platform-admins').then((m) => m.PlatformAdmins),

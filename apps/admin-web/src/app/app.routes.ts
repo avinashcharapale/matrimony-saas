@@ -39,6 +39,11 @@ export const appRoutes: Route[] = [
           import('./pages/subscriptions/subscriptions').then((m) => m.Subscriptions),
       },
       {
+        path: 'subscription-plans',
+        loadComponent: () =>
+          import('./pages/user-subscription-plans/user-subscription-plans').then((m) => m.UserSubscriptionPlans),
+      },
+      {
         path: 'permissions',
         loadComponent: () =>
           import('./pages/permissions/permissions').then((m) => m.Permissions),

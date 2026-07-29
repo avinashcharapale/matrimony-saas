@@ -9,13 +9,14 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { TenantClient, TenantDto } from '@org/generated';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tenants',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
     <div class="page">
       <div class="page-header">
@@ -62,8 +63,8 @@ import { TenantClient, TenantDto } from '@org/generated';
               @for (tenant of filteredTenants(); track tenant.tenantId) {
                 <tr>
                   <td class="cell-id">{{ tenant.tenantId }}</td>
-                  <td class="cell-bold">{{ tenant.tenantName }}</td>
-                  <td>{{ tenant.domainName }}</td>
+                  <td class="cell-bold">{{ tenant.name || tenant.tenantCode }}</td>
+                  <td>{{ tenant.domain }}</td>
                   <td class="cell-center">{{ tenant.userCount ?? 0 }}</td>
                   <td class="cell-center">
                     <span class="badge" [class.active]="tenant.isActive" [class.inactive]="!tenant.isActive">
@@ -72,6 +73,9 @@ import { TenantClient, TenantDto } from '@org/generated';
                   </td>
                   <td>{{ tenant.trialEndDate ? (tenant.trialEndDate | date:'mediumDate') : '—' }}</td>
                   <td class="cell-actions">
+                    <button class="btn-icon-sm" title="Permissions" (click)="navigateToPerms(tenant.tenantId!)">P</button>
+                    <button class="btn-icon-sm" title="Roles" (click)="navigateToRoles(tenant.tenantId!)">R</button>
+                    <button class="btn-icon-sm" title="Plan" (click)="navigateToPlan(tenant.tenantId!)">P</button>
                     <button class="btn-icon-sm" title="Edit" (click)="openDialog(tenant)">E</button>
                     <button class="btn-icon-sm danger" title="Delete" (click)="confirmDelete(tenant)">D</button>
                   </td>
@@ -92,16 +96,16 @@ import { TenantClient, TenantDto } from '@org/generated';
             <form [formGroup]="tenantForm" (ngSubmit)="saveTenant()">
               <div class="dialog-body">
                 <div class="field">
-                  <label>Tenant Name</label>
-                  <input formControlName="tenantName" placeholder="Enter tenant name" />
-                  @if (tenantForm.get('tenantName')?.touched && tenantForm.get('tenantName')?.errors?.['required']) {
+                  <label>Tenant Code</label>
+                  <input formControlName="tenantCode" placeholder="Enter tenant code" />
+                  @if (tenantForm.get('tenantCode')?.touched && tenantForm.get('tenantCode')?.errors?.['required']) {
                     <span class="field-error">Required</span>
                   }
                 </div>
                 <div class="field">
-                  <label>Domain Name</label>
-                  <input formControlName="domainName" placeholder="example.com" />
-                  @if (tenantForm.get('domainName')?.touched && tenantForm.get('domainName')?.errors?.['required']) {
+                  <label>Domain</label>
+                  <input formControlName="domain" placeholder="example.com" />
+                  @if (tenantForm.get('domain')?.touched && tenantForm.get('domain')?.errors?.['required']) {
                     <span class="field-error">Required</span>
                   }
                 </div>
@@ -137,7 +141,7 @@ import { TenantClient, TenantDto } from '@org/generated';
               <button class="btn-close" (click)="cancelDelete()">&times;</button>
             </div>
             <div class="dialog-body">
-              <p>Are you sure you want to delete <strong>{{ deletingTenant()?.tenantName }}</strong>? This action cannot be undone.</p>
+              <p>Are you sure you want to delete <strong>{{ deletingTenant()?.name || deletingTenant()?.tenantCode }}</strong>? This action cannot be undone.</p>
             </div>
             @if (deleteError()) {
               <div class="dialog-error">{{ deleteError() }}</div>
@@ -266,6 +270,7 @@ export class Tenants implements OnInit {
   private readonly tenantClient = inject(TenantClient);
   private readonly fb = inject(FormBuilder);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly router = inject(Router);
 
   readonly loading = signal(true);
   readonly saving = signal(false);
@@ -284,14 +289,14 @@ export class Tenants implements OnInit {
     if (!term) return this.tenants();
     return this.tenants().filter(
       (t) =>
-        (t.tenantName?.toLowerCase().includes(term)) ||
-        (t.domainName?.toLowerCase().includes(term)),
+        (t.tenantCode?.toLowerCase().includes(term)) ||
+        (t.domain?.toLowerCase().includes(term)),
     );
   });
 
   readonly tenantForm = this.fb.nonNullable.group({
-    tenantName: ['', Validators.required],
-    domainName: ['', Validators.required],
+    tenantCode: ['', Validators.required],
+    domain: ['', Validators.required],
     trialEndDate: [''],
     isActive: [true],
   });
@@ -315,6 +320,18 @@ export class Tenants implements OnInit {
     });
   }
 
+  navigateToPerms(tenantId: number): void {
+    this.router.navigate(['/tenants', tenantId, 'permissions']);
+  }
+
+  navigateToRoles(tenantId: number): void {
+    this.router.navigate(['/tenants', tenantId, 'roles']);
+  }
+
+  navigateToPlan(tenantId: number): void {
+    this.router.navigate(['/tenants', tenantId, 'plan']);
+  }
+
   onSearch(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
   }
@@ -323,14 +340,14 @@ export class Tenants implements OnInit {
     if (tenant) {
       this.editingTenant.set(tenant);
       this.tenantForm.patchValue({
-        tenantName: tenant.tenantName ?? '',
-        domainName: tenant.domainName ?? '',
+        tenantCode: tenant.tenantCode ?? '',
+        domain: tenant.domain ?? '',
         trialEndDate: tenant.trialEndDate ? tenant.trialEndDate.substring(0, 10) : '',
         isActive: tenant.isActive ?? true,
       });
     } else {
       this.editingTenant.set(null);
-      this.tenantForm.reset({ tenantName: '', domainName: '', trialEndDate: '', isActive: true });
+      this.tenantForm.reset({ tenantCode: '', domain: '', trialEndDate: '', isActive: true });
     }
     this.dialogError.set(null);
     this.dialogOpen.set(true);
@@ -347,8 +364,8 @@ export class Tenants implements OnInit {
 
     const formValue = this.tenantForm.getRawValue();
     const dto: TenantDto = {
-      tenantName: formValue.tenantName,
-      domainName: formValue.domainName,
+      tenantCode: formValue.tenantCode,
+      domain: formValue.domain,
       trialEndDate: formValue.trialEndDate || undefined,
       isActive: formValue.isActive,
     };

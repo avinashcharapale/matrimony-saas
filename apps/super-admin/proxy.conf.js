@@ -1,3 +1,5 @@
+const ANGULAR_ROUTES = ['/tenants', '/platform-admins', '/platform-roles', '/platform-permissions', '/analytics', '/system', '/login'];
+
 module.exports = {
   '/api': {
     target: 'http://127.0.0.1:8000',
@@ -13,6 +15,11 @@ module.exports = {
     target: 'http://127.0.0.1:8000',
     secure: false,
     changeOrigin: true,
+    bypass: (req) => {
+      if (ANGULAR_ROUTES.some(r => req.url.startsWith(r))) {
+        return req.url;
+      }
+    },
   },
   '/profile': {
     target: 'http://127.0.0.1:8000',

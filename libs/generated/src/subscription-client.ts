@@ -9,11 +9,14 @@ import {
   UpdateSubscriptionPlanRequest,
   CreateSubscriptionFeatureRequest,
   UpdateSubscriptionFeatureRequest,
-  TenantPlanFeatureOverrideDto,
-  SetTenantFeatureOverridesRequest,
-  TenantPlanExclusionDto,
   CheckoutRequestDto,
   CheckoutResponseDto,
+  TenantSubscriptionDto,
+  CreateTenantSubscriptionRequest,
+  UpdateTenantSubscriptionRequest,
+  UserSubscriptionPlanDto,
+  CreateUserSubscriptionPlanRequest,
+  UpdateUserSubscriptionPlanRequest,
 } from './dtos';
 
 @Injectable({ providedIn: 'root' })
@@ -92,31 +95,47 @@ export class SubscriptionClient {
     return this.http.post<CheckoutResponseDto>('/subscription/Payments/checkout', body);
   }
 
-  // ─── Tenant Plan Pricing ──────────────────────────────────────────────────
+  // ─── Tenant Subscriptions ──────────────────────────────────────────────────
 
-  getTenantPlanFeatureOverrides(tenantId: number, planId: number): Observable<TenantPlanFeatureOverrideDto[]> {
-    return this.http.get<TenantPlanFeatureOverrideDto[]>(`/subscription/TenantPlanPricing/${tenantId}/${planId}`);
+  getTenantSubscriptions(tenantId: number): Observable<TenantSubscriptionDto[]> {
+    return this.http.get<TenantSubscriptionDto[]>(`/subscription/TenantSubscriptions?tenantId=${tenantId}`);
   }
 
-  setTenantPlanFeatureOverrides(tenantId: number, planId: number, body: SetTenantFeatureOverridesRequest): Observable<void> {
-    return this.http.put<void>(`/subscription/TenantPlanPricing/${tenantId}/${planId}`, body);
+  getTenantSubscriptionById(id: number): Observable<TenantSubscriptionDto> {
+    return this.http.get<TenantSubscriptionDto>(`/subscription/TenantSubscriptions/${id}`);
   }
 
-  deleteTenantPlanFeatureOverrides(tenantId: number, planId: number): Observable<void> {
-    return this.http.delete<void>(`/subscription/TenantPlanPricing/${tenantId}/${planId}`);
+  createTenantSubscription(body: CreateTenantSubscriptionRequest): Observable<TenantSubscriptionDto> {
+    return this.http.post<TenantSubscriptionDto>('/subscription/TenantSubscriptions', body);
   }
 
-  // ─── Tenant Plan Exclusions ───────────────────────────────────────────────
-
-  getTenantPlanExclusions(tenantId: number): Observable<TenantPlanExclusionDto[]> {
-    return this.http.get<TenantPlanExclusionDto[]>(`/subscription/TenantPlanExclusions/${tenantId}`);
+  updateTenantSubscription(id: number, body: UpdateTenantSubscriptionRequest): Observable<void> {
+    return this.http.put<void>(`/subscription/TenantSubscriptions/${id}`, body);
   }
 
-  addTenantPlanExclusion(tenantId: number, planId: number): Observable<void> {
-    return this.http.post<void>(`/subscription/TenantPlanExclusions/${tenantId}/${planId}`, {});
+  deleteTenantSubscription(id: number): Observable<void> {
+    return this.http.delete<void>(`/subscription/TenantSubscriptions/${id}`);
   }
 
-  removeTenantPlanExclusion(tenantId: number, planId: number): Observable<void> {
-    return this.http.delete<void>(`/subscription/TenantPlanExclusions/${tenantId}/${planId}`);
+  // ─── User Subscription Plans ──────────────────────────────────────────────
+
+  getAllUserSubscriptionPlans(): Observable<UserSubscriptionPlanDto[]> {
+    return this.http.get<UserSubscriptionPlanDto[]>('/subscription/UserSubscriptionPlans');
+  }
+
+  getUserSubscriptionPlanById(id: number): Observable<UserSubscriptionPlanDto> {
+    return this.http.get<UserSubscriptionPlanDto>(`/subscription/UserSubscriptionPlans/${id}`);
+  }
+
+  createUserSubscriptionPlan(body: CreateUserSubscriptionPlanRequest): Observable<UserSubscriptionPlanDto> {
+    return this.http.post<UserSubscriptionPlanDto>('/subscription/UserSubscriptionPlans', body);
+  }
+
+  updateUserSubscriptionPlan(id: number, body: UpdateUserSubscriptionPlanRequest): Observable<void> {
+    return this.http.put<void>(`/subscription/UserSubscriptionPlans/${id}`, body);
+  }
+
+  deleteUserSubscriptionPlan(id: number): Observable<void> {
+    return this.http.delete<void>(`/subscription/UserSubscriptionPlans/${id}`);
   }
 }

@@ -363,13 +363,16 @@ export interface ProfileListItemDtoPagedResult {
 // ─── Tenant DTOs ──────────────────────────────────────────────────────────────
 
 export interface TenantDto {
-  createdAt?: string;
-  updatedAt?: string;
   tenantId?: number;
-  tenantName?: string;
-  domainName?: string;
+  tenantCode?: string;
+  name?: string;
+  displayName?: string;
+  domain?: string;
+  subscriptionStatus?: string;
   trialEndDate?: string;
   isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   userCount?: number;
 }
 
@@ -705,6 +708,70 @@ export interface TenantPlanExclusionDto {
   subscriptionPlanId?: number;
   tenantId?: number;
   createdAt?: string;
+}
+
+// ─── Tenant Subscription DTOs ──────────────────────────────────────────────────
+
+export interface TenantSubscriptionDto {
+  subscriptionId: number;
+  tenantId: number;
+  planId: number;
+  planName?: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTenantSubscriptionRequest {
+  tenantId: number;
+  planId: number;
+  startDate: string;
+  endDate: string;
+}
+
+export interface UpdateTenantSubscriptionRequest {
+  endDate?: string;
+  isActive?: boolean;
+}
+
+// ─── User Subscription Plan DTOs ──────────────────────────────────────────────
+
+export interface UserSubscriptionPlanDto {
+  id?: number;
+  tenantId?: number;
+  code?: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  durationMonths?: number;
+  currency?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  features?: PlanFeatureValueDto[];
+}
+
+export interface CreateUserSubscriptionPlanRequest {
+  code?: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  durationMonths?: number;
+  currency?: string;
+  isActive?: boolean;
+  features?: FeatureValueRequest[];
+}
+
+export interface UpdateUserSubscriptionPlanRequest {
+  name?: string;
+  description?: string;
+  price?: number;
+  durationMonths?: number;
+  currency?: string;
+  isActive?: boolean;
+  features?: FeatureValueRequest[];
 }
 
 // ─── Match DTOs ───────────────────────────────────────────────────────────────

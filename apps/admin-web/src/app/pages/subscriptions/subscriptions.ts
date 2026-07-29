@@ -8,11 +8,11 @@ import {
 import { CommonModule } from '@angular/common';
 import { AuthStore } from '@org/data-access-auth';
 import { SubscriptionStore } from '@org/data-access-subscription';
-import { SubscriptionPlanDto } from '@org/generated';
 import { PageHeaderComponent, StatusBadgeComponent } from '@org/shared-ui';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../services/user-subscription-plan.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,18 +91,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
             <mat-spinner diameter="32"></mat-spinner>
             <span>Loading plans...</span>
           </div>
-        } @else if (plans().length === 0) {
+        } @else if (userPlans().length === 0) {
           <div class="plans-empty">
             <mat-icon>inventory_2</mat-icon>
             <span>No plans available</span>
           </div>
         } @else {
           <div class="plans-grid">
-            @for (plan of plans(); track plan.id) {
-              <div class="plan-card" [class.plan-popular]="plan.isPopular">
-                @if (plan.isPopular) {
-                  <div class="popular-badge">Popular</div>
-                }
+            @for (plan of userPlans(); track plan.id) {
+              <div class="plan-card">
                 <div class="plan-header">
                   <h3>{{ plan.name }}</h3>
                   @if (plan.description) {
@@ -335,11 +332,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class Subscriptions implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly planService = inject(UserSubscriptionPlanService);
 
   readonly loading = signal(true);
   readonly loadingPlans = signal(true);
   readonly subscriptionStatus = this.subscriptionStore.status;
-  readonly plans = this.subscriptionStore.plans;
+  readonly userPlans = signal<UserSubscriptionPlanDto[]>([]);
 
   ngOnInit(): void {
     const session = this.authStore.session();
@@ -348,8 +346,12 @@ export class Subscriptions implements OnInit {
         this.loading.set(false);
       });
 
-      this.subscriptionStore.loadPlans().subscribe(() => {
-        this.loadingPlans.set(false);
+      this.planService.getAll().subscribe({
+        next: (data) => {
+          this.userPlans.set(data ?? []);
+          this.loadingPlans.set(false);
+        },
+        error: () => this.loadingPlans.set(false),
       });
     } else {
       this.loading.set(false);

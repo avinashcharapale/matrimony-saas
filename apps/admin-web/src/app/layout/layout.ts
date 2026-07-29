@@ -44,8 +44,14 @@ import { MatButtonModule } from '@angular/material/button';
             <mat-icon>person_search</mat-icon>
             <span>Profiles</span>
           </a>
+          @if (isAdmin()) {
+            <a routerLink="/subscription-plans" routerLinkActive="active" class="nav-item">
+              <mat-icon>card_membership</mat-icon>
+              <span>Plan Management</span>
+            </a>
+          }
           <a routerLink="/subscriptions" routerLinkActive="active" class="nav-item">
-            <mat-icon>card_membership</mat-icon>
+            <mat-icon>subscriptions</mat-icon>
             <span>Subscriptions</span>
           </a>
         </nav>
