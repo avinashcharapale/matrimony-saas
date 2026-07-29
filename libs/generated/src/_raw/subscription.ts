@@ -15,7 +15,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new OpaqueToken('API_BASE_URL');
 
 @Injectable()
-export class SubscriptionPlansClient {
+export class TenantSubscriptionPlansClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -29,7 +29,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     getAll(): Observable<SubscriptionPlanDto[]> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -87,7 +87,7 @@ export class SubscriptionPlansClient {
      * @return Created
      */
     create(body: CreateSubscriptionPlanRequest): Observable<SubscriptionPlanDto> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -142,7 +142,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     getAllIncludingInactive(): Observable<SubscriptionPlanDto[]> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/all";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/all";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -200,7 +200,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     getById(id: number): Observable<SubscriptionPlanDto> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/{id}";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -254,7 +254,7 @@ export class SubscriptionPlansClient {
      * @return No Content
      */
     update(id: number, body: UpdateSubscriptionPlanRequest): Observable<void> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/{id}";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -308,7 +308,7 @@ export class SubscriptionPlansClient {
      * @return No Content
      */
     delete(id: number): Observable<void> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/{id}";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -358,7 +358,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     getByCode(code: string): Observable<SubscriptionPlanDto> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/code/{code}";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/code/{code}";
         if (code === undefined || code === null)
             throw new globalThis.Error("The parameter 'code' must be defined.");
         url_ = url_.replace("{code}", encodeURIComponent("" + code));

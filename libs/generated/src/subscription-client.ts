@@ -1,4 +1,4 @@
-﻿import { Injectable, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
@@ -23,41 +23,41 @@ import {
 export class SubscriptionClient {
   private readonly http = inject(HttpClient);
 
-  // ─── Plans ────────────────────────────────────────────────────────────────
+  // --- Plans ----------------------------------------------------------------
 
   getAllSubscriptionPlans(tenantId?: number): Observable<SubscriptionPlanDto[]> {
     let params = new HttpParams();
     if (tenantId !== undefined) {
       params = params.set('tenantId', tenantId);
     }
-    return this.http.get<SubscriptionPlanDto[]>('/subscription/SubscriptionPlans', { params });
+    return this.http.get<SubscriptionPlanDto[]>('/subscription/TenantSubscriptionPlans', { params });
   }
 
   getAllSubscriptionPlansAdmin(): Observable<SubscriptionPlanDto[]> {
-    return this.http.get<SubscriptionPlanDto[]>('/subscription/SubscriptionPlans/all');
+    return this.http.get<SubscriptionPlanDto[]>('/subscription/TenantSubscriptionPlans/all');
   }
 
   getSubscriptionPlanById(id: number): Observable<SubscriptionPlanDto> {
-    return this.http.get<SubscriptionPlanDto>(`/subscription/SubscriptionPlans/${id}`);
+    return this.http.get<SubscriptionPlanDto>(`/subscription/TenantSubscriptionPlans/${id}`);
   }
 
   getSubscriptionPlanByCode(code: string): Observable<SubscriptionPlanDto> {
-    return this.http.get<SubscriptionPlanDto>(`/subscription/SubscriptionPlans/code/${code}`);
+    return this.http.get<SubscriptionPlanDto>(`/subscription/TenantSubscriptionPlans/code/${code}`);
   }
 
   createSubscriptionPlan(body: CreateSubscriptionPlanRequest): Observable<SubscriptionPlanDto> {
-    return this.http.post<SubscriptionPlanDto>('/subscription/SubscriptionPlans', body);
+    return this.http.post<SubscriptionPlanDto>('/subscription/TenantSubscriptionPlans', body);
   }
 
   updateSubscriptionPlan(id: number, body: UpdateSubscriptionPlanRequest): Observable<void> {
-    return this.http.put<void>(`/subscription/SubscriptionPlans/${id}`, body);
+    return this.http.put<void>(`/subscription/TenantSubscriptionPlans/${id}`, body);
   }
 
   deleteSubscriptionPlan(id: number): Observable<void> {
-    return this.http.delete<void>(`/subscription/SubscriptionPlans/${id}`);
+    return this.http.delete<void>(`/subscription/TenantSubscriptionPlans/${id}`);
   }
 
-  // ─── Features ─────────────────────────────────────────────────────────────
+  // --- Features -------------------------------------------------------------
 
   getAllSubscriptionFeatures(): Observable<SubscriptionFeatureDto[]> {
     return this.http.get<SubscriptionFeatureDto[]>('/subscription/SubscriptionFeatures');
@@ -79,7 +79,7 @@ export class SubscriptionClient {
     return this.http.delete<void>(`/subscription/SubscriptionFeatures/${id}`);
   }
 
-  // ─── Status ───────────────────────────────────────────────────────────────
+  // --- Status ---------------------------------------------------------------
 
   getSubscriptionStatus(tenantId: number): Observable<SubscriptionStatusDto> {
     return this.http.get<SubscriptionStatusDto>(`/subscription/subscription/status/${tenantId}`);
@@ -89,13 +89,13 @@ export class SubscriptionClient {
     return this.http.get<SubscriptionStatusDto>(`/subscription/subscription/user-status/${userId}`);
   }
 
-  // ─── Payments ─────────────────────────────────────────────────────────────
+  // --- Payments -------------------------------------------------------------
 
   checkout(body: CheckoutRequestDto): Observable<CheckoutResponseDto> {
     return this.http.post<CheckoutResponseDto>('/subscription/Payments/checkout', body);
   }
 
-  // ─── Tenant Subscriptions ──────────────────────────────────────────────────
+  // --- Tenant Subscriptions --------------------------------------------------
 
   getTenantSubscriptions(tenantId: number): Observable<TenantSubscriptionDto[]> {
     return this.http.get<TenantSubscriptionDto[]>(`/subscription/TenantSubscriptions?tenantId=${tenantId}`);
@@ -117,7 +117,7 @@ export class SubscriptionClient {
     return this.http.delete<void>(`/subscription/TenantSubscriptions/${id}`);
   }
 
-  // ─── User Subscription Plans ──────────────────────────────────────────────
+  // --- User Subscription Plans ----------------------------------------------
 
   getAllUserSubscriptionPlans(): Observable<UserSubscriptionPlanDto[]> {
     return this.http.get<UserSubscriptionPlanDto[]>('/subscription/UserSubscriptionPlans');

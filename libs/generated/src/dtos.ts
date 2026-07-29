@@ -691,25 +691,6 @@ export interface SubscriptionStatusDto {
   effectiveFeatures?: PlanFeatureValueDto[];
 }
 
-export interface TenantPlanFeatureOverrideDto {
-  tenantPlanFeatureOverrideId?: number;
-  subscriptionPlanId?: number;
-  subscriptionFeatureId?: number;
-  tenantId?: number;
-  value?: string;
-}
-
-export interface SetTenantFeatureOverridesRequest {
-  overrides?: TenantPlanFeatureOverrideDto[];
-}
-
-export interface TenantPlanExclusionDto {
-  tenantPlanExclusionId?: number;
-  subscriptionPlanId?: number;
-  tenantId?: number;
-  createdAt?: string;
-}
-
 // ─── Tenant Subscription DTOs ──────────────────────────────────────────────────
 
 export interface TenantSubscriptionDto {

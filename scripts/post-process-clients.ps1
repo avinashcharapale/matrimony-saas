@@ -32,9 +32,9 @@ function Rewrite-Paths {
   $result = $result -replace '"/api/UserProfiles/', '"/profile/UserProfiles/'
   $result = $result -replace '"/api/UserProfiles"', '"/profile/UserProfiles"'
   
-  # Subscription: /api/SubscriptionPlans/* → /subscription/SubscriptionPlans/*
-  $result = $result -replace '"/api/SubscriptionPlans/', '"/subscription/SubscriptionPlans/'
-  $result = $result -replace '"/api/SubscriptionPlans"', '"/subscription/SubscriptionPlans"'
+  # Subscription: /api/TenantSubscriptionPlans/* → /subscription/TenantSubscriptionPlans/*
+  $result = $result -replace '"/api/TenantSubscriptionPlans/', '"/subscription/TenantSubscriptionPlans/'
+  $result = $result -replace '"/api/TenantSubscriptionPlans"', '"/subscription/TenantSubscriptionPlans"'
   
   # Subscription status: /api/subscription/status → /subscription/subscription/status
   $result = $result -replace '"/api/subscription/status', '"/subscription/subscription/status'
@@ -49,7 +49,7 @@ function Rewrite-ClassNames {
   $result = $result.Replace("export class AuthClient", "export class IdentityClient")
   $result = $result.Replace("export class TenantsClient", "export class TenantClient")
   $result = $result.Replace("export class UserProfilesClient", "export class ProfileClient")
-  $result = $result.Replace("export class SubscriptionPlansClient", "export class SubscriptionClient")
+  $result = $result.Replace("export class TenantSubscriptionPlansClient", "export class SubscriptionClient")
   return $result
 }
 

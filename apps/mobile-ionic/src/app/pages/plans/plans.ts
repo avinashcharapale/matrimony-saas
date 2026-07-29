@@ -38,7 +38,7 @@ export class Plans implements OnInit {
 
   ngOnInit(): void {
     this.loading.set(true);
-    this.http.get<SubscriptionPlanDto[]>('/subscription/SubscriptionPlans').pipe(
+    this.http.get<SubscriptionPlanDto[]>('/subscription/TenantSubscriptionPlans').pipe(
       finalize(() => this.loading.set(false)),
     ).subscribe({
       next: (plans) => this.plans.set(plans ?? []),

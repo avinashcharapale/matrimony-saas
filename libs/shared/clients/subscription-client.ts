@@ -314,7 +314,7 @@ export class SubscriptionFeaturesClient {
     }
 }
 
-export class SubscriptionPlansClient {
+export class TenantSubscriptionPlansClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -329,7 +329,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     getAll(tenantId: number | undefined): Promise<SubscriptionPlanDto[]> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans?";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans?";
         if (tenantId === null)
             throw new globalThis.Error("The parameter 'tenantId' cannot be null.");
         else if (tenantId !== undefined)
@@ -378,7 +378,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     create(body: CreateSubscriptionPlanRequest | undefined): Promise<SubscriptionPlanDto> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -419,7 +419,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     getAllIncludingInactive(): Promise<SubscriptionPlanDto[]> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/all";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/all";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -463,7 +463,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     getById(id: number): Promise<SubscriptionPlanDto> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/{id}";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -504,7 +504,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     update(id: number, body: UpdateSubscriptionPlanRequest | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/{id}";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -544,7 +544,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     delete(id: number): Promise<void> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/{id}";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -580,7 +580,7 @@ export class SubscriptionPlansClient {
      * @return OK
      */
     getByCode(code: string): Promise<SubscriptionPlanDto> {
-        let url_ = this.baseUrl + "/api/SubscriptionPlans/code/{code}";
+        let url_ = this.baseUrl + "/api/TenantSubscriptionPlans/code/{code}";
         if (code === undefined || code === null)
             throw new globalThis.Error("The parameter 'code' must be defined.");
         url_ = url_.replace("{code}", encodeURIComponent("" + code));
@@ -708,7 +708,7 @@ export class SubscriptionStatusClient {
     }
 }
 
-export class TenantPlanExclusionsClient {
+export class TenantSubscriptionsClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -719,66 +719,163 @@ export class TenantPlanExclusionsClient {
     }
 
     /**
+     * @param tenantId (optional) 
      * @return OK
      */
-    getExclusions(tenantId: number): Promise<void> {
-        let url_ = this.baseUrl + "/api/TenantPlanExclusions/{tenantId}";
-        if (tenantId === undefined || tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
-        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+    getAll(tenantId: number | undefined): Promise<TenantSubscriptionDto[]> {
+        let url_ = this.baseUrl + "/api/TenantSubscriptions?";
+        if (tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' cannot be null.");
+        else if (tenantId !== undefined)
+            url_ += "tenantId=" + encodeURIComponent("" + tenantId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetExclusions(_response);
+            return this.processGetAll(_response);
         });
     }
 
-    protected processGetExclusions(response: Response): Promise<void> {
+    protected processGetAll(response: Response): Promise<TenantSubscriptionDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TenantSubscriptionDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<TenantSubscriptionDto[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    create(body: CreateTenantSubscriptionRequest | undefined): Promise<TenantSubscriptionDto> {
+        let url_ = this.baseUrl + "/api/TenantSubscriptions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<TenantSubscriptionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TenantSubscriptionDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TenantSubscriptionDto>(null as any);
     }
 
     /**
      * @return OK
      */
-    exclude(tenantId: number, planId: number): Promise<void> {
-        let url_ = this.baseUrl + "/api/TenantPlanExclusions/{tenantId}/{planId}";
-        if (tenantId === undefined || tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
-        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
-        if (planId === undefined || planId === null)
-            throw new globalThis.Error("The parameter 'planId' must be defined.");
-        url_ = url_.replace("{planId}", encodeURIComponent("" + planId));
+    getById(id: number): Promise<TenantSubscriptionDto> {
+        let url_ = this.baseUrl + "/api/TenantSubscriptions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
-            method: "POST",
+            method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processExclude(_response);
+            return this.processGetById(_response);
         });
     }
 
-    protected processExclude(response: Response): Promise<void> {
+    protected processGetById(response: Response): Promise<TenantSubscriptionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TenantSubscriptionDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TenantSubscriptionDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    update(id: number, body: UpdateTenantSubscriptionRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/TenantSubscriptions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -796,14 +893,11 @@ export class TenantPlanExclusionsClient {
     /**
      * @return OK
      */
-    include(tenantId: number, planId: number): Promise<void> {
-        let url_ = this.baseUrl + "/api/TenantPlanExclusions/{tenantId}/{planId}";
-        if (tenantId === undefined || tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
-        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
-        if (planId === undefined || planId === null)
-            throw new globalThis.Error("The parameter 'planId' must be defined.");
-        url_ = url_.replace("{planId}", encodeURIComponent("" + planId));
+    delete(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/TenantSubscriptions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -813,11 +907,11 @@ export class TenantPlanExclusionsClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processInclude(_response);
+            return this.processDelete(_response);
         });
     }
 
-    protected processInclude(response: Response): Promise<void> {
+    protected processDelete(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -833,7 +927,7 @@ export class TenantPlanExclusionsClient {
     }
 }
 
-export class TenantPlanPricingClient {
+export class UserSubscriptionPlansClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -846,14 +940,8 @@ export class TenantPlanPricingClient {
     /**
      * @return OK
      */
-    getOverrides(tenantId: number, planId: number): Promise<TenantPlanFeatureOverrideDto[]> {
-        let url_ = this.baseUrl + "/api/TenantPlanPricing/{tenantId}/{planId}";
-        if (tenantId === undefined || tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
-        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
-        if (planId === undefined || planId === null)
-            throw new globalThis.Error("The parameter 'planId' must be defined.");
-        url_ = url_.replace("{planId}", encodeURIComponent("" + planId));
+    getAll(): Promise<UserSubscriptionPlanDto[]> {
+        let url_ = this.baseUrl + "/api/UserSubscriptionPlans";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -864,11 +952,11 @@ export class TenantPlanPricingClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetOverrides(_response);
+            return this.processGetAll(_response);
         });
     }
 
-    protected processGetOverrides(response: Response): Promise<TenantPlanFeatureOverrideDto[]> {
+    protected processGetAll(response: Response): Promise<UserSubscriptionPlanDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -878,7 +966,7 @@ export class TenantPlanPricingClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(TenantPlanFeatureOverrideDto.fromJS(item));
+                    result200!.push(UserSubscriptionPlanDto.fromJS(item));
             }
             else {
                 result200 = null as any;
@@ -890,21 +978,100 @@ export class TenantPlanPricingClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<TenantPlanFeatureOverrideDto[]>(null as any);
+        return Promise.resolve<UserSubscriptionPlanDto[]>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    setOverrides(tenantId: number, planId: number, body: SetTenantFeatureOverridesRequest | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/TenantPlanPricing/{tenantId}/{planId}";
-        if (tenantId === undefined || tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
-        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
-        if (planId === undefined || planId === null)
-            throw new globalThis.Error("The parameter 'planId' must be defined.");
-        url_ = url_.replace("{planId}", encodeURIComponent("" + planId));
+    create(body: CreateUserSubscriptionPlanRequest | undefined): Promise<UserSubscriptionPlanDto> {
+        let url_ = this.baseUrl + "/api/UserSubscriptionPlans";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<UserSubscriptionPlanDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserSubscriptionPlanDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserSubscriptionPlanDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getById(id: number): Promise<UserSubscriptionPlanDto> {
+        let url_ = this.baseUrl + "/api/UserSubscriptionPlans/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetById(_response);
+        });
+    }
+
+    protected processGetById(response: Response): Promise<UserSubscriptionPlanDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserSubscriptionPlanDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserSubscriptionPlanDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    update(id: number, body: UpdateUserSubscriptionPlanRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/UserSubscriptionPlans/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -918,11 +1085,11 @@ export class TenantPlanPricingClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSetOverrides(_response);
+            return this.processUpdate(_response);
         });
     }
 
-    protected processSetOverrides(response: Response): Promise<void> {
+    protected processUpdate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -940,14 +1107,11 @@ export class TenantPlanPricingClient {
     /**
      * @return OK
      */
-    clearOverrides(tenantId: number, planId: number): Promise<void> {
-        let url_ = this.baseUrl + "/api/TenantPlanPricing/{tenantId}/{planId}";
-        if (tenantId === undefined || tenantId === null)
-            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
-        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
-        if (planId === undefined || planId === null)
-            throw new globalThis.Error("The parameter 'planId' must be defined.");
-        url_ = url_.replace("{planId}", encodeURIComponent("" + planId));
+    delete(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/UserSubscriptionPlans/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -957,11 +1121,11 @@ export class TenantPlanPricingClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processClearOverrides(_response);
+            return this.processDelete(_response);
         });
     }
 
-    protected processClearOverrides(response: Response): Promise<void> {
+    protected processDelete(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -974,6 +1138,46 @@ export class TenantPlanPricingClient {
             });
         }
         return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getByCode(code: string): Promise<UserSubscriptionPlanDto> {
+        let url_ = this.baseUrl + "/api/UserSubscriptionPlans/code/{code}";
+        if (code === undefined || code === null)
+            throw new globalThis.Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetByCode(_response);
+        });
+    }
+
+    protected processGetByCode(response: Response): Promise<UserSubscriptionPlanDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserSubscriptionPlanDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserSubscriptionPlanDto>(null as any);
     }
 }
 
@@ -1157,6 +1361,134 @@ export interface ICreateSubscriptionPlanRequest {
     features?: FeatureValueRequest[] | undefined;
 }
 
+export class CreateTenantSubscriptionRequest implements ICreateTenantSubscriptionRequest {
+    tenantId?: number;
+    planId?: number;
+    startDate?: Date;
+    endDate?: Date;
+
+    constructor(data?: ICreateTenantSubscriptionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tenantId = _data["tenantId"];
+            this.planId = _data["planId"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : undefined as any;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): CreateTenantSubscriptionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateTenantSubscriptionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tenantId"] = this.tenantId;
+        data["planId"] = this.planId;
+        data["startDate"] = this.startDate ? formatDate(this.startDate) : undefined as any;
+        data["endDate"] = this.endDate ? formatDate(this.endDate) : undefined as any;
+        return data;
+    }
+}
+
+export interface ICreateTenantSubscriptionRequest {
+    tenantId?: number;
+    planId?: number;
+    startDate?: Date;
+    endDate?: Date;
+}
+
+export class CreateUserSubscriptionPlanRequest implements ICreateUserSubscriptionPlanRequest {
+    code!: string;
+    name!: string;
+    description?: string | undefined;
+    price!: number;
+    durationMonths!: number;
+    currency?: string | undefined;
+    displayOrder?: number;
+    isPopular?: boolean;
+    isActive?: boolean;
+    features?: FeatureValueRequest[] | undefined;
+
+    constructor(data?: ICreateUserSubscriptionPlanRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.price = _data["price"];
+            this.durationMonths = _data["durationMonths"];
+            this.currency = _data["currency"];
+            this.displayOrder = _data["displayOrder"];
+            this.isPopular = _data["isPopular"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["features"])) {
+                this.features = [] as any;
+                for (let item of _data["features"])
+                    this.features!.push(FeatureValueRequest.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateUserSubscriptionPlanRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateUserSubscriptionPlanRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["price"] = this.price;
+        data["durationMonths"] = this.durationMonths;
+        data["currency"] = this.currency;
+        data["displayOrder"] = this.displayOrder;
+        data["isPopular"] = this.isPopular;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.features)) {
+            data["features"] = [];
+            for (let item of this.features)
+                data["features"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface ICreateUserSubscriptionPlanRequest {
+    code: string;
+    name: string;
+    description?: string | undefined;
+    price: number;
+    durationMonths: number;
+    currency?: string | undefined;
+    displayOrder?: number;
+    isPopular?: boolean;
+    isActive?: boolean;
+    features?: FeatureValueRequest[] | undefined;
+}
+
 export class FeatureValueRequest implements IFeatureValueRequest {
     featureCode!: string;
     value!: string;
@@ -1247,53 +1579,6 @@ export interface IPlanFeatureValueDto {
     category?: string | undefined;
     dataType?: string | undefined;
     value?: string | undefined;
-}
-
-export class SetTenantFeatureOverridesRequest implements ISetTenantFeatureOverridesRequest {
-    overrides!: TenantFeatureOverrideRequest[];
-
-    constructor(data?: ISetTenantFeatureOverridesRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-        if (!data) {
-            this.overrides = [];
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["overrides"])) {
-                this.overrides = [] as any;
-                for (let item of _data["overrides"])
-                    this.overrides!.push(TenantFeatureOverrideRequest.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): SetTenantFeatureOverridesRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new SetTenantFeatureOverridesRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.overrides)) {
-            data["overrides"] = [];
-            for (let item of this.overrides)
-                data["overrides"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ISetTenantFeatureOverridesRequest {
-    overrides: TenantFeatureOverrideRequest[];
 }
 
 export class SubscriptionFeatureDto implements ISubscriptionFeatureDto {
@@ -1516,57 +1801,18 @@ export interface ISubscriptionStatusDto {
     isTrial?: boolean;
 }
 
-export class TenantFeatureOverrideRequest implements ITenantFeatureOverrideRequest {
-    featureCode!: string;
-    value!: string;
-
-    constructor(data?: ITenantFeatureOverrideRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.featureCode = _data["featureCode"];
-            this.value = _data["value"];
-        }
-    }
-
-    static fromJS(data: any): TenantFeatureOverrideRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantFeatureOverrideRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["featureCode"] = this.featureCode;
-        data["value"] = this.value;
-        return data;
-    }
-}
-
-export interface ITenantFeatureOverrideRequest {
-    featureCode: string;
-    value: string;
-}
-
-export class TenantPlanFeatureOverrideDto implements ITenantPlanFeatureOverrideDto {
-    id?: number;
+export class TenantSubscriptionDto implements ITenantSubscriptionDto {
+    subscriptionId?: number;
     tenantId?: number;
-    subscriptionPlanId?: number;
-    subscriptionFeatureId?: number;
-    featureCode?: string | undefined;
-    featureName?: string | undefined;
-    value?: string | undefined;
+    planId?: number;
+    planName?: string | undefined;
+    startDate?: Date;
+    endDate?: Date;
+    isActive?: boolean;
     createdAt?: Date;
+    updatedAt?: Date;
 
-    constructor(data?: ITenantPlanFeatureOverrideDto) {
+    constructor(data?: ITenantSubscriptionDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1577,47 +1823,50 @@ export class TenantPlanFeatureOverrideDto implements ITenantPlanFeatureOverrideD
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
+            this.subscriptionId = _data["subscriptionId"];
             this.tenantId = _data["tenantId"];
-            this.subscriptionPlanId = _data["subscriptionPlanId"];
-            this.subscriptionFeatureId = _data["subscriptionFeatureId"];
-            this.featureCode = _data["featureCode"];
-            this.featureName = _data["featureName"];
-            this.value = _data["value"];
+            this.planId = _data["planId"];
+            this.planName = _data["planName"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : undefined as any;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
+            this.isActive = _data["isActive"];
             this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
         }
     }
 
-    static fromJS(data: any): TenantPlanFeatureOverrideDto {
+    static fromJS(data: any): TenantSubscriptionDto {
         data = typeof data === 'object' ? data : {};
-        let result = new TenantPlanFeatureOverrideDto();
+        let result = new TenantSubscriptionDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
+        data["subscriptionId"] = this.subscriptionId;
         data["tenantId"] = this.tenantId;
-        data["subscriptionPlanId"] = this.subscriptionPlanId;
-        data["subscriptionFeatureId"] = this.subscriptionFeatureId;
-        data["featureCode"] = this.featureCode;
-        data["featureName"] = this.featureName;
-        data["value"] = this.value;
+        data["planId"] = this.planId;
+        data["planName"] = this.planName;
+        data["startDate"] = this.startDate ? formatDate(this.startDate) : undefined as any;
+        data["endDate"] = this.endDate ? formatDate(this.endDate) : undefined as any;
+        data["isActive"] = this.isActive;
         data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
         return data;
     }
 }
 
-export interface ITenantPlanFeatureOverrideDto {
-    id?: number;
+export interface ITenantSubscriptionDto {
+    subscriptionId?: number;
     tenantId?: number;
-    subscriptionPlanId?: number;
-    subscriptionFeatureId?: number;
-    featureCode?: string | undefined;
-    featureName?: string | undefined;
-    value?: string | undefined;
+    planId?: number;
+    planName?: string | undefined;
+    startDate?: Date;
+    endDate?: Date;
+    isActive?: boolean;
     createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export class UpdateSubscriptionFeatureRequest implements IUpdateSubscriptionFeatureRequest {
@@ -1752,11 +2001,224 @@ export interface IUpdateSubscriptionPlanRequest {
     features?: FeatureValueRequest[] | undefined;
 }
 
+export class UpdateTenantSubscriptionRequest implements IUpdateTenantSubscriptionRequest {
+    endDate?: Date | undefined;
+    isActive?: boolean | undefined;
+
+    constructor(data?: IUpdateTenantSubscriptionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): UpdateTenantSubscriptionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateTenantSubscriptionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["endDate"] = this.endDate ? formatDate(this.endDate) : undefined as any;
+        data["isActive"] = this.isActive;
+        return data;
+    }
+}
+
+export interface IUpdateTenantSubscriptionRequest {
+    endDate?: Date | undefined;
+    isActive?: boolean | undefined;
+}
+
+export class UpdateUserSubscriptionPlanRequest implements IUpdateUserSubscriptionPlanRequest {
+    name?: string | undefined;
+    description?: string | undefined;
+    price?: number | undefined;
+    durationMonths?: number | undefined;
+    currency?: string | undefined;
+    displayOrder?: number | undefined;
+    isPopular?: boolean | undefined;
+    isActive?: boolean | undefined;
+    features?: FeatureValueRequest[] | undefined;
+
+    constructor(data?: IUpdateUserSubscriptionPlanRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.price = _data["price"];
+            this.durationMonths = _data["durationMonths"];
+            this.currency = _data["currency"];
+            this.displayOrder = _data["displayOrder"];
+            this.isPopular = _data["isPopular"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["features"])) {
+                this.features = [] as any;
+                for (let item of _data["features"])
+                    this.features!.push(FeatureValueRequest.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateUserSubscriptionPlanRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateUserSubscriptionPlanRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["price"] = this.price;
+        data["durationMonths"] = this.durationMonths;
+        data["currency"] = this.currency;
+        data["displayOrder"] = this.displayOrder;
+        data["isPopular"] = this.isPopular;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.features)) {
+            data["features"] = [];
+            for (let item of this.features)
+                data["features"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IUpdateUserSubscriptionPlanRequest {
+    name?: string | undefined;
+    description?: string | undefined;
+    price?: number | undefined;
+    durationMonths?: number | undefined;
+    currency?: string | undefined;
+    displayOrder?: number | undefined;
+    isPopular?: boolean | undefined;
+    isActive?: boolean | undefined;
+    features?: FeatureValueRequest[] | undefined;
+}
+
+export class UserSubscriptionPlanDto implements IUserSubscriptionPlanDto {
+    id?: number;
+    tenantId?: number;
+    code?: string | undefined;
+    name?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    durationMonths?: number;
+    currency?: string | undefined;
+    displayOrder?: number;
+    isPopular?: boolean;
+    isActive?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    features?: PlanFeatureValueDto[] | undefined;
+
+    constructor(data?: IUserSubscriptionPlanDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.tenantId = _data["tenantId"];
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.price = _data["price"];
+            this.durationMonths = _data["durationMonths"];
+            this.currency = _data["currency"];
+            this.displayOrder = _data["displayOrder"];
+            this.isPopular = _data["isPopular"];
+            this.isActive = _data["isActive"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
+            if (Array.isArray(_data["features"])) {
+                this.features = [] as any;
+                for (let item of _data["features"])
+                    this.features!.push(PlanFeatureValueDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UserSubscriptionPlanDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserSubscriptionPlanDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["tenantId"] = this.tenantId;
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["price"] = this.price;
+        data["durationMonths"] = this.durationMonths;
+        data["currency"] = this.currency;
+        data["displayOrder"] = this.displayOrder;
+        data["isPopular"] = this.isPopular;
+        data["isActive"] = this.isActive;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
+        if (Array.isArray(this.features)) {
+            data["features"] = [];
+            for (let item of this.features)
+                data["features"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IUserSubscriptionPlanDto {
+    id?: number;
+    tenantId?: number;
+    code?: string | undefined;
+    name?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    durationMonths?: number;
+    currency?: string | undefined;
+    displayOrder?: number;
+    isPopular?: boolean;
+    isActive?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    features?: PlanFeatureValueDto[] | undefined;
+}
+
 export class UserSubscriptionStatusDto implements IUserSubscriptionStatusDto {
     isActive?: boolean;
     isExpired?: boolean;
     isTrial?: boolean;
     planName?: string | undefined;
+    startDate?: Date | undefined;
     expiresAt?: Date | undefined;
     effectiveFeatures?: PlanFeatureValueDto[] | undefined;
 
@@ -1775,6 +2237,7 @@ export class UserSubscriptionStatusDto implements IUserSubscriptionStatusDto {
             this.isExpired = _data["isExpired"];
             this.isTrial = _data["isTrial"];
             this.planName = _data["planName"];
+            this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : undefined as any;
             this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : undefined as any;
             if (Array.isArray(_data["effectiveFeatures"])) {
                 this.effectiveFeatures = [] as any;
@@ -1797,6 +2260,7 @@ export class UserSubscriptionStatusDto implements IUserSubscriptionStatusDto {
         data["isExpired"] = this.isExpired;
         data["isTrial"] = this.isTrial;
         data["planName"] = this.planName;
+        data["startDate"] = this.startDate ? this.startDate.toISOString() : undefined as any;
         data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : undefined as any;
         if (Array.isArray(this.effectiveFeatures)) {
             data["effectiveFeatures"] = [];
@@ -1812,8 +2276,15 @@ export interface IUserSubscriptionStatusDto {
     isExpired?: boolean;
     isTrial?: boolean;
     planName?: string | undefined;
+    startDate?: Date | undefined;
     expiresAt?: Date | undefined;
     effectiveFeatures?: PlanFeatureValueDto[] | undefined;
+}
+
+function formatDate(d: Date) {
+    return d.getFullYear() + '-' + 
+        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
+        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
 }
 
 export class ApiException extends Error {
