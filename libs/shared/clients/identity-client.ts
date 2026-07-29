@@ -170,6 +170,1641 @@ export class AuthClient {
     }
 }
 
+export class PermissionsClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param search (optional) 
+     * @param isActive (optional) 
+     * @return OK
+     */
+    getAll(search: string | undefined, isActive: boolean | undefined): Promise<PermissionDto[]> {
+        let url_ = this.baseUrl + "/api/Permissions?";
+        if (search === null)
+            throw new globalThis.Error("The parameter 'search' cannot be null.");
+        else if (search !== undefined)
+            url_ += "search=" + encodeURIComponent("" + search) + "&";
+        if (isActive === null)
+            throw new globalThis.Error("The parameter 'isActive' cannot be null.");
+        else if (isActive !== undefined)
+            url_ += "isActive=" + encodeURIComponent("" + isActive) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<PermissionDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PermissionDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PermissionDto[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    create(body: CreatePermissionRequest | undefined): Promise<PermissionDto> {
+        let url_ = this.baseUrl + "/api/Permissions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<PermissionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PermissionDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PermissionDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getById(id: number): Promise<PermissionDto> {
+        let url_ = this.baseUrl + "/api/Permissions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetById(_response);
+        });
+    }
+
+    protected processGetById(response: Response): Promise<PermissionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PermissionDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PermissionDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    update(id: number, body: UpdatePermissionRequest | undefined): Promise<PermissionDto> {
+        let url_ = this.baseUrl + "/api/Permissions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<PermissionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PermissionDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PermissionDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    delete(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Permissions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    assignToUser(body: AssignPermissionRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/Permissions/assign";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAssignToUser(_response);
+        });
+    }
+
+    protected processAssignToUser(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    revokeFromUser(body: AssignPermissionRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/Permissions/assign";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRevokeFromUser(_response);
+        });
+    }
+
+    protected processRevokeFromUser(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export class PlatformAuthClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    login(body: LoginRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformAuth/login";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processLogin(_response);
+        });
+    }
+
+    protected processLogin(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    refresh(body: RefreshTokenRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformAuth/refresh";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRefresh(_response);
+        });
+    }
+
+    protected processRefresh(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    logout(body: RefreshTokenRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformAuth/logout";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processLogout(_response);
+        });
+    }
+
+    protected processLogout(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getPermissions(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformAuth/{id}/permissions";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPermissions(_response);
+        });
+    }
+
+    protected processGetPermissions(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getRoles(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformAuth/{id}/roles";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetRoles(_response);
+        });
+    }
+
+    protected processGetRoles(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export class PlatformPermissionsClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @return OK
+     */
+    getAll(): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformPermissions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    create(body: CreatePlatformPermissionRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformPermissions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getById(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformPermissions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetById(_response);
+        });
+    }
+
+    protected processGetById(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    update(id: number, body: UpdatePlatformPermissionRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformPermissions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    delete(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformPermissions/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export class RolesClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param search (optional) 
+     * @return OK
+     */
+    getAll(search: string | undefined): Promise<RoleDto[]> {
+        let url_ = this.baseUrl + "/api/Roles?";
+        if (search === null)
+            throw new globalThis.Error("The parameter 'search' cannot be null.");
+        else if (search !== undefined)
+            url_ += "search=" + encodeURIComponent("" + search) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<RoleDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(RoleDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RoleDto[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    create(body: CreateRoleRequest | undefined): Promise<RoleDto> {
+        let url_ = this.baseUrl + "/api/Roles";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<RoleDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RoleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RoleDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getById(id: number): Promise<RoleDetailDto> {
+        let url_ = this.baseUrl + "/api/Roles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetById(_response);
+        });
+    }
+
+    protected processGetById(response: Response): Promise<RoleDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RoleDetailDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RoleDetailDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    update(id: number, body: UpdateRoleRequest | undefined): Promise<RoleDto> {
+        let url_ = this.baseUrl + "/api/Roles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<RoleDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RoleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RoleDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    delete(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Roles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    assignPermissions(id: number, body: AssignPermissionsToRoleRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/Roles/{id}/permissions";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAssignPermissions(_response);
+        });
+    }
+
+    protected processAssignPermissions(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    removePermission(id: number, permId: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Roles/{id}/permissions/{permId}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (permId === undefined || permId === null)
+            throw new globalThis.Error("The parameter 'permId' must be defined.");
+        url_ = url_.replace("{permId}", encodeURIComponent("" + permId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRemovePermission(_response);
+        });
+    }
+
+    protected processRemovePermission(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    assignUsers(id: number, body: AssignUsersToRoleRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/Roles/{id}/users";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAssignUsers(_response);
+        });
+    }
+
+    protected processAssignUsers(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    removeUser(id: number, userId: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Roles/{id}/users/{userId}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (userId === undefined || userId === null)
+            throw new globalThis.Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRemoveUser(_response);
+        });
+    }
+
+    protected processRemoveUser(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export class TenantAdminPermissionsClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param search (optional) 
+     * @param isActive (optional) 
+     * @return OK
+     */
+    getPermissions(tenantId: number, search: string | undefined, isActive: boolean | undefined): Promise<PermissionDto[]> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/permissions?";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (search === null)
+            throw new globalThis.Error("The parameter 'search' cannot be null.");
+        else if (search !== undefined)
+            url_ += "search=" + encodeURIComponent("" + search) + "&";
+        if (isActive === null)
+            throw new globalThis.Error("The parameter 'isActive' cannot be null.");
+        else if (isActive !== undefined)
+            url_ += "isActive=" + encodeURIComponent("" + isActive) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPermissions(_response);
+        });
+    }
+
+    protected processGetPermissions(response: Response): Promise<PermissionDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PermissionDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PermissionDto[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    createPermission(tenantId: number, body: CreatePermissionRequest | undefined): Promise<PermissionDto> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/permissions";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreatePermission(_response);
+        });
+    }
+
+    protected processCreatePermission(response: Response): Promise<PermissionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PermissionDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PermissionDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getPermissionById(tenantId: number, id: number): Promise<PermissionDto> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/permissions/{id}";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPermissionById(_response);
+        });
+    }
+
+    protected processGetPermissionById(response: Response): Promise<PermissionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PermissionDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PermissionDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    updatePermission(tenantId: number, id: number, body: UpdatePermissionRequest | undefined): Promise<PermissionDto> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/permissions/{id}";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdatePermission(_response);
+        });
+    }
+
+    protected processUpdatePermission(response: Response): Promise<PermissionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PermissionDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PermissionDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    deletePermission(tenantId: number, id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/permissions/{id}";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeletePermission(_response);
+        });
+    }
+
+    protected processDeletePermission(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param search (optional) 
+     * @return OK
+     */
+    getRoles(tenantId: number, search: string | undefined): Promise<RoleDto[]> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/roles?";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (search === null)
+            throw new globalThis.Error("The parameter 'search' cannot be null.");
+        else if (search !== undefined)
+            url_ += "search=" + encodeURIComponent("" + search) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetRoles(_response);
+        });
+    }
+
+    protected processGetRoles(response: Response): Promise<RoleDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(RoleDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RoleDto[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    createRole(tenantId: number, body: CreateRoleRequest | undefined): Promise<RoleDto> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/roles";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateRole(_response);
+        });
+    }
+
+    protected processCreateRole(response: Response): Promise<RoleDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RoleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RoleDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getRoleById(tenantId: number, id: number): Promise<RoleDetailDto> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/roles/{id}";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetRoleById(_response);
+        });
+    }
+
+    protected processGetRoleById(response: Response): Promise<RoleDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RoleDetailDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RoleDetailDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    updateRole(tenantId: number, id: number, body: UpdateRoleRequest | undefined): Promise<RoleDto> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/roles/{id}";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateRole(_response);
+        });
+    }
+
+    protected processUpdateRole(response: Response): Promise<RoleDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RoleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<RoleDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    deleteRole(tenantId: number, id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/roles/{id}";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteRole(_response);
+        });
+    }
+
+    protected processDeleteRole(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    assignPermissionsToRole(tenantId: number, id: number, body: AssignPermissionsToRoleRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/roles/{id}/permissions";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAssignPermissionsToRole(_response);
+        });
+    }
+
+    protected processAssignPermissionsToRole(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    removePermissionFromRole(tenantId: number, id: number, permId: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Tenants/{tenantId}/roles/{id}/permissions/{permId}";
+        if (tenantId === undefined || tenantId === null)
+            throw new globalThis.Error("The parameter 'tenantId' must be defined.");
+        url_ = url_.replace("{tenantId}", encodeURIComponent("" + tenantId));
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (permId === undefined || permId === null)
+            throw new globalThis.Error("The parameter 'permId' must be defined.");
+        url_ = url_.replace("{permId}", encodeURIComponent("" + permId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRemovePermissionFromRole(_response);
+        });
+    }
+
+    protected processRemovePermissionFromRole(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
 export class UsersClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -381,6 +2016,114 @@ export class UsersClient {
         }
         return Promise.resolve<void>(null as any);
     }
+
+    /**
+     * @return OK
+     */
+    getBasicInfo(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Users/{id}/basic-info";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetBasicInfo(_response);
+        });
+    }
+
+    protected processGetBasicInfo(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getPermissions(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Users/{id}/permissions";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPermissions(_response);
+        });
+    }
+
+    protected processGetPermissions(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getRoles(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/Users/{id}/roles";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetRoles(_response);
+        });
+    }
+
+    protected processGetRoles(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export class ApiKey implements IApiKey {
@@ -485,6 +2228,138 @@ export interface IApiKey {
     revokedAt?: Date | undefined;
     tenant?: Tenant;
     user?: User;
+}
+
+export class AssignPermissionRequest implements IAssignPermissionRequest {
+    userId?: number;
+    permissionId?: number;
+    tenantId?: number;
+
+    constructor(data?: IAssignPermissionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userId = _data["userId"];
+            this.permissionId = _data["permissionId"];
+            this.tenantId = _data["tenantId"];
+        }
+    }
+
+    static fromJS(data: any): AssignPermissionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssignPermissionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["permissionId"] = this.permissionId;
+        data["tenantId"] = this.tenantId;
+        return data;
+    }
+}
+
+export interface IAssignPermissionRequest {
+    userId?: number;
+    permissionId?: number;
+    tenantId?: number;
+}
+
+export class AssignPermissionsToRoleRequest implements IAssignPermissionsToRoleRequest {
+    permissionIds?: number[] | undefined;
+
+    constructor(data?: IAssignPermissionsToRoleRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["permissionIds"])) {
+                this.permissionIds = [] as any;
+                for (let item of _data["permissionIds"])
+                    this.permissionIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): AssignPermissionsToRoleRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssignPermissionsToRoleRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.permissionIds)) {
+            data["permissionIds"] = [];
+            for (let item of this.permissionIds)
+                data["permissionIds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IAssignPermissionsToRoleRequest {
+    permissionIds?: number[] | undefined;
+}
+
+export class AssignUsersToRoleRequest implements IAssignUsersToRoleRequest {
+    userIds?: number[] | undefined;
+
+    constructor(data?: IAssignUsersToRoleRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["userIds"])) {
+                this.userIds = [] as any;
+                for (let item of _data["userIds"])
+                    this.userIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): AssignUsersToRoleRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssignUsersToRoleRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.userIds)) {
+            data["userIds"] = [];
+            for (let item of this.userIds)
+                data["userIds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IAssignUsersToRoleRequest {
+    userIds?: number[] | undefined;
 }
 
 export class AuditLog implements IAuditLog {
@@ -2223,11 +4098,166 @@ export interface ICouponUsage {
     invoice?: Invoice;
 }
 
+export class CreatePermissionRequest implements ICreatePermissionRequest {
+    tenantId?: number;
+    permissionCode?: string | undefined;
+    displayName?: string | undefined;
+    description?: string | undefined;
+    resourceType?: string | undefined;
+    action?: string | undefined;
+    isActive?: boolean;
+
+    constructor(data?: ICreatePermissionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tenantId = _data["tenantId"];
+            this.permissionCode = _data["permissionCode"];
+            this.displayName = _data["displayName"];
+            this.description = _data["description"];
+            this.resourceType = _data["resourceType"];
+            this.action = _data["action"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): CreatePermissionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreatePermissionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tenantId"] = this.tenantId;
+        data["permissionCode"] = this.permissionCode;
+        data["displayName"] = this.displayName;
+        data["description"] = this.description;
+        data["resourceType"] = this.resourceType;
+        data["action"] = this.action;
+        data["isActive"] = this.isActive;
+        return data;
+    }
+}
+
+export interface ICreatePermissionRequest {
+    tenantId?: number;
+    permissionCode?: string | undefined;
+    displayName?: string | undefined;
+    description?: string | undefined;
+    resourceType?: string | undefined;
+    action?: string | undefined;
+    isActive?: boolean;
+}
+
+export class CreatePlatformPermissionRequest implements ICreatePlatformPermissionRequest {
+    permissionCode?: string | undefined;
+    displayName?: string | undefined;
+    description?: string | undefined;
+    resourceType?: string | undefined;
+    action?: string | undefined;
+    isActive?: boolean;
+
+    constructor(data?: ICreatePlatformPermissionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.permissionCode = _data["permissionCode"];
+            this.displayName = _data["displayName"];
+            this.description = _data["description"];
+            this.resourceType = _data["resourceType"];
+            this.action = _data["action"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): CreatePlatformPermissionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreatePlatformPermissionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["permissionCode"] = this.permissionCode;
+        data["displayName"] = this.displayName;
+        data["description"] = this.description;
+        data["resourceType"] = this.resourceType;
+        data["action"] = this.action;
+        data["isActive"] = this.isActive;
+        return data;
+    }
+}
+
+export interface ICreatePlatformPermissionRequest {
+    permissionCode?: string | undefined;
+    displayName?: string | undefined;
+    description?: string | undefined;
+    resourceType?: string | undefined;
+    action?: string | undefined;
+    isActive?: boolean;
+}
+
+export class CreateRoleRequest implements ICreateRoleRequest {
+    tenantId?: number;
+    roleName?: string | undefined;
+
+    constructor(data?: ICreateRoleRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tenantId = _data["tenantId"];
+            this.roleName = _data["roleName"];
+        }
+    }
+
+    static fromJS(data: any): CreateRoleRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateRoleRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["tenantId"] = this.tenantId;
+        data["roleName"] = this.roleName;
+        return data;
+    }
+}
+
+export interface ICreateRoleRequest {
+    tenantId?: number;
+    roleName?: string | undefined;
+}
+
 export class CreateUserRequest implements ICreateUserRequest {
     tenantId?: number;
     email?: string | undefined;
     password?: string | undefined;
-    isSuperAdmin?: boolean;
     isActive?: boolean;
 
     constructor(data?: ICreateUserRequest) {
@@ -2244,7 +4274,6 @@ export class CreateUserRequest implements ICreateUserRequest {
             this.tenantId = _data["tenantId"];
             this.email = _data["email"];
             this.password = _data["password"];
-            this.isSuperAdmin = _data["isSuperAdmin"];
             this.isActive = _data["isActive"];
         }
     }
@@ -2261,7 +4290,6 @@ export class CreateUserRequest implements ICreateUserRequest {
         data["tenantId"] = this.tenantId;
         data["email"] = this.email;
         data["password"] = this.password;
-        data["isSuperAdmin"] = this.isSuperAdmin;
         data["isActive"] = this.isActive;
         return data;
     }
@@ -2271,7 +4299,6 @@ export interface ICreateUserRequest {
     tenantId?: number;
     email?: string | undefined;
     password?: string | undefined;
-    isSuperAdmin?: boolean;
     isActive?: boolean;
 }
 
@@ -3660,7 +5687,7 @@ export class InterestRequest implements IInterestRequest {
     interestRequestId?: number;
     requesterProfileId?: number;
     targetProfileId?: number;
-    status?: string | undefined;
+    status?: InterestRequestStatus;
     message?: string | undefined;
     respondedAt?: Date | undefined;
     profile?: Profile;
@@ -3743,12 +5770,20 @@ export interface IInterestRequest {
     interestRequestId?: number;
     requesterProfileId?: number;
     targetProfileId?: number;
-    status?: string | undefined;
+    status?: InterestRequestStatus;
     message?: string | undefined;
     respondedAt?: Date | undefined;
     profile?: Profile;
     profileNavigation?: Profile;
     tenant?: Tenant;
+}
+
+export enum InterestRequestStatus {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+    _3 = 3,
+    _4 = 4,
 }
 
 export class Invoice implements IInvoice {
@@ -6498,6 +8533,74 @@ export interface IPermissionDependency {
     dependsOnPermissionId?: number;
     permission?: Permission;
     dependsOnPermission?: Permission;
+}
+
+export class PermissionDto implements IPermissionDto {
+    permissionId?: number;
+    tenantId?: number;
+    permissionCode?: string | undefined;
+    displayName?: string | undefined;
+    description?: string | undefined;
+    resourceType?: string | undefined;
+    action?: string | undefined;
+    isActive?: boolean;
+    createdAt?: Date;
+
+    constructor(data?: IPermissionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.permissionId = _data["permissionId"];
+            this.tenantId = _data["tenantId"];
+            this.permissionCode = _data["permissionCode"];
+            this.displayName = _data["displayName"];
+            this.description = _data["description"];
+            this.resourceType = _data["resourceType"];
+            this.action = _data["action"];
+            this.isActive = _data["isActive"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): PermissionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PermissionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["permissionId"] = this.permissionId;
+        data["tenantId"] = this.tenantId;
+        data["permissionCode"] = this.permissionCode;
+        data["displayName"] = this.displayName;
+        data["description"] = this.description;
+        data["resourceType"] = this.resourceType;
+        data["action"] = this.action;
+        data["isActive"] = this.isActive;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        return data;
+    }
+}
+
+export interface IPermissionDto {
+    permissionId?: number;
+    tenantId?: number;
+    permissionCode?: string | undefined;
+    displayName?: string | undefined;
+    description?: string | undefined;
+    resourceType?: string | undefined;
+    action?: string | undefined;
+    isActive?: boolean;
+    createdAt?: Date;
 }
 
 export class Personality implements IPersonality {
@@ -9935,6 +12038,134 @@ export interface IRole {
     rolePermissions?: RolePermission[] | undefined;
 }
 
+export class RoleDetailDto implements IRoleDetailDto {
+    roleId?: number;
+    tenantId?: number;
+    roleName?: string | undefined;
+    createdAt?: Date;
+    users?: UserBasicInfoDto[] | undefined;
+    permissions?: UserPermissionDto[] | undefined;
+
+    constructor(data?: IRoleDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.roleId = _data["roleId"];
+            this.tenantId = _data["tenantId"];
+            this.roleName = _data["roleName"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            if (Array.isArray(_data["users"])) {
+                this.users = [] as any;
+                for (let item of _data["users"])
+                    this.users!.push(UserBasicInfoDto.fromJS(item));
+            }
+            if (Array.isArray(_data["permissions"])) {
+                this.permissions = [] as any;
+                for (let item of _data["permissions"])
+                    this.permissions!.push(UserPermissionDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): RoleDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RoleDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["roleId"] = this.roleId;
+        data["tenantId"] = this.tenantId;
+        data["roleName"] = this.roleName;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        if (Array.isArray(this.users)) {
+            data["users"] = [];
+            for (let item of this.users)
+                data["users"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.permissions)) {
+            data["permissions"] = [];
+            for (let item of this.permissions)
+                data["permissions"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IRoleDetailDto {
+    roleId?: number;
+    tenantId?: number;
+    roleName?: string | undefined;
+    createdAt?: Date;
+    users?: UserBasicInfoDto[] | undefined;
+    permissions?: UserPermissionDto[] | undefined;
+}
+
+export class RoleDto implements IRoleDto {
+    roleId?: number;
+    tenantId?: number;
+    roleName?: string | undefined;
+    createdAt?: Date;
+    userCount?: number;
+    permissionCount?: number;
+
+    constructor(data?: IRoleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.roleId = _data["roleId"];
+            this.tenantId = _data["tenantId"];
+            this.roleName = _data["roleName"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.userCount = _data["userCount"];
+            this.permissionCount = _data["permissionCount"];
+        }
+    }
+
+    static fromJS(data: any): RoleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RoleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["roleId"] = this.roleId;
+        data["tenantId"] = this.tenantId;
+        data["roleName"] = this.roleName;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["userCount"] = this.userCount;
+        data["permissionCount"] = this.permissionCount;
+        return data;
+    }
+}
+
+export interface IRoleDto {
+    roleId?: number;
+    tenantId?: number;
+    roleName?: string | undefined;
+    createdAt?: Date;
+    userCount?: number;
+    permissionCount?: number;
+}
+
 export class RolePermission implements IRolePermission {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -10398,7 +12629,7 @@ export class SubscriptionFeature implements ISubscriptionFeature {
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     planFeatures?: SubscriptionPlanFeature[] | undefined;
-    tenantPlanFeatureOverrides?: TenantPlanFeatureOverride[] | undefined;
+    userPlanFeatures?: UserSubscriptionPlanFeature[] | undefined;
 
     constructor(data?: ISubscriptionFeature) {
         if (data) {
@@ -10432,10 +12663,10 @@ export class SubscriptionFeature implements ISubscriptionFeature {
                 for (let item of _data["planFeatures"])
                     this.planFeatures!.push(SubscriptionPlanFeature.fromJS(item));
             }
-            if (Array.isArray(_data["tenantPlanFeatureOverrides"])) {
-                this.tenantPlanFeatureOverrides = [] as any;
-                for (let item of _data["tenantPlanFeatureOverrides"])
-                    this.tenantPlanFeatureOverrides!.push(TenantPlanFeatureOverride.fromJS(item));
+            if (Array.isArray(_data["userPlanFeatures"])) {
+                this.userPlanFeatures = [] as any;
+                for (let item of _data["userPlanFeatures"])
+                    this.userPlanFeatures!.push(UserSubscriptionPlanFeature.fromJS(item));
             }
         }
     }
@@ -10470,10 +12701,10 @@ export class SubscriptionFeature implements ISubscriptionFeature {
             for (let item of this.planFeatures)
                 data["planFeatures"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.tenantPlanFeatureOverrides)) {
-            data["tenantPlanFeatureOverrides"] = [];
-            for (let item of this.tenantPlanFeatureOverrides)
-                data["tenantPlanFeatureOverrides"].push(item ? item.toJSON() : undefined as any);
+        if (Array.isArray(this.userPlanFeatures)) {
+            data["userPlanFeatures"] = [];
+            for (let item of this.userPlanFeatures)
+                data["userPlanFeatures"].push(item ? item.toJSON() : undefined as any);
         }
         return data;
     }
@@ -10497,7 +12728,7 @@ export interface ISubscriptionFeature {
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     planFeatures?: SubscriptionPlanFeature[] | undefined;
-    tenantPlanFeatureOverrides?: TenantPlanFeatureOverride[] | undefined;
+    userPlanFeatures?: UserSubscriptionPlanFeature[] | undefined;
 }
 
 export class SubscriptionLifecycleEvent implements ISubscriptionLifecycleEvent {
@@ -10594,8 +12825,6 @@ export class SubscriptionPlan implements ISubscriptionPlan {
     isActive?: boolean;
     tenant?: Tenant;
     planFeatures?: SubscriptionPlanFeature[] | undefined;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
-    tenantPlanFeatureOverrides?: TenantPlanFeatureOverride[] | undefined;
     planPrices?: PlanPrice[] | undefined;
     planVersions?: SubscriptionPlanVersion[] | undefined;
     addOns?: SubscriptionAddOn[] | undefined;
@@ -10635,16 +12864,6 @@ export class SubscriptionPlan implements ISubscriptionPlan {
                 this.planFeatures = [] as any;
                 for (let item of _data["planFeatures"])
                     this.planFeatures!.push(SubscriptionPlanFeature.fromJS(item));
-            }
-            if (Array.isArray(_data["tenantUserPlans"])) {
-                this.tenantUserPlans = [] as any;
-                for (let item of _data["tenantUserPlans"])
-                    this.tenantUserPlans!.push(TenantUserPlan.fromJS(item));
-            }
-            if (Array.isArray(_data["tenantPlanFeatureOverrides"])) {
-                this.tenantPlanFeatureOverrides = [] as any;
-                for (let item of _data["tenantPlanFeatureOverrides"])
-                    this.tenantPlanFeatureOverrides!.push(TenantPlanFeatureOverride.fromJS(item));
             }
             if (Array.isArray(_data["planPrices"])) {
                 this.planPrices = [] as any;
@@ -10698,16 +12917,6 @@ export class SubscriptionPlan implements ISubscriptionPlan {
             for (let item of this.planFeatures)
                 data["planFeatures"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.tenantUserPlans)) {
-            data["tenantUserPlans"] = [];
-            for (let item of this.tenantUserPlans)
-                data["tenantUserPlans"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.tenantPlanFeatureOverrides)) {
-            data["tenantPlanFeatureOverrides"] = [];
-            for (let item of this.tenantPlanFeatureOverrides)
-                data["tenantPlanFeatureOverrides"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.planPrices)) {
             data["planPrices"] = [];
             for (let item of this.planPrices)
@@ -10749,8 +12958,6 @@ export interface ISubscriptionPlan {
     isActive?: boolean;
     tenant?: Tenant;
     planFeatures?: SubscriptionPlanFeature[] | undefined;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
-    tenantPlanFeatureOverrides?: TenantPlanFeatureOverride[] | undefined;
     planPrices?: PlanPrice[] | undefined;
     planVersions?: SubscriptionPlanVersion[] | undefined;
     addOns?: SubscriptionAddOn[] | undefined;
@@ -11101,7 +13308,6 @@ export class Tenant implements ITenant {
     tenantMasterData?: TenantMasterDatum[] | undefined;
     tenantSettings?: TenantSetting[] | undefined;
     tenantSubscription?: TenantSubscription;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
     users?: User[] | undefined;
     matches?: Match[] | undefined;
     compatibilityRules?: CompatibilityRule[] | undefined;
@@ -11252,11 +13458,6 @@ export class Tenant implements ITenant {
                     this.tenantSettings!.push(TenantSetting.fromJS(item));
             }
             this.tenantSubscription = _data["tenantSubscription"] ? TenantSubscription.fromJS(_data["tenantSubscription"]) : undefined as any;
-            if (Array.isArray(_data["tenantUserPlans"])) {
-                this.tenantUserPlans = [] as any;
-                for (let item of _data["tenantUserPlans"])
-                    this.tenantUserPlans!.push(TenantUserPlan.fromJS(item));
-            }
             if (Array.isArray(_data["users"])) {
                 this.users = [] as any;
                 for (let item of _data["users"])
@@ -11427,11 +13628,6 @@ export class Tenant implements ITenant {
                 data["tenantSettings"].push(item ? item.toJSON() : undefined as any);
         }
         data["tenantSubscription"] = this.tenantSubscription ? this.tenantSubscription.toJSON() : undefined as any;
-        if (Array.isArray(this.tenantUserPlans)) {
-            data["tenantUserPlans"] = [];
-            for (let item of this.tenantUserPlans)
-                data["tenantUserPlans"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.users)) {
             data["users"] = [];
             for (let item of this.users)
@@ -11523,7 +13719,6 @@ export interface ITenant {
     tenantMasterData?: TenantMasterDatum[] | undefined;
     tenantSettings?: TenantSetting[] | undefined;
     tenantSubscription?: TenantSubscription;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
     users?: User[] | undefined;
     matches?: Match[] | undefined;
     compatibilityRules?: CompatibilityRule[] | undefined;
@@ -12052,90 +14247,6 @@ export interface ITenantNotificationSetting {
     tenant?: Tenant;
 }
 
-export class TenantPlanFeatureOverride implements ITenantPlanFeatureOverride {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    tenantPlanFeatureOverrideId?: number;
-    subscriptionPlanId?: number;
-    subscriptionFeatureId?: number;
-    value?: string | undefined;
-    rowVersion?: string | undefined;
-    tenant?: Tenant;
-    subscriptionPlan?: SubscriptionPlan;
-    subscriptionFeature?: SubscriptionFeature;
-
-    constructor(data?: ITenantPlanFeatureOverride) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.tenantPlanFeatureOverrideId = _data["tenantPlanFeatureOverrideId"];
-            this.subscriptionPlanId = _data["subscriptionPlanId"];
-            this.subscriptionFeatureId = _data["subscriptionFeatureId"];
-            this.value = _data["value"];
-            this.rowVersion = _data["rowVersion"];
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.subscriptionPlan = _data["subscriptionPlan"] ? SubscriptionPlan.fromJS(_data["subscriptionPlan"]) : undefined as any;
-            this.subscriptionFeature = _data["subscriptionFeature"] ? SubscriptionFeature.fromJS(_data["subscriptionFeature"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): TenantPlanFeatureOverride {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantPlanFeatureOverride();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["tenantPlanFeatureOverrideId"] = this.tenantPlanFeatureOverrideId;
-        data["subscriptionPlanId"] = this.subscriptionPlanId;
-        data["subscriptionFeatureId"] = this.subscriptionFeatureId;
-        data["value"] = this.value;
-        data["rowVersion"] = this.rowVersion;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["subscriptionPlan"] = this.subscriptionPlan ? this.subscriptionPlan.toJSON() : undefined as any;
-        data["subscriptionFeature"] = this.subscriptionFeature ? this.subscriptionFeature.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ITenantPlanFeatureOverride {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    tenantPlanFeatureOverrideId?: number;
-    subscriptionPlanId?: number;
-    subscriptionFeatureId?: number;
-    value?: string | undefined;
-    rowVersion?: string | undefined;
-    tenant?: Tenant;
-    subscriptionPlan?: SubscriptionPlan;
-    subscriptionFeature?: SubscriptionFeature;
-}
-
 export class TenantProfileSequence implements ITenantProfileSequence {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -12448,98 +14559,6 @@ export interface ITenantSubscription {
     tenant?: Tenant;
 }
 
-export class TenantUserPlan implements ITenantUserPlan {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    tenantUserPlanId?: number;
-    subscriptionPlanId?: number | undefined;
-    priceOverride?: number | undefined;
-    durationOverride?: number | undefined;
-    isActive?: boolean;
-    tenant?: Tenant;
-    subscriptionPlan?: SubscriptionPlan;
-    userSubscriptions?: UserSubscription[] | undefined;
-
-    constructor(data?: ITenantUserPlan) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.tenantUserPlanId = _data["tenantUserPlanId"];
-            this.subscriptionPlanId = _data["subscriptionPlanId"];
-            this.priceOverride = _data["priceOverride"];
-            this.durationOverride = _data["durationOverride"];
-            this.isActive = _data["isActive"];
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.subscriptionPlan = _data["subscriptionPlan"] ? SubscriptionPlan.fromJS(_data["subscriptionPlan"]) : undefined as any;
-            if (Array.isArray(_data["userSubscriptions"])) {
-                this.userSubscriptions = [] as any;
-                for (let item of _data["userSubscriptions"])
-                    this.userSubscriptions!.push(UserSubscription.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): TenantUserPlan {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantUserPlan();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["tenantUserPlanId"] = this.tenantUserPlanId;
-        data["subscriptionPlanId"] = this.subscriptionPlanId;
-        data["priceOverride"] = this.priceOverride;
-        data["durationOverride"] = this.durationOverride;
-        data["isActive"] = this.isActive;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["subscriptionPlan"] = this.subscriptionPlan ? this.subscriptionPlan.toJSON() : undefined as any;
-        if (Array.isArray(this.userSubscriptions)) {
-            data["userSubscriptions"] = [];
-            for (let item of this.userSubscriptions)
-                data["userSubscriptions"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ITenantUserPlan {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    tenantUserPlanId?: number;
-    subscriptionPlanId?: number | undefined;
-    priceOverride?: number | undefined;
-    durationOverride?: number | undefined;
-    isActive?: boolean;
-    tenant?: Tenant;
-    subscriptionPlan?: SubscriptionPlan;
-    userSubscriptions?: UserSubscription[] | undefined;
-}
-
 export class TrustedDevice implements ITrustedDevice {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -12612,10 +14631,133 @@ export interface ITrustedDevice {
     user?: User;
 }
 
+export class UpdatePermissionRequest implements IUpdatePermissionRequest {
+    displayName?: string | undefined;
+    description?: string | undefined;
+    isActive?: boolean | undefined;
+
+    constructor(data?: IUpdatePermissionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.displayName = _data["displayName"];
+            this.description = _data["description"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): UpdatePermissionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdatePermissionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["displayName"] = this.displayName;
+        data["description"] = this.description;
+        data["isActive"] = this.isActive;
+        return data;
+    }
+}
+
+export interface IUpdatePermissionRequest {
+    displayName?: string | undefined;
+    description?: string | undefined;
+    isActive?: boolean | undefined;
+}
+
+export class UpdatePlatformPermissionRequest implements IUpdatePlatformPermissionRequest {
+    displayName?: string | undefined;
+    description?: string | undefined;
+    isActive?: boolean | undefined;
+
+    constructor(data?: IUpdatePlatformPermissionRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.displayName = _data["displayName"];
+            this.description = _data["description"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): UpdatePlatformPermissionRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdatePlatformPermissionRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["displayName"] = this.displayName;
+        data["description"] = this.description;
+        data["isActive"] = this.isActive;
+        return data;
+    }
+}
+
+export interface IUpdatePlatformPermissionRequest {
+    displayName?: string | undefined;
+    description?: string | undefined;
+    isActive?: boolean | undefined;
+}
+
+export class UpdateRoleRequest implements IUpdateRoleRequest {
+    roleName?: string | undefined;
+
+    constructor(data?: IUpdateRoleRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.roleName = _data["roleName"];
+        }
+    }
+
+    static fromJS(data: any): UpdateRoleRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateRoleRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["roleName"] = this.roleName;
+        return data;
+    }
+}
+
+export interface IUpdateRoleRequest {
+    roleName?: string | undefined;
+}
+
 export class UpdateUserRequest implements IUpdateUserRequest {
     email?: string | undefined;
     isActive?: boolean | undefined;
-    isSuperAdmin?: boolean | undefined;
 
     constructor(data?: IUpdateUserRequest) {
         if (data) {
@@ -12630,7 +14772,6 @@ export class UpdateUserRequest implements IUpdateUserRequest {
         if (_data) {
             this.email = _data["email"];
             this.isActive = _data["isActive"];
-            this.isSuperAdmin = _data["isSuperAdmin"];
         }
     }
 
@@ -12645,7 +14786,6 @@ export class UpdateUserRequest implements IUpdateUserRequest {
         data = typeof data === 'object' ? data : {};
         data["email"] = this.email;
         data["isActive"] = this.isActive;
-        data["isSuperAdmin"] = this.isSuperAdmin;
         return data;
     }
 }
@@ -12653,7 +14793,6 @@ export class UpdateUserRequest implements IUpdateUserRequest {
 export interface IUpdateUserRequest {
     email?: string | undefined;
     isActive?: boolean | undefined;
-    isSuperAdmin?: boolean | undefined;
 }
 
 export class User implements IUser {
@@ -12680,7 +14819,6 @@ export class User implements IUser {
     concurrencyStamp?: string | undefined;
     passwordChangedAt?: Date | undefined;
     passwordExpiryDays?: number;
-    isSuperAdmin?: boolean;
     isActive?: boolean;
     failedLoginAttempts?: number;
     lockoutEnd?: Date | undefined;
@@ -12752,7 +14890,6 @@ export class User implements IUser {
             this.concurrencyStamp = _data["concurrencyStamp"];
             this.passwordChangedAt = _data["passwordChangedAt"] ? new Date(_data["passwordChangedAt"].toString()) : undefined as any;
             this.passwordExpiryDays = _data["passwordExpiryDays"];
-            this.isSuperAdmin = _data["isSuperAdmin"];
             this.isActive = _data["isActive"];
             this.failedLoginAttempts = _data["failedLoginAttempts"];
             this.lockoutEnd = _data["lockoutEnd"] ? new Date(_data["lockoutEnd"].toString()) : undefined as any;
@@ -12940,7 +15077,6 @@ export class User implements IUser {
         data["concurrencyStamp"] = this.concurrencyStamp;
         data["passwordChangedAt"] = this.passwordChangedAt ? this.passwordChangedAt.toISOString() : undefined as any;
         data["passwordExpiryDays"] = this.passwordExpiryDays;
-        data["isSuperAdmin"] = this.isSuperAdmin;
         data["isActive"] = this.isActive;
         data["failedLoginAttempts"] = this.failedLoginAttempts;
         data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : undefined as any;
@@ -13121,7 +15257,6 @@ export interface IUser {
     concurrencyStamp?: string | undefined;
     passwordChangedAt?: Date | undefined;
     passwordExpiryDays?: number;
-    isSuperAdmin?: boolean;
     isActive?: boolean;
     failedLoginAttempts?: number;
     lockoutEnd?: Date | undefined;
@@ -13158,6 +15293,54 @@ export interface IUser {
     externalLogins?: ExternalLogin[] | undefined;
     rolePermissions?: RolePermission[] | undefined;
     userSubscriptions?: UserSubscription[] | undefined;
+}
+
+export class UserBasicInfoDto implements IUserBasicInfoDto {
+    id?: number;
+    email?: string | undefined;
+    tenantId?: number;
+    isActive?: boolean;
+
+    constructor(data?: IUserBasicInfoDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.email = _data["email"];
+            this.tenantId = _data["tenantId"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): UserBasicInfoDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserBasicInfoDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["email"] = this.email;
+        data["tenantId"] = this.tenantId;
+        data["isActive"] = this.isActive;
+        return data;
+    }
+}
+
+export interface IUserBasicInfoDto {
+    id?: number;
+    email?: string | undefined;
+    tenantId?: number;
+    isActive?: boolean;
 }
 
 export class UserOnlineStatus implements IUserOnlineStatus {
@@ -13354,6 +15537,42 @@ export interface IUserPermission {
     grantedByNavigation?: User;
     permission?: Permission;
     user?: User;
+}
+
+export class UserPermissionDto implements IUserPermissionDto {
+    permissionCode?: string | undefined;
+
+    constructor(data?: IUserPermissionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.permissionCode = _data["permissionCode"];
+        }
+    }
+
+    static fromJS(data: any): UserPermissionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserPermissionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["permissionCode"] = this.permissionCode;
+        return data;
+    }
+}
+
+export interface IUserPermissionDto {
+    permissionCode?: string | undefined;
 }
 
 export class UserRole implements IUserRole {
@@ -13640,7 +15859,7 @@ export class UserSubscription implements IUserSubscription {
     tenantId?: number;
     userSubscriptionId?: number;
     userId?: number;
-    tenantUserPlanId?: number;
+    userSubscriptionPlanId?: number;
     startDate?: Date;
     endDate?: Date;
     isActive?: boolean;
@@ -13655,7 +15874,7 @@ export class UserSubscription implements IUserSubscription {
     nextRenewalDate?: Date | undefined;
     renewalCount?: number;
     rowVersion?: string | undefined;
-    tenantUserPlan?: TenantUserPlan;
+    userSubscriptionPlan?: UserSubscriptionPlan;
     user?: User;
     invoices?: Invoice[] | undefined;
     paymentTransactions?: PaymentTransaction[] | undefined;
@@ -13679,7 +15898,7 @@ export class UserSubscription implements IUserSubscription {
             this.tenantId = _data["tenantId"];
             this.userSubscriptionId = _data["userSubscriptionId"];
             this.userId = _data["userId"];
-            this.tenantUserPlanId = _data["tenantUserPlanId"];
+            this.userSubscriptionPlanId = _data["userSubscriptionPlanId"];
             this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : undefined as any;
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
             this.isActive = _data["isActive"];
@@ -13694,7 +15913,7 @@ export class UserSubscription implements IUserSubscription {
             this.nextRenewalDate = _data["nextRenewalDate"] ? new Date(_data["nextRenewalDate"].toString()) : undefined as any;
             this.renewalCount = _data["renewalCount"];
             this.rowVersion = _data["rowVersion"];
-            this.tenantUserPlan = _data["tenantUserPlan"] ? TenantUserPlan.fromJS(_data["tenantUserPlan"]) : undefined as any;
+            this.userSubscriptionPlan = _data["userSubscriptionPlan"] ? UserSubscriptionPlan.fromJS(_data["userSubscriptionPlan"]) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
             if (Array.isArray(_data["invoices"])) {
                 this.invoices = [] as any;
@@ -13730,7 +15949,7 @@ export class UserSubscription implements IUserSubscription {
         data["tenantId"] = this.tenantId;
         data["userSubscriptionId"] = this.userSubscriptionId;
         data["userId"] = this.userId;
-        data["tenantUserPlanId"] = this.tenantUserPlanId;
+        data["userSubscriptionPlanId"] = this.userSubscriptionPlanId;
         data["startDate"] = this.startDate ? formatDate(this.startDate) : undefined as any;
         data["endDate"] = this.endDate ? formatDate(this.endDate) : undefined as any;
         data["isActive"] = this.isActive;
@@ -13745,7 +15964,7 @@ export class UserSubscription implements IUserSubscription {
         data["nextRenewalDate"] = this.nextRenewalDate ? formatDate(this.nextRenewalDate) : undefined as any;
         data["renewalCount"] = this.renewalCount;
         data["rowVersion"] = this.rowVersion;
-        data["tenantUserPlan"] = this.tenantUserPlan ? this.tenantUserPlan.toJSON() : undefined as any;
+        data["userSubscriptionPlan"] = this.userSubscriptionPlan ? this.userSubscriptionPlan.toJSON() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         if (Array.isArray(this.invoices)) {
             data["invoices"] = [];
@@ -13774,7 +15993,7 @@ export interface IUserSubscription {
     tenantId?: number;
     userSubscriptionId?: number;
     userId?: number;
-    tenantUserPlanId?: number;
+    userSubscriptionPlanId?: number;
     startDate?: Date;
     endDate?: Date;
     isActive?: boolean;
@@ -13789,11 +16008,223 @@ export interface IUserSubscription {
     nextRenewalDate?: Date | undefined;
     renewalCount?: number;
     rowVersion?: string | undefined;
-    tenantUserPlan?: TenantUserPlan;
+    userSubscriptionPlan?: UserSubscriptionPlan;
     user?: User;
     invoices?: Invoice[] | undefined;
     paymentTransactions?: PaymentTransaction[] | undefined;
     lifecycleEvents?: SubscriptionLifecycleEvent[] | undefined;
+}
+
+export class UserSubscriptionPlan implements IUserSubscriptionPlan {
+    createdAt?: Date;
+    updatedAt?: Date | undefined;
+    createdBy?: number | undefined;
+    updatedBy?: number | undefined;
+    isDeleted?: boolean;
+    deletedAt?: Date | undefined;
+    deletedBy?: number | undefined;
+    rowVersion?: string | undefined;
+    userSubscriptionPlanId?: number;
+    tenantId?: number;
+    code?: string | undefined;
+    name?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    durationMonths?: number;
+    currency?: string | undefined;
+    displayOrder?: number;
+    isPopular?: boolean;
+    isActive?: boolean;
+    tenant?: Tenant;
+    planFeatures?: UserSubscriptionPlanFeature[] | undefined;
+    userSubscriptions?: UserSubscription[] | undefined;
+
+    constructor(data?: IUserSubscriptionPlan) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
+            this.createdBy = _data["createdBy"];
+            this.updatedBy = _data["updatedBy"];
+            this.isDeleted = _data["isDeleted"];
+            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
+            this.deletedBy = _data["deletedBy"];
+            this.rowVersion = _data["rowVersion"];
+            this.userSubscriptionPlanId = _data["userSubscriptionPlanId"];
+            this.tenantId = _data["tenantId"];
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.price = _data["price"];
+            this.durationMonths = _data["durationMonths"];
+            this.currency = _data["currency"];
+            this.displayOrder = _data["displayOrder"];
+            this.isPopular = _data["isPopular"];
+            this.isActive = _data["isActive"];
+            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
+            if (Array.isArray(_data["planFeatures"])) {
+                this.planFeatures = [] as any;
+                for (let item of _data["planFeatures"])
+                    this.planFeatures!.push(UserSubscriptionPlanFeature.fromJS(item));
+            }
+            if (Array.isArray(_data["userSubscriptions"])) {
+                this.userSubscriptions = [] as any;
+                for (let item of _data["userSubscriptions"])
+                    this.userSubscriptions!.push(UserSubscription.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UserSubscriptionPlan {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserSubscriptionPlan();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
+        data["createdBy"] = this.createdBy;
+        data["updatedBy"] = this.updatedBy;
+        data["isDeleted"] = this.isDeleted;
+        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
+        data["deletedBy"] = this.deletedBy;
+        data["rowVersion"] = this.rowVersion;
+        data["userSubscriptionPlanId"] = this.userSubscriptionPlanId;
+        data["tenantId"] = this.tenantId;
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["price"] = this.price;
+        data["durationMonths"] = this.durationMonths;
+        data["currency"] = this.currency;
+        data["displayOrder"] = this.displayOrder;
+        data["isPopular"] = this.isPopular;
+        data["isActive"] = this.isActive;
+        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
+        if (Array.isArray(this.planFeatures)) {
+            data["planFeatures"] = [];
+            for (let item of this.planFeatures)
+                data["planFeatures"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.userSubscriptions)) {
+            data["userSubscriptions"] = [];
+            for (let item of this.userSubscriptions)
+                data["userSubscriptions"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IUserSubscriptionPlan {
+    createdAt?: Date;
+    updatedAt?: Date | undefined;
+    createdBy?: number | undefined;
+    updatedBy?: number | undefined;
+    isDeleted?: boolean;
+    deletedAt?: Date | undefined;
+    deletedBy?: number | undefined;
+    rowVersion?: string | undefined;
+    userSubscriptionPlanId?: number;
+    tenantId?: number;
+    code?: string | undefined;
+    name?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    durationMonths?: number;
+    currency?: string | undefined;
+    displayOrder?: number;
+    isPopular?: boolean;
+    isActive?: boolean;
+    tenant?: Tenant;
+    planFeatures?: UserSubscriptionPlanFeature[] | undefined;
+    userSubscriptions?: UserSubscription[] | undefined;
+}
+
+export class UserSubscriptionPlanFeature implements IUserSubscriptionPlanFeature {
+    createdAt?: Date;
+    updatedAt?: Date | undefined;
+    createdBy?: number | undefined;
+    updatedBy?: number | undefined;
+    userSubscriptionPlanFeatureId?: number;
+    userSubscriptionPlanId?: number;
+    subscriptionFeatureId?: number;
+    value?: string | undefined;
+    rowVersion?: string | undefined;
+    userSubscriptionPlan?: UserSubscriptionPlan;
+    subscriptionFeature?: SubscriptionFeature;
+
+    constructor(data?: IUserSubscriptionPlanFeature) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
+            this.createdBy = _data["createdBy"];
+            this.updatedBy = _data["updatedBy"];
+            this.userSubscriptionPlanFeatureId = _data["userSubscriptionPlanFeatureId"];
+            this.userSubscriptionPlanId = _data["userSubscriptionPlanId"];
+            this.subscriptionFeatureId = _data["subscriptionFeatureId"];
+            this.value = _data["value"];
+            this.rowVersion = _data["rowVersion"];
+            this.userSubscriptionPlan = _data["userSubscriptionPlan"] ? UserSubscriptionPlan.fromJS(_data["userSubscriptionPlan"]) : undefined as any;
+            this.subscriptionFeature = _data["subscriptionFeature"] ? SubscriptionFeature.fromJS(_data["subscriptionFeature"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): UserSubscriptionPlanFeature {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserSubscriptionPlanFeature();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
+        data["createdBy"] = this.createdBy;
+        data["updatedBy"] = this.updatedBy;
+        data["userSubscriptionPlanFeatureId"] = this.userSubscriptionPlanFeatureId;
+        data["userSubscriptionPlanId"] = this.userSubscriptionPlanId;
+        data["subscriptionFeatureId"] = this.subscriptionFeatureId;
+        data["value"] = this.value;
+        data["rowVersion"] = this.rowVersion;
+        data["userSubscriptionPlan"] = this.userSubscriptionPlan ? this.userSubscriptionPlan.toJSON() : undefined as any;
+        data["subscriptionFeature"] = this.subscriptionFeature ? this.subscriptionFeature.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IUserSubscriptionPlanFeature {
+    createdAt?: Date;
+    updatedAt?: Date | undefined;
+    createdBy?: number | undefined;
+    updatedBy?: number | undefined;
+    userSubscriptionPlanFeatureId?: number;
+    userSubscriptionPlanId?: number;
+    subscriptionFeatureId?: number;
+    value?: string | undefined;
+    rowVersion?: string | undefined;
+    userSubscriptionPlan?: UserSubscriptionPlan;
+    subscriptionFeature?: SubscriptionFeature;
 }
 
 export class UserTenant implements IUserTenant {

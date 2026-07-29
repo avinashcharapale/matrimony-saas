@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
@@ -23,7 +23,7 @@ import {
 export class SubscriptionClient {
   private readonly http = inject(HttpClient);
 
-  // --- Plans ----------------------------------------------------------------
+  // ─── Plans ────────────────────────────────────────────────────────────────
 
   getAllSubscriptionPlans(tenantId?: number): Observable<SubscriptionPlanDto[]> {
     let params = new HttpParams();
@@ -57,7 +57,7 @@ export class SubscriptionClient {
     return this.http.delete<void>(`/subscription/TenantSubscriptionPlans/${id}`);
   }
 
-  // --- Features -------------------------------------------------------------
+  // ─── Features ────────────────────────────────────────────────────────────
 
   getAllSubscriptionFeatures(): Observable<SubscriptionFeatureDto[]> {
     return this.http.get<SubscriptionFeatureDto[]>('/subscription/SubscriptionFeatures');
@@ -79,9 +79,9 @@ export class SubscriptionClient {
     return this.http.delete<void>(`/subscription/SubscriptionFeatures/${id}`);
   }
 
-  // --- Status ---------------------------------------------------------------
+  // ─── Subscription Status ─────────────────────────────────────────────────
 
-  getSubscriptionStatus(tenantId: number): Observable<SubscriptionStatusDto> {
+  getTenantSubscriptionStatus(tenantId: number): Observable<SubscriptionStatusDto> {
     return this.http.get<SubscriptionStatusDto>(`/subscription/subscription/status/${tenantId}`);
   }
 
@@ -89,16 +89,14 @@ export class SubscriptionClient {
     return this.http.get<SubscriptionStatusDto>(`/subscription/subscription/user-status/${userId}`);
   }
 
-  // --- Payments -------------------------------------------------------------
+  // ─── Tenant Subscription Assignment ──────────────────────────────────────
 
-  checkout(body: CheckoutRequestDto): Observable<CheckoutResponseDto> {
-    return this.http.post<CheckoutResponseDto>('/subscription/Payments/checkout', body);
-  }
-
-  // --- Tenant Subscriptions --------------------------------------------------
-
-  getTenantSubscriptions(tenantId: number): Observable<TenantSubscriptionDto[]> {
-    return this.http.get<TenantSubscriptionDto[]>(`/subscription/TenantSubscriptions?tenantId=${tenantId}`);
+  getTenantSubscriptions(tenantId?: number): Observable<TenantSubscriptionDto[]> {
+    let params = new HttpParams();
+    if (tenantId !== undefined) {
+      params = params.set('tenantId', tenantId);
+    }
+    return this.http.get<TenantSubscriptionDto[]>('/subscription/TenantSubscriptions', { params });
   }
 
   getTenantSubscriptionById(id: number): Observable<TenantSubscriptionDto> {
@@ -117,7 +115,7 @@ export class SubscriptionClient {
     return this.http.delete<void>(`/subscription/TenantSubscriptions/${id}`);
   }
 
-  // --- User Subscription Plans ----------------------------------------------
+  // ─── User Subscription Plans (per-tenant) ────────────────────────────────
 
   getAllUserSubscriptionPlans(): Observable<UserSubscriptionPlanDto[]> {
     return this.http.get<UserSubscriptionPlanDto[]>('/subscription/UserSubscriptionPlans');
@@ -137,5 +135,11 @@ export class SubscriptionClient {
 
   deleteUserSubscriptionPlan(id: number): Observable<void> {
     return this.http.delete<void>(`/subscription/UserSubscriptionPlans/${id}`);
+  }
+
+  // ─── Checkout ────────────────────────────────────────────────────────────
+
+  checkout(body: CheckoutRequestDto): Observable<CheckoutResponseDto> {
+    return this.http.post<CheckoutResponseDto>('/subscription/Payments/checkout', body);
   }
 }

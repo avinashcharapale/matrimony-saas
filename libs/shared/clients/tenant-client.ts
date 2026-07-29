@@ -7,6 +7,522 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
+export class PlatformAdminsClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @return OK
+     */
+    getAll(): Promise<PlatformAdminDto[]> {
+        let url_ = this.baseUrl + "/api/PlatformAdmins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<PlatformAdminDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PlatformAdminDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PlatformAdminDto[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    create(body: CreatePlatformAdminRequest | undefined): Promise<PlatformAdminDetailDto> {
+        let url_ = this.baseUrl + "/api/PlatformAdmins";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<PlatformAdminDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PlatformAdminDetailDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PlatformAdminDetailDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getById(id: number): Promise<PlatformAdminDetailDto> {
+        let url_ = this.baseUrl + "/api/PlatformAdmins/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetById(_response);
+        });
+    }
+
+    protected processGetById(response: Response): Promise<PlatformAdminDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PlatformAdminDetailDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PlatformAdminDetailDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    update(id: number, body: UpdatePlatformAdminRequest | undefined): Promise<PlatformAdminDetailDto> {
+        let url_ = this.baseUrl + "/api/PlatformAdmins/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<PlatformAdminDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PlatformAdminDetailDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PlatformAdminDetailDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    deactivate(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformAdmins/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeactivate(_response);
+        });
+    }
+
+    protected processDeactivate(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
+export class PlatformRolesClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @return OK
+     */
+    getAll(): Promise<PlatformRoleDto[]> {
+        let url_ = this.baseUrl + "/api/PlatformRoles";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
+        });
+    }
+
+    protected processGetAll(response: Response): Promise<PlatformRoleDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PlatformRoleDto.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PlatformRoleDto[]>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    create(body: CreatePlatformRoleRequest | undefined): Promise<PlatformRoleDto> {
+        let url_ = this.baseUrl + "/api/PlatformRoles";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<PlatformRoleDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PlatformRoleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PlatformRoleDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getById(id: number): Promise<PlatformRoleDto> {
+        let url_ = this.baseUrl + "/api/PlatformRoles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetById(_response);
+        });
+    }
+
+    protected processGetById(response: Response): Promise<PlatformRoleDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PlatformRoleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PlatformRoleDto>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    update(id: number, body: UpdatePlatformRoleRequest | undefined): Promise<PlatformRoleDto> {
+        let url_ = this.baseUrl + "/api/PlatformRoles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
+        });
+    }
+
+    protected processUpdate(response: Response): Promise<PlatformRoleDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PlatformRoleDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PlatformRoleDto>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    delete(id: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformRoles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    assignPermissions(id: number, body: AssignPlatformPermissionsRequest | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformRoles/{id}/permissions";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAssignPermissions(_response);
+        });
+    }
+
+    protected processAssignPermissions(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    removePermission(id: number, permId: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/PlatformRoles/{id}/permissions/{permId}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (permId === undefined || permId === null)
+            throw new globalThis.Error("The parameter 'permId' must be defined.");
+        url_ = url_.replace("{permId}", encodeURIComponent("" + permId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRemovePermission(_response);
+        });
+    }
+
+    protected processRemovePermission(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
 export class TenantsClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -319,6 +835,50 @@ export interface IApiKey {
     revokedAt?: Date | undefined;
     tenant?: Tenant;
     user?: User;
+}
+
+export class AssignPlatformPermissionsRequest implements IAssignPlatformPermissionsRequest {
+    permissionIds?: number[] | undefined;
+
+    constructor(data?: IAssignPlatformPermissionsRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["permissionIds"])) {
+                this.permissionIds = [] as any;
+                for (let item of _data["permissionIds"])
+                    this.permissionIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): AssignPlatformPermissionsRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AssignPlatformPermissionsRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.permissionIds)) {
+            data["permissionIds"] = [];
+            for (let item of this.permissionIds)
+                data["permissionIds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IAssignPlatformPermissionsRequest {
+    permissionIds?: number[] | undefined;
 }
 
 export class AuditLog implements IAuditLog {
@@ -2057,6 +2617,98 @@ export interface ICouponUsage {
     invoice?: Invoice;
 }
 
+export class CreatePlatformAdminRequest implements ICreatePlatformAdminRequest {
+    email?: string | undefined;
+    password?: string | undefined;
+    displayName?: string | undefined;
+    roleIds?: number[] | undefined;
+
+    constructor(data?: ICreatePlatformAdminRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.email = _data["email"];
+            this.password = _data["password"];
+            this.displayName = _data["displayName"];
+            if (Array.isArray(_data["roleIds"])) {
+                this.roleIds = [] as any;
+                for (let item of _data["roleIds"])
+                    this.roleIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): CreatePlatformAdminRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreatePlatformAdminRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
+        data["password"] = this.password;
+        data["displayName"] = this.displayName;
+        if (Array.isArray(this.roleIds)) {
+            data["roleIds"] = [];
+            for (let item of this.roleIds)
+                data["roleIds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface ICreatePlatformAdminRequest {
+    email?: string | undefined;
+    password?: string | undefined;
+    displayName?: string | undefined;
+    roleIds?: number[] | undefined;
+}
+
+export class CreatePlatformRoleRequest implements ICreatePlatformRoleRequest {
+    roleName?: string | undefined;
+
+    constructor(data?: ICreatePlatformRoleRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.roleName = _data["roleName"];
+        }
+    }
+
+    static fromJS(data: any): CreatePlatformRoleRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreatePlatformRoleRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["roleName"] = this.roleName;
+        return data;
+    }
+}
+
+export interface ICreatePlatformRoleRequest {
+    roleName?: string | undefined;
+}
+
 export class CreateTenantRequest implements ICreateTenantRequest {
     tenantCode!: string;
     domain?: string | undefined;
@@ -3490,7 +4142,7 @@ export class InterestRequest implements IInterestRequest {
     interestRequestId?: number;
     requesterProfileId?: number;
     targetProfileId?: number;
-    status?: string | undefined;
+    status?: InterestRequestStatus;
     message?: string | undefined;
     respondedAt?: Date | undefined;
     profile?: Profile;
@@ -3573,12 +4225,20 @@ export interface IInterestRequest {
     interestRequestId?: number;
     requesterProfileId?: number;
     targetProfileId?: number;
-    status?: string | undefined;
+    status?: InterestRequestStatus;
     message?: string | undefined;
     respondedAt?: Date | undefined;
     profile?: Profile;
     profileNavigation?: Profile;
     tenant?: Tenant;
+}
+
+export enum InterestRequestStatus {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+    _3 = 3,
+    _4 = 4,
 }
 
 export class Invoice implements IInvoice {
@@ -6468,6 +7128,206 @@ export interface IPlanPrice {
     price?: number;
     setupFee?: number;
     subscriptionPlan?: SubscriptionPlan;
+}
+
+export class PlatformAdminDetailDto implements IPlatformAdminDetailDto {
+    platformAdminId?: number;
+    email?: string | undefined;
+    displayName?: string | undefined;
+    mustChangePassword?: boolean;
+    isActive?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    roles?: PlatformRoleDto[] | undefined;
+
+    constructor(data?: IPlatformAdminDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.platformAdminId = _data["platformAdminId"];
+            this.email = _data["email"];
+            this.displayName = _data["displayName"];
+            this.mustChangePassword = _data["mustChangePassword"];
+            this.isActive = _data["isActive"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(PlatformRoleDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PlatformAdminDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PlatformAdminDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["platformAdminId"] = this.platformAdminId;
+        data["email"] = this.email;
+        data["displayName"] = this.displayName;
+        data["mustChangePassword"] = this.mustChangePassword;
+        data["isActive"] = this.isActive;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IPlatformAdminDetailDto {
+    platformAdminId?: number;
+    email?: string | undefined;
+    displayName?: string | undefined;
+    mustChangePassword?: boolean;
+    isActive?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    roles?: PlatformRoleDto[] | undefined;
+}
+
+export class PlatformAdminDto implements IPlatformAdminDto {
+    platformAdminId?: number;
+    email?: string | undefined;
+    displayName?: string | undefined;
+    mustChangePassword?: boolean;
+    isActive?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    roles?: PlatformRoleDto[] | undefined;
+
+    constructor(data?: IPlatformAdminDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.platformAdminId = _data["platformAdminId"];
+            this.email = _data["email"];
+            this.displayName = _data["displayName"];
+            this.mustChangePassword = _data["mustChangePassword"];
+            this.isActive = _data["isActive"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(PlatformRoleDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PlatformAdminDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PlatformAdminDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["platformAdminId"] = this.platformAdminId;
+        data["email"] = this.email;
+        data["displayName"] = this.displayName;
+        data["mustChangePassword"] = this.mustChangePassword;
+        data["isActive"] = this.isActive;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IPlatformAdminDto {
+    platformAdminId?: number;
+    email?: string | undefined;
+    displayName?: string | undefined;
+    mustChangePassword?: boolean;
+    isActive?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
+    roles?: PlatformRoleDto[] | undefined;
+}
+
+export class PlatformRoleDto implements IPlatformRoleDto {
+    platformRoleId?: number;
+    roleName?: string | undefined;
+    isActive?: boolean;
+    createdAt?: Date;
+    permissionCount?: number;
+    adminCount?: number;
+
+    constructor(data?: IPlatformRoleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.platformRoleId = _data["platformRoleId"];
+            this.roleName = _data["roleName"];
+            this.isActive = _data["isActive"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.permissionCount = _data["permissionCount"];
+            this.adminCount = _data["adminCount"];
+        }
+    }
+
+    static fromJS(data: any): PlatformRoleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PlatformRoleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["platformRoleId"] = this.platformRoleId;
+        data["roleName"] = this.roleName;
+        data["isActive"] = this.isActive;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["permissionCount"] = this.permissionCount;
+        data["adminCount"] = this.adminCount;
+        return data;
+    }
+}
+
+export interface IPlatformRoleDto {
+    platformRoleId?: number;
+    roleName?: string | undefined;
+    isActive?: boolean;
+    createdAt?: Date;
+    permissionCount?: number;
+    adminCount?: number;
 }
 
 export class Profile implements IProfile {
@@ -10104,7 +10964,7 @@ export class SubscriptionFeature implements ISubscriptionFeature {
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     planFeatures?: SubscriptionPlanFeature[] | undefined;
-    tenantPlanFeatureOverrides?: TenantPlanFeatureOverride[] | undefined;
+    userPlanFeatures?: UserSubscriptionPlanFeature[] | undefined;
 
     constructor(data?: ISubscriptionFeature) {
         if (data) {
@@ -10138,10 +10998,10 @@ export class SubscriptionFeature implements ISubscriptionFeature {
                 for (let item of _data["planFeatures"])
                     this.planFeatures!.push(SubscriptionPlanFeature.fromJS(item));
             }
-            if (Array.isArray(_data["tenantPlanFeatureOverrides"])) {
-                this.tenantPlanFeatureOverrides = [] as any;
-                for (let item of _data["tenantPlanFeatureOverrides"])
-                    this.tenantPlanFeatureOverrides!.push(TenantPlanFeatureOverride.fromJS(item));
+            if (Array.isArray(_data["userPlanFeatures"])) {
+                this.userPlanFeatures = [] as any;
+                for (let item of _data["userPlanFeatures"])
+                    this.userPlanFeatures!.push(UserSubscriptionPlanFeature.fromJS(item));
             }
         }
     }
@@ -10176,10 +11036,10 @@ export class SubscriptionFeature implements ISubscriptionFeature {
             for (let item of this.planFeatures)
                 data["planFeatures"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.tenantPlanFeatureOverrides)) {
-            data["tenantPlanFeatureOverrides"] = [];
-            for (let item of this.tenantPlanFeatureOverrides)
-                data["tenantPlanFeatureOverrides"].push(item ? item.toJSON() : undefined as any);
+        if (Array.isArray(this.userPlanFeatures)) {
+            data["userPlanFeatures"] = [];
+            for (let item of this.userPlanFeatures)
+                data["userPlanFeatures"].push(item ? item.toJSON() : undefined as any);
         }
         return data;
     }
@@ -10203,7 +11063,7 @@ export interface ISubscriptionFeature {
     deletedBy?: number | undefined;
     rowVersion?: string | undefined;
     planFeatures?: SubscriptionPlanFeature[] | undefined;
-    tenantPlanFeatureOverrides?: TenantPlanFeatureOverride[] | undefined;
+    userPlanFeatures?: UserSubscriptionPlanFeature[] | undefined;
 }
 
 export class SubscriptionLifecycleEvent implements ISubscriptionLifecycleEvent {
@@ -10300,8 +11160,6 @@ export class SubscriptionPlan implements ISubscriptionPlan {
     isActive?: boolean;
     tenant?: Tenant;
     planFeatures?: SubscriptionPlanFeature[] | undefined;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
-    tenantPlanFeatureOverrides?: TenantPlanFeatureOverride[] | undefined;
     planPrices?: PlanPrice[] | undefined;
     planVersions?: SubscriptionPlanVersion[] | undefined;
     addOns?: SubscriptionAddOn[] | undefined;
@@ -10341,16 +11199,6 @@ export class SubscriptionPlan implements ISubscriptionPlan {
                 this.planFeatures = [] as any;
                 for (let item of _data["planFeatures"])
                     this.planFeatures!.push(SubscriptionPlanFeature.fromJS(item));
-            }
-            if (Array.isArray(_data["tenantUserPlans"])) {
-                this.tenantUserPlans = [] as any;
-                for (let item of _data["tenantUserPlans"])
-                    this.tenantUserPlans!.push(TenantUserPlan.fromJS(item));
-            }
-            if (Array.isArray(_data["tenantPlanFeatureOverrides"])) {
-                this.tenantPlanFeatureOverrides = [] as any;
-                for (let item of _data["tenantPlanFeatureOverrides"])
-                    this.tenantPlanFeatureOverrides!.push(TenantPlanFeatureOverride.fromJS(item));
             }
             if (Array.isArray(_data["planPrices"])) {
                 this.planPrices = [] as any;
@@ -10404,16 +11252,6 @@ export class SubscriptionPlan implements ISubscriptionPlan {
             for (let item of this.planFeatures)
                 data["planFeatures"].push(item ? item.toJSON() : undefined as any);
         }
-        if (Array.isArray(this.tenantUserPlans)) {
-            data["tenantUserPlans"] = [];
-            for (let item of this.tenantUserPlans)
-                data["tenantUserPlans"].push(item ? item.toJSON() : undefined as any);
-        }
-        if (Array.isArray(this.tenantPlanFeatureOverrides)) {
-            data["tenantPlanFeatureOverrides"] = [];
-            for (let item of this.tenantPlanFeatureOverrides)
-                data["tenantPlanFeatureOverrides"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.planPrices)) {
             data["planPrices"] = [];
             for (let item of this.planPrices)
@@ -10455,8 +11293,6 @@ export interface ISubscriptionPlan {
     isActive?: boolean;
     tenant?: Tenant;
     planFeatures?: SubscriptionPlanFeature[] | undefined;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
-    tenantPlanFeatureOverrides?: TenantPlanFeatureOverride[] | undefined;
     planPrices?: PlanPrice[] | undefined;
     planVersions?: SubscriptionPlanVersion[] | undefined;
     addOns?: SubscriptionAddOn[] | undefined;
@@ -10807,7 +11643,6 @@ export class Tenant implements ITenant {
     tenantMasterData?: TenantMasterDatum[] | undefined;
     tenantSettings?: TenantSetting[] | undefined;
     tenantSubscription?: TenantSubscription;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
     users?: User[] | undefined;
     matches?: Match[] | undefined;
     compatibilityRules?: CompatibilityRule[] | undefined;
@@ -10958,11 +11793,6 @@ export class Tenant implements ITenant {
                     this.tenantSettings!.push(TenantSetting.fromJS(item));
             }
             this.tenantSubscription = _data["tenantSubscription"] ? TenantSubscription.fromJS(_data["tenantSubscription"]) : undefined as any;
-            if (Array.isArray(_data["tenantUserPlans"])) {
-                this.tenantUserPlans = [] as any;
-                for (let item of _data["tenantUserPlans"])
-                    this.tenantUserPlans!.push(TenantUserPlan.fromJS(item));
-            }
             if (Array.isArray(_data["users"])) {
                 this.users = [] as any;
                 for (let item of _data["users"])
@@ -11133,11 +11963,6 @@ export class Tenant implements ITenant {
                 data["tenantSettings"].push(item ? item.toJSON() : undefined as any);
         }
         data["tenantSubscription"] = this.tenantSubscription ? this.tenantSubscription.toJSON() : undefined as any;
-        if (Array.isArray(this.tenantUserPlans)) {
-            data["tenantUserPlans"] = [];
-            for (let item of this.tenantUserPlans)
-                data["tenantUserPlans"].push(item ? item.toJSON() : undefined as any);
-        }
         if (Array.isArray(this.users)) {
             data["users"] = [];
             for (let item of this.users)
@@ -11229,7 +12054,6 @@ export interface ITenant {
     tenantMasterData?: TenantMasterDatum[] | undefined;
     tenantSettings?: TenantSetting[] | undefined;
     tenantSubscription?: TenantSubscription;
-    tenantUserPlans?: TenantUserPlan[] | undefined;
     users?: User[] | undefined;
     matches?: Match[] | undefined;
     compatibilityRules?: CompatibilityRule[] | undefined;
@@ -11401,6 +12225,8 @@ export interface ITenantDomain {
 export class TenantDto implements ITenantDto {
     tenantId?: number;
     tenantCode?: string | undefined;
+    name?: string | undefined;
+    displayName?: string | undefined;
     domain?: string | undefined;
     subscriptionStatus?: string | undefined;
     trialEndDate?: Date | undefined;
@@ -11422,6 +12248,8 @@ export class TenantDto implements ITenantDto {
         if (_data) {
             this.tenantId = _data["tenantId"];
             this.tenantCode = _data["tenantCode"];
+            this.name = _data["name"];
+            this.displayName = _data["displayName"];
             this.domain = _data["domain"];
             this.subscriptionStatus = _data["subscriptionStatus"];
             this.trialEndDate = _data["trialEndDate"] ? new Date(_data["trialEndDate"].toString()) : undefined as any;
@@ -11443,6 +12271,8 @@ export class TenantDto implements ITenantDto {
         data = typeof data === 'object' ? data : {};
         data["tenantId"] = this.tenantId;
         data["tenantCode"] = this.tenantCode;
+        data["name"] = this.name;
+        data["displayName"] = this.displayName;
         data["domain"] = this.domain;
         data["subscriptionStatus"] = this.subscriptionStatus;
         data["trialEndDate"] = this.trialEndDate ? formatDate(this.trialEndDate) : undefined as any;
@@ -11457,6 +12287,8 @@ export class TenantDto implements ITenantDto {
 export interface ITenantDto {
     tenantId?: number;
     tenantCode?: string | undefined;
+    name?: string | undefined;
+    displayName?: string | undefined;
     domain?: string | undefined;
     subscriptionStatus?: string | undefined;
     trialEndDate?: Date | undefined;
@@ -11826,90 +12658,6 @@ export interface ITenantNotificationSetting {
     tenant?: Tenant;
 }
 
-export class TenantPlanFeatureOverride implements ITenantPlanFeatureOverride {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    tenantPlanFeatureOverrideId?: number;
-    subscriptionPlanId?: number;
-    subscriptionFeatureId?: number;
-    value?: string | undefined;
-    rowVersion?: string | undefined;
-    tenant?: Tenant;
-    subscriptionPlan?: SubscriptionPlan;
-    subscriptionFeature?: SubscriptionFeature;
-
-    constructor(data?: ITenantPlanFeatureOverride) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.tenantPlanFeatureOverrideId = _data["tenantPlanFeatureOverrideId"];
-            this.subscriptionPlanId = _data["subscriptionPlanId"];
-            this.subscriptionFeatureId = _data["subscriptionFeatureId"];
-            this.value = _data["value"];
-            this.rowVersion = _data["rowVersion"];
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.subscriptionPlan = _data["subscriptionPlan"] ? SubscriptionPlan.fromJS(_data["subscriptionPlan"]) : undefined as any;
-            this.subscriptionFeature = _data["subscriptionFeature"] ? SubscriptionFeature.fromJS(_data["subscriptionFeature"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): TenantPlanFeatureOverride {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantPlanFeatureOverride();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["tenantPlanFeatureOverrideId"] = this.tenantPlanFeatureOverrideId;
-        data["subscriptionPlanId"] = this.subscriptionPlanId;
-        data["subscriptionFeatureId"] = this.subscriptionFeatureId;
-        data["value"] = this.value;
-        data["rowVersion"] = this.rowVersion;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["subscriptionPlan"] = this.subscriptionPlan ? this.subscriptionPlan.toJSON() : undefined as any;
-        data["subscriptionFeature"] = this.subscriptionFeature ? this.subscriptionFeature.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface ITenantPlanFeatureOverride {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    tenantPlanFeatureOverrideId?: number;
-    subscriptionPlanId?: number;
-    subscriptionFeatureId?: number;
-    value?: string | undefined;
-    rowVersion?: string | undefined;
-    tenant?: Tenant;
-    subscriptionPlan?: SubscriptionPlan;
-    subscriptionFeature?: SubscriptionFeature;
-}
-
 export class TenantProfileSequence implements ITenantProfileSequence {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -12222,98 +12970,6 @@ export interface ITenantSubscription {
     tenant?: Tenant;
 }
 
-export class TenantUserPlan implements ITenantUserPlan {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    tenantUserPlanId?: number;
-    subscriptionPlanId?: number | undefined;
-    priceOverride?: number | undefined;
-    durationOverride?: number | undefined;
-    isActive?: boolean;
-    tenant?: Tenant;
-    subscriptionPlan?: SubscriptionPlan;
-    userSubscriptions?: UserSubscription[] | undefined;
-
-    constructor(data?: ITenantUserPlan) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
-            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
-            this.createdBy = _data["createdBy"];
-            this.updatedBy = _data["updatedBy"];
-            this.tenantId = _data["tenantId"];
-            this.tenantUserPlanId = _data["tenantUserPlanId"];
-            this.subscriptionPlanId = _data["subscriptionPlanId"];
-            this.priceOverride = _data["priceOverride"];
-            this.durationOverride = _data["durationOverride"];
-            this.isActive = _data["isActive"];
-            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
-            this.subscriptionPlan = _data["subscriptionPlan"] ? SubscriptionPlan.fromJS(_data["subscriptionPlan"]) : undefined as any;
-            if (Array.isArray(_data["userSubscriptions"])) {
-                this.userSubscriptions = [] as any;
-                for (let item of _data["userSubscriptions"])
-                    this.userSubscriptions!.push(UserSubscription.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): TenantUserPlan {
-        data = typeof data === 'object' ? data : {};
-        let result = new TenantUserPlan();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
-        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
-        data["createdBy"] = this.createdBy;
-        data["updatedBy"] = this.updatedBy;
-        data["tenantId"] = this.tenantId;
-        data["tenantUserPlanId"] = this.tenantUserPlanId;
-        data["subscriptionPlanId"] = this.subscriptionPlanId;
-        data["priceOverride"] = this.priceOverride;
-        data["durationOverride"] = this.durationOverride;
-        data["isActive"] = this.isActive;
-        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
-        data["subscriptionPlan"] = this.subscriptionPlan ? this.subscriptionPlan.toJSON() : undefined as any;
-        if (Array.isArray(this.userSubscriptions)) {
-            data["userSubscriptions"] = [];
-            for (let item of this.userSubscriptions)
-                data["userSubscriptions"].push(item ? item.toJSON() : undefined as any);
-        }
-        return data;
-    }
-}
-
-export interface ITenantUserPlan {
-    createdAt?: Date;
-    updatedAt?: Date | undefined;
-    createdBy?: number | undefined;
-    updatedBy?: number | undefined;
-    tenantId?: number;
-    tenantUserPlanId?: number;
-    subscriptionPlanId?: number | undefined;
-    priceOverride?: number | undefined;
-    durationOverride?: number | undefined;
-    isActive?: boolean;
-    tenant?: Tenant;
-    subscriptionPlan?: SubscriptionPlan;
-    userSubscriptions?: UserSubscription[] | undefined;
-}
-
 export class TrustedDevice implements ITrustedDevice {
     createdAt?: Date;
     updatedAt?: Date | undefined;
@@ -12384,6 +13040,98 @@ export interface ITrustedDevice {
     deviceName?: string | undefined;
     trustedUntil?: Date;
     user?: User;
+}
+
+export class UpdatePlatformAdminRequest implements IUpdatePlatformAdminRequest {
+    displayName?: string | undefined;
+    isActive?: boolean | undefined;
+    roleIds?: number[] | undefined;
+
+    constructor(data?: IUpdatePlatformAdminRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.displayName = _data["displayName"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["roleIds"])) {
+                this.roleIds = [] as any;
+                for (let item of _data["roleIds"])
+                    this.roleIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdatePlatformAdminRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdatePlatformAdminRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["displayName"] = this.displayName;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.roleIds)) {
+            data["roleIds"] = [];
+            for (let item of this.roleIds)
+                data["roleIds"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IUpdatePlatformAdminRequest {
+    displayName?: string | undefined;
+    isActive?: boolean | undefined;
+    roleIds?: number[] | undefined;
+}
+
+export class UpdatePlatformRoleRequest implements IUpdatePlatformRoleRequest {
+    roleName?: string | undefined;
+    isActive?: boolean | undefined;
+
+    constructor(data?: IUpdatePlatformRoleRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.roleName = _data["roleName"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): UpdatePlatformRoleRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdatePlatformRoleRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["roleName"] = this.roleName;
+        data["isActive"] = this.isActive;
+        return data;
+    }
+}
+
+export interface IUpdatePlatformRoleRequest {
+    roleName?: string | undefined;
+    isActive?: boolean | undefined;
 }
 
 export class UpdateTenantRequest implements IUpdateTenantRequest {
@@ -12458,7 +13206,6 @@ export class User implements IUser {
     concurrencyStamp?: string | undefined;
     passwordChangedAt?: Date | undefined;
     passwordExpiryDays?: number;
-    isSuperAdmin?: boolean;
     isActive?: boolean;
     failedLoginAttempts?: number;
     lockoutEnd?: Date | undefined;
@@ -12530,7 +13277,6 @@ export class User implements IUser {
             this.concurrencyStamp = _data["concurrencyStamp"];
             this.passwordChangedAt = _data["passwordChangedAt"] ? new Date(_data["passwordChangedAt"].toString()) : undefined as any;
             this.passwordExpiryDays = _data["passwordExpiryDays"];
-            this.isSuperAdmin = _data["isSuperAdmin"];
             this.isActive = _data["isActive"];
             this.failedLoginAttempts = _data["failedLoginAttempts"];
             this.lockoutEnd = _data["lockoutEnd"] ? new Date(_data["lockoutEnd"].toString()) : undefined as any;
@@ -12718,7 +13464,6 @@ export class User implements IUser {
         data["concurrencyStamp"] = this.concurrencyStamp;
         data["passwordChangedAt"] = this.passwordChangedAt ? this.passwordChangedAt.toISOString() : undefined as any;
         data["passwordExpiryDays"] = this.passwordExpiryDays;
-        data["isSuperAdmin"] = this.isSuperAdmin;
         data["isActive"] = this.isActive;
         data["failedLoginAttempts"] = this.failedLoginAttempts;
         data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : undefined as any;
@@ -12899,7 +13644,6 @@ export interface IUser {
     concurrencyStamp?: string | undefined;
     passwordChangedAt?: Date | undefined;
     passwordExpiryDays?: number;
-    isSuperAdmin?: boolean;
     isActive?: boolean;
     failedLoginAttempts?: number;
     lockoutEnd?: Date | undefined;
@@ -13418,7 +14162,7 @@ export class UserSubscription implements IUserSubscription {
     tenantId?: number;
     userSubscriptionId?: number;
     userId?: number;
-    tenantUserPlanId?: number;
+    userSubscriptionPlanId?: number;
     startDate?: Date;
     endDate?: Date;
     isActive?: boolean;
@@ -13433,7 +14177,7 @@ export class UserSubscription implements IUserSubscription {
     nextRenewalDate?: Date | undefined;
     renewalCount?: number;
     rowVersion?: string | undefined;
-    tenantUserPlan?: TenantUserPlan;
+    userSubscriptionPlan?: UserSubscriptionPlan;
     user?: User;
     invoices?: Invoice[] | undefined;
     paymentTransactions?: PaymentTransaction[] | undefined;
@@ -13457,7 +14201,7 @@ export class UserSubscription implements IUserSubscription {
             this.tenantId = _data["tenantId"];
             this.userSubscriptionId = _data["userSubscriptionId"];
             this.userId = _data["userId"];
-            this.tenantUserPlanId = _data["tenantUserPlanId"];
+            this.userSubscriptionPlanId = _data["userSubscriptionPlanId"];
             this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : undefined as any;
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : undefined as any;
             this.isActive = _data["isActive"];
@@ -13472,7 +14216,7 @@ export class UserSubscription implements IUserSubscription {
             this.nextRenewalDate = _data["nextRenewalDate"] ? new Date(_data["nextRenewalDate"].toString()) : undefined as any;
             this.renewalCount = _data["renewalCount"];
             this.rowVersion = _data["rowVersion"];
-            this.tenantUserPlan = _data["tenantUserPlan"] ? TenantUserPlan.fromJS(_data["tenantUserPlan"]) : undefined as any;
+            this.userSubscriptionPlan = _data["userSubscriptionPlan"] ? UserSubscriptionPlan.fromJS(_data["userSubscriptionPlan"]) : undefined as any;
             this.user = _data["user"] ? User.fromJS(_data["user"]) : undefined as any;
             if (Array.isArray(_data["invoices"])) {
                 this.invoices = [] as any;
@@ -13508,7 +14252,7 @@ export class UserSubscription implements IUserSubscription {
         data["tenantId"] = this.tenantId;
         data["userSubscriptionId"] = this.userSubscriptionId;
         data["userId"] = this.userId;
-        data["tenantUserPlanId"] = this.tenantUserPlanId;
+        data["userSubscriptionPlanId"] = this.userSubscriptionPlanId;
         data["startDate"] = this.startDate ? formatDate(this.startDate) : undefined as any;
         data["endDate"] = this.endDate ? formatDate(this.endDate) : undefined as any;
         data["isActive"] = this.isActive;
@@ -13523,7 +14267,7 @@ export class UserSubscription implements IUserSubscription {
         data["nextRenewalDate"] = this.nextRenewalDate ? formatDate(this.nextRenewalDate) : undefined as any;
         data["renewalCount"] = this.renewalCount;
         data["rowVersion"] = this.rowVersion;
-        data["tenantUserPlan"] = this.tenantUserPlan ? this.tenantUserPlan.toJSON() : undefined as any;
+        data["userSubscriptionPlan"] = this.userSubscriptionPlan ? this.userSubscriptionPlan.toJSON() : undefined as any;
         data["user"] = this.user ? this.user.toJSON() : undefined as any;
         if (Array.isArray(this.invoices)) {
             data["invoices"] = [];
@@ -13552,7 +14296,7 @@ export interface IUserSubscription {
     tenantId?: number;
     userSubscriptionId?: number;
     userId?: number;
-    tenantUserPlanId?: number;
+    userSubscriptionPlanId?: number;
     startDate?: Date;
     endDate?: Date;
     isActive?: boolean;
@@ -13567,11 +14311,223 @@ export interface IUserSubscription {
     nextRenewalDate?: Date | undefined;
     renewalCount?: number;
     rowVersion?: string | undefined;
-    tenantUserPlan?: TenantUserPlan;
+    userSubscriptionPlan?: UserSubscriptionPlan;
     user?: User;
     invoices?: Invoice[] | undefined;
     paymentTransactions?: PaymentTransaction[] | undefined;
     lifecycleEvents?: SubscriptionLifecycleEvent[] | undefined;
+}
+
+export class UserSubscriptionPlan implements IUserSubscriptionPlan {
+    createdAt?: Date;
+    updatedAt?: Date | undefined;
+    createdBy?: number | undefined;
+    updatedBy?: number | undefined;
+    isDeleted?: boolean;
+    deletedAt?: Date | undefined;
+    deletedBy?: number | undefined;
+    rowVersion?: string | undefined;
+    userSubscriptionPlanId?: number;
+    tenantId?: number;
+    code?: string | undefined;
+    name?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    durationMonths?: number;
+    currency?: string | undefined;
+    displayOrder?: number;
+    isPopular?: boolean;
+    isActive?: boolean;
+    tenant?: Tenant;
+    planFeatures?: UserSubscriptionPlanFeature[] | undefined;
+    userSubscriptions?: UserSubscription[] | undefined;
+
+    constructor(data?: IUserSubscriptionPlan) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
+            this.createdBy = _data["createdBy"];
+            this.updatedBy = _data["updatedBy"];
+            this.isDeleted = _data["isDeleted"];
+            this.deletedAt = _data["deletedAt"] ? new Date(_data["deletedAt"].toString()) : undefined as any;
+            this.deletedBy = _data["deletedBy"];
+            this.rowVersion = _data["rowVersion"];
+            this.userSubscriptionPlanId = _data["userSubscriptionPlanId"];
+            this.tenantId = _data["tenantId"];
+            this.code = _data["code"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.price = _data["price"];
+            this.durationMonths = _data["durationMonths"];
+            this.currency = _data["currency"];
+            this.displayOrder = _data["displayOrder"];
+            this.isPopular = _data["isPopular"];
+            this.isActive = _data["isActive"];
+            this.tenant = _data["tenant"] ? Tenant.fromJS(_data["tenant"]) : undefined as any;
+            if (Array.isArray(_data["planFeatures"])) {
+                this.planFeatures = [] as any;
+                for (let item of _data["planFeatures"])
+                    this.planFeatures!.push(UserSubscriptionPlanFeature.fromJS(item));
+            }
+            if (Array.isArray(_data["userSubscriptions"])) {
+                this.userSubscriptions = [] as any;
+                for (let item of _data["userSubscriptions"])
+                    this.userSubscriptions!.push(UserSubscription.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UserSubscriptionPlan {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserSubscriptionPlan();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
+        data["createdBy"] = this.createdBy;
+        data["updatedBy"] = this.updatedBy;
+        data["isDeleted"] = this.isDeleted;
+        data["deletedAt"] = this.deletedAt ? this.deletedAt.toISOString() : undefined as any;
+        data["deletedBy"] = this.deletedBy;
+        data["rowVersion"] = this.rowVersion;
+        data["userSubscriptionPlanId"] = this.userSubscriptionPlanId;
+        data["tenantId"] = this.tenantId;
+        data["code"] = this.code;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["price"] = this.price;
+        data["durationMonths"] = this.durationMonths;
+        data["currency"] = this.currency;
+        data["displayOrder"] = this.displayOrder;
+        data["isPopular"] = this.isPopular;
+        data["isActive"] = this.isActive;
+        data["tenant"] = this.tenant ? this.tenant.toJSON() : undefined as any;
+        if (Array.isArray(this.planFeatures)) {
+            data["planFeatures"] = [];
+            for (let item of this.planFeatures)
+                data["planFeatures"].push(item ? item.toJSON() : undefined as any);
+        }
+        if (Array.isArray(this.userSubscriptions)) {
+            data["userSubscriptions"] = [];
+            for (let item of this.userSubscriptions)
+                data["userSubscriptions"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IUserSubscriptionPlan {
+    createdAt?: Date;
+    updatedAt?: Date | undefined;
+    createdBy?: number | undefined;
+    updatedBy?: number | undefined;
+    isDeleted?: boolean;
+    deletedAt?: Date | undefined;
+    deletedBy?: number | undefined;
+    rowVersion?: string | undefined;
+    userSubscriptionPlanId?: number;
+    tenantId?: number;
+    code?: string | undefined;
+    name?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    durationMonths?: number;
+    currency?: string | undefined;
+    displayOrder?: number;
+    isPopular?: boolean;
+    isActive?: boolean;
+    tenant?: Tenant;
+    planFeatures?: UserSubscriptionPlanFeature[] | undefined;
+    userSubscriptions?: UserSubscription[] | undefined;
+}
+
+export class UserSubscriptionPlanFeature implements IUserSubscriptionPlanFeature {
+    createdAt?: Date;
+    updatedAt?: Date | undefined;
+    createdBy?: number | undefined;
+    updatedBy?: number | undefined;
+    userSubscriptionPlanFeatureId?: number;
+    userSubscriptionPlanId?: number;
+    subscriptionFeatureId?: number;
+    value?: string | undefined;
+    rowVersion?: string | undefined;
+    userSubscriptionPlan?: UserSubscriptionPlan;
+    subscriptionFeature?: SubscriptionFeature;
+
+    constructor(data?: IUserSubscriptionPlanFeature) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : undefined as any;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : undefined as any;
+            this.createdBy = _data["createdBy"];
+            this.updatedBy = _data["updatedBy"];
+            this.userSubscriptionPlanFeatureId = _data["userSubscriptionPlanFeatureId"];
+            this.userSubscriptionPlanId = _data["userSubscriptionPlanId"];
+            this.subscriptionFeatureId = _data["subscriptionFeatureId"];
+            this.value = _data["value"];
+            this.rowVersion = _data["rowVersion"];
+            this.userSubscriptionPlan = _data["userSubscriptionPlan"] ? UserSubscriptionPlan.fromJS(_data["userSubscriptionPlan"]) : undefined as any;
+            this.subscriptionFeature = _data["subscriptionFeature"] ? SubscriptionFeature.fromJS(_data["subscriptionFeature"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): UserSubscriptionPlanFeature {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserSubscriptionPlanFeature();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : undefined as any;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : undefined as any;
+        data["createdBy"] = this.createdBy;
+        data["updatedBy"] = this.updatedBy;
+        data["userSubscriptionPlanFeatureId"] = this.userSubscriptionPlanFeatureId;
+        data["userSubscriptionPlanId"] = this.userSubscriptionPlanId;
+        data["subscriptionFeatureId"] = this.subscriptionFeatureId;
+        data["value"] = this.value;
+        data["rowVersion"] = this.rowVersion;
+        data["userSubscriptionPlan"] = this.userSubscriptionPlan ? this.userSubscriptionPlan.toJSON() : undefined as any;
+        data["subscriptionFeature"] = this.subscriptionFeature ? this.subscriptionFeature.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IUserSubscriptionPlanFeature {
+    createdAt?: Date;
+    updatedAt?: Date | undefined;
+    createdBy?: number | undefined;
+    updatedBy?: number | undefined;
+    userSubscriptionPlanFeatureId?: number;
+    userSubscriptionPlanId?: number;
+    subscriptionFeatureId?: number;
+    value?: string | undefined;
+    rowVersion?: string | undefined;
+    userSubscriptionPlan?: UserSubscriptionPlan;
+    subscriptionFeature?: SubscriptionFeature;
 }
 
 export class UserTenant implements IUserTenant {
