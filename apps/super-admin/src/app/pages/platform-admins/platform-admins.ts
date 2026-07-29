@@ -319,6 +319,7 @@ export class PlatformAdmins implements OnInit {
     const edit = this.editing();
     const request$ = edit?.platformAdminId
       ? this.adminService.update(edit.platformAdminId, {
+          email: val.email,
           displayName: val.displayName || undefined,
           isActive: val.isActive,
           roleIds,

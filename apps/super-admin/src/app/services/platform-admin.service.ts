@@ -41,6 +41,7 @@ export interface CreatePlatformAdminRequest {
 }
 
 export interface UpdatePlatformAdminRequest {
+  email?: string;
   displayName?: string;
   isActive?: boolean;
   roleIds?: number[];

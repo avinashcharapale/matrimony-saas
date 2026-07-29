@@ -13043,6 +13043,7 @@ export interface ITrustedDevice {
 }
 
 export class UpdatePlatformAdminRequest implements IUpdatePlatformAdminRequest {
+    email?: string | undefined;
     displayName?: string | undefined;
     isActive?: boolean | undefined;
     roleIds?: number[] | undefined;
@@ -13058,6 +13059,7 @@ export class UpdatePlatformAdminRequest implements IUpdatePlatformAdminRequest {
 
     init(_data?: any) {
         if (_data) {
+            this.email = _data["email"];
             this.displayName = _data["displayName"];
             this.isActive = _data["isActive"];
             if (Array.isArray(_data["roleIds"])) {
@@ -13077,6 +13079,7 @@ export class UpdatePlatformAdminRequest implements IUpdatePlatformAdminRequest {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["email"] = this.email;
         data["displayName"] = this.displayName;
         data["isActive"] = this.isActive;
         if (Array.isArray(this.roleIds)) {
@@ -13089,6 +13092,7 @@ export class UpdatePlatformAdminRequest implements IUpdatePlatformAdminRequest {
 }
 
 export interface IUpdatePlatformAdminRequest {
+    email?: string | undefined;
     displayName?: string | undefined;
     isActive?: boolean | undefined;
     roleIds?: number[] | undefined;

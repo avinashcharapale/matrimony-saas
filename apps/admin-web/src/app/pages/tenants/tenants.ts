@@ -153,8 +153,12 @@ interface TenantRow extends Record<string, unknown> {
   tenantName?: string;
   domainName?: string;
   isActive?: boolean;
+  subscriptionStartDate?: string;
+  subscriptionEndDate?: string;
   trialEndDate?: string;
   isActiveLabel: string;
+  subscriptionStartDateFormatted: string;
+  subscriptionEndDateFormatted: string;
   trialEndDateFormatted: string;
 }
 
@@ -232,6 +236,8 @@ export class Tenants implements OnInit {
     { key: 'tenantId', label: 'ID', type: 'text' },
     { key: 'tenantName', label: 'Tenant Name', type: 'text' },
     { key: 'domainName', label: 'Domain', type: 'text' },
+    { key: 'subscriptionStartDateFormatted', label: 'Start Date', type: 'date' },
+    { key: 'subscriptionEndDateFormatted', label: 'End Date', type: 'date' },
     { key: 'trialEndDateFormatted', label: 'Trial End Date', type: 'date' },
     { key: 'isActiveLabel', label: 'Status', type: 'badge' },
   ];
@@ -271,8 +277,16 @@ export class Tenants implements OnInit {
       tenantName: tenant.tenantName,
       domainName: tenant.domainName,
       isActive: tenant.isActive,
+      subscriptionStartDate: tenant.subscriptionStartDate,
+      subscriptionEndDate: tenant.subscriptionEndDate,
       trialEndDate: tenant.trialEndDate,
       isActiveLabel: tenant.isActive ? 'Active' : 'Inactive',
+      subscriptionStartDateFormatted: tenant.subscriptionStartDate
+        ? new Date(tenant.subscriptionStartDate).toLocaleDateString()
+        : '-',
+      subscriptionEndDateFormatted: tenant.subscriptionEndDate
+        ? new Date(tenant.subscriptionEndDate).toLocaleDateString()
+        : '-',
       trialEndDateFormatted: tenant.trialEndDate
         ? new Date(tenant.trialEndDate).toLocaleDateString()
         : '-',

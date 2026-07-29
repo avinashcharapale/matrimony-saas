@@ -55,6 +55,8 @@ import { TenantClient, TenantDto } from '@org/generated';
                 <th>Domain</th>
                 <th>Users</th>
                 <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
                 <th>Trial End Date</th>
                 <th>Actions</th>
               </tr>
@@ -71,6 +73,8 @@ import { TenantClient, TenantDto } from '@org/generated';
                       {{ tenant.isActive ? 'Active' : 'Inactive' }}
                     </span>
                   </td>
+                  <td>{{ tenant.subscriptionStartDate ? (tenant.subscriptionStartDate | date:'mediumDate') : '—' }}</td>
+                  <td>{{ tenant.subscriptionEndDate ? (tenant.subscriptionEndDate | date:'mediumDate') : '—' }}</td>
                   <td>{{ tenant.trialEndDate ? (tenant.trialEndDate | date:'mediumDate') : '—' }}</td>
                   <td class="cell-actions">
                     <button class="btn-icon-sm" title="Permissions" (click)="navigateToPerms(tenant.tenantId!)">P</button>
