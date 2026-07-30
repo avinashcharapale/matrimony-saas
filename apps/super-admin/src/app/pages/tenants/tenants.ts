@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { TenantClient, TenantDto } from '@org/generated';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
@@ -23,6 +25,8 @@ import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dial
     CommonModule,
     RouterModule,
     MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatButtonModule,
     MatIconModule,
   ],
@@ -40,12 +44,17 @@ import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dial
       </div>
 
       <div class="search-bar">
-        <input
-          type="text"
-          placeholder="Search by name or domain..."
-          [value]="searchTerm()"
-          (input)="onSearch($event)"
-        />
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search tenants</mat-label>
+          <input
+            matInput
+            type="text"
+            placeholder="Search by name or domain..."
+            [value]="searchTerm()"
+            (input)="onSearch($event)"
+          />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
       </div>
 
       @if (loading()) {
@@ -113,11 +122,7 @@ import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dial
     .page-header h1 { font-size: 1.5rem; color: #2c003e; margin-bottom: 0.25rem; }
     .subtitle { color: #666; font-size: 0.875rem; }
     .search-bar { margin-bottom: 1.5rem; }
-    .search-bar input {
-      width: 100%; max-width: 400px; padding: 0.625rem 1rem; border: 1px solid #ddd;
-      border-radius: 6px; font-size: 0.875rem; outline: none;
-    }
-    .search-bar input:focus { border-color: #7b1fa2; box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.1); }
+    .search-field { width: 360px; }
     .loading-state { padding: 3rem; text-align: center; color: #888; }
     .empty-state { padding: 3rem; text-align: center; color: #888; }
     .empty-icon {
