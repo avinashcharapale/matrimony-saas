@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -44,8 +44,12 @@ export interface RoleFormResult {
         </mat-form-field>
 
         <div class="toggle-row">
-          <mat-slide-toggle formControlName="isActive" color="primary">
-            Active
+          <mat-slide-toggle
+            [checked]="isActiveValue()"
+            (click)="isActiveValue.set(!isActiveValue())"
+            color="primary"
+          >
+            {{ isActiveValue() ? 'Active' : 'Inactive' }}
           </mat-slide-toggle>
         </div>
       </form>
@@ -80,6 +84,8 @@ export class RoleFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<RoleFormDialogComponent, RoleFormResult>);
   readonly data = inject<RoleFormDialogData>(MAT_DIALOG_DATA);
 
+  readonly isActiveValue = signal(this.data.role?.isActive ?? true);
+
   readonly form = this.fb.nonNullable.group({
     roleName: [this.data.role?.roleName ?? '', Validators.required],
     isActive: [this.data.role?.isActive ?? true],
@@ -88,6 +94,6 @@ export class RoleFormDialogComponent {
   submit(): void {
     if (this.form.invalid) return;
     const val = this.form.getRawValue();
-    this.dialogRef.close(val);
+    this.dialogRef.close({ ...val, isActive: this.isActiveValue() });
   }
 }

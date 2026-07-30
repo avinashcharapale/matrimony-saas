@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -79,8 +79,12 @@ export interface PermFormResult {
         </mat-form-field>
 
         <div class="toggle-row">
-          <mat-slide-toggle formControlName="isActive" color="primary">
-            Active
+          <mat-slide-toggle
+            [checked]="isActiveValue()"
+            (click)="isActiveValue.set(!isActiveValue())"
+            color="primary"
+          >
+            {{ isActiveValue() ? 'Active' : 'Inactive' }}
           </mat-slide-toggle>
         </div>
       </form>
@@ -108,6 +112,8 @@ export class PermFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<PermFormDialogComponent, PermFormResult>);
   readonly data = inject<PermFormDialogData>(MAT_DIALOG_DATA);
 
+  readonly isActiveValue = signal(this.data.perm?.isActive ?? true);
+
   readonly form = this.fb.nonNullable.group({
     permissionCode: [this.data.perm?.permissionCode ?? '', Validators.required],
     displayName: [this.data.perm?.displayName ?? '', Validators.required],
@@ -119,6 +125,7 @@ export class PermFormDialogComponent {
 
   submit(): void {
     if (this.form.invalid) return;
-    this.dialogRef.close(this.form.getRawValue() as PermFormResult);
+    const raw = this.form.getRawValue();
+    this.dialogRef.close({ ...raw, isActive: this.isActiveValue() });
   }
 }

@@ -5,3 +5,6 @@ export type { ConfirmDialogData } from './lib/confirm-dialog.component';
 export { PageHeaderComponent } from './lib/page-header.component';
 export { StatusBadgeComponent } from './lib/status-badge.component';
 export { EmptyStateComponent } from './lib/empty-state.component';
+export { PaginatorComponent } from './lib/paginator.component';
+export { createSort, createPagination } from './lib/table-utils';
+export type { SortDirection } from './lib/table-utils';

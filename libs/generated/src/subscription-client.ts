@@ -104,7 +104,15 @@ export class SubscriptionClient {
   }
 
   createTenantSubscription(body: CreateTenantSubscriptionRequest): Observable<TenantSubscriptionDto> {
-    return this.http.post<TenantSubscriptionDto>('/subscription/TenantSubscriptions', body);
+    const payload = {
+      request: {
+        tenantId: body.tenantId,
+        planId: body.planId,
+        startDate: body.startDate?.split('T')[0],
+        endDate: body.endDate?.split('T')[0],
+      },
+    };
+    return this.http.post<TenantSubscriptionDto>('/subscription/TenantSubscriptions', payload);
   }
 
   updateTenantSubscription(id: number, body: UpdateTenantSubscriptionRequest): Observable<void> {

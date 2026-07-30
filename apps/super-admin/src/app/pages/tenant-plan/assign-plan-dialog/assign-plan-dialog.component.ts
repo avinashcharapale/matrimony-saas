@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { SubscriptionPlanDto, CreateTenantSubscriptionRequest } from '@org/generated';
 
@@ -18,6 +18,7 @@ export interface PlanFormDialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-assign-plan-dialog',
   standalone: true,
+  providers: [provideNativeDateAdapter()],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -26,7 +27,6 @@ export interface PlanFormDialogData {
     MatSelectModule,
     MatInputModule,
     MatDatepickerModule,
-    MatNativeDateModule,
     MatButtonModule,
   ],
   template: `

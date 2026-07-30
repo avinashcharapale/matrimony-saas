@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -86,8 +86,8 @@ export interface PlanFormDialogData {
         </div>
 
         <div class="toggle-row">
-          <mat-slide-toggle formControlName="isPopular" color="primary">Popular</mat-slide-toggle>
-          <mat-slide-toggle formControlName="isActive" color="primary">Active</mat-slide-toggle>
+          <mat-slide-toggle [checked]="isPopularValue()" (click)="isPopularValue.set(!isPopularValue())" color="primary">{{ isPopularValue() ? 'Popular' : 'Not Popular' }}</mat-slide-toggle>
+          <mat-slide-toggle [checked]="isActiveValue()" (click)="isActiveValue.set(!isActiveValue())" color="primary">{{ isActiveValue() ? 'Active' : 'Inactive' }}</mat-slide-toggle>
         </div>
       </form>
     </mat-dialog-content>
@@ -130,6 +130,9 @@ export class PlanFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<PlanFormDialogComponent, SubscriptionPlanDto>);
   readonly data = inject<PlanFormDialogData>(MAT_DIALOG_DATA);
 
+  readonly isPopularValue = signal(this.data.plan?.isPopular ?? false);
+  readonly isActiveValue = signal(this.data.plan?.isActive ?? true);
+
   readonly form = this.fb.nonNullable.group({
     code: [this.data.plan?.code ?? '', Validators.required],
     name: [this.data.plan?.name ?? '', Validators.required],
@@ -154,8 +157,8 @@ export class PlanFormDialogComponent {
       durationMonths: val.durationMonths,
       currency: val.currency,
       displayOrder: val.displayOrder,
-      isPopular: val.isPopular,
-      isActive: val.isActive,
+      isPopular: this.isPopularValue(),
+      isActive: this.isActiveValue(),
     };
     this.dialogRef.close(dto);
   }

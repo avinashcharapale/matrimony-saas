@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
+import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm-form-dialog.component';
 
 @Component({
@@ -20,6 +20,7 @@ import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    PaginatorComponent,
   ],
   template: `
     <div class="page">
@@ -54,17 +55,17 @@ import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Code</th>
-                <th>Display Name</th>
-                <th>Resource</th>
-                <th>Action</th>
-                <th>Status</th>
+                <th class="sortable" (click)="sort.toggleSort('id')">ID <mat-icon class="sort-icon">{{ sort.sortIcon('id') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('code')">Code <mat-icon class="sort-icon">{{ sort.sortIcon('code') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('displayName')">Display Name <mat-icon class="sort-icon">{{ sort.sortIcon('displayName') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('resource')">Resource <mat-icon class="sort-icon">{{ sort.sortIcon('resource') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('action')">Action <mat-icon class="sort-icon">{{ sort.sortIcon('action') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('status')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('status') }}</mat-icon></th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @for (perm of filtered(); track perm.platformPermissionId) {
+              @for (perm of pagination.paginated(); track perm.platformPermissionId) {
                 <tr>
                   <td class="cell-id">{{ perm.platformPermissionId }}</td>
                   <td class="cell-bold">{{ perm.permissionCode }}</td>
@@ -88,6 +89,14 @@ import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm
               }
             </tbody>
           </table>
+          <ui-paginator
+            [totalItems]="pagination.totalItems()"
+            [totalPages]="pagination.totalPages()"
+            [currentPage]="pagination.currentPage()"
+            [pageSize]="pagination.pageSize()"
+            (pageChange)="pagination.goToPage($event)"
+            (pageSizeChange)="pagination.onPageSizeChange($event)"
+          />
         </div>
       }
     </div>
@@ -114,6 +123,9 @@ import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm
     .badge { display: inline-block; padding: 0.2rem 0.625rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { background: #f0ecf3; }
+    .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }
   `],
 })
 export class PlatformPermissions implements OnInit {
@@ -133,6 +145,30 @@ export class PlatformPermissions implements OnInit {
     );
   });
 
+  readonly sort = createSort();
+
+  private readonly sorted = computed(() => {
+    const col = this.sort.sortColumn();
+    if (!col) return this.filtered();
+    const dir = this.sort.sortDirection();
+    const data = [...this.filtered()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'id': cmp = (a.platformPermissionId ?? 0) - (b.platformPermissionId ?? 0); break;
+        case 'code': cmp = (a.permissionCode || '').localeCompare(b.permissionCode || ''); break;
+        case 'displayName': cmp = (a.displayName || '').localeCompare(b.displayName || ''); break;
+        case 'resource': cmp = (a.resourceType || '').localeCompare(b.resourceType || ''); break;
+        case 'action': cmp = (a.action || '').localeCompare(b.action || ''); break;
+        case 'status': cmp = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly pagination = createPagination(this.sorted);
+
   ngOnInit(): void {
     this.loadPermissions();
   }
@@ -147,6 +183,7 @@ export class PlatformPermissions implements OnInit {
 
   onSearch(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
+    this.pagination.goToPage(1);
   }
 
   openAddDialog(): void {

@@ -33,12 +33,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tenant-form-dialog',
   standalone: true,
+  providers: [provideNativeDateAdapter()],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -49,7 +50,6 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatIconModule,
     MatSlideToggleModule,
     MatDatepickerModule,
-    MatNativeDateModule,
   ],
   template: `
     <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Add New Tenant' : 'Edit Tenant' }}</h2>

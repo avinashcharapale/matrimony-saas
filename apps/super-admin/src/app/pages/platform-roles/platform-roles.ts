@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { PlatformRoleService, PlatformRoleDto } from '../../services/platform-role.service';
-import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
+import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { RoleFormDialogComponent, RoleFormResult } from './role-form-dialog/role-form-dialog.component';
 import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/assign-permissions-dialog.component';
 
@@ -21,6 +21,7 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    PaginatorComponent,
   ],
   template: `
     <div class="page">
@@ -55,16 +56,16 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Role Name</th>
-                <th>Permissions</th>
-                <th>Admins</th>
-                <th>Status</th>
+                <th class="sortable" (click)="sort.toggleSort('id')">ID <mat-icon class="sort-icon">{{ sort.sortIcon('id') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('name')">Role Name <mat-icon class="sort-icon">{{ sort.sortIcon('name') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('permissions')">Permissions <mat-icon class="sort-icon">{{ sort.sortIcon('permissions') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('admins')">Admins <mat-icon class="sort-icon">{{ sort.sortIcon('admins') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('status')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('status') }}</mat-icon></th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @for (role of filtered(); track role.platformRoleId) {
+              @for (role of pagination.paginated(); track role.platformRoleId) {
                 <tr>
                   <td class="cell-id">{{ role.platformRoleId }}</td>
                   <td class="cell-bold">{{ role.roleName }}</td>
@@ -96,6 +97,14 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
               }
             </tbody>
           </table>
+          <ui-paginator
+            [totalItems]="pagination.totalItems()"
+            [totalPages]="pagination.totalPages()"
+            [currentPage]="pagination.currentPage()"
+            [pageSize]="pagination.pageSize()"
+            (pageChange)="pagination.goToPage($event)"
+            (pageSizeChange)="pagination.onPageSizeChange($event)"
+          />
         </div>
       }
     </div>
@@ -122,6 +131,9 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
     .badge { display: inline-block; padding: 0.2rem 0.625rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { background: #f0ecf3; }
+    .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }
   `],
 })
 export class PlatformRoles implements OnInit {
@@ -132,11 +144,34 @@ export class PlatformRoles implements OnInit {
   readonly roles = signal<PlatformRoleDto[]>([]);
   readonly searchTerm = signal('');
 
+  readonly sort = createSort();
+
   readonly filtered = computed(() => {
     const term = this.searchTerm().toLowerCase();
     if (!term) return this.roles();
     return this.roles().filter(r => r.roleName?.toLowerCase().includes(term));
   });
+
+  private readonly sorted = computed(() => {
+    const col = this.sort.sortColumn();
+    if (!col) return this.filtered();
+    const dir = this.sort.sortDirection();
+    const data = [...this.filtered()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'id': cmp = (a.platformRoleId ?? 0) - (b.platformRoleId ?? 0); break;
+        case 'name': cmp = (a.roleName || '').localeCompare(b.roleName || ''); break;
+        case 'permissions': cmp = (a.permissionCount ?? 0) - (b.permissionCount ?? 0); break;
+        case 'admins': cmp = (a.adminCount ?? 0) - (b.adminCount ?? 0); break;
+        case 'status': cmp = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly pagination = createPagination(this.sorted);
 
   ngOnInit(): void {
     this.loadRoles();
@@ -152,6 +187,7 @@ export class PlatformRoles implements OnInit {
 
   onSearch(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
+    this.pagination.goToPage(1);
   }
 
   openAddDialog(): void {

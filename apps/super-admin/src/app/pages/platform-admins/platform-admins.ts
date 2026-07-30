@@ -7,14 +7,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
+import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { AdminFormDialogComponent, AdminFormDialogData, AdminFormResult } from './admin-form-dialog/admin-form-dialog.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-platform-admins',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, PaginatorComponent],
   template: `
     <div class="page">
       <div class="page-header">
@@ -48,17 +48,17 @@ import { AdminFormDialogComponent, AdminFormDialogData, AdminFormResult } from '
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Email</th>
-                <th>Display Name</th>
-                <th>Roles</th>
-                <th>Status</th>
-                <th>Created</th>
+                <th class="sortable" (click)="sort.toggleSort('id')">ID <mat-icon class="sort-icon">{{ sort.sortIcon('id') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('email')">Email <mat-icon class="sort-icon">{{ sort.sortIcon('email') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('displayName')">Display Name <mat-icon class="sort-icon">{{ sort.sortIcon('displayName') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('roles')">Roles <mat-icon class="sort-icon">{{ sort.sortIcon('roles') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('status')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('status') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('created')">Created <mat-icon class="sort-icon">{{ sort.sortIcon('created') }}</mat-icon></th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @for (admin of filtered(); track admin.platformAdminId) {
+              @for (admin of pagination.paginated(); track admin.platformAdminId) {
                 <tr>
                   <td class="cell-id">{{ admin.platformAdminId }}</td>
                   <td class="cell-bold">{{ admin.email }}</td>
@@ -86,6 +86,14 @@ import { AdminFormDialogComponent, AdminFormDialogData, AdminFormResult } from '
               }
             </tbody>
           </table>
+          <ui-paginator
+            [totalItems]="pagination.totalItems()"
+            [totalPages]="pagination.totalPages()"
+            [currentPage]="pagination.currentPage()"
+            [pageSize]="pagination.pageSize()"
+            (pageChange)="pagination.goToPage($event)"
+            (pageSizeChange)="pagination.onPageSizeChange($event)"
+          />
         </div>
       }
     </div>
@@ -113,6 +121,9 @@ import { AdminFormDialogComponent, AdminFormDialogData, AdminFormResult } from '
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
     .role-tag { display: inline-block; padding: 2px 8px; background: #f3e5f5; color: #7b1fa2; border-radius: 4px; font-size: 0.75rem; font-weight: 500; margin: 1px 2px; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { background: #f0ecf3; }
+    .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }
   `],
 })
 export class PlatformAdmins implements OnInit {
@@ -126,11 +137,35 @@ export class PlatformAdmins implements OnInit {
   readonly availableRoles = signal<PlatformRoleDto[]>([]);
   readonly searchTerm = signal('');
 
+  readonly sort = createSort();
+
   readonly filtered = computed(() => {
     const term = this.searchTerm().toLowerCase();
     if (!term) return this.admins();
     return this.admins().filter(a => a.email?.toLowerCase().includes(term));
   });
+
+  private readonly sorted = computed(() => {
+    const col = this.sort.sortColumn();
+    if (!col) return this.filtered();
+    const dir = this.sort.sortDirection();
+    const data = [...this.filtered()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'id': cmp = (a.platformAdminId ?? 0) - (b.platformAdminId ?? 0); break;
+        case 'email': cmp = (a.email || '').localeCompare(b.email || ''); break;
+        case 'displayName': cmp = (a.displayName || '').localeCompare(b.displayName || ''); break;
+        case 'roles': cmp = (a.roles?.length ?? 0) - (b.roles?.length ?? 0); break;
+        case 'status': cmp = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0); break;
+        case 'created': cmp = (a.createdAt || '').localeCompare(b.createdAt || ''); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly pagination = createPagination(this.sorted);
 
   ngOnInit(): void {
     this.loadAdmins();
@@ -154,6 +189,7 @@ export class PlatformAdmins implements OnInit {
 
   onSearch(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
+    this.pagination.goToPage(1);
   }
 
   openAddDialog(): void {

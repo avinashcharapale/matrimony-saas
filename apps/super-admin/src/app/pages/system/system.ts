@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   inject,
   signal,
+  computed,
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -15,14 +16,14 @@ import {
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
+import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/plan-form-dialog.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-system',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, PaginatorComponent],
   template: `
     <div class="page">
       <div class="page-header">
@@ -48,18 +49,18 @@ import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/
           <table class="data-table">
             <thead>
               <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Duration (mo)</th>
-                <th>Currency</th>
-                <th>Popular</th>
-                <th>Status</th>
+                <th class="sortable" (click)="sort.toggleSort('code')">Code <mat-icon class="sort-icon">{{ sort.sortIcon('code') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('name')">Name <mat-icon class="sort-icon">{{ sort.sortIcon('name') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('price')">Price <mat-icon class="sort-icon">{{ sort.sortIcon('price') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('durationMonths')">Duration (mo) <mat-icon class="sort-icon">{{ sort.sortIcon('durationMonths') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('currency')">Currency <mat-icon class="sort-icon">{{ sort.sortIcon('currency') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('isPopular')">Popular <mat-icon class="sort-icon">{{ sort.sortIcon('isPopular') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('isActive')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('isActive') }}</mat-icon></th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @for (plan of plans(); track plan.id) {
+              @for (plan of pagination.paginated(); track plan.id) {
                 <tr>
                   <td class="cell-code">{{ plan.code }}</td>
                   <td class="cell-bold">{{ plan.name }}</td>
@@ -90,6 +91,14 @@ import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/
               }
             </tbody>
           </table>
+          <ui-paginator
+            [totalItems]="pagination.totalItems()"
+            [totalPages]="pagination.totalPages()"
+            [currentPage]="pagination.currentPage()"
+            [pageSize]="pagination.pageSize()"
+            (pageChange)="pagination.goToPage($event)"
+            (pageSizeChange)="pagination.onPageSizeChange($event)"
+          />
         </div>
       }
     </div>
@@ -133,6 +142,9 @@ import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/
     }
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { background: #f0ecf3; }
+    .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }
     .popular-badge {
       display: inline-block; padding: 0.2rem 0.625rem; border-radius: 12px;
       font-size: 0.75rem; font-weight: 600; background: #fff3e0; color: #e65100;
@@ -145,6 +157,31 @@ export class System implements OnInit {
 
   readonly loading = signal(true);
   readonly plans = signal<SubscriptionPlanDto[]>([]);
+
+  readonly sort = createSort();
+
+  private readonly sorted = computed(() => {
+    const col = this.sort.sortColumn();
+    if (!col) return this.plans();
+    const dir = this.sort.sortDirection();
+    const data = [...this.plans()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'code': cmp = (a.code || '').localeCompare(b.code || ''); break;
+        case 'name': cmp = (a.name || '').localeCompare(b.name || ''); break;
+        case 'price': cmp = (a.price ?? 0) - (b.price ?? 0); break;
+        case 'durationMonths': cmp = (a.durationMonths ?? 0) - (b.durationMonths ?? 0); break;
+        case 'currency': cmp = (a.currency || '').localeCompare(b.currency || ''); break;
+        case 'isPopular': cmp = (a.isPopular ? 1 : 0) - (b.isPopular ? 1 : 0); break;
+        case 'isActive': cmp = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly pagination = createPagination(this.sorted);
 
   ngOnInit(): void {
     this.loadPlans();

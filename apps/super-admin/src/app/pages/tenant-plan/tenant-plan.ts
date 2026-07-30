@@ -20,14 +20,14 @@ import {
   CreateTenantSubscriptionRequest,
   UpdateTenantSubscriptionRequest,
 } from '@org/generated';
-import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
+import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dialog/assign-plan-dialog.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tenant-plan',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatDialogModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatDialogModule, MatButtonModule, MatIconModule, PaginatorComponent],
   template: `
     <div class="page">
       <div class="page-header">
@@ -92,7 +92,10 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
 
         <section class="card available-plans">
           <h2>Available Plans</h2>
-          @if (plans().length === 0) {
+          <div class="search-bar">
+            <input class="search-input" type="text" placeholder="Search plans..." [value]="searchTerm()" (input)="onSearch($event)" />
+          </div>
+          @if (filtered().length === 0) {
             <div class="empty-state">
               <p>No subscription plans available.</p>
             </div>
@@ -101,16 +104,16 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Duration (mo)</th>
-                    <th>Currency</th>
-                    <th>Status</th>
+                    <th class="sortable" (click)="sort.toggleSort('code')">Code <mat-icon class="sort-icon">{{ sort.sortIcon('code') }}</mat-icon></th>
+                    <th class="sortable" (click)="sort.toggleSort('name')">Name <mat-icon class="sort-icon">{{ sort.sortIcon('name') }}</mat-icon></th>
+                    <th class="sortable" (click)="sort.toggleSort('price')">Price <mat-icon class="sort-icon">{{ sort.sortIcon('price') }}</mat-icon></th>
+                    <th class="sortable" (click)="sort.toggleSort('durationMonths')">Duration (mo) <mat-icon class="sort-icon">{{ sort.sortIcon('durationMonths') }}</mat-icon></th>
+                    <th class="sortable" (click)="sort.toggleSort('currency')">Currency <mat-icon class="sort-icon">{{ sort.sortIcon('currency') }}</mat-icon></th>
+                    <th class="sortable" (click)="sort.toggleSort('isActive')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('isActive') }}</mat-icon></th>
                   </tr>
                 </thead>
                 <tbody>
-                  @for (plan of plans(); track plan.id) {
+                  @for (plan of pagination.paginated(); track plan.id) {
                     <tr>
                       <td class="cell-code">{{ plan.code }}</td>
                       <td class="cell-bold">{{ plan.name }}</td>
@@ -126,6 +129,14 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
                   }
                 </tbody>
               </table>
+              <ui-paginator
+                [totalItems]="pagination.totalItems()"
+                [totalPages]="pagination.totalPages()"
+                [currentPage]="pagination.currentPage()"
+                [pageSize]="pagination.pageSize()"
+                (pageChange)="pagination.goToPage($event)"
+                (pageSizeChange)="pagination.onPageSizeChange($event)"
+              />
             </div>
           }
         </section>
@@ -182,6 +193,12 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
     }
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
+    .search-bar { margin-bottom: 1rem; }
+    .search-input { padding: 0.5rem 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.875rem; width: 280px; outline: none; }
+    .search-input:focus { border-color: #7b1fa2; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { background: #f0ecf3; }
+    .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }
   `],
 })
 export class TenantPlan implements OnInit {
@@ -197,6 +214,40 @@ export class TenantPlan implements OnInit {
   readonly tenant = signal<TenantDto | null>(null);
   readonly subscriptions = signal<TenantSubscriptionDto[]>([]);
   readonly plans = signal<SubscriptionPlanDto[]>([]);
+  readonly searchTerm = signal('');
+
+  readonly filtered = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    if (!term) return this.plans();
+    return this.plans().filter(p =>
+      p.code?.toLowerCase().includes(term) ||
+      p.name?.toLowerCase().includes(term)
+    );
+  });
+
+  readonly sort = createSort();
+
+  readonly sorted = computed(() => {
+    const col = this.sort.sortColumn();
+    if (!col) return this.filtered();
+    const dir = this.sort.sortDirection();
+    const data = [...this.filtered()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'code': cmp = (a.code ?? '').localeCompare(b.code ?? ''); break;
+        case 'name': cmp = (a.name ?? '').localeCompare(b.name ?? ''); break;
+        case 'price': cmp = (a.price ?? 0) - (b.price ?? 0); break;
+        case 'durationMonths': cmp = (a.durationMonths ?? 0) - (b.durationMonths ?? 0); break;
+        case 'currency': cmp = (a.currency ?? '').localeCompare(b.currency ?? ''); break;
+        case 'isActive': cmp = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly pagination = createPagination(this.sorted);
 
   readonly activeSubscription = computed(() =>
     this.subscriptions().find((s) => s.isActive) ?? null,
@@ -235,6 +286,11 @@ export class TenantPlan implements OnInit {
       },
     });
     this.loading.set(false);
+  }
+
+  onSearch(event: Event): void {
+    this.searchTerm.set((event.target as HTMLInputElement).value);
+    this.pagination.goToPage(1);
   }
 
   openAssignDialog(): void {

@@ -6,7 +6,7 @@ import {
   computed,
   OnInit,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { TenantClient, TenantDto } from '@org/generated';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -14,7 +14,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dialog.component';
 
 @Component({
@@ -29,6 +30,8 @@ import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dial
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatSlideToggleModule,
+    PaginatorComponent,
   ],
   template: `
     <div class="page">
@@ -69,26 +72,30 @@ import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dial
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Tenant Name</th>
-                <th>Domain</th>
-                <th>Users</th>
-                <th>Status</th>
-                <th>Trial End Date</th>
+                <th class="sortable" (click)="sort.toggleSort('id')">ID <mat-icon class="sort-icon">{{ sort.sortIcon('id') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('name')">Tenant Name <mat-icon class="sort-icon">{{ sort.sortIcon('name') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('domain')">Domain <mat-icon class="sort-icon">{{ sort.sortIcon('domain') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('users')">Users <mat-icon class="sort-icon">{{ sort.sortIcon('users') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('status')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('status') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('trialEndDate')">Trial End Date <mat-icon class="sort-icon">{{ sort.sortIcon('trialEndDate') }}</mat-icon></th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @for (tenant of filteredTenants(); track tenant.tenantId) {
+              @for (tenant of pagination.paginated(); track tenant.tenantId) {
                 <tr>
                   <td class="cell-id">{{ tenant.tenantId }}</td>
                   <td class="cell-bold">{{ tenant.name || tenant.tenantCode }}</td>
                   <td>{{ tenant.domain }}</td>
                   <td class="cell-center">{{ tenant.userCount ?? 0 }}</td>
                   <td class="cell-center">
-                    <span class="badge" [class.active]="tenant.isActive" [class.inactive]="!tenant.isActive">
+                    <mat-slide-toggle
+                      [checked]="tenant.isActive"
+                      (click)="$event.stopPropagation(); toggleStatus(tenant)"
+                      color="primary"
+                    >
                       {{ tenant.isActive ? 'Active' : 'Inactive' }}
-                    </span>
+                    </mat-slide-toggle>
                   </td>
                   <td>{{ tenant.trialEndDate ? (tenant.trialEndDate | date:'mediumDate') : '—' }}</td>
                   <td class="cell-actions">
@@ -112,6 +119,14 @@ import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dial
               }
             </tbody>
           </table>
+          <ui-paginator
+            [totalItems]="pagination.totalItems()"
+            [totalPages]="pagination.totalPages()"
+            [currentPage]="pagination.currentPage()"
+            [pageSize]="pagination.pageSize()"
+            (pageChange)="pagination.goToPage($event)"
+            (pageSizeChange)="pagination.onPageSizeChange($event)"
+          />
         </div>
       }
     </div>
@@ -149,12 +164,10 @@ import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dial
     .cell-bold { font-weight: 500; }
     .cell-center { text-align: center; }
     .cell-actions { text-align: right; white-space: nowrap; }
-    .badge {
-      display: inline-block; padding: 0.2rem 0.625rem; border-radius: 12px;
-      font-size: 0.75rem; font-weight: 600;
-    }
-    .badge.active { background: #e8f5e9; color: #2e7d32; }
-    .badge.inactive { background: #fbe9e7; color: #c62828; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { background: #f0ecf3; }
+    .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }
+
   `],
 })
 export class Tenants implements OnInit {
@@ -166,6 +179,8 @@ export class Tenants implements OnInit {
   readonly tenants = signal<TenantDto[]>([]);
   readonly searchTerm = signal('');
 
+  readonly sort = createSort();
+
   readonly filteredTenants = computed(() => {
     const term = this.searchTerm().toLowerCase();
     if (!term) return this.tenants();
@@ -175,6 +190,28 @@ export class Tenants implements OnInit {
         (t.domain?.toLowerCase().includes(term)),
     );
   });
+
+  private readonly sortedTenants = computed(() => {
+    const col = this.sort.sortColumn();
+    if (!col) return this.filteredTenants();
+    const dir = this.sort.sortDirection();
+    const data = [...this.filteredTenants()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'id': cmp = (a.tenantId ?? 0) - (b.tenantId ?? 0); break;
+        case 'name': cmp = (a.name || a.tenantCode || '').localeCompare(b.name || b.tenantCode || ''); break;
+        case 'domain': cmp = (a.domain || '').localeCompare(b.domain || ''); break;
+        case 'users': cmp = (a.userCount ?? 0) - (b.userCount ?? 0); break;
+        case 'status': cmp = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0); break;
+        case 'trialEndDate': cmp = ((a.trialEndDate ?? '') < (b.trialEndDate ?? '') ? -1 : ((a.trialEndDate ?? '') > (b.trialEndDate ?? '') ? 1 : 0)); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly pagination = createPagination(this.sortedTenants);
 
   ngOnInit(): void {
     this.loadTenants();
@@ -207,6 +244,7 @@ export class Tenants implements OnInit {
 
   onSearch(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
+    this.pagination.goToPage(1);
   }
 
   openAddDialog(): void {
@@ -237,11 +275,26 @@ export class Tenants implements OnInit {
     dialogRef.afterClosed().subscribe((result: TenantDto | undefined) => {
       if (result && tenant.tenantId != null) {
         this.loading.set(true);
-        this.tenantClient.update(tenant.tenantId, result).subscribe({
+        this.tenantClient.update(tenant.tenantId, result as any).subscribe({
           next: () => this.loadTenants(),
           error: () => this.loading.set(false),
         });
       }
+    });
+  }
+
+  toggleStatus(tenant: TenantDto): void {
+    if (tenant.tenantId == null) return;
+    const newStatus = !tenant.isActive;
+    this.tenants.update(list =>
+      list.map(t => t.tenantId === tenant.tenantId ? { ...t, isActive: newStatus } : t)
+    );
+    this.tenantClient.update(tenant.tenantId, {
+      isActive: newStatus,
+      trialEndDate: tenant.trialEndDate?.split('T')[0],
+    } as any).subscribe({
+      next: () => this.loadTenants(),
+      error: () => this.loadTenants(),
     });
   }
 

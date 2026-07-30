@@ -5,6 +5,7 @@ import {
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { appRoutes } from './app.routes';
 import {
   correlationInterceptor,
@@ -17,6 +18,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideAnimationsAsync(),
+    provideNativeDateAdapter(),
     provideRouter(appRoutes),
     provideHttpClient(
       withInterceptors([

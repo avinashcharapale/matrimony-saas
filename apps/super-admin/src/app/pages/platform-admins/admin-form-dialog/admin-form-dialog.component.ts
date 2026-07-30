@@ -92,8 +92,12 @@ export interface AdminFormResult {
         </div>
 
         <div class="toggle-row">
-          <mat-slide-toggle formControlName="isActive" color="primary">
-            Active
+          <mat-slide-toggle
+            [checked]="isActiveValue()"
+            (click)="isActiveValue.set(!isActiveValue())"
+            color="primary"
+          >
+            {{ isActiveValue() ? 'Active' : 'Inactive' }}
           </mat-slide-toggle>
         </div>
       </form>
@@ -158,11 +162,13 @@ export class AdminFormDialogComponent {
     new Set(this.data.admin?.roles.map(r => r.platformRoleId) ?? []),
   );
 
+  readonly isActiveValue = signal(this.data.admin?.isActive ?? true);
+
   readonly form = this.fb.nonNullable.group({
     email: [this.data.admin?.email ?? '', [Validators.required, Validators.email]],
     password: ['', this.data.mode === 'create' ? [Validators.required, Validators.minLength(6)] : []],
     displayName: [this.data.admin?.displayName ?? ''],
-    isActive: [this.data.admin?.isActive ?? true],
+    isActive: [this.data.admin?.isActive ?? true], // keep form control for structure, value replaced by signal
   });
 
     toggleRole(id: number, checked: boolean): void {
@@ -178,7 +184,7 @@ export class AdminFormDialogComponent {
       email: val.email,
       password: this.data.mode === 'create' ? val.password : undefined,
       displayName: val.displayName || undefined,
-      isActive: val.isActive,
+      isActive: this.isActiveValue(),
       roleIds: Array.from(this.selectedRoleIds()),
     };
     this.dialogRef.close(result);

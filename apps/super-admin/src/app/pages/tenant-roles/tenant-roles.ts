@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
+import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { RoleFormDialogComponent } from './role-form-dialog/role-form-dialog.component';
 import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/assign-permissions-dialog.component';
 
@@ -23,6 +23,7 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    PaginatorComponent,
   ],
   template: `
     <div class="page">
@@ -62,15 +63,15 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
           <table class="data-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Role Name</th>
-                <th>Permissions</th>
-                <th>Users</th>
+                <th class="sortable" (click)="sort.toggleSort('roleId')">ID<mat-icon class="sort-icon">{{ sort.sortIcon('roleId') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('roleName')">Role Name<mat-icon class="sort-icon">{{ sort.sortIcon('roleName') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('permissionCount')">Permissions<mat-icon class="sort-icon">{{ sort.sortIcon('permissionCount') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('userCount')">Users<mat-icon class="sort-icon">{{ sort.sortIcon('userCount') }}</mat-icon></th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              @for (role of filtered(); track role.roleId) {
+              @for (role of pagination.paginated(); track role.roleId) {
                 <tr>
                   <td class="cell-id">{{ role.roleId }}</td>
                   <td class="cell-bold">{{ role.roleName }}</td>
@@ -91,6 +92,14 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
               }
             </tbody>
           </table>
+          <ui-paginator
+            [totalItems]="pagination.totalItems()"
+            [totalPages]="pagination.totalPages()"
+            [currentPage]="pagination.currentPage()"
+            [pageSize]="pagination.pageSize()"
+            (pageChange)="pagination.goToPage($event)"
+            (pageSizeChange)="pagination.onPageSizeChange($event)"
+          ></ui-paginator>
         </div>
       }
     </div>
@@ -119,6 +128,9 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
     .cell-center { text-align: center; }
     .cell-actions { text-align: right; white-space: nowrap; }
     .btn-link { background: none; border: none; color: #7b1fa2; cursor: pointer; font-size: 0.75rem; text-decoration: underline; padding: 0; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { background: #f0ecf3; }
+    .sort-icon { font-size: 16px; vertical-align: middle; margin-left: 4px; }
   `],
 })
 export class TenantRoles implements OnInit {
@@ -136,6 +148,28 @@ export class TenantRoles implements OnInit {
     if (!term) return this.roles();
     return this.roles().filter(r => r.roleName?.toLowerCase().includes(term));
   });
+
+  readonly sort = createSort();
+
+  private readonly sorted = computed(() => {
+    const col = this.sort.sortColumn();
+    if (!col) return this.filtered();
+    const dir = this.sort.sortDirection();
+    const data = [...this.filtered()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'roleId': cmp = (a.roleId ?? 0) - (b.roleId ?? 0); break;
+        case 'roleName': cmp = (a.roleName || '').localeCompare(b.roleName || ''); break;
+        case 'permissionCount': cmp = (a.permissionCount ?? 0) - (b.permissionCount ?? 0); break;
+        case 'userCount': cmp = (a.userCount ?? 0) - (b.userCount ?? 0); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly pagination = createPagination(this.sorted);
 
   ngOnInit(): void {
     const tid = Number(this.route.snapshot.paramMap.get('tenantId'));
@@ -155,6 +189,7 @@ export class TenantRoles implements OnInit {
 
   onSearch(event: Event): void {
     this.searchTerm.set((event.target as HTMLInputElement).value);
+    this.pagination.goToPage(1);
   }
 
   openAddDialog(): void {
