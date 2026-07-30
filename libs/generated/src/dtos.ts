@@ -614,6 +614,18 @@ export interface SubscriptionPlanDto {
   createdAt?: string;
   updatedAt?: string;
   features?: PlanFeatureValueDto[];
+  tenantFeatures?: TenantFeatureValueDto[];
+}
+
+export interface TenantFeatureValueDto {
+  featureDefinitionId?: number;
+  featureCode?: string;
+  displayName?: string;
+  description?: string;
+  featureGroup?: string;
+  hasLimit?: boolean;
+  limitType?: string;
+  value?: string;
 }
 
 export interface SubscriptionFeatureDto {
@@ -642,6 +654,7 @@ export interface CreateSubscriptionPlanRequest {
   isActive?: boolean;
   tenantId?: number;
   features?: FeatureValueRequest[];
+  tenantFeatures?: FeatureValueRequest[];
 }
 
 export interface UpdateSubscriptionPlanRequest {
@@ -654,6 +667,7 @@ export interface UpdateSubscriptionPlanRequest {
   isPopular?: boolean;
   isActive?: boolean;
   features?: FeatureValueRequest[];
+  tenantFeatures?: FeatureValueRequest[];
 }
 
 export interface FeatureValueRequest {
@@ -695,7 +709,7 @@ export interface SubscriptionStatusDto {
 export interface TenantSubscriptionDto {
   subscriptionId: number;
   tenantId: number;
-  planId: number;
+  subscriptionPlanId: number;
   planName?: string;
   startDate: string;
   endDate: string;
@@ -706,7 +720,7 @@ export interface TenantSubscriptionDto {
 
 export interface CreateTenantSubscriptionRequest {
   tenantId: number;
-  planId: number;
+  subscriptionPlanId: number;
   startDate: string;
   endDate: string;
 }

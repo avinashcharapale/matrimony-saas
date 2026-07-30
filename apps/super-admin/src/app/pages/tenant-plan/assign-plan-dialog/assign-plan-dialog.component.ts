@@ -35,14 +35,14 @@ export interface PlanFormDialogData {
       <form [formGroup]="form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Plan</mat-label>
-          <mat-select formControlName="planId">
+          <mat-select formControlName="subscriptionPlanId">
             @for (plan of data.plans; track plan.id) {
               <mat-option [value]="plan.id">
                 {{ plan.name }} ({{ plan.price ?? 0 | number:'1.2-2' }} {{ plan.currency ?? 'USD' }})
               </mat-option>
             }
           </mat-select>
-          @if (form.get('planId')?.hasError('required') && form.get('planId')?.touched) {
+          @if (form.get('subscriptionPlanId')?.hasError('required') && form.get('subscriptionPlanId')?.touched) {
             <mat-error>Required</mat-error>
           }
         </mat-form-field>
@@ -84,7 +84,7 @@ export class AssignPlanDialogComponent {
   readonly data = inject<PlanFormDialogData>(MAT_DIALOG_DATA);
 
   readonly form = this.fb.nonNullable.group({
-    planId: [0, Validators.required],
+    subscriptionPlanId: [0, Validators.required],
     startDate: [null as Date | null, Validators.required],
     endDate: [null as Date | null, Validators.required],
   });
@@ -92,11 +92,17 @@ export class AssignPlanDialogComponent {
   submit(): void {
     if (this.form.invalid) return;
     const val = this.form.getRawValue();
+    const fmt = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
     const result: CreateTenantSubscriptionRequest = {
       tenantId: 0,
-      planId: val.planId,
-      startDate: val.startDate?.toISOString() ?? '',
-      endDate: val.endDate?.toISOString() ?? '',
+      subscriptionPlanId: val.subscriptionPlanId,
+      startDate: val.startDate ? fmt(val.startDate) : '',
+      endDate: val.endDate ? fmt(val.endDate) : '',
     };
     this.dialogRef.close(result);
   }

@@ -17,6 +17,7 @@ import {
   UserSubscriptionPlanDto,
   CreateUserSubscriptionPlanRequest,
   UpdateUserSubscriptionPlanRequest,
+  TenantFeatureValueDto,
 } from './dtos';
 
 @Injectable({ providedIn: 'root' })
@@ -79,6 +80,12 @@ export class SubscriptionClient {
     return this.http.delete<void>(`/subscription/SubscriptionFeatures/${id}`);
   }
 
+  // ─── Tenant Features ────────────────────────────────────────────────────
+
+  getAllTenantFeatureDefinitions(): Observable<TenantFeatureValueDto[]> {
+    return this.http.get<TenantFeatureValueDto[]>('/subscription/TenantSubscriptionPlans/tenant-features');
+  }
+
   // ─── Subscription Status ─────────────────────────────────────────────────
 
   getTenantSubscriptionStatus(tenantId: number): Observable<SubscriptionStatusDto> {
@@ -104,15 +111,7 @@ export class SubscriptionClient {
   }
 
   createTenantSubscription(body: CreateTenantSubscriptionRequest): Observable<TenantSubscriptionDto> {
-    const payload = {
-      request: {
-        tenantId: body.tenantId,
-        planId: body.planId,
-        startDate: body.startDate?.split('T')[0],
-        endDate: body.endDate?.split('T')[0],
-      },
-    };
-    return this.http.post<TenantSubscriptionDto>('/subscription/TenantSubscriptions', payload);
+    return this.http.post<TenantSubscriptionDto>('/subscription/TenantSubscriptions', body);
   }
 
   updateTenantSubscription(id: number, body: UpdateTenantSubscriptionRequest): Observable<void> {

@@ -19,6 +19,8 @@ import {
   TenantSubscriptionDto,
   CreateTenantSubscriptionRequest,
   UpdateTenantSubscriptionRequest,
+  PlanFeatureValueDto,
+  TenantFeatureValueDto,
 } from '@org/generated';
 import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dialog/assign-plan-dialog.component';
@@ -54,6 +56,12 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
       @if (loading()) {
         <div class="loading-state">Loading subscription data...</div>
       } @else {
+        @if (errorMessage(); as msg) {
+          <div class="error-banner">
+            <span>{{ msg }}</span>
+            <button mat-icon-button (click)="errorMessage.set('')" title="Dismiss"><mat-icon>close</mat-icon></button>
+          </div>
+        }
         <section class="card current-subscription">
           <h2>Current Subscription</h2>
           @if (activeSubscription(); as sub) {
@@ -90,6 +98,63 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
           }
         </section>
 
+        @if (pastSubscriptions().length > 0) {
+          <section class="card history-section">
+            <h2>Subscription History</h2>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="sortable" (click)="hSort.toggleSort('planName')">Plan <mat-icon class="sort-icon">{{ hSort.sortIcon('planName') }}</mat-icon></th>
+                    <th>Features</th>
+                    <th class="sortable" (click)="hSort.toggleSort('startDate')">Start Date <mat-icon class="sort-icon">{{ hSort.sortIcon('startDate') }}</mat-icon></th>
+                    <th class="sortable" (click)="hSort.toggleSort('endDate')">End Date <mat-icon class="sort-icon">{{ hSort.sortIcon('endDate') }}</mat-icon></th>
+                    <th class="sortable" (click)="hSort.toggleSort('isActive')">Status <mat-icon class="sort-icon">{{ hSort.sortIcon('isActive') }}</mat-icon></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (sub of hPagination.paginated(); track sub.subscriptionId) {
+                    <tr>
+                      <td class="cell-bold">{{ sub.planName || '—' }}</td>
+                      <td>
+                        @if (getPlanFeatures(sub.subscriptionPlanId).length > 0) {
+                          <button mat-icon-button (click)="toggleFeatures(sub.subscriptionId)" title="View features">
+                            <mat-icon>{{ expandedId() === sub.subscriptionId ? 'expand_less' : 'expand_more' }}</mat-icon>
+                          </button>
+                        }
+                      </td>
+                      <td>{{ sub.startDate | date:'mediumDate' }}</td>
+                      <td>{{ sub.endDate | date:'mediumDate' }}</td>
+                      <td>
+                        <span class="badge inactive">Inactive</span>
+                      </td>
+                    </tr>
+                    @if (expandedId() === sub.subscriptionId) {
+                      <tr class="features-row">
+                        <td colspan="5">
+                          <div class="features-grid">
+                            @for (f of getPlanFeatures(sub.subscriptionPlanId); track f.featureCode) {
+                              <div class="feature-tag">{{ f.displayName || f.featureCode }}: {{ f.value }}</div>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  }
+                </tbody>
+              </table>
+              <ui-paginator
+                [totalItems]="hPagination.totalItems()"
+                [totalPages]="hPagination.totalPages()"
+                [currentPage]="hPagination.currentPage()"
+                [pageSize]="hPagination.pageSize()"
+                (pageChange)="hPagination.goToPage($event)"
+                (pageSizeChange)="hPagination.onPageSizeChange($event)"
+              />
+            </div>
+          </section>
+        }
+
         <section class="card available-plans">
           <h2>Available Plans</h2>
           <div class="search-bar">
@@ -106,6 +171,7 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
                   <tr>
                     <th class="sortable" (click)="sort.toggleSort('code')">Code <mat-icon class="sort-icon">{{ sort.sortIcon('code') }}</mat-icon></th>
                     <th class="sortable" (click)="sort.toggleSort('name')">Name <mat-icon class="sort-icon">{{ sort.sortIcon('name') }}</mat-icon></th>
+                    <th>Features</th>
                     <th class="sortable" (click)="sort.toggleSort('price')">Price <mat-icon class="sort-icon">{{ sort.sortIcon('price') }}</mat-icon></th>
                     <th class="sortable" (click)="sort.toggleSort('durationMonths')">Duration (mo) <mat-icon class="sort-icon">{{ sort.sortIcon('durationMonths') }}</mat-icon></th>
                     <th class="sortable" (click)="sort.toggleSort('currency')">Currency <mat-icon class="sort-icon">{{ sort.sortIcon('currency') }}</mat-icon></th>
@@ -117,6 +183,13 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
                     <tr>
                       <td class="cell-code">{{ plan.code }}</td>
                       <td class="cell-bold">{{ plan.name }}</td>
+                      <td>
+                        @if (plan.features?.length || plan.tenantFeatures?.length) {
+                          <button mat-icon-button (click)="toggleAvailablePlanFeatures(plan.id)" title="View features">
+                            <mat-icon>{{ availablePlanExpandedId() === plan.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+                          </button>
+                        }
+                      </td>
                       <td class="cell-price">{{ plan.price ?? 0 | number:'1.2-2' }}</td>
                       <td class="cell-center">{{ plan.durationMonths }}</td>
                       <td class="cell-center">{{ plan.currency ?? 'USD' }}</td>
@@ -126,6 +199,20 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
                         </span>
                       </td>
                     </tr>
+                    @if (availablePlanExpandedId() === plan.id) {
+                      <tr class="features-row">
+                        <td colspan="7">
+                          <div class="features-grid">
+                            @if (plan.tenantFeatures?.length) {
+                              <div class="feature-group-label" style="margin-top:8px;">Tenant Features</div>
+                              @for (f of plan.tenantFeatures; track f.featureCode) {
+                                <div class="feature-tag">{{ f.displayName || f.featureCode }}: {{ f.value }}</div>
+                              }
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    }
                   }
                 </tbody>
               </table>
@@ -193,9 +280,31 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
     }
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
+    .history-section .table-wrapper { margin-top: -0.5rem; }
+    .features-row td { padding: 0.75rem 1rem !important; background: #fafafa; }
+    .features-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .feature-tag {
+      padding: 0.25rem 0.625rem; background: #f3e5f5; color: #7b1fa2;
+      border-radius: 4px; font-size: 0.8125rem; font-weight: 500;
+    }
+    .feature-group-label {
+      width: 100%;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
     .search-bar { margin-bottom: 1rem; }
     .search-input { padding: 0.5rem 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.875rem; width: 280px; outline: none; }
     .search-input:focus { border-color: #7b1fa2; }
+    .error-banner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem; margin-bottom: 1rem;
+      background: #fbe9e7; color: #c62828; border-radius: 6px; font-size: 0.875rem;
+    }
+    .error-banner button { color: #c62828; }
     .sortable { cursor: pointer; user-select: none; }
     .sortable:hover { background: #f0ecf3; }
     .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }
@@ -211,6 +320,7 @@ export class TenantPlan implements OnInit {
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly cancelling = signal(false);
+  readonly errorMessage = signal('');
   readonly tenant = signal<TenantDto | null>(null);
   readonly subscriptions = signal<TenantSubscriptionDto[]>([]);
   readonly plans = signal<SubscriptionPlanDto[]>([]);
@@ -252,6 +362,47 @@ export class TenantPlan implements OnInit {
   readonly activeSubscription = computed(() =>
     this.subscriptions().find((s) => s.isActive) ?? null,
   );
+
+  readonly pastSubscriptions = computed(() =>
+    this.subscriptions().filter((s) => !s.isActive),
+  );
+
+  readonly hSort = createSort();
+
+  private readonly sortedHistory = computed(() => {
+    const col = this.hSort.sortColumn();
+    if (!col) return this.pastSubscriptions();
+    const dir = this.hSort.sortDirection();
+    const data = [...this.pastSubscriptions()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'planName': cmp = (a.planName ?? '').localeCompare(b.planName ?? ''); break;
+        case 'startDate': cmp = (a.startDate ?? '').localeCompare(b.startDate ?? ''); break;
+        case 'endDate': cmp = (a.endDate ?? '').localeCompare(b.endDate ?? ''); break;
+        case 'isActive': cmp = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly hPagination = createPagination(this.sortedHistory);
+
+  readonly expandedId = signal<number | null>(null);
+  readonly availablePlanExpandedId = signal<number | undefined>(undefined);
+
+  toggleFeatures(subscriptionId: number): void {
+    this.expandedId.update(id => id === subscriptionId ? null : subscriptionId);
+  }
+
+  toggleAvailablePlanFeatures(planId: number | undefined): void {
+    this.availablePlanExpandedId.update(id => id === planId ? undefined : planId);
+  }
+
+  getPlanFeatures(planId: number): TenantFeatureValueDto[] {
+    return this.plans().find(p => p.id === planId)?.tenantFeatures ?? [];
+  }
 
   ngOnInit(): void {
     const tid = Number(this.route.snapshot.paramMap.get('tenantId'));
@@ -310,8 +461,9 @@ export class TenantPlan implements OnInit {
           this.saving.set(false);
           this.loadData();
         },
-        error: () => {
+        error: (err) => {
           this.saving.set(false);
+          this.errorMessage.set(err.error?.error ?? 'Failed to assign plan.');
         },
       });
     });
@@ -341,8 +493,9 @@ export class TenantPlan implements OnInit {
           this.cancelling.set(false);
           this.loadData();
         },
-        error: () => {
+        error: (err) => {
           this.cancelling.set(false);
+          this.errorMessage.set(err.error?.error ?? 'Failed to cancel subscription.');
         },
       });
     });

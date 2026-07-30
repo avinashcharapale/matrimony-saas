@@ -112,16 +112,6 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
                     / {{ plan.durationMonths ?? 1 }} {{ (plan.durationMonths ?? 1) === 1 ? 'month' : 'months' }}
                   </span>
                 </div>
-                @if (plan.features?.length) {
-                  <ul class="plan-features">
-                    @for (feature of plan.features; track feature.code) {
-                      <li>
-                        <mat-icon>check_circle</mat-icon>
-                        {{ feature.name || feature.code }}
-                      </li>
-                    }
-                  </ul>
-                }
                 <div class="plan-footer">
                   <ui-status-badge
                     [status]="plan.isActive ? 'Active' : 'Inactive'"

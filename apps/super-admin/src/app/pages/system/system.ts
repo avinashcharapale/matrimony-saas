@@ -12,6 +12,7 @@ import {
   SubscriptionPlanDto,
   CreateSubscriptionPlanRequest,
   UpdateSubscriptionPlanRequest,
+  TenantFeatureValueDto,
 } from '@org/generated';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -55,6 +56,7 @@ import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/
                 <th class="sortable" (click)="sort.toggleSort('durationMonths')">Duration (mo) <mat-icon class="sort-icon">{{ sort.sortIcon('durationMonths') }}</mat-icon></th>
                 <th class="sortable" (click)="sort.toggleSort('currency')">Currency <mat-icon class="sort-icon">{{ sort.sortIcon('currency') }}</mat-icon></th>
                 <th class="sortable" (click)="sort.toggleSort('isPopular')">Popular <mat-icon class="sort-icon">{{ sort.sortIcon('isPopular') }}</mat-icon></th>
+                <th>Tenant Features</th>
                 <th class="sortable" (click)="sort.toggleSort('isActive')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('isActive') }}</mat-icon></th>
                 <th>Actions</th>
               </tr>
@@ -75,6 +77,15 @@ import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/
                     }
                   </td>
                   <td class="cell-center">
+                    @if (plan.tenantFeatures?.length) {
+                      <button mat-icon-button (click)="toggleTenantFeatures(plan.id)" title="View tenant features">
+                        <mat-icon>{{ expandedTenantId() === plan.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+                      </button>
+                    } @else {
+                      <span class="muted">—</span>
+                    }
+                  </td>
+                  <td class="cell-center">
                     <span class="badge" [class.active]="plan.isActive" [class.inactive]="!plan.isActive">
                       {{ plan.isActive ? 'Active' : 'Inactive' }}
                     </span>
@@ -88,6 +99,17 @@ import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/
                     </button>
                   </td>
                 </tr>
+                @if (expandedTenantId() === plan.id) {
+                  <tr class="features-row">
+                    <td colspan="8">
+                      <div class="features-grid">
+                        @for (f of plan.tenantFeatures; track f.featureCode) {
+                          <div class="feature-tag">{{ f.displayName || f.featureCode }}: {{ f.value }}</div>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
               }
             </tbody>
           </table>
@@ -149,6 +171,12 @@ import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/
       display: inline-block; padding: 0.2rem 0.625rem; border-radius: 12px;
       font-size: 0.75rem; font-weight: 600; background: #fff3e0; color: #e65100;
     }
+    .features-row td { padding: 0.75rem 1rem !important; background: #fafafa; }
+    .features-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .feature-tag {
+      padding: 0.25rem 0.625rem; background: #f3e5f5; color: #7b1fa2;
+      border-radius: 4px; font-size: 0.8125rem; font-weight: 500;
+    }
   `],
 })
 export class System implements OnInit {
@@ -157,6 +185,7 @@ export class System implements OnInit {
 
   readonly loading = signal(true);
   readonly plans = signal<SubscriptionPlanDto[]>([]);
+  readonly expandedTenantId = signal<number | undefined>(undefined);
 
   readonly sort = createSort();
 
@@ -185,6 +214,10 @@ export class System implements OnInit {
 
   ngOnInit(): void {
     this.loadPlans();
+  }
+
+  toggleTenantFeatures(planId: number | undefined): void {
+    this.expandedTenantId.update(id => id === planId ? undefined : planId);
   }
 
   loadPlans(): void {
