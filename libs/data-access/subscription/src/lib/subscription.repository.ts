@@ -45,8 +45,8 @@ export class SubscriptionRepository {
     return this.subscription.getSubscriptionFeatureById(id);
   }
 
-  getSubscriptionStatus(tenantId: number): Observable<SubscriptionStatusDto> {
-    return this.subscription.getSubscriptionStatus(tenantId);
+  getTenantSubscriptionStatus(tenantId: number): Observable<SubscriptionStatusDto> {
+    return this.subscription.getTenantSubscriptionStatus(tenantId);
   }
 
   getUserSubscriptionStatus(userId: number): Observable<SubscriptionStatusDto> {

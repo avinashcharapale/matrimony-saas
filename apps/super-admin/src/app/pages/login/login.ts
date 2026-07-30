@@ -2,6 +2,10 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { patchState } from '@ngrx/signals';
 import { AuthStore } from '@org/data-access-auth';
 import { PlatformAuthService } from '../../services/platform-auth.service';
@@ -10,7 +14,7 @@ import { PlatformAuthService } from '../../services/platform-auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
   template: `
     <div class="login-container">
       <div class="login-card">
@@ -25,40 +29,47 @@ import { PlatformAuthService } from '../../services/platform-auth.service';
         }
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
-          <div class="field">
-            <label for="email">Email</label>
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
             <input
-              id="email"
+              matInput
               type="email"
               formControlName="email"
               placeholder="admin@example.com"
               autocomplete="email"
             />
             @if (form.get('email')?.touched && form.get('email')?.errors?.['required']) {
-              <span class="field-error">Email is required</span>
+              <mat-error>Email is required</mat-error>
             }
             @if (form.get('email')?.touched && form.get('email')?.errors?.['email']) {
-              <span class="field-error">Enter a valid email</span>
+              <mat-error>Enter a valid email</mat-error>
             }
-          </div>
+          </mat-form-field>
 
-          <div class="field">
-            <label for="password">Password</label>
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
             <input
-              id="password"
+              matInput
               type="password"
               formControlName="password"
               placeholder="Enter password"
               autocomplete="current-password"
             />
             @if (form.get('password')?.touched && form.get('password')?.errors?.['required']) {
-              <span class="field-error">Password is required</span>
+              <mat-error>Password is required</mat-error>
             }
-          </div>
+          </mat-form-field>
 
-          <button type="submit" class="btn-primary" [disabled]="loading() || form.invalid">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="loading() || form.invalid"
+          >
             @if (loading()) {
-              <span class="spinner"></span> Signing in...
+              Signing in...
             } @else {
               Sign In
             }
@@ -118,69 +129,14 @@ import { PlatformAuthService } from '../../services/platform-auth.service';
       margin-bottom: 1rem;
       border: 1px solid #ffcdd2;
     }
-    .field {
-      margin-bottom: 1.25rem;
-    }
-    .field label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #333;
-      margin-bottom: 0.375rem;
-    }
-    .field input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.9375rem;
-      transition: border-color 0.2s;
-      outline: none;
-    }
-    .field input:focus {
-      border-color: #7b1fa2;
-      box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.1);
-    }
-    .field-error {
-      display: block;
-      color: #c62828;
-      font-size: 0.75rem;
-      margin-top: 0.25rem;
-    }
-    .btn-primary {
-      width: 100%;
-      padding: 0.75rem;
-      background: #7b1fa2;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
+    form {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      transition: background 0.2s;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    button[mat-flat-button] {
+      width: 100%;
       margin-top: 0.5rem;
-    }
-    .btn-primary:hover:not(:disabled) {
-      background: #6a1b9a;
-    }
-    .btn-primary:disabled {
-      background: #b39dba;
-      cursor: not-allowed;
-    }
-    .spinner {
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
     }
   `],
 })

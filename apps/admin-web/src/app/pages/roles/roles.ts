@@ -150,7 +150,6 @@ export class AssignPermissionsDialogComponent {
   imports: [
     CommonModule, FormsModule, PageHeaderComponent, DataTableComponent,
     MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
-    RoleFormDialogComponent, AssignPermissionsDialogComponent,
   ],
   template: `
     <div class="roles-page">

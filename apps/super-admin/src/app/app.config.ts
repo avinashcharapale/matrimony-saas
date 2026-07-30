@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { appRoutes } from './app.routes';
 import {
   correlationInterceptor,
@@ -15,6 +16,7 @@ import { platformAuthInterceptor } from './interceptors/platform-auth.intercepto
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideAnimationsAsync(),
     provideRouter(appRoutes),
     provideHttpClient(
       withInterceptors([

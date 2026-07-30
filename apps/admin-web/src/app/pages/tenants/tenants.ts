@@ -57,18 +57,18 @@ import { MatNativeDateModule } from '@angular/material/core';
       <form [formGroup]="form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Tenant Name</mat-label>
-          <input matInput formControlName="tenantName" placeholder="e.g. Matrimony India" />
+          <input matInput formControlName="name" placeholder="e.g. Matrimony India" />
           <mat-icon matPrefix>business</mat-icon>
-          @if (form.get('tenantName')?.hasError('required') && form.get('tenantName')?.touched) {
+          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
             <mat-error>Tenant name is required</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Domain</mat-label>
-          <input matInput formControlName="domainName" placeholder="e.g. example.com" />
+          <input matInput formControlName="domain" placeholder="e.g. example.com" />
           <mat-icon matPrefix>language</mat-icon>
-          @if (form.get('domainName')?.hasError('required') && form.get('domainName')?.touched) {
+          @if (form.get('domain')?.hasError('required') && form.get('domain')?.touched) {
             <mat-error>Domain is required</mat-error>
           }
         </mat-form-field>
@@ -128,8 +128,8 @@ export class TenantFormDialogComponent {
   }>(MAT_DIALOG_DATA);
 
   readonly form = this.fb.nonNullable.group({
-    tenantName: [this.data.tenant?.tenantName ?? '', [Validators.required]],
-    domainName: [this.data.tenant?.domainName ?? '', [Validators.required]],
+    name: [this.data.tenant?.name ?? '', [Validators.required]],
+    domain: [this.data.tenant?.domain ?? '', [Validators.required]],
     trialEndDate: [this.data.tenant?.trialEndDate ? new Date(this.data.tenant.trialEndDate) : null],
     isActive: [this.data.tenant?.isActive ?? true],
   });
@@ -139,8 +139,8 @@ export class TenantFormDialogComponent {
     const val = this.form.getRawValue();
     const dto: TenantDto = {
       tenantId: this.data.tenant?.tenantId,
-      tenantName: val.tenantName,
-      domainName: val.domainName,
+      name: val.name,
+      domain: val.domain,
       trialEndDate: val.trialEndDate ? val.trialEndDate.toISOString() : undefined,
       isActive: val.isActive,
     };
@@ -150,15 +150,11 @@ export class TenantFormDialogComponent {
 
 interface TenantRow extends Record<string, unknown> {
   tenantId?: number;
-  tenantName?: string;
-  domainName?: string;
+  name?: string;
+  domain?: string;
   isActive?: boolean;
-  subscriptionStartDate?: string;
-  subscriptionEndDate?: string;
   trialEndDate?: string;
   isActiveLabel: string;
-  subscriptionStartDateFormatted: string;
-  subscriptionEndDateFormatted: string;
   trialEndDateFormatted: string;
 }
 
@@ -177,7 +173,6 @@ interface TenantRow extends Record<string, unknown> {
     MatButtonModule,
     MatIconModule,
     MatSlideToggleModule,
-    TenantFormDialogComponent,
   ],
   template: `
     <div class="tenants-page">
@@ -234,10 +229,8 @@ export class Tenants implements OnInit {
 
   readonly columns: TableColumn[] = [
     { key: 'tenantId', label: 'ID', type: 'text' },
-    { key: 'tenantName', label: 'Tenant Name', type: 'text' },
-    { key: 'domainName', label: 'Domain', type: 'text' },
-    { key: 'subscriptionStartDateFormatted', label: 'Start Date', type: 'date' },
-    { key: 'subscriptionEndDateFormatted', label: 'End Date', type: 'date' },
+    { key: 'name', label: 'Tenant Name', type: 'text' },
+    { key: 'domain', label: 'Domain', type: 'text' },
     { key: 'trialEndDateFormatted', label: 'Trial End Date', type: 'date' },
     { key: 'isActiveLabel', label: 'Status', type: 'badge' },
   ];
@@ -248,8 +241,8 @@ export class Tenants implements OnInit {
     const mapped = list.map((t) => this.toRow(t));
     if (!term) return mapped;
     return mapped.filter((r) => {
-      const name = r.tenantName ?? '';
-      const domain = r.domainName ?? '';
+      const name = r.name ?? '';
+      const domain = r.domain ?? '';
       return name.toLowerCase().includes(term) || domain.toLowerCase().includes(term);
     });
   });
@@ -274,19 +267,11 @@ export class Tenants implements OnInit {
   private toRow(tenant: TenantDto): TenantRow {
     return {
       tenantId: tenant.tenantId,
-      tenantName: tenant.tenantName,
-      domainName: tenant.domainName,
+      name: tenant.name,
+      domain: tenant.domain,
       isActive: tenant.isActive,
-      subscriptionStartDate: tenant.subscriptionStartDate,
-      subscriptionEndDate: tenant.subscriptionEndDate,
       trialEndDate: tenant.trialEndDate,
       isActiveLabel: tenant.isActive ? 'Active' : 'Inactive',
-      subscriptionStartDateFormatted: tenant.subscriptionStartDate
-        ? new Date(tenant.subscriptionStartDate).toLocaleDateString()
-        : '-',
-      subscriptionEndDateFormatted: tenant.subscriptionEndDate
-        ? new Date(tenant.subscriptionEndDate).toLocaleDateString()
-        : '-',
       trialEndDateFormatted: tenant.trialEndDate
         ? new Date(tenant.trialEndDate).toLocaleDateString()
         : '-',
@@ -344,7 +329,7 @@ export class Tenants implements OnInit {
       width: '400px',
       data: {
         title: 'Delete Tenant',
-        message: `Are you sure you want to delete tenant "${tenant.tenantName}"? This action cannot be undone.`,
+        message: `Are you sure you want to delete tenant "${tenant.name}"? This action cannot be undone.`,
         confirmText: 'Delete',
         cancelText: 'Cancel',
       } satisfies ConfirmDialogData,

@@ -107,7 +107,7 @@ export class PermissionFormDialogComponent {
   imports: [
     CommonModule, FormsModule, PageHeaderComponent, DataTableComponent,
     MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
-    MatSlideToggleModule, PermissionFormDialogComponent,
+    MatSlideToggleModule,
   ],
   template: `
     <div class="permissions-page">

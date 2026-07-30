@@ -368,9 +368,6 @@ export interface TenantDto {
   name?: string;
   displayName?: string;
   domain?: string;
-  subscriptionStatus?: string;
-  subscriptionStartDate?: string;
-  subscriptionEndDate?: string;
   trialEndDate?: string;
   isActive?: boolean;
   createdAt?: string;

@@ -224,7 +224,7 @@ export class AssignRoleDialogComponent {
   imports: [
     CommonModule, FormsModule, PageHeaderComponent, DataTableComponent,
     MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
-    MatSlideToggleModule, UserFormDialogComponent, AssignRoleDialogComponent,
+    MatSlideToggleModule,
   ],
   template: `
     <div class="users-page">

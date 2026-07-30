@@ -9,6 +9,7 @@ export interface PlatformRoleDto {
   createdAt: string;
   permissionCount: number;
   adminCount: number;
+  permissionIds: number[];
 }
 
 export interface CreatePlatformRoleRequest {
