@@ -60,8 +60,7 @@ export interface AssignPermissionsDialogData {
   `,
   styles: [`
     mat-dialog-content {
-      min-width: 460px;
-      max-height: 50vh;
+      min-width: 480px;
     }
     .perm-list {
       display: flex;

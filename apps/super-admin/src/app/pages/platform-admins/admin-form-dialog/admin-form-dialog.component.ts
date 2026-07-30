@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { PlatformAdminDto, PlatformRoleDto } from '../../../services/platform-admin.service';
 
 export interface AdminFormDialogData {
@@ -36,6 +37,7 @@ export interface AdminFormResult {
     MatButtonModule,
     MatIconModule,
     MatSlideToggleModule,
+    MatCheckboxModule,
   ],
   template: `
     <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Add Admin' : 'Edit Admin' }}</h2>
@@ -77,14 +79,14 @@ export interface AdminFormResult {
           <label class="field-label">Roles</label>
           <div class="role-checkbox-list">
             @for (role of data.availableRoles; track role.platformRoleId) {
-              <label class="role-checkbox-item">
-                <input
-                  type="checkbox"
+              <div class="role-checkbox-item">
+                <mat-checkbox
                   [checked]="selectedRoleIds().has(role.platformRoleId)"
-                  (change)="toggleRole(role.platformRoleId)"
-                />
-                <span>{{ role.roleName }}</span>
-              </label>
+                  (change)="toggleRole(role.platformRoleId, $event.checked)"
+                >
+                  {{ role.roleName }}
+                </mat-checkbox>
+              </div>
             }
           </div>
         </div>
@@ -130,8 +132,6 @@ export interface AdminFormResult {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      max-height: 200px;
-      overflow-y: auto;
       padding: 8px;
       border: 1px solid #ddd;
       border-radius: 6px;
@@ -144,12 +144,8 @@ export interface AdminFormResult {
       font-size: 0.875rem;
       padding: 4px 0;
     }
-    .role-checkbox-item input[type="checkbox"] {
-      width: auto;
-      margin: 0;
-    }
     mat-dialog-content {
-      min-width: 400px;
+      min-width: 420px;
     }
   `],
 })
@@ -169,11 +165,11 @@ export class AdminFormDialogComponent {
     isActive: [this.data.admin?.isActive ?? true],
   });
 
-  toggleRole(id: number): void {
-    const set = new Set(this.selectedRoleIds());
-    if (set.has(id)) set.delete(id); else set.add(id);
-    this.selectedRoleIds.set(set);
-  }
+    toggleRole(id: number, checked: boolean): void {
+      const set = new Set(this.selectedRoleIds());
+      if (checked) set.add(id); else set.delete(id);
+      this.selectedRoleIds.set(set);
+    }
 
   submit(): void {
     if (this.form.invalid) return;

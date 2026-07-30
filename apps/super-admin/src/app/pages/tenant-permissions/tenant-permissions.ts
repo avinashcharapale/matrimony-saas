@@ -5,6 +5,8 @@ import { TenantPermissionService, TenantPermissionDto } from '../../services/ten
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { ConfirmDialogComponent, ConfirmDialogData } from '@org/shared-ui';
 import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm-form-dialog.component';
 
@@ -18,6 +20,8 @@ import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   template: `
     <div class="page">
@@ -38,7 +42,11 @@ import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm
       </div>
 
       <div class="search-bar">
-        <input type="text" placeholder="Search by code or name..." [value]="searchTerm()" (input)="onSearch($event)" />
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search by code or name...</mat-label>
+          <input matInput type="text" placeholder="Search by code or name..." [value]="searchTerm()" (input)="onSearch($event)" />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
       </div>
 
       @if (loading()) {
@@ -101,8 +109,7 @@ import { PermFormDialogComponent, PermFormResult } from './perm-form-dialog/perm
     .breadcrumb a:hover { text-decoration: underline; }
     .breadcrumb .sep { margin: 0 0.375rem; }
     .search-bar { margin-bottom: 1.5rem; }
-    .search-bar input { width: 100%; max-width: 400px; padding: 0.625rem 1rem; border: 1px solid #ddd; border-radius: 6px; font-size: 0.875rem; outline: none; }
-    .search-bar input:focus { border-color: #7b1fa2; box-shadow: 0 0 0 3px rgba(123,31,162,0.1); }
+    .search-field { width: 360px; }
     .loading-state { padding: 3rem; text-align: center; color: #888; }
     .empty-state { padding: 3rem; text-align: center; color: #888; }
     .empty-icon { width: 48px; height: 48px; background: #f3e5f5; color: #7b1fa2; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700; margin: 0 auto 1rem; }
