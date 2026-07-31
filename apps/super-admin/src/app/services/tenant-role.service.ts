@@ -6,6 +6,7 @@ export interface TenantRoleDto {
   roleId: number;
   tenantId: number;
   roleName: string;
+  isSystem: boolean;
   createdAt: string;
   userCount: number;
   permissionCount: number;
@@ -15,6 +16,7 @@ export interface TenantRoleDetailDto {
   roleId: number;
   tenantId: number;
   roleName: string;
+  isSystem: boolean;
   createdAt: string;
   users: { id: number; email: string; tenantId: number; isActive: boolean }[];
   permissions: { permissionCode: string }[];

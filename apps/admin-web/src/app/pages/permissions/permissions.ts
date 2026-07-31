@@ -112,10 +112,12 @@ export class PermissionFormDialogComponent {
   template: `
     <div class="permissions-page">
       <ui-page-header title="Permission Management" subtitle="Define and manage tenant permissions">
-        <button mat-flat-button color="primary" (click)="openAddDialog()">
-          <mat-icon>add</mat-icon>
-          Add Permission
-        </button>
+        @if (can('permission.create')) {
+          <button mat-flat-button color="primary" (click)="openAddDialog()">
+            <mat-icon>add</mat-icon>
+            Add Permission
+          </button>
+        }
       </ui-page-header>
 
       <div class="search-bar">
@@ -130,6 +132,8 @@ export class PermissionFormDialogComponent {
         [columns]="columns"
         [data]="displayRows()"
         [loading]="loading()"
+        [canEdit]="canEditRow"
+        [canDelete]="canDeleteRow"
         emptyMessage="No permissions found"
         (rowEdit)="openEditDialog($event)"
         (rowDelete)="confirmDelete($event)"
@@ -145,10 +149,16 @@ export class PermissionFormDialogComponent {
 export class Permissions implements OnInit {
   private readonly permissionService = inject(PermissionService);
   private readonly dialog = inject(MatDialog);
+  private readonly authStore = inject(AuthStore);
+
+  readonly can = this.authStore.can;
 
   readonly loading = signal(false);
   readonly permissions = signal<PermissionDto[]>([]);
   searchTerm = '';
+
+  readonly canEditRow = (): boolean => this.can('permission.update');
+  readonly canDeleteRow = (): boolean => this.can('permission.delete');
 
   readonly columns: TableColumn[] = [
     { key: 'permissionCode', label: 'Code', type: 'text' },

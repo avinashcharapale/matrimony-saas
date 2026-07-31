@@ -33,6 +33,7 @@ interface UserRow extends Record<string, unknown> {
   id?: number;
   email?: string;
   isActive?: boolean;
+  isTenantAdmin?: boolean;
   createdAt?: string;
   isActiveLabel: string;
   roleLabel: string;
@@ -253,11 +254,13 @@ export class AssignRoleDialogComponent {
   ],
   template: `
     <div class="users-page">
-      <ui-page-header title="User Management" subtitle="Manage users, roles, and permissions">
-        <button mat-flat-button color="primary" (click)="openAddDialog()">
-          <mat-icon>add</mat-icon>
-          Add User
-        </button>
+      <ui-page-header title="Staff" subtitle="Manage tenant admin staff, roles, and permissions">
+        @if (can('user.create')) {
+          <button mat-flat-button color="primary" (click)="openAddDialog()">
+            <mat-icon>add</mat-icon>
+            Add User
+          </button>
+        }
       </ui-page-header>
 
       <div class="search-bar">
@@ -272,34 +275,40 @@ export class AssignRoleDialogComponent {
         [columns]="columns"
         [data]="displayRows()"
         [loading]="loading()"
-        emptyMessage="No users found"
+        emptyMessage="No staff members found"
         (rowClick)="openAssignRoleDialog($event)"
       >
         <ng-template #actions let-row>
-          <button
-            mat-icon-button
-            color="primary"
-            title="Edit"
-            (click)="openEditDialog(row); $event.stopPropagation()"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            title="Promote to Tenant Admin"
-            [disabled]="isTenantAdminRow(row)"
-            (click)="promoteToTenantAdmin(row); $event.stopPropagation()"
-          >
-            <mat-icon>admin_panel_settings</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            color="warn"
-            title="Delete"
-            (click)="confirmDelete(row); $event.stopPropagation()"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
+          @if (can('user.update')) {
+            <button
+              mat-icon-button
+              color="primary"
+              title="Edit"
+              (click)="openEditDialog(row); $event.stopPropagation()"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+          @if (can('user.assign_roles')) {
+            <button
+              mat-icon-button
+              title="Promote to Tenant Admin"
+              [disabled]="isTenantAdminRow(row)"
+              (click)="promoteToTenantAdmin(row); $event.stopPropagation()"
+            >
+              <mat-icon>admin_panel_settings</mat-icon>
+            </button>
+          }
+          @if (can('user.delete')) {
+            <button
+              mat-icon-button
+              color="warn"
+              title="Delete"
+              (click)="confirmDelete(row); $event.stopPropagation()"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          }
         </ng-template>
       </ui-data-table>
     </div>
@@ -312,14 +321,14 @@ export class AssignRoleDialogComponent {
 })
 export class Users implements OnInit {
   readonly userStore = inject(UserStore);
-  private readonly usersClient = inject(UsersClient);
   private readonly authStore = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
   private readonly snackbar = inject(MatSnackBar);
   private readonly roleService = inject(RoleService);
 
+  readonly can = this.authStore.can;
+
   readonly loading = signal(false);
-  readonly userRoles = signal<Map<number, string[]>>(new Map());
   searchTerm = '';
 
   readonly columns: TableColumn[] = [
@@ -331,11 +340,14 @@ export class Users implements OnInit {
 
   readonly displayRows = computed<UserRow[]>(() => {
     const users = this.userStore.users();
-    const term = this.searchTerm.toLowerCase();
-    const roles = this.userRoles();
-    const mapped = users.map((u) => this.toRow(u, roles));
-    if (!term) return mapped;
-    return mapped.filter((u) => (u.email ?? '').toLowerCase().includes(term));
+    const term = this.searchTerm.trim().toLowerCase();
+    return users
+      .map((u) => this.toRow(u))
+      .filter((u) => {
+        if (u.isTenantAdmin === true) return true;
+        if (!term) return false;
+        return (u.email ?? '').toLowerCase().includes(term);
+      });
   });
 
   ngOnInit(): void {
@@ -344,40 +356,19 @@ export class Users implements OnInit {
       this.loading.set(true);
       this.userStore.loadUsersByTenant(session.tenantId).subscribe(() => {
         this.loading.set(false);
-        this.loadRolesForAllUsers();
       });
     }
   }
 
-  loadRolesForAllUsers(): void {
-    const users = this.userStore.users();
-    const roles = new Map<number, string[]>();
-    let completed = 0;
-    if (users.length === 0) return;
-    for (const u of users) {
-      if (u.id == null) { completed++; continue; }
-      this.usersClient.getById(u.id).subscribe({
-        next: (detail) => {
-          roles.set(u.id!, detail.roles ?? []);
-          completed++;
-          if (completed === users.length) this.userRoles.set(new Map(roles));
-        },
-        error: () => {
-          completed++;
-          if (completed === users.length) this.userRoles.set(new Map(roles));
-        },
-      });
-    }
-  }
-
-  private toRow(user: UserListDto, roles: Map<number, string[]>): UserRow {
+  private toRow(user: UserListDto): UserRow {
     return {
       id: user.id,
       email: user.email,
       isActive: user.isActive,
+      isTenantAdmin: user.isTenantAdmin,
       createdAt: user.createdAt,
       isActiveLabel: user.isActive ? 'Active' : 'Inactive',
-      roleLabel: user.id != null ? (roles.get(user.id)?.join(', ') || 'None') : 'None',
+      roleLabel: (user.roles ?? []).join(', ') || 'None',
       createdAtFormatted: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-',
     };
   }
@@ -432,6 +423,7 @@ export class Users implements OnInit {
   }
 
   openAssignRoleDialog(row: Record<string, unknown>): void {
+    if (!this.can('user.assign_roles')) return;
     const userId = row['id'] as number;
     const userEmail = row['email'] as string;
     const ref = this.dialog.open(AssignRoleDialogComponent, {
@@ -441,13 +433,12 @@ export class Users implements OnInit {
       if (changed) {
         const session = this.authStore.session();
         if (session?.tenantId) this.userStore.loadUsersByTenant(session.tenantId).subscribe();
-        this.loadRolesForAllUsers();
       }
     });
   }
 
   isTenantAdminRow(row: Record<string, unknown>): boolean {
-    return ((row['roleLabel'] as string) ?? '').split(', ').includes('TenantAdmin');
+    return (row['isTenantAdmin'] as boolean) ?? false;
   }
 
   promoteToTenantAdmin(row: Record<string, unknown>): void {
@@ -479,7 +470,6 @@ export class Users implements OnInit {
               this.snackbar.open(`${userEmail} promoted to Tenant Admin.`, 'Close', { duration: 4000 });
               const session = this.authStore.session();
               if (session?.tenantId) this.userStore.loadUsersByTenant(session.tenantId).subscribe();
-              this.loadRolesForAllUsers();
             },
             error: (err) => this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 }),
           });

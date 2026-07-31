@@ -54,6 +54,11 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./pages/system/system').then((m) => m.System),
       },
+      {
+        path: 'features',
+        loadComponent: () =>
+          import('./pages/features/features').then((m) => m.Features),
+      },
     ],
   },
   {

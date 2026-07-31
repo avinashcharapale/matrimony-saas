@@ -14,6 +14,19 @@ export interface PlanFormDialogData {
   plan?: SubscriptionPlanDto;
 }
 
+export interface PlanFormResult {
+  code: string;
+  name: string;
+  description?: string;
+  price: number;
+  durationMonths: number;
+  currency: string;
+  displayOrder: number;
+  isPopular: boolean;
+  isActive: boolean;
+  tenantFeatures: FeatureValueRequest[];
+}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-plan-form-dialog',
@@ -178,7 +191,7 @@ export interface PlanFormDialogData {
 })
 export class PlanFormDialogComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly dialogRef = inject(MatDialogRef<PlanFormDialogComponent, SubscriptionPlanDto>);
+  private readonly dialogRef = inject(MatDialogRef<PlanFormDialogComponent, PlanFormResult>);
   private readonly subscriptionClient = inject(SubscriptionClient);
   readonly data = inject<PlanFormDialogData>(MAT_DIALOG_DATA);
 
@@ -232,8 +245,7 @@ export class PlanFormDialogComponent implements OnInit {
       featureCode: f.featureCode,
       value: String(f.value),
     }));
-    const dto: SubscriptionPlanDto = {
-      id: this.data.plan?.id,
+    const dto: PlanFormResult = {
       code: val.code,
       name: val.name,
       description: val.description || undefined,

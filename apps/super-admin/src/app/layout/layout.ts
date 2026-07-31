@@ -44,6 +44,10 @@ import { PlatformAuthService } from '../services/platform-auth.service';
             <span class="nav-icon">S</span>
             System
           </a>
+          <a routerLink="/features" routerLinkActive="active" class="nav-item">
+            <span class="nav-icon">F</span>
+            Features
+          </a>
         </nav>
         <div class="sidebar-footer">
           <button class="logout-btn" (click)="logout()">Sign Out</button>

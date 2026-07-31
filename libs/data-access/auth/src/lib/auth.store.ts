@@ -10,6 +10,7 @@ export const USER_ID_KEY = 'auth_user_id';
 export const TENANT_ID_KEY = 'auth_tenant_id';
 export const ROLE_KEY = 'auth_role';
 export const ROLES_KEY = 'auth_roles';
+export const PERMISSIONS_KEY = 'auth_permissions';
 export const EXPIRES_AT_KEY = 'auth_expires_at';
 
 export interface AuthSession {
@@ -17,6 +18,7 @@ export interface AuthSession {
   tenantId: number;
   role: string;
   roles: string[];
+  permissions: string[];
   expiresAt: string;
 }
 
@@ -27,6 +29,7 @@ export interface AuthState {
   tenantId: number | null;
   role: string | null;
   roles: string[];
+  permissions: string[];
   expiresAt: string | null;
   loading: boolean;
   error: string | null;
@@ -44,6 +47,7 @@ function loadFromStorage(): AuthState {
       : null,
     role: localStorage.getItem(ROLE_KEY),
     roles: parseRoles(localStorage.getItem(ROLES_KEY)),
+    permissions: parseRoles(localStorage.getItem(PERMISSIONS_KEY)),
     expiresAt: localStorage.getItem(EXPIRES_AT_KEY),
     loading: false,
     error: null,
@@ -70,6 +74,7 @@ function persistToStorage(state: AuthState): void {
   set(TENANT_ID_KEY, state.tenantId != null ? String(state.tenantId) : null);
   set(ROLE_KEY, state.role);
   set(ROLES_KEY, state.roles.length > 0 ? JSON.stringify(state.roles) : null);
+  set(PERMISSIONS_KEY, state.permissions.length > 0 ? JSON.stringify(state.permissions) : null);
   set(EXPIRES_AT_KEY, state.expiresAt);
 }
 
@@ -84,6 +89,7 @@ function normalizeAuthPayload(
     tenantId?: number;
     role?: string;
     roles?: string[];
+    permissions?: string[];
     expiresAt?: string;
     expiresIn?: number;
     user?: { id?: number; tenantId?: number };
@@ -97,6 +103,9 @@ function normalizeAuthPayload(
   const roles = Array.isArray(r.roles) && r.roles.length > 0
     ? r.roles
     : previous?.roles ?? (role ? [role] : []);
+  const permissions = Array.isArray(r.permissions)
+    ? r.permissions.filter((p) => typeof p === 'string')
+    : previous?.permissions ?? [];
   const expiresAt =
     r.expiresAt ??
     (typeof r.expiresIn === 'number' && r.expiresIn > 0
@@ -105,7 +114,7 @@ function normalizeAuthPayload(
     previous?.expiresAt ??
     null;
 
-  return { accessToken, storedRefreshToken, userId, tenantId, role, roles, expiresAt };
+  return { accessToken, storedRefreshToken, userId, tenantId, role, roles, permissions, expiresAt };
 }
 
 function extractErrorMessage(error: unknown, fallback: string): string {
@@ -149,6 +158,7 @@ const EMPTY_STATE: AuthState = {
   tenantId: null,
   role: null,
   roles: [],
+  permissions: [],
   expiresAt: null,
   loading: false,
   error: null,
@@ -157,7 +167,7 @@ const EMPTY_STATE: AuthState = {
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(loadFromStorage),
-  withComputed(({ accessToken, userId, tenantId, role, roles, expiresAt }) => ({
+  withComputed(({ accessToken, userId, tenantId, role, roles, permissions, expiresAt }) => ({
     isAuthenticated: computed(() => {
       const token = accessToken();
       if (!token) return false;
@@ -179,11 +189,16 @@ export const AuthStore = signalStore(
         tenantId: tenantId() ?? 0,
         role: role() ?? 'member',
         roles: roles(),
+        permissions: permissions(),
         expiresAt: expiresAt() ?? '',
       };
     }),
   })),
   withMethods((store, repository = inject(AuthRepository)) => ({
+    can(code: string): boolean {
+      if (store.isAdmin()) return true;
+      return store.permissions().includes(code);
+    },
     login(email: string, password: string) {
       patchState(store, { loading: true, error: null });
 
@@ -235,6 +250,7 @@ export const AuthStore = signalStore(
                   tenantId: store.tenantId() ?? 0,
                   role: store.role() ?? 'member',
                   roles: store.roles(),
+                  permissions: store.permissions(),
                   expiresAt: store.expiresAt() ?? '',
                 }
               : null;

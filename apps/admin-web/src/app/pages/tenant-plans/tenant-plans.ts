@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { PageHeaderComponent, StatusBadgeComponent } from '@org/shared-ui';
@@ -10,29 +10,27 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSelectModule } from '@angular/material/select';
-import { SubscriptionClient, SubscriptionFeatureDto } from '@org/generated';
 import {
-  UserSubscriptionPlanService,
-  UserSubscriptionPlanDto,
-  CreateUserSubscriptionPlanRequest,
-  UpdateUserSubscriptionPlanRequest,
-} from '../../services/user-subscription-plan.service';
+  SubscriptionPlanDto,
+  CreateSubscriptionPlanRequest,
+  UpdateSubscriptionPlanRequest,
+} from '@org/generated';
+import { TenantPlanService } from '../../services/tenant-plan.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-user-subscription-plans',
+  selector: 'app-tenant-plans',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, PageHeaderComponent, StatusBadgeComponent,
     MatCardModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatButtonModule, MatCheckboxModule, MatSelectModule,
+    MatFormFieldModule, MatInputModule, MatButtonModule, MatCheckboxModule,
   ],
   template: `
     <div class="plans-page">
       <ui-page-header
-        title="User Subscription Plans"
-        subtitle="Create and manage subscription plans for users"
+        title="Tenant Plans"
+        subtitle="Create and manage your tenant's own subscription plans"
       />
 
       <div class="header-actions">
@@ -50,7 +48,7 @@ import {
       } @else if (plans().length === 0) {
         <div class="empty-state">
           <mat-icon>inventory_2</mat-icon>
-          <span>No subscription plans found</span>
+          <span>No plans found. Create your first plan to get started.</span>
         </div>
       } @else {
         <div class="table-wrapper">
@@ -63,7 +61,7 @@ import {
                 <th>Duration</th>
                 <th>Currency</th>
                 <th>Status</th>
-                <th>Features</th>
+                <th>Popular</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -79,11 +77,8 @@ import {
                     <ui-status-badge [status]="plan.isActive ? 'Active' : 'Inactive'"></ui-status-badge>
                   </td>
                   <td class="cell-center">
-                    @if (plan.features?.length) {
-                      <button mat-icon-button title="View features" (click)="toggleFeatures(plan.id)">
-                        <mat-icon>{{ expandedId() === plan.id ? 'expand_less' : 'expand_more' }}</mat-icon>
-                      </button>
-                      <span class="feature-count">{{ plan.features?.length }}</span>
+                    @if (plan.isPopular) {
+                      <mat-icon class="popular-icon">star</mat-icon>
                     } @else {
                       <span class="cell-muted">—</span>
                     }
@@ -97,19 +92,6 @@ import {
                     </button>
                   </td>
                 </tr>
-                @if (expandedId() === plan.id) {
-                  <tr class="features-row">
-                    <td colspan="8">
-                      <div class="feature-chips">
-                        @for (f of plan.features; track f.code) {
-                          <span class="feature-chip">
-                            {{ f.name || f.code }}: <strong>{{ f.value }}</strong>
-                          </span>
-                        }
-                      </div>
-                    </td>
-                  </tr>
-                }
               }
             </tbody>
           </table>
@@ -146,32 +128,15 @@ import {
     .cell-price { font-weight: 600; color: #2e7d32; }
     .cell-actions { text-align: right; white-space: nowrap; }
     .cell-muted { color: #bdbdbd; }
-    .feature-count {
-      display: inline-block; min-width: 20px; padding: 1px 6px; border-radius: 10px;
-      background: #e3f2fd; color: #1976d2; font-size: 0.75rem; font-weight: 600;
-      text-align: center; margin-left: 4px;
-    }
-    .features-row td { padding: 0.75rem 1rem !important; background: #fafafa; }
-    .feature-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .feature-chip {
-      padding: 0.25rem 0.625rem; background: #e3f2fd; color: #1976d2;
-      border-radius: 12px; font-size: 0.8125rem;
-    }
-    .feature-chip strong { font-weight: 600; }
+    .popular-icon { color: #f9a825; font-size: 18px; width: 18px; height: 18px; }
   `],
 })
-export class UserSubscriptionPlans implements OnInit {
-  private readonly planService = inject(UserSubscriptionPlanService);
+export class TenantPlans implements OnInit {
+  private readonly planService = inject(TenantPlanService);
   private readonly dialog = inject(MatDialog);
-  private readonly fb = inject(FormBuilder);
 
   readonly loading = signal(true);
-  readonly plans = signal<UserSubscriptionPlanDto[]>([]);
-  readonly expandedId = signal<number | null>(null);
-
-  toggleFeatures(planId: number | undefined): void {
-    this.expandedId.update(id => (id === planId ? null : (planId ?? null)));
-  }
+  readonly plans = signal<SubscriptionPlanDto[]>([]);
 
   ngOnInit(): void {
     this.loadPlans();
@@ -187,29 +152,29 @@ export class UserSubscriptionPlans implements OnInit {
 
   openAddDialog(): void {
     const ref = this.dialog.open(PlanFormDialogComponent, {
-      width: '520px',
+      width: '560px',
       disableClose: true,
       data: { mode: 'create' },
     });
-    ref.afterClosed().subscribe((result: CreateUserSubscriptionPlanRequest | undefined) => {
+    ref.afterClosed().subscribe((result: CreateSubscriptionPlanRequest | undefined) => {
       if (!result) return;
       this.planService.create(result).subscribe(() => this.loadPlans());
     });
   }
 
-  openEditDialog(plan: UserSubscriptionPlanDto): void {
+  openEditDialog(plan: SubscriptionPlanDto): void {
     const ref = this.dialog.open(PlanFormDialogComponent, {
-      width: '520px',
+      width: '560px',
       disableClose: true,
       data: { mode: 'edit', plan },
     });
-    ref.afterClosed().subscribe((result: UpdateUserSubscriptionPlanRequest | undefined) => {
+    ref.afterClosed().subscribe((result: UpdateSubscriptionPlanRequest | undefined) => {
       if (!result || plan.id == null) return;
       this.planService.update(plan.id, result).subscribe(() => this.loadPlans());
     });
   }
 
-  confirmDelete(plan: UserSubscriptionPlanDto): void {
+  confirmDelete(plan: SubscriptionPlanDto): void {
     const ref = this.dialog.open(DeleteConfirmDialogComponent, {
       width: '400px',
       disableClose: true,
@@ -223,21 +188,13 @@ export class UserSubscriptionPlans implements OnInit {
   }
 }
 
-interface PlanFeatureRow {
-  code: string;
-  name: string;
-  category: string;
-  dataType: string;
-  value: string;
-}
-
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-plan-form-dialog',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatSelectModule,
+    MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule,
   ],
   template: `
     <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Add Plan' : 'Edit Plan' }}</h2>
@@ -246,7 +203,7 @@ interface PlanFeatureRow {
         @if (data.mode === 'create') {
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Code</mat-label>
-            <input matInput formControlName="code" placeholder="e.g. BASIC_MONTHLY" />
+            <input matInput formControlName="code" placeholder="e.g. TENANT_PREMIUM" />
             @if (form.get('code')?.hasError('required') && form.get('code')?.touched) {
               <mat-error>Required</mat-error>
             }
@@ -255,7 +212,7 @@ interface PlanFeatureRow {
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Name</mat-label>
-          <input matInput formControlName="name" placeholder="e.g. Basic Monthly" />
+          <input matInput formControlName="name" placeholder="e.g. Premium Monthly" />
           @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
             <mat-error>Required</mat-error>
           }
@@ -278,68 +235,21 @@ interface PlanFeatureRow {
           </mat-form-field>
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Currency</mat-label>
-          <input matInput formControlName="currency" placeholder="INR" />
-        </mat-form-field>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Currency</mat-label>
+            <input matInput formControlName="currency" placeholder="INR" />
+          </mat-form-field>
 
-        <div class="checkbox-row">
-          <mat-checkbox formControlName="isActive" color="primary">Active</mat-checkbox>
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Display order</mat-label>
+            <input matInput type="number" formControlName="displayOrder" placeholder="0" />
+          </mat-form-field>
         </div>
 
-        <div class="features-editor">
-          <div class="features-header">
-            <span class="features-title">Plan Features</span>
-            <mat-form-field appearance="outline" class="add-feature">
-              <mat-label>Add feature</mat-label>
-              <mat-select
-                [value]="addFeatureSelection()"
-                (selectionChange)="onAddFeature($event.value)"
-              >
-                @for (f of availableFeatures(); track f.code) {
-                  <mat-option [value]="f">{{ f.name || f.code }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          @if (features().length === 0) {
-            <div class="features-empty">No features selected yet.</div>
-          } @else {
-            <div class="feature-list">
-              @for (f of features(); track f.code; let i = $index) {
-                <div class="feature-row">
-                  <span class="feature-name" [title]="f.code">{{ f.name || f.code }}</span>
-                  @if (f.dataType === 'bool') {
-                    <mat-checkbox
-                      color="primary"
-                      [checked]="f.value === 'true'"
-                      (change)="setFeatureBool(i, $event.checked)"
-                    >Enabled</mat-checkbox>
-                  } @else if (f.dataType === 'int') {
-                    <input
-                      class="feature-value"
-                      type="number"
-                      placeholder="0"
-                      [value]="f.value"
-                      (input)="onFeatureValueInput(i, $event)"
-                    />
-                  } @else {
-                    <input
-                      class="feature-value"
-                      type="text"
-                      placeholder="Value"
-                      [value]="f.value"
-                      (input)="onFeatureValueInput(i, $event)"
-                    />
-                  }
-                  <button mat-icon-button color="warn" title="Remove" (click)="removeFeature(i)">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </div>
-              }
-            </div>
-          }
+        <div class="checkbox-row">
+          <mat-checkbox formControlName="isPopular" color="primary">Popular</mat-checkbox>
+          <mat-checkbox formControlName="isActive" color="primary">Active</mat-checkbox>
         </div>
       </form>
     </mat-dialog-content>
@@ -354,42 +264,14 @@ interface PlanFeatureRow {
     .full-width { width: 100%; margin-bottom: 4px; }
     .half-width { width: 48%; }
     .form-row { display: flex; gap: 4%; }
-    .checkbox-row { margin: 12px 0; }
-    mat-dialog-content { min-width: 460px; padding-top: 16px !important; }
-    .features-editor {
-      border: 1px solid #eee; border-radius: 8px; padding: 0.75rem;
-      margin-top: 0.5rem;
-    }
-    .features-header {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; margin-bottom: 0.5rem;
-    }
-    .features-title { font-size: 0.875rem; font-weight: 600; color: #333; }
-    .add-feature { width: 200px; margin-bottom: -1.25em; }
-    .features-empty { font-size: 0.8125rem; color: #9e9e9e; padding: 0.25rem 0; }
-    .feature-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
-    .feature-row {
-      display: flex; align-items: center; gap: 8px;
-      background: #fafafa; border: 1px solid #f0f0f0; border-radius: 6px;
-      padding: 0.25rem 0.5rem;
-    }
-    .feature-name { flex: 1; font-size: 0.8125rem; font-weight: 500; color: #424242; }
-    .feature-value {
-      width: 110px; padding: 0.4rem 0.5rem; border: 1px solid #ddd;
-      border-radius: 6px; font-size: 0.8125rem; outline: none;
-    }
-    .feature-value:focus { border-color: #1976d2; }
+    .checkbox-row { margin: 12px 0; display: flex; gap: 24px; }
+    mat-dialog-content { min-width: 500px; padding-top: 16px !important; }
   `],
 })
-export class PlanFormDialogComponent implements OnInit {
+export class PlanFormDialogComponent {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<PlanFormDialogComponent>);
-  private readonly subscriptionClient = inject(SubscriptionClient);
-  readonly data = inject<{ mode: 'create' | 'edit'; plan?: UserSubscriptionPlanDto }>(MAT_DIALOG_DATA);
-
-  readonly catalog = signal<SubscriptionFeatureDto[]>([]);
-  readonly features = signal<PlanFeatureRow[]>([]);
-  readonly addFeatureSelection = signal<SubscriptionFeatureDto | null>(null);
+  readonly data = inject<{ mode: 'create' | 'edit'; plan?: SubscriptionPlanDto }>(MAT_DIALOG_DATA);
 
   readonly form = this.fb.nonNullable.group({
     code: [this.data.plan?.code ?? '', this.data.mode === 'create' ? [Validators.required] : []],
@@ -398,65 +280,14 @@ export class PlanFormDialogComponent implements OnInit {
     price: [this.data.plan?.price ?? null as number | null],
     durationMonths: [this.data.plan?.durationMonths ?? null as number | null],
     currency: [this.data.plan?.currency ?? 'INR'],
+    displayOrder: [this.data.plan?.displayOrder ?? 0],
+    isPopular: [this.data.plan?.isPopular ?? false],
     isActive: [this.data.plan?.isActive ?? true],
   });
-
-  readonly availableFeatures = computed(() => {
-    const used = new Set(this.features().map(f => f.code));
-    return this.catalog().filter(f => !used.has(f.code ?? ''));
-  });
-
-  ngOnInit(): void {
-    this.features.set((this.data.plan?.features ?? []).map(f => ({
-      code: f.code ?? '',
-      name: f.name ?? '',
-      category: f.category ?? '',
-      dataType: f.dataType ?? '',
-      value: f.value ?? '',
-    })));
-    this.subscriptionClient.getAllTenantOwnFeatures().subscribe({
-      next: (catalog) => this.catalog.set(catalog ?? []),
-    });
-  }
-
-  onAddFeature(feature: SubscriptionFeatureDto | null): void {
-    if (feature?.code) {
-      this.features.update(list => [
-        ...list,
-        {
-          code: feature.code!,
-          name: feature.name ?? feature.code!,
-          category: feature.category ?? '',
-          dataType: feature.dataType ?? '',
-          value: feature.defaultValue ?? '',
-        },
-      ]);
-    }
-    this.addFeatureSelection.set(null);
-  }
-
-  removeFeature(index: number): void {
-    this.features.update(list => list.filter((_, i) => i !== index));
-  }
-
-  setFeatureValue(index: number, value: string): void {
-    this.features.update(list => list.map((f, i) => (i === index ? { ...f, value } : f)));
-  }
-
-  onFeatureValueInput(index: number, event: Event): void {
-    this.setFeatureValue(index, (event.target as HTMLInputElement).value);
-  }
-
-  setFeatureBool(index: number, checked: boolean): void {
-    this.features.update(list => list.map((f, i) => (i === index ? { ...f, value: checked ? 'true' : 'false' } : f)));
-  }
 
   submit(): void {
     if (this.form.invalid) return;
     const raw = this.form.getRawValue();
-    const features = this.features()
-      .filter(f => f.code && f.value !== '')
-      .map(f => ({ featureCode: f.code, value: f.value }));
     this.dialogRef.close({
       code: raw.code || undefined,
       name: raw.name,
@@ -464,8 +295,9 @@ export class PlanFormDialogComponent implements OnInit {
       price: raw.price ?? undefined,
       durationMonths: raw.durationMonths ?? undefined,
       currency: raw.currency || undefined,
+      displayOrder: raw.displayOrder ?? undefined,
+      isPopular: raw.isPopular,
       isActive: raw.isActive,
-      features,
     });
   }
 }

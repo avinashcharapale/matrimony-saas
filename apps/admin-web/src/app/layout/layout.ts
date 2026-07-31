@@ -22,19 +22,25 @@ import { MatButtonModule } from '@angular/material/button';
             <mat-icon>dashboard</mat-icon>
             <span>Dashboard</span>
           </a>
-          @if (isAdmin()) {
+          @if (can('user.read')) {
             <a routerLink="/users" routerLinkActive="active" class="nav-item">
-              <mat-icon>people</mat-icon>
-              <span>Users</span>
+              <mat-icon>manage_accounts</mat-icon>
+              <span>Staff</span>
             </a>
+          }
+          @if (can('role.read')) {
             <a routerLink="/roles" routerLinkActive="active" class="nav-item">
               <mat-icon>admin_panel_settings</mat-icon>
               <span>Roles</span>
             </a>
+          }
+          @if (can('permission.read')) {
             <a routerLink="/permissions" routerLinkActive="active" class="nav-item">
               <mat-icon>vpn_key</mat-icon>
               <span>Permissions</span>
             </a>
+          }
+          @if (canManageTenants()) {
             <a routerLink="/tenants" routerLinkActive="active" class="nav-item">
               <mat-icon>business</mat-icon>
               <span>Tenants</span>
@@ -48,6 +54,14 @@ import { MatButtonModule } from '@angular/material/button';
             <a routerLink="/subscription-plans" routerLinkActive="active" class="nav-item">
               <mat-icon>card_membership</mat-icon>
               <span>Plan Management</span>
+            </a>
+            <a routerLink="/tenant-plans" routerLinkActive="active" class="nav-item">
+              <mat-icon>storefront</mat-icon>
+              <span>Tenant Plans</span>
+            </a>
+            <a routerLink="/tenant-features" routerLinkActive="active" class="nav-item">
+              <mat-icon>stars</mat-icon>
+              <span>My Features</span>
             </a>
           }
           <a routerLink="/subscriptions" routerLinkActive="active" class="nav-item">
@@ -190,6 +204,14 @@ export class Layout {
   private readonly session = this.authStore.session;
 
   readonly isAdmin = this.authStore.isAdmin;
+
+  readonly can = this.authStore.can;
+
+  readonly canManageTenants = computed(() => {
+    const s = this.session();
+    const all = [s?.role, ...(s?.roles ?? [])];
+    return all.includes('PlatformAdmin') || all.includes('SuperAdmin');
+  });
 
   readonly roleLabel = computed(() => {
     const s = this.session();

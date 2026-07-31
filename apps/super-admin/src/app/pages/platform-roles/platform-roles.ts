@@ -68,12 +68,18 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
               @for (role of pagination.paginated(); track role.platformRoleId) {
                 <tr>
                   <td class="cell-id">{{ role.platformRoleId }}</td>
-                  <td class="cell-bold">{{ role.roleName }}</td>
+                  <td class="cell-bold">
+                    {{ role.roleName }}
+                    @if (role.isSystem) {
+                      <span class="badge system">System</span>
+                    }
+                  </td>
                   <td class="cell-center">
                     {{ role.permissionCount }}
                     <button
                       mat-icon-button
                       title="Assign Permissions"
+                      [disabled]="role.isSystem"
                       (click)="openAssignPermissions(role)"
                     >
                       <mat-icon>edit</mat-icon>
@@ -86,10 +92,10 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
                     </span>
                   </td>
                   <td class="cell-actions">
-                    <button mat-icon-button title="Edit" (click)="openEditDialog(role)">
+                    <button mat-icon-button title="Edit" [disabled]="role.isSystem" (click)="openEditDialog(role)">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button title="Delete" (click)="confirmDelete(role)">
+                    <button mat-icon-button title="Delete" [disabled]="role.isSystem" (click)="confirmDelete(role)">
                       <mat-icon color="warn">delete</mat-icon>
                     </button>
                   </td>
@@ -131,6 +137,7 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
     .badge { display: inline-block; padding: 0.2rem 0.625rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
+    .badge.system { background: #ede7f6; color: #4527a0; margin-left: 0.5rem; }
     .sortable { cursor: pointer; user-select: none; }
     .sortable:hover { background: #f0ecf3; }
     .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }

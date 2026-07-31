@@ -14,6 +14,7 @@ export interface AuthLoginResponse {
   tenantId: number;
   role: string;
   roles?: string[];
+  permissions?: string[];
   expiresAt: string;
 }
 

@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { AuthStore } from '@org/data-access-auth';
 import { PageHeaderComponent, DataTableComponent, ConfirmDialogComponent, ConfirmDialogData, TableColumn } from '@org/shared-ui';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,6 +18,7 @@ import { RESERVED_ROLE_NAMES } from '../../services/role.constants';
 interface RoleRow extends Record<string, unknown> {
   id?: number;
   roleName?: string;
+  isSystem?: boolean;
   userCount?: number;
   permissionCount?: number;
   createdAtFormatted: string;
@@ -167,10 +169,12 @@ export class AssignPermissionsDialogComponent {
   template: `
     <div class="roles-page">
       <ui-page-header title="Role Management" subtitle="Create and manage roles with permissions">
-        <button mat-flat-button color="primary" (click)="openAddDialog()">
-          <mat-icon>add</mat-icon>
-          Add Role
-        </button>
+        @if (can('role.create')) {
+          <button mat-flat-button color="primary" (click)="openAddDialog()">
+            <mat-icon>add</mat-icon>
+            Add Role
+          </button>
+        }
       </ui-page-header>
 
       <div class="search-bar">
@@ -204,20 +208,26 @@ export class Roles implements OnInit {
   private readonly roleService = inject(RoleService);
   private readonly dialog = inject(MatDialog);
   private readonly snackbar = inject(MatSnackBar);
+  private readonly authStore = inject(AuthStore);
+
+  readonly can = this.authStore.can;
 
   readonly loading = signal(false);
   readonly roles = signal<RoleDto[]>([]);
   searchTerm = '';
 
-  readonly canEditRow = (row: Record<string, unknown>): boolean => !this.isReservedRow(row);
-  readonly canDeleteRow = (row: Record<string, unknown>): boolean => !this.isReservedRow(row);
+  readonly canEditRow = (row: Record<string, unknown>): boolean =>
+    this.can('role.update') && !this.isReservedRow(row);
+  readonly canDeleteRow = (row: Record<string, unknown>): boolean =>
+    this.can('role.delete') && !this.isReservedRow(row);
 
   private isReservedRow(row: Record<string, unknown>): boolean {
-    return RESERVED_ROLE_NAMES.includes(row['roleName'] as string);
+    return row['isSystem'] === true || RESERVED_ROLE_NAMES.includes(row['roleName'] as string);
   }
 
   readonly columns: TableColumn[] = [
     { key: 'roleName', label: 'Role Name', type: 'text' },
+    { key: 'isSystemText', label: 'System', type: 'text' },
     { key: 'userCount', label: 'Users', type: 'text' },
     { key: 'permissionCount', label: 'Permissions', type: 'text' },
     { key: 'createdAtFormatted', label: 'Created At', type: 'date' },
@@ -229,6 +239,8 @@ export class Roles implements OnInit {
     const mapped = list.map(r => ({
       id: r.roleId,
       roleName: r.roleName,
+      isSystem: r.isSystem,
+      isSystemText: r.isSystem ? 'Yes' : '',
       userCount: r.userCount,
       permissionCount: r.permissionCount,
       createdAtFormatted: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '-',
@@ -304,6 +316,7 @@ export class Roles implements OnInit {
   }
 
   openAssignPermissions(row: Record<string, unknown>): void {
+    if (!this.can('role.assign_permissions')) return;
     const roleId = row['id'] as number;
     const roleName = row['roleName'] as string;
     this.roleService.getById(roleId).subscribe({

@@ -64,6 +64,10 @@ export class SubscriptionClient {
     return this.http.get<SubscriptionFeatureDto[]>('/subscription/SubscriptionFeatures');
   }
 
+  getAllSubscriptionFeaturesIncludingTenant(): Observable<SubscriptionFeatureDto[]> {
+    return this.http.get<SubscriptionFeatureDto[]>('/subscription/SubscriptionFeatures/all');
+  }
+
   getSubscriptionFeatureById(id: number): Observable<SubscriptionFeatureDto> {
     return this.http.get<SubscriptionFeatureDto>(`/subscription/SubscriptionFeatures/${id}`);
   }
@@ -78,6 +82,28 @@ export class SubscriptionClient {
 
   deleteSubscriptionFeature(id: number): Observable<void> {
     return this.http.delete<void>(`/subscription/SubscriptionFeatures/${id}`);
+  }
+
+  // ─── Tenant-Own Features (per-tenant) ────────────────────────────────────
+
+  getAllTenantOwnFeatures(): Observable<SubscriptionFeatureDto[]> {
+    return this.http.get<SubscriptionFeatureDto[]>('/subscription/TenantOwnFeatures');
+  }
+
+  getTenantOwnFeatureById(id: number): Observable<SubscriptionFeatureDto> {
+    return this.http.get<SubscriptionFeatureDto>(`/subscription/TenantOwnFeatures/${id}`);
+  }
+
+  createTenantOwnFeature(body: CreateSubscriptionFeatureRequest): Observable<SubscriptionFeatureDto> {
+    return this.http.post<SubscriptionFeatureDto>('/subscription/TenantOwnFeatures', body);
+  }
+
+  updateTenantOwnFeature(id: number, body: UpdateSubscriptionFeatureRequest): Observable<void> {
+    return this.http.put<void>(`/subscription/TenantOwnFeatures/${id}`, body);
+  }
+
+  deleteTenantOwnFeature(id: number): Observable<void> {
+    return this.http.delete<void>(`/subscription/TenantOwnFeatures/${id}`);
   }
 
   // ─── Tenant Features ────────────────────────────────────────────────────

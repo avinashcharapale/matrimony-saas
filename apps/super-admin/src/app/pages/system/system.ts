@@ -101,7 +101,7 @@ import { PlanFormDialogComponent, PlanFormDialogData } from './plan-form-dialog/
                 </tr>
                 @if (expandedTenantId() === plan.id) {
                   <tr class="features-row">
-                    <td colspan="8">
+                    <td colspan="9">
                       <div class="features-grid">
                         @for (f of plan.tenantFeatures; track f.featureCode) {
                           <div class="feature-tag">{{ f.displayName || f.featureCode }}: {{ f.value }}</div>

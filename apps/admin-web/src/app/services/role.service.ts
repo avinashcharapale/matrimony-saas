@@ -6,6 +6,7 @@ export interface RoleDto {
   roleId: number;
   tenantId: number;
   roleName: string;
+  isSystem: boolean;
   createdAt: string;
   userCount: number;
   permissionCount: number;
@@ -28,6 +29,7 @@ export interface RoleDetailDto {
   roleId: number;
   tenantId: number;
   roleName: string;
+  isSystem: boolean;
   createdAt: string;
   users: UserBasicInfoDto[];
   permissions: UserPermissionDto[];

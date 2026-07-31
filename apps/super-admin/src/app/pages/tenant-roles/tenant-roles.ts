@@ -74,17 +74,22 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
               @for (role of pagination.paginated(); track role.roleId) {
                 <tr>
                   <td class="cell-id">{{ role.roleId }}</td>
-                  <td class="cell-bold">{{ role.roleName }}</td>
+                  <td class="cell-bold">
+                    {{ role.roleName }}
+                    @if (role.isSystem) {
+                      <span class="badge system">System</span>
+                    }
+                  </td>
                   <td class="cell-center">
                     {{ role.permissionCount }}
-                    <button class="btn-link" (click)="openAssignPermissions(role)" title="Assign Permissions">Edit</button>
+                    <button class="btn-link" [disabled]="role.isSystem" (click)="openAssignPermissions(role)" title="Assign Permissions">Edit</button>
                   </td>
                   <td class="cell-center">{{ role.userCount }}</td>
                   <td class="cell-actions">
-                    <button mat-icon-button title="Edit" (click)="openEditDialog(role)">
+                    <button mat-icon-button title="Edit" [disabled]="role.isSystem" (click)="openEditDialog(role)">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button title="Delete" (click)="confirmDelete(role)">
+                    <button mat-icon-button title="Delete" [disabled]="role.isSystem" (click)="confirmDelete(role)">
                       <mat-icon color="warn">delete</mat-icon>
                     </button>
                   </td>
@@ -127,6 +132,7 @@ import { AssignPermissionsDialogComponent } from './assign-permissions-dialog/as
     .cell-bold { font-weight: 500; }
     .cell-center { text-align: center; }
     .cell-actions { text-align: right; white-space: nowrap; }
+    .badge.system { display: inline-block; padding: 0.2rem 0.625rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: #ede7f6; color: #4527a0; margin-left: 0.5rem; }
     .btn-link { background: none; border: none; color: #7b1fa2; cursor: pointer; font-size: 0.75rem; text-decoration: underline; padding: 0; }
     .sortable { cursor: pointer; user-select: none; }
     .sortable:hover { background: #f0ecf3; }

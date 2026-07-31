@@ -6,6 +6,7 @@ export interface PlatformRoleDto {
   platformRoleId: number;
   roleName: string;
   isActive: boolean;
+  isSystem: boolean;
   createdAt: string;
   permissionCount: number;
   adminCount: number;

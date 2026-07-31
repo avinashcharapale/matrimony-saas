@@ -59,6 +59,8 @@ export interface UserListDto {
   isSuperAdmin?: boolean;
   isActive?: boolean;
   createdAt?: string;
+  roles?: string[];
+  isTenantAdmin?: boolean;
 }
 
 // ─── Profile DTOs ─────────────────────────────────────────────────────────────
@@ -637,6 +639,7 @@ export interface SubscriptionFeatureDto {
   category?: string;
   dataType?: string;
   defaultValue?: string;
+  tenantId?: number;
   isActive?: boolean;
   displayOrder?: number;
   createdAt?: string;
@@ -683,6 +686,7 @@ export interface CreateSubscriptionFeatureRequest {
   category?: string;
   dataType?: string;
   defaultValue?: string;
+  tenantId?: number;
   isActive?: boolean;
 }
 
