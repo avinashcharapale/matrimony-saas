@@ -2,28 +2,27 @@ import {
   Component,
   ChangeDetectionStrategy,
   inject,
-  OnInit,
   signal,
   computed,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ProfileClient, ProfileListItemDto, ProfileDetailDto } from '@org/generated';
-import { PageHeaderComponent } from '@org/shared-ui';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogData,
-  DataTableComponent,
-  TableColumn,
-} from '@org/shared-ui';
+import { Router, RouterModule } from '@angular/router';
+import { ProfileClient, ProfileListItemDto } from '@org/generated';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  PaginatorComponent,
+  createSort,
+  createPagination,
+} from '@org/shared-ui';
 
-interface ProfileRow extends Record<string, unknown> {
+interface ProfileRow {
   profileId?: number;
   profileCode?: string;
   fullName?: string;
@@ -38,300 +37,190 @@ interface ProfileRow extends Record<string, unknown> {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    PageHeaderComponent,
-    DataTableComponent,
+    RouterModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
+    PaginatorComponent,
   ],
   template: `
-    <div class="profiles-page">
-      <ui-page-header title="Profile Management" subtitle="View and manage member profiles" />
+    <div class="page">
+      <div class="page-header">
+        <div>
+          <h1>Profile Management</h1>
+          <p class="subtitle">View and manage member profiles across your tenant.</p>
+        </div>
+      </div>
 
       <div class="search-bar">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Search profiles</mat-label>
           <input
             matInput
-            [(ngModel)]="searchTerm"
+            type="text"
             placeholder="Search by name or code..."
+            [value]="searchTerm()"
+            (input)="onSearch($event)"
           />
           <mat-icon matPrefix>search</mat-icon>
         </mat-form-field>
       </div>
 
-      <div class="content-layout">
-        <div class="table-section" [class.with-detail]="selectedProfile()">
-          <ui-data-table
-            [columns]="columns"
-            [data]="displayRows()"
-            [loading]="loading()"
-            emptyMessage="No profiles found"
-            (rowClick)="onRowClick($event)"
-            (rowDelete)="confirmDelete($event)"
-          ></ui-data-table>
+      @if (loading()) {
+        <div class="loading-state">Loading profiles...</div>
+      } @else if (displayRows().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">P</div>
+          <p>No profiles found.</p>
         </div>
-
-        @if (selectedProfile()) {
-          <div class="detail-panel">
-            <div class="detail-header">
-              <h3>Profile Details</h3>
-              <button mat-icon-button (click)="closeDetail()">
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-            <div class="detail-content">
-              <div class="detail-section">
-                <h4>Basic Info</h4>
-                <div class="detail-row">
-                  <span class="detail-label">ID</span>
-                  <span class="detail-value">{{ selectedProfile()?.profileId }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Code</span>
-                  <span class="detail-value">{{ selectedProfile()?.profileCode }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Name</span>
-                  <span class="detail-value">{{ selectedProfile()?.fullName }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Age</span>
-                  <span class="detail-value">{{ selectedProfile()?.age ?? '-' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Verified</span>
-                  <span class="detail-value">
-                    {{ selectedProfile()?.isVerified ? 'Yes' : 'No' }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="detail-section">
-                <h4>Personal Details</h4>
-                <div class="detail-row">
-                  <span class="detail-label">Gender</span>
-                  <span class="detail-value">{{ selectedProfile()?.personalDetails?.genderName ?? '-' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Religion</span>
-                  <span class="detail-value">{{ selectedProfile()?.personalDetails?.religionName ?? '-' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Caste</span>
-                  <span class="detail-value">{{ selectedProfile()?.personalDetails?.casteName ?? '-' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Height</span>
-                  <span class="detail-value">
-                    @if (selectedProfile()?.personalDetails?.heightFt) {
-                      {{ selectedProfile()?.personalDetails?.heightFt }}'{{ selectedProfile()?.personalDetails?.heightIn ?? 0 }}"
-                    } @else {
-                      -
-                    }
-                  </span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Marital Status</span>
-                  <span class="detail-value">{{ selectedProfile()?.personalDetails?.maritalStatusName ?? '-' }}</span>
-                </div>
-              </div>
-
-              <div class="detail-section">
-                <h4>Career</h4>
-                <div class="detail-row">
-                  <span class="detail-label">Education</span>
-                  <span class="detail-value">{{ selectedProfile()?.career?.educationName ?? '-' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Occupation</span>
-                  <span class="detail-value">{{ selectedProfile()?.career?.occupationName ?? '-' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Working City</span>
-                  <span class="detail-value">{{ selectedProfile()?.career?.workingCity ?? '-' }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Income</span>
-                  <span class="detail-value">
-                    @if (selectedProfile()?.career?.incomeAmount) {
-                      {{ selectedProfile()?.career?.incomeAmount }} {{ selectedProfile()?.career?.incomePeriodName }}
-                    } @else {
-                      -
-                    }
-                  </span>
-                </div>
-              </div>
-
-              @if (selectedProfile()?.bio) {
-                <div class="detail-section">
-                  <h4>Bio</h4>
-                  <p class="detail-bio">{{ selectedProfile()?.bio }}</p>
-                </div>
+      } @else {
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="sortable" (click)="sort.toggleSort('profileCode')">Code <mat-icon class="sort-icon">{{ sort.sortIcon('profileCode') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('fullName')">Name <mat-icon class="sort-icon">{{ sort.sortIcon('fullName') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('genderLabel')">Gender <mat-icon class="sort-icon">{{ sort.sortIcon('genderLabel') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('locationText')">City <mat-icon class="sort-icon">{{ sort.sortIcon('locationText') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('verifiedLabel')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('verifiedLabel') }}</mat-icon></th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of pagination.paginated(); track row.profileId) {
+                <tr (click)="onRowClick(row)" class="clickable-row">
+                  <td class="cell-id">{{ row.profileCode }}</td>
+                  <td class="cell-bold">{{ row.fullName }}</td>
+                  <td>{{ row.genderLabel }}</td>
+                  <td>{{ row.locationText }}</td>
+                  <td>
+                    <span class="status-badge" [class.verified]="row.verifiedLabel === 'Verified'" [class.pending]="row.verifiedLabel === 'Pending'">
+                      {{ row.verifiedLabel }}
+                    </span>
+                  </td>
+                  <td class="cell-actions">
+                    <button mat-icon-button title="Delete" (click)="$event.stopPropagation(); confirmDelete(row)" (dblclick)="$event.stopPropagation()">
+                      <mat-icon color="warn">delete</mat-icon>
+                    </button>
+                  </td>
+                </tr>
               }
-
-              @if (selectedProfile()?.photos?.length) {
-                <div class="detail-section">
-                  <h4>Photos ({{ selectedProfile()?.photos?.length }})</h4>
-                  <div class="photo-grid">
-                    @for (photo of selectedProfile()?.photos; track photo.photoId) {
-                      <div class="photo-thumb">
-                        <img [src]="photo.fileUrl" [alt]="photo.fileName" />
-                      </div>
-                    }
-                  </div>
-                </div>
-              }
-            </div>
-          </div>
-        }
-      </div>
+            </tbody>
+          </table>
+          <ui-paginator
+            [totalItems]="pagination.totalItems()"
+            [totalPages]="pagination.totalPages()"
+            [currentPage]="pagination.currentPage()"
+            [pageSize]="pagination.pageSize()"
+            (pageChange)="pagination.goToPage($event)"
+            (pageSizeChange)="pagination.onPageSizeChange($event)"
+          />
+        </div>
+      }
     </div>
   `,
   styles: [`
-    .profiles-page {
-      position: relative;
+    .page { max-width: 1200px; }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    .page-header h1 { font-size: 1.5rem; color: #2c003e; margin-bottom: 0.25rem; }
+    .subtitle { color: #666; font-size: 0.875rem; }
+    .search-bar { margin-bottom: 1.5rem; }
+    .search-field { width: 360px; }
+
+    .loading-state { padding: 3rem; text-align: center; color: #888; }
+    .empty-state { padding: 3rem; text-align: center; color: #888; }
+    .empty-icon {
+      width: 48px; height: 48px; background: #f3e5f5; color: #7b1fa2; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+      font-weight: 700; margin: 0 auto 1rem;
     }
 
-    .search-bar {
-      margin-bottom: 1.5rem;
+    .table-wrapper {
+      background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      overflow-x: auto;
     }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      padding: 0.875rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600;
+      color: #666; text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 2px solid #eee; background: #fafafa;
+    }
+    .data-table td {
+      padding: 0.875rem 1rem; font-size: 0.875rem; color: #333;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .data-table tbody tr:hover { background: #f9f5fc; }
+    .clickable-row { cursor: pointer; }
+    .cell-id { color: #999; font-family: monospace; }
+    .cell-bold { font-weight: 500; }
+    .cell-actions { text-align: right; white-space: nowrap; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable:hover { background: #f0ecf3; }
+    .sort-icon { font-size: 1rem; width: 1rem; height: 1rem; vertical-align: middle; line-height: 1; }
 
-    .search-field {
-      width: 360px;
+    .status-badge {
+      display: inline-block; padding: 2px 10px; border-radius: 9999px;
+      font-size: 0.75rem; font-weight: 600;
     }
-
-    .content-layout {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .table-section {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .detail-panel {
-      width: 400px;
-      flex-shrink: 0;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      max-height: calc(100vh - 200px);
-      overflow-y: auto;
-      position: sticky;
-      top: 1rem;
-    }
-
-    .detail-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .detail-header h3 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .detail-content {
-      padding: 1rem 1.25rem;
-    }
-
-    .detail-section {
-      margin-bottom: 1.25rem;
-    }
-
-    .detail-section h4 {
-      margin: 0 0 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #757575;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid #f5f5f5;
-    }
-
-    .detail-label {
-      font-size: 13px;
-      color: #757575;
-    }
-
-    .detail-value {
-      font-size: 13px;
-      font-weight: 500;
-      color: #1a1a1a;
-      text-align: right;
-    }
-
-    .detail-bio {
-      font-size: 13px;
-      color: #424242;
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .photo-thumb {
-      aspect-ratio: 1;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #f5f5f5;
-    }
-
-    .photo-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .status-badge.verified { background: #e8f5e9; color: #2e7d32; }
+    .status-badge.pending { background: #fff3e0; color: #e65100; }
+    .status-badge.expired { background: #fce4ec; color: #c62828; }
   `],
 })
 export class Profiles implements OnInit {
   private readonly profileClient = inject(ProfileClient);
+  private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
-  searchTerm = '';
-  readonly profiles = signal<ProfileListItemDto[]>([]);
-  readonly selectedProfile = signal<ProfileDetailDto | null>(null);
   readonly loading = signal(false);
+  readonly profiles = signal<ProfileListItemDto[]>([]);
+  readonly searchTerm = signal('');
 
-  readonly columns: TableColumn[] = [
-    { key: 'profileCode', label: 'Code', type: 'text' },
-    { key: 'fullName', label: 'Name', type: 'text' },
-    { key: 'genderLabel', label: 'Gender', type: 'text' },
-    { key: 'locationText', label: 'City', type: 'text' },
-    { key: 'verifiedLabel', label: 'Status', type: 'badge' },
-  ];
+  readonly sort = createSort();
 
-  readonly displayRows = computed<ProfileRow[]>(() => {
+  readonly displayRows = computed(() => {
+    const term = this.searchTerm().toLowerCase();
     const list = this.profiles();
-    const term = this.searchTerm.toLowerCase();
-    const mapped = list.map((p) => this.toRow(p));
-    if (!term) return mapped;
-    return mapped.filter((r) => {
-      const fullName = r.fullName ?? '';
-      const code = r.profileCode ?? '';
-      return fullName.toLowerCase().includes(term) || code.toLowerCase().includes(term);
-    });
+    let filtered = list;
+    if (term) {
+      filtered = list.filter(
+        (p) =>
+          (p.fullName?.toLowerCase().includes(term)) ||
+          (p.profileCode?.toLowerCase().includes(term)),
+      );
+    }
+    return filtered.map((p) => ({
+      profileId: p.profileId,
+      profileCode: p.profileCode,
+      fullName: p.fullName,
+      locationText: p.locationText,
+      genderLabel: p.genderId === 1 ? 'Male' : p.genderId === 2 ? 'Female' : '-',
+      verifiedLabel: p.isVerified ? 'Verified' : 'Pending',
+    } as ProfileRow));
   });
+
+  readonly sortedRows = computed(() => {
+    const col = this.sort.sortColumn();
+    if (!col) return this.displayRows();
+    const dir = this.sort.sortDirection();
+    const data = [...this.displayRows()];
+    data.sort((a, b) => {
+      let cmp = 0;
+      switch (col) {
+        case 'profileCode': cmp = (a.profileCode ?? '').localeCompare(b.profileCode ?? ''); break;
+        case 'fullName': cmp = (a.fullName ?? '').localeCompare(b.fullName ?? ''); break;
+        case 'genderLabel': cmp = a.genderLabel.localeCompare(b.genderLabel); break;
+        case 'locationText': cmp = (a.locationText ?? '').localeCompare(b.locationText ?? ''); break;
+        case 'verifiedLabel': cmp = a.verifiedLabel.localeCompare(b.verifiedLabel); break;
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
+    return data;
+  });
+
+  readonly pagination = createPagination(this.sortedRows);
 
   ngOnInit(): void {
     this.loadProfiles();
@@ -344,40 +233,25 @@ export class Profiles implements OnInit {
         this.profiles.set(profiles ?? []);
         this.loading.set(false);
       },
-      error: () => {
-        this.loading.set(false);
-      },
+      error: () => this.loading.set(false),
     });
   }
 
-  private toRow(profile: ProfileListItemDto): ProfileRow {
-    return {
-      profileId: profile.profileId,
-      profileCode: profile.profileCode,
-      fullName: profile.fullName,
-      locationText: profile.locationText,
-      genderLabel: profile.genderId === 1 ? 'Male' : profile.genderId === 2 ? 'Female' : '-',
-      verifiedLabel: profile.isVerified ? 'Verified' : 'Pending',
-    };
+  onSearch(event: Event): void {
+    this.searchTerm.set((event.target as HTMLInputElement).value);
+    this.pagination.goToPage(1);
   }
 
-  onRowClick(row: Record<string, unknown>): void {
-    const profileId = row['profileId'] as number | undefined;
-    if (profileId != null) {
-      this.profileClient.getById(profileId).subscribe((detail) => {
-        this.selectedProfile.set(detail);
-      });
+  onRowClick(row: ProfileRow): void {
+    if (row.profileId != null) {
+      this.router.navigate(['/profiles', row.profileId]);
     }
   }
 
-  closeDetail(): void {
-    this.selectedProfile.set(null);
-  }
-
-  confirmDelete(row: Record<string, unknown>): void {
-    const profileId = row['profileId'] as number | undefined;
-    const fullName = (row['fullName'] as string) ?? 'Unknown';
-    const profileCode = (row['profileCode'] as string) ?? '-';
+  confirmDelete(row: ProfileRow): void {
+    const profileId = row.profileId;
+    const fullName = row.fullName ?? 'Unknown';
+    const profileCode = row.profileCode ?? '-';
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
@@ -394,9 +268,6 @@ export class Profiles implements OnInit {
           this.profiles.set(
             this.profiles().filter((p) => p.profileId !== profileId),
           );
-          if (this.selectedProfile()?.profileId === profileId) {
-            this.selectedProfile.set(null);
-          }
         });
       }
     });

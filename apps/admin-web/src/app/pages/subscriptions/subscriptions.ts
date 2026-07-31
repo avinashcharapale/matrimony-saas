@@ -1,13 +1,13 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  effect,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthStore } from '@org/data-access-auth';
-import { SubscriptionStore } from '@org/data-access-subscription';
+import { SubscriptionClient, SubscriptionStatusDto } from '@org/generated';
 import { PageHeaderComponent, StatusBadgeComponent } from '@org/shared-ui';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -45,11 +45,11 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
               <mat-spinner diameter="32"></mat-spinner>
               <span>Loading subscription status...</span>
             </div>
-          } @else if (subscriptionStatus()) {
+          } @else if (tenantStatus()) {
             <div class="status-details">
               <div class="status-row">
                 <span class="status-label">Plan</span>
-                <span class="status-value">{{ subscriptionStatus()?.planName ?? 'No Plan' }}</span>
+                <span class="status-value">{{ tenantStatus()?.planName ?? 'No Plan' }}</span>
               </div>
               <div class="status-row">
                 <span class="status-label">Status</span>
@@ -62,17 +62,30 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
               <div class="status-row">
                 <span class="status-label">Trial</span>
                 <span class="status-value">
-                  {{ subscriptionStatus()?.isTrial ? 'Yes' : 'No' }}
+                  {{ tenantStatus()?.isTrial ? 'Yes' : 'No' }}
                 </span>
               </div>
               <div class="status-row">
                 <span class="status-label">Start Date</span>
-                <span class="status-value">{{ formatDate(subscriptionStatus()?.startDate) }}</span>
+                <span class="status-value">{{ formatDate(tenantStatus()?.startDate) }}</span>
               </div>
               <div class="status-row">
                 <span class="status-label">Expiry Date</span>
-                <span class="status-value">{{ formatDate(subscriptionStatus()?.expiresAt) }}</span>
+                <span class="status-value">{{ formatDate(tenantStatus()?.expiresAt) }}</span>
               </div>
+              @if (tenantStatus()?.effectiveFeatures?.length) {
+                <div class="features-divider"></div>
+                <div class="features-section">
+                  <div class="features-title">Plan Features</div>
+                  @for (feat of tenantStatus()?.effectiveFeatures; track feat.code) {
+                    <div class="feature-row">
+                      <mat-icon class="feature-icon">check_circle</mat-icon>
+                      <span class="feature-label">{{ feat.name || feat.code }}</span>
+                      <span class="feature-value">{{ feat.value }}</span>
+                    </div>
+                  }
+                </div>
+              }
             </div>
           } @else {
             <div class="status-empty">
@@ -112,6 +125,16 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
                     / {{ plan.durationMonths ?? 1 }} {{ (plan.durationMonths ?? 1) === 1 ? 'month' : 'months' }}
                   </span>
                 </div>
+                @if (plan.features?.length) {
+                  <ul class="plan-features">
+                    @for (feature of plan.features; track feature.code) {
+                      <li>
+                        <mat-icon>check_circle</mat-icon>
+                        {{ feature.name || feature.code }}: {{ feature.value }}
+                      </li>
+                    }
+                  </ul>
+                }
                 <div class="plan-footer">
                   <ui-status-badge
                     [status]="plan.isActive ? 'Active' : 'Inactive'"
@@ -195,6 +218,48 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
 
     .status-value {
       font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .features-divider {
+      height: 1px;
+      background: #f0f0f0;
+      margin: 8px 0 12px;
+    }
+
+    .features-section {
+      padding: 4px 0;
+    }
+
+    .features-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #424242;
+      margin-bottom: 8px;
+    }
+
+    .feature-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 0;
+      font-size: 13px;
+      color: #424242;
+    }
+
+    .feature-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #388e3c;
+    }
+
+    .feature-label {
+      flex: 1;
+    }
+
+    .feature-value {
       font-weight: 500;
       color: #1a1a1a;
     }
@@ -319,38 +384,52 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
     }
   `],
 })
-export class Subscriptions implements OnInit {
+export class Subscriptions {
   private readonly authStore = inject(AuthStore);
-  private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly subscriptionClient = inject(SubscriptionClient);
   private readonly planService = inject(UserSubscriptionPlanService);
 
   readonly loading = signal(true);
   readonly loadingPlans = signal(true);
-  readonly subscriptionStatus = this.subscriptionStore.status;
+  readonly tenantStatus = signal<SubscriptionStatusDto | null>(null);
   readonly userPlans = signal<UserSubscriptionPlanDto[]>([]);
+  private loaded = false;
 
-  ngOnInit(): void {
-    const session = this.authStore.session();
-    if (session) {
-      this.subscriptionStore.loadSubscriptionStatus(session.userId).subscribe(() => {
+  constructor() {
+    effect(() => {
+      if (this.loaded) return;
+      const session = this.authStore.session();
+      const tid = session?.tenantId;
+      if (tid && tid > 0) {
+        this.loaded = true;
+        this.subscriptionClient.getTenantSubscriptionStatus(tid).subscribe({
+          next: (status) => {
+            this.tenantStatus.set(status);
+            this.loading.set(false);
+          },
+          error: () => this.loading.set(false),
+        });
+      } else if (session) {
+        this.loaded = true;
         this.loading.set(false);
-      });
+      }
 
-      this.planService.getAll().subscribe({
-        next: (data) => {
-          this.userPlans.set(data ?? []);
-          this.loadingPlans.set(false);
-        },
-        error: () => this.loadingPlans.set(false),
-      });
-    } else {
-      this.loading.set(false);
-      this.loadingPlans.set(false);
-    }
+      if (session) {
+        this.planService.getAll().subscribe({
+          next: (data) => {
+            this.userPlans.set(data ?? []);
+            this.loadingPlans.set(false);
+          },
+          error: () => this.loadingPlans.set(false),
+        });
+      } else {
+        this.loadingPlans.set(false);
+      }
+    });
   }
 
   getStatusText(): string {
-    const s = this.subscriptionStatus();
+    const s = this.tenantStatus();
     if (!s) return 'None';
     if (s.isTrial) return 'Trial';
     if (s.isActive) return 'Active';

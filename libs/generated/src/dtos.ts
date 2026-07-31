@@ -286,6 +286,7 @@ export interface CreateProfileDto {
 
 export interface ProfileDetailDto {
   profileId?: number;
+  userId?: number;
   profileCode?: string;
   fullName?: string;
   age?: number;

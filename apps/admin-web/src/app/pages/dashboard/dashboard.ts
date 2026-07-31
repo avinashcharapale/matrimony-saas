@@ -1,8 +1,8 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  effect,
   inject,
-  OnInit,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -10,9 +10,7 @@ import { RouterModule } from '@angular/router';
 import { AuthStore } from '@org/data-access-auth';
 import { UserStore } from '@org/data-access-user';
 import { ProfileStore } from '@org/data-access-profile';
-import { SubscriptionStore } from '@org/data-access-subscription';
-import { ProfileClient } from '@org/generated';
-import { ProfileStatsDto } from '@org/generated';
+import { ProfileClient, ProfileStatsDto, SubscriptionClient } from '@org/generated';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -194,11 +192,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     }
   `],
 })
-export class Dashboard implements OnInit {
+export class Dashboard {
   private readonly authStore = inject(AuthStore);
   private readonly userStore = inject(UserStore);
   private readonly profileClient = inject(ProfileClient);
-  private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly subscriptionClient = inject(SubscriptionClient);
 
   readonly userCount = signal(0);
   readonly profileStats = signal<ProfileStatsDto | null>(null);
@@ -207,34 +205,38 @@ export class Dashboard implements OnInit {
   readonly subStatus = signal('None');
   readonly planName = signal('No Plan');
 
-  ngOnInit(): void {
-    const session = this.authStore.session();
-    if (!session) return;
+  constructor() {
+    effect(() => {
+      const session = this.authStore.session();
+      if (!session) return;
 
-    this.userStore.loadUsersByTenant(session.tenantId).subscribe((users) => {
-      this.userCount.set(Array.isArray(users) ? users.length : 0);
-    });
+      const tid = session.tenantId;
+      if (tid) {
+        this.userStore.loadUsersByTenant(tid).subscribe((users) => {
+          this.userCount.set(Array.isArray(users) ? users.length : 0);
+        });
 
-    this.profileClient.getProfileStats().subscribe((stats) => {
-      this.profileStats.set(stats);
-    });
-
-    this.subscriptionStore.loadSubscriptionStatus(session.userId).subscribe(() => {
-      const s = this.subscriptionStore.status();
-      if (s) {
-        if (s.isTrial) {
-          this.subStatus.set('Trial');
-        } else if (s.isActive) {
-          this.subStatus.set('Active');
-        } else {
-          this.subStatus.set('Inactive');
-        }
-        this.planName.set(s.planName ?? 'No Plan');
+        this.subscriptionClient.getTenantSubscriptionStatus(tid).subscribe({
+          next: (s) => {
+            if (s) {
+              if (s.isTrial) {
+                this.subStatus.set('Trial');
+              } else if (s.isActive) {
+                this.subStatus.set('Active');
+              } else {
+                this.subStatus.set('Inactive');
+              }
+              this.planName.set(s.planName ?? 'No Plan');
+            }
+          },
+        });
       }
+
+      this.profileClient.getProfileStats().subscribe((stats) => {
+        this.profileStats.set(stats);
+      });
+
+      this.loading.set(false);
     });
-
-    this.subscriptionStore.loadPlans().subscribe();
-
-    this.loading.set(false);
   }
 }
