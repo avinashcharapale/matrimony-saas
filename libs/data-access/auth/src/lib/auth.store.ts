@@ -9,12 +9,14 @@ export const REFRESH_TOKEN_KEY = 'refresh_token';
 export const USER_ID_KEY = 'auth_user_id';
 export const TENANT_ID_KEY = 'auth_tenant_id';
 export const ROLE_KEY = 'auth_role';
+export const ROLES_KEY = 'auth_roles';
 export const EXPIRES_AT_KEY = 'auth_expires_at';
 
 export interface AuthSession {
   userId: number;
   tenantId: number;
   role: string;
+  roles: string[];
   expiresAt: string;
 }
 
@@ -24,6 +26,7 @@ export interface AuthState {
   userId: number | null;
   tenantId: number | null;
   role: string | null;
+  roles: string[];
   expiresAt: string | null;
   loading: boolean;
   error: string | null;
@@ -40,10 +43,21 @@ function loadFromStorage(): AuthState {
       ? Number(localStorage.getItem(TENANT_ID_KEY))
       : null,
     role: localStorage.getItem(ROLE_KEY),
+    roles: parseRoles(localStorage.getItem(ROLES_KEY)),
     expiresAt: localStorage.getItem(EXPIRES_AT_KEY),
     loading: false,
     error: null,
   };
+}
+
+function parseRoles(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((r) => typeof r === 'string') : [];
+  } catch {
+    return [];
+  }
 }
 
 function persistToStorage(state: AuthState): void {
@@ -55,6 +69,7 @@ function persistToStorage(state: AuthState): void {
   set(USER_ID_KEY, state.userId != null ? String(state.userId) : null);
   set(TENANT_ID_KEY, state.tenantId != null ? String(state.tenantId) : null);
   set(ROLE_KEY, state.role);
+  set(ROLES_KEY, state.roles.length > 0 ? JSON.stringify(state.roles) : null);
   set(EXPIRES_AT_KEY, state.expiresAt);
 }
 
@@ -68,6 +83,7 @@ function normalizeAuthPayload(
     userId?: number;
     tenantId?: number;
     role?: string;
+    roles?: string[];
     expiresAt?: string;
     expiresIn?: number;
     user?: { id?: number; tenantId?: number };
@@ -78,6 +94,9 @@ function normalizeAuthPayload(
   const userId = r.userId ?? r.user?.id ?? previous?.userId ?? null;
   const tenantId = r.tenantId ?? r.user?.tenantId ?? previous?.tenantId ?? null;
   const role = r.role ?? previous?.role ?? 'member';
+  const roles = Array.isArray(r.roles) && r.roles.length > 0
+    ? r.roles
+    : previous?.roles ?? (role ? [role] : []);
   const expiresAt =
     r.expiresAt ??
     (typeof r.expiresIn === 'number' && r.expiresIn > 0
@@ -86,7 +105,7 @@ function normalizeAuthPayload(
     previous?.expiresAt ??
     null;
 
-  return { accessToken, storedRefreshToken, userId, tenantId, role, expiresAt };
+  return { accessToken, storedRefreshToken, userId, tenantId, role, roles, expiresAt };
 }
 
 function extractErrorMessage(error: unknown, fallback: string): string {
@@ -129,6 +148,7 @@ const EMPTY_STATE: AuthState = {
   userId: null,
   tenantId: null,
   role: null,
+  roles: [],
   expiresAt: null,
   loading: false,
   error: null,
@@ -137,13 +157,19 @@ const EMPTY_STATE: AuthState = {
 export const AuthStore = signalStore(
   { providedIn: 'root' },
   withState(loadFromStorage),
-  withComputed(({ accessToken, userId, tenantId, role, expiresAt }) => ({
+  withComputed(({ accessToken, userId, tenantId, role, roles, expiresAt }) => ({
     isAuthenticated: computed(() => {
       const token = accessToken();
       if (!token) return false;
       const exp = expiresAt();
       if (exp) return new Date(exp) > new Date();
       return true;
+    }),
+    isAdmin: computed(() => {
+      const r = role();
+      if (r === 'TenantAdmin' || r === 'SuperAdmin' || r === 'PlatformAdmin') return true;
+      const all = roles();
+      return all.includes('TenantAdmin') || all.includes('SuperAdmin') || all.includes('PlatformAdmin');
     }),
     session: computed((): AuthSession | null => {
       const uid = userId();
@@ -152,6 +178,7 @@ export const AuthStore = signalStore(
         userId: uid,
         tenantId: tenantId() ?? 0,
         role: role() ?? 'member',
+        roles: roles(),
         expiresAt: expiresAt() ?? '',
       };
     }),
@@ -207,6 +234,7 @@ export const AuthStore = signalStore(
                   userId: store.userId()!,
                   tenantId: store.tenantId() ?? 0,
                   role: store.role() ?? 'member',
+                  roles: store.roles(),
                   expiresAt: store.expiresAt() ?? '',
                 }
               : null;

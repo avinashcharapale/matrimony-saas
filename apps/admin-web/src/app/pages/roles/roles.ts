@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { PageHeaderComponent, DataTableComponent, ConfirmDialogComponent, ConfirmDialogData, TableColumn } from '@org/shared-ui';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,8 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RoleService, RoleDto } from '../../services/role.service';
 import { PermissionService, PermissionDto } from '../../services/permission.service';
+import { RESERVED_ROLE_NAMES } from '../../services/role.constants';
 
 interface RoleRow extends Record<string, unknown> {
   id?: number;
@@ -38,6 +40,9 @@ interface RoleRow extends Record<string, unknown> {
           @if (form.get('roleName')?.hasError('required') && form.get('roleName')?.touched) {
             <mat-error>Required</mat-error>
           }
+          @if (form.get('roleName')?.hasError('reserved')) {
+            <mat-error>This role name is reserved by the system.</mat-error>
+          }
         </mat-form-field>
       </form>
     </mat-dialog-content>
@@ -59,13 +64,21 @@ export class RoleFormDialogComponent {
   readonly data = inject<{ mode: 'create' | 'edit'; role?: RoleDto }>(MAT_DIALOG_DATA);
 
   readonly form = this.fb.nonNullable.group({
-    roleName: [this.data.role?.roleName ?? '', [Validators.required]],
+    roleName: [this.data.role?.roleName ?? '', [Validators.required, reservedRoleNameValidator]],
   });
 
   submit(): void {
     if (this.form.invalid) return;
     this.dialogRef.close(this.form.getRawValue());
   }
+}
+
+function reservedRoleNameValidator(control: AbstractControl): ValidationErrors | null {
+  const name = (control.value as string)?.trim();
+  if (name && RESERVED_ROLE_NAMES.some(r => r.toLowerCase() === name.toLowerCase())) {
+    return { reserved: true };
+  }
+  return null;
 }
 
 @Component({
@@ -172,6 +185,8 @@ export class AssignPermissionsDialogComponent {
         [columns]="columns"
         [data]="displayRows()"
         [loading]="loading()"
+        [canEdit]="canEditRow"
+        [canDelete]="canDeleteRow"
         emptyMessage="No roles found"
         (rowEdit)="openEditDialog($event)"
         (rowDelete)="confirmDelete($event)"
@@ -188,10 +203,18 @@ export class AssignPermissionsDialogComponent {
 export class Roles implements OnInit {
   private readonly roleService = inject(RoleService);
   private readonly dialog = inject(MatDialog);
+  private readonly snackbar = inject(MatSnackBar);
 
   readonly loading = signal(false);
   readonly roles = signal<RoleDto[]>([]);
   searchTerm = '';
+
+  readonly canEditRow = (row: Record<string, unknown>): boolean => !this.isReservedRow(row);
+  readonly canDeleteRow = (row: Record<string, unknown>): boolean => !this.isReservedRow(row);
+
+  private isReservedRow(row: Record<string, unknown>): boolean {
+    return RESERVED_ROLE_NAMES.includes(row['roleName'] as string);
+  }
 
   readonly columns: TableColumn[] = [
     { key: 'roleName', label: 'Role Name', type: 'text' },
@@ -234,7 +257,10 @@ export class Roles implements OnInit {
     });
     ref.afterClosed().subscribe((result: { roleName: string } | undefined) => {
       if (!result) return;
-      this.roleService.create(result).subscribe(() => this.loadRoles());
+      this.roleService.create(result).subscribe({
+        next: () => this.loadRoles(),
+        error: (err) => this.showError(err),
+      });
     });
   }
 
@@ -248,7 +274,10 @@ export class Roles implements OnInit {
     });
     ref.afterClosed().subscribe((result: { roleName: string } | undefined) => {
       if (!result) return;
-      this.roleService.update(role.roleId, result).subscribe(() => this.loadRoles());
+      this.roleService.update(role.roleId, result).subscribe({
+        next: () => this.loadRoles(),
+        error: (err) => this.showError(err),
+      });
     });
   }
 
@@ -266,7 +295,10 @@ export class Roles implements OnInit {
     });
     ref.afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
-        this.roleService.delete(id).subscribe(() => this.loadRoles());
+        this.roleService.delete(id).subscribe({
+          next: () => this.loadRoles(),
+          error: (err) => this.showError(err),
+        });
       }
     });
   }
@@ -284,9 +316,24 @@ export class Roles implements OnInit {
         });
         ref.afterClosed().subscribe((selectedIds: number[] | undefined) => {
           if (!selectedIds) return;
-          this.roleService.assignPermissions(roleId, selectedIds).subscribe(() => this.loadRoles());
+          this.roleService.assignPermissions(roleId, selectedIds).subscribe({
+            next: () => this.loadRoles(),
+            error: (err) => this.showError(err),
+          });
         });
       },
     });
+  }
+
+  private showError(err: unknown): void {
+    const raw = (err as { error?: unknown })?.error;
+    let message = 'Operation failed. Please try again.';
+    if (typeof raw === 'string' && raw) {
+      message = raw;
+    } else if (raw && typeof raw === 'object') {
+      const body = raw as { message?: string; title?: string };
+      message = body.message || body.title || message;
+    }
+    this.snackbar.open(message, 'Close', { duration: 5000 });
   }
 }

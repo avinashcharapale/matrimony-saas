@@ -4,12 +4,16 @@ import {
   Input,
   Output,
   EventEmitter,
+  ContentChild,
+  TemplateRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+export type RowPredicate = (row: Record<string, unknown>) => boolean;
 
 export interface TableColumn {
   key: string;
@@ -23,6 +27,7 @@ export interface TableColumn {
   standalone: true,
   imports: [
     CommonModule,
+    NgTemplateOutlet,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -54,22 +59,31 @@ export interface TableColumn {
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
             <td mat-cell *matCellDef="let row" class="actions-cell">
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="rowEdit.emit(row); $event.stopPropagation()"
-                aria-label="Edit"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="rowDelete.emit(row); $event.stopPropagation()"
-                aria-label="Delete"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
+              @if (actionsTemplate) {
+                <ng-container
+                  [ngTemplateOutlet]="actionsTemplate"
+                  [ngTemplateOutletContext]="{ $implicit: row }"
+                ></ng-container>
+              } @else {
+                <button
+                  mat-icon-button
+                  color="primary"
+                  [disabled]="canEdit && !canEdit(row)"
+                  (click)="rowEdit.emit(row); $event.stopPropagation()"
+                  aria-label="Edit"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  [disabled]="canDelete && !canDelete(row)"
+                  (click)="rowDelete.emit(row); $event.stopPropagation()"
+                  aria-label="Delete"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             </td>
           </ng-container>
 
@@ -142,6 +156,10 @@ export class DataTableComponent {
   @Input({ required: true }) data: Record<string, unknown>[] = [];
   @Input() loading = false;
   @Input() emptyMessage = 'No data available';
+  @Input() canEdit?: RowPredicate;
+  @Input() canDelete?: RowPredicate;
+
+  @ContentChild('actions') actionsTemplate?: TemplateRef<unknown>;
 
   @Output() rowClick = new EventEmitter<Record<string, unknown>>();
   @Output() rowEdit = new EventEmitter<Record<string, unknown>>();

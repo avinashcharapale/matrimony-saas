@@ -189,13 +189,14 @@ export class Layout {
 
   private readonly session = this.authStore.session;
 
-  readonly isAdmin = computed(() => {
-    const s = this.session();
-    return s?.role === 'TenantAdmin' || s?.role === 'SuperAdmin';
-  });
+  readonly isAdmin = this.authStore.isAdmin;
 
   readonly roleLabel = computed(() => {
     const s = this.session();
+    const roles = s?.roles ?? [];
+    if (roles.includes('SuperAdmin')) return 'Super Admin';
+    if (roles.includes('TenantAdmin')) return 'Tenant Admin';
+    if (roles.includes('PlatformAdmin')) return 'Platform Admin';
     return s?.role ?? 'User';
   });
 

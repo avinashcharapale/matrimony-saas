@@ -12,9 +12,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UsersClient } from '@org/generated';
 import { RoleService, RoleDto } from '../../services/role.service';
+import { CROSS_TENANT_ROLE_NAMES } from '../../services/role.constants';
 import { forkJoin, Observable } from 'rxjs';
+
+function extractHttpError(err: unknown): string {
+  const raw = (err as { error?: unknown })?.error;
+  if (typeof raw === 'string' && raw) return raw;
+  if (raw && typeof raw === 'object') {
+    const body = raw as { message?: string; title?: string };
+    if (body.message) return body.message;
+    if (body.title) return body.title;
+  }
+  return 'Operation failed. Please try again.';
+}
 
 interface UserRow extends Record<string, unknown> {
   id?: number;
@@ -119,6 +132,9 @@ export class UserFormDialogComponent {
       } @else if (allRoles().length === 0) {
         <p>No roles available.</p>
       } @else {
+        @if (hiddenRoleCount() > 0) {
+          <p class="role-note">Platform-level roles are not assignable here.</p>
+        }
         <div class="role-list">
           @for (role of allRoles(); track role.roleId) {
             <label class="role-item">
@@ -135,7 +151,7 @@ export class UserFormDialogComponent {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-flat-button color="primary" [disabled]="loading()" (click)="save()">Save</button>
+      <button mat-flat-button color="primary" [disabled]="loading() || saving()" (click)="save()">Save</button>
     </mat-dialog-actions>
   `,
   styles: [`
@@ -143,17 +159,20 @@ export class UserFormDialogComponent {
     .role-list { display: flex; flex-direction: column; gap: 4px; }
     .role-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; }
     .role-count { font-size: 12px; color: #888; margin-left: auto; }
+    .role-note { font-size: 12px; color: #888; margin: 0 0 8px; }
   `],
 })
 export class AssignRoleDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<AssignRoleDialogComponent>);
   private readonly roleService = inject(RoleService);
   private readonly usersClient = inject(UsersClient);
+  private readonly snackbar = inject(MatSnackBar);
   readonly data = inject<{ userId: number; userEmail: string }>(MAT_DIALOG_DATA);
 
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly allRoles = signal<RoleDto[]>([]);
+  readonly hiddenRoleCount = signal(0);
   readonly userRoleIds = signal<Set<number>>(new Set());
   readonly originalIds = signal<Set<number>>(new Set());
 
@@ -164,9 +183,12 @@ export class AssignRoleDialogComponent {
   loadData(): void {
     this.roleService.getAll().subscribe({
       next: (roles) => {
-        this.allRoles.set(roles ?? []);
+        const all = roles ?? [];
+        const filtered = all.filter(r => !CROSS_TENANT_ROLE_NAMES.includes(r.roleName));
+        this.hiddenRoleCount.set(all.length - filtered.length);
+        this.allRoles.set(filtered);
         this.loading.set(false);
-        this.loadUserRoles(roles ?? []);
+        this.loadUserRoles(filtered);
       },
       error: () => this.loading.set(false),
     });
@@ -212,7 +234,10 @@ export class AssignRoleDialogComponent {
 
     forkJoin(ops).subscribe({
       next: () => { this.saving.set(false); this.dialogRef.close(true); },
-      error: () => { this.saving.set(false); this.dialogRef.close(true); },
+      error: (err) => {
+        this.saving.set(false);
+        this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 });
+      },
     });
   }
 }
@@ -248,10 +273,35 @@ export class AssignRoleDialogComponent {
         [data]="displayRows()"
         [loading]="loading()"
         emptyMessage="No users found"
-        (rowEdit)="openEditDialog($event)"
-        (rowDelete)="confirmDelete($event)"
         (rowClick)="openAssignRoleDialog($event)"
-      ></ui-data-table>
+      >
+        <ng-template #actions let-row>
+          <button
+            mat-icon-button
+            color="primary"
+            title="Edit"
+            (click)="openEditDialog(row); $event.stopPropagation()"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            title="Promote to Tenant Admin"
+            [disabled]="isTenantAdminRow(row)"
+            (click)="promoteToTenantAdmin(row); $event.stopPropagation()"
+          >
+            <mat-icon>admin_panel_settings</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            title="Delete"
+            (click)="confirmDelete(row); $event.stopPropagation()"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </ng-template>
+      </ui-data-table>
     </div>
   `,
   styles: [`
@@ -265,6 +315,8 @@ export class Users implements OnInit {
   private readonly usersClient = inject(UsersClient);
   private readonly authStore = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
+  private readonly snackbar = inject(MatSnackBar);
+  private readonly roleService = inject(RoleService);
 
   readonly loading = signal(false);
   readonly userRoles = signal<Map<number, string[]>>(new Map());
@@ -391,6 +443,49 @@ export class Users implements OnInit {
         if (session?.tenantId) this.userStore.loadUsersByTenant(session.tenantId).subscribe();
         this.loadRolesForAllUsers();
       }
+    });
+  }
+
+  isTenantAdminRow(row: Record<string, unknown>): boolean {
+    return ((row['roleLabel'] as string) ?? '').split(', ').includes('TenantAdmin');
+  }
+
+  promoteToTenantAdmin(row: Record<string, unknown>): void {
+    const userId = row['id'] as number;
+    const userEmail = row['email'] as string;
+    if (userId == null) return;
+
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Promote to Tenant Admin',
+        message: `Are you sure you want to promote "${userEmail}" to Tenant Admin?`,
+        confirmText: 'Promote',
+        cancelText: 'Cancel',
+      } satisfies ConfirmDialogData,
+    });
+
+    ref.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.roleService.getAll().subscribe({
+        next: (roles) => {
+          const tenantAdminRole = (roles ?? []).find(r => r.roleName === 'TenantAdmin');
+          if (!tenantAdminRole) {
+            this.snackbar.open('TenantAdmin role not found for this tenant.', 'Close', { duration: 4000 });
+            return;
+          }
+          this.roleService.assignUsers(tenantAdminRole.roleId, [userId]).subscribe({
+            next: () => {
+              this.snackbar.open(`${userEmail} promoted to Tenant Admin.`, 'Close', { duration: 4000 });
+              const session = this.authStore.session();
+              if (session?.tenantId) this.userStore.loadUsersByTenant(session.tenantId).subscribe();
+              this.loadRolesForAllUsers();
+            },
+            error: (err) => this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 }),
+          });
+        },
+        error: (err) => this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 }),
+      });
     });
   }
 }

@@ -13,6 +13,7 @@ export interface AuthLoginResponse {
   userId: number;
   tenantId: number;
   role: string;
+  roles?: string[];
   expiresAt: string;
 }
 
