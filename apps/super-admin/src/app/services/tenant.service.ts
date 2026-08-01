@@ -21,7 +21,15 @@ export class TenantService {
         .resolveTenant(window.location.hostname, window.location.pathname, window.location.search)
         .toPromise();
       if (resolved) {
-        this.currentTenant = { ...this.currentTenant, ...resolved };
+        this.currentTenant = {
+          ...this.currentTenant,
+          id: resolved.tenantId ?? this.currentTenant.id,
+          displayName:
+            resolved.displayName || resolved.name || this.currentTenant.displayName,
+          logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
+          primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
+          accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
+        };
       }
     } catch {
       // Use default

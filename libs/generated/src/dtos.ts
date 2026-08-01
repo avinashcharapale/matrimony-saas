@@ -402,6 +402,12 @@ export interface TenantResolveResponse {
   tenantId: number;
   tenantCode: string;
   domain: string;
+  name?: string | null;
+  displayName?: string | null;
+  logoUrl?: string | null;
+  faviconUrl?: string | null;
+  primaryColor?: string | null;
+  accentColor?: string | null;
 }
 
 // ─── Chat DTOs ────────────────────────────────────────────────────────────────

@@ -11,6 +11,7 @@ import {
   correlationInterceptor,
   loadingInterceptor,
   errorInterceptor,
+  notificationInterceptor,
 } from '@org/core';
 import { platformAuthInterceptor } from './interceptors/platform-auth.interceptor';
 
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([
         errorInterceptor,
+        notificationInterceptor,
         loadingInterceptor,
         correlationInterceptor,
         platformAuthInterceptor,

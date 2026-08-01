@@ -10,7 +10,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { RoleService, RoleDto } from '../../services/role.service';
 import { PermissionService, PermissionDto } from '../../services/permission.service';
 import { RESERVED_ROLE_NAMES } from '../../services/role.constants';
@@ -240,7 +239,6 @@ export class AssignPermissionsDialogComponent {
 export class Roles implements OnInit {
   private readonly roleService = inject(RoleService);
   private readonly dialog = inject(MatDialog);
-  private readonly snackbar = inject(MatSnackBar);
   private readonly authStore = inject(AuthStore);
 
   readonly can = this.authStore.can;
@@ -299,7 +297,7 @@ export class Roles implements OnInit {
       if (!result) return;
       this.roleService.create(result).subscribe({
         next: () => this.loadRoles(),
-        error: (err) => this.showError(err),
+        error: () => undefined,
       });
     });
   }
@@ -316,7 +314,7 @@ export class Roles implements OnInit {
       if (!result) return;
       this.roleService.update(role.roleId, result).subscribe({
         next: () => this.loadRoles(),
-        error: (err) => this.showError(err),
+        error: () => undefined,
       });
     });
   }
@@ -337,7 +335,7 @@ export class Roles implements OnInit {
       if (confirmed) {
         this.roleService.delete(id).subscribe({
           next: () => this.loadRoles(),
-          error: (err) => this.showError(err),
+          error: () => undefined,
         });
       }
     });
@@ -359,22 +357,10 @@ export class Roles implements OnInit {
           if (!selectedIds) return;
           this.roleService.assignPermissions(roleId, selectedIds).subscribe({
             next: () => this.loadRoles(),
-            error: (err) => this.showError(err),
+            error: () => undefined,
           });
         });
       },
     });
-  }
-
-  private showError(err: unknown): void {
-    const raw = (err as { error?: unknown })?.error;
-    let message = 'Operation failed. Please try again.';
-    if (typeof raw === 'string' && raw) {
-      message = raw;
-    } else if (raw && typeof raw === 'object') {
-      const body = raw as { message?: string; title?: string };
-      message = body.message || body.title || message;
-    }
-    this.snackbar.open(message, 'Close', { duration: 5000 });
   }
 }

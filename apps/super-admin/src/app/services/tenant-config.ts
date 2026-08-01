@@ -4,6 +4,7 @@ export interface TenantConfig {
   displayName: string;
   primaryColor: string;
   accentColor: string;
+  logoUrl?: string;
 }
 
 const DEFAULT_TENANT: TenantConfig = {

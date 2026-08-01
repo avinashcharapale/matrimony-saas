@@ -15,6 +15,7 @@ import {
   correlationInterceptor,
   loadingInterceptor,
   errorInterceptor,
+  notificationInterceptor,
 } from '@org/core';
 import { TenantService } from './services/tenant.service';
 
@@ -27,6 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([
         errorInterceptor,
+        notificationInterceptor,
         loadingInterceptor,
         correlationInterceptor,
         tenantInterceptor,

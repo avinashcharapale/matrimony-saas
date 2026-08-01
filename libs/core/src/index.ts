@@ -5,5 +5,7 @@ export { correlationInterceptor } from '../../core/correlation/src/index';
 export { LoadingService, loadingInterceptor } from '../../core/loading/src/index';
 export { ErrorService, errorInterceptor } from '../../core/error/src/index';
 export type { AppError } from '../../core/error/src/index';
+export { NotificationService, notificationInterceptor } from '../../core/notification/src/index';
+export type { NotificationKind } from '../../core/notification/src/index';
 export { SignalRService } from '../../core/signalr/src/index';
 export type { NotificationEvent, ChatMessageEvent, TypingEvent } from '../../core/signalr/src/index';

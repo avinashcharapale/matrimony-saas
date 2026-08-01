@@ -13,23 +13,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '@org/core';
 import { UsersClient } from '@org/generated';
 import { RoleService, RoleDto } from '../../services/role.service';
 import { PermissionService, PermissionDto } from '../../services/permission.service';
 import { CROSS_TENANT_ROLE_NAMES, MEMBER_ROLE_NAME, TENANT_ADMIN_ROLE_NAME } from '../../services/role.constants';
 import { forkJoin, Observable } from 'rxjs';
-
-function extractHttpError(err: unknown): string {
-  const raw = (err as { error?: unknown })?.error;
-  if (typeof raw === 'string' && raw) return raw;
-  if (raw && typeof raw === 'object') {
-    const body = raw as { message?: string; title?: string };
-    if (body.message) return body.message;
-    if (body.title) return body.title;
-  }
-  return 'Operation failed. Please try again.';
-}
 
 interface UserRow extends Record<string, unknown> {
   id?: number;
@@ -203,7 +192,6 @@ export class AssignRoleDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<AssignRoleDialogComponent>);
   private readonly roleService = inject(RoleService);
   private readonly usersClient = inject(UsersClient);
-  private readonly snackbar = inject(MatSnackBar);
   readonly data = inject<{ userId: number; userEmail: string; isAdmin: boolean }>(MAT_DIALOG_DATA);
   protected readonly tenantAdminRoleName = TENANT_ADMIN_ROLE_NAME;
 
@@ -276,10 +264,7 @@ export class AssignRoleDialogComponent {
 
     forkJoin(ops).subscribe({
       next: () => { this.saving.set(false); this.dialogRef.close(true); },
-      error: (err) => {
-        this.saving.set(false);
-        this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 });
-      },
+      error: () => { this.saving.set(false); },
     });
   }
 }
@@ -337,7 +322,6 @@ export class AssignUserPermissionsDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<AssignUserPermissionsDialogComponent>);
   private readonly permissionService = inject(PermissionService);
   private readonly usersClient = inject(UsersClient);
-  private readonly snackbar = inject(MatSnackBar);
   readonly data = inject<{ userId: number; userEmail: string }>(MAT_DIALOG_DATA);
 
   readonly loading = signal(true);
@@ -405,10 +389,7 @@ export class AssignUserPermissionsDialogComponent {
 
     forkJoin(ops).subscribe({
       next: () => { this.saving.set(false); this.dialogRef.close(true); },
-      error: (err) => {
-        this.saving.set(false);
-        this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 });
-      },
+      error: () => { this.saving.set(false); },
     });
   }
 }
@@ -503,7 +484,7 @@ export class Users implements OnInit {
   readonly userStore = inject(UserStore);
   private readonly authStore = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
-  private readonly snackbar = inject(MatSnackBar);
+  private readonly notifications = inject(NotificationService);
   private readonly roleService = inject(RoleService);
 
   readonly can = this.authStore.can;
@@ -569,7 +550,7 @@ export class Users implements OnInit {
       }).subscribe((created) => {
         if (created?.id != null && roleId != null) {
           this.roleService.assignUsers(roleId, [created.id]).subscribe({
-            error: (err) => this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 }),
+            error: () => undefined,
           });
         }
         const s = this.authStore.session();
@@ -663,19 +644,18 @@ export class Users implements OnInit {
         next: (roles) => {
           const tenantAdminRole = (roles ?? []).find(r => r.roleName === 'TenantAdmin');
           if (!tenantAdminRole) {
-            this.snackbar.open('TenantAdmin role not found for this tenant.', 'Close', { duration: 4000 });
+            this.notifications.error('TenantAdmin role not found for this tenant.');
             return;
           }
           this.roleService.assignUsers(tenantAdminRole.roleId, [userId]).subscribe({
             next: () => {
-              this.snackbar.open(`${userEmail} promoted to Tenant Admin.`, 'Close', { duration: 4000 });
               const session = this.authStore.session();
               if (session?.tenantId) this.userStore.loadUsersByTenant(session.tenantId).subscribe();
             },
-            error: (err) => this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 }),
+            error: () => undefined,
           });
         },
-        error: (err) => this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 }),
+        error: () => undefined,
       });
     });
   }
