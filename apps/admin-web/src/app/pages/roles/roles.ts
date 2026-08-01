@@ -189,13 +189,46 @@ export class AssignPermissionsDialogComponent {
         [columns]="columns"
         [data]="displayRows()"
         [loading]="loading()"
-        [canEdit]="canEditRow"
-        [canDelete]="canDeleteRow"
         emptyMessage="No roles found"
         (rowEdit)="openEditDialog($event)"
         (rowDelete)="confirmDelete($event)"
         (rowClick)="openAssignPermissions($event)"
-      ></ui-data-table>
+      >
+        <ng-template #actions let-row>
+          @if (can('role.update')) {
+            <button
+              mat-icon-button
+              color="primary"
+              title="Edit"
+              [disabled]="isReservedRow(row)"
+              (click)="openEditDialog(row); $event.stopPropagation()"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+          @if (can('role.assign_permissions')) {
+            <button
+              mat-icon-button
+              color="accent"
+              title="Permissions"
+              (click)="openAssignPermissions(row); $event.stopPropagation()"
+            >
+              <mat-icon>key</mat-icon>
+            </button>
+          }
+          @if (can('role.delete')) {
+            <button
+              mat-icon-button
+              color="warn"
+              title="Delete"
+              [disabled]="isReservedRow(row)"
+              (click)="confirmDelete(row); $event.stopPropagation()"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          }
+        </ng-template>
+      </ui-data-table>
     </div>
   `,
   styles: [`
@@ -216,12 +249,7 @@ export class Roles implements OnInit {
   readonly roles = signal<RoleDto[]>([]);
   searchTerm = '';
 
-  readonly canEditRow = (row: Record<string, unknown>): boolean =>
-    this.can('role.update') && !this.isReservedRow(row);
-  readonly canDeleteRow = (row: Record<string, unknown>): boolean =>
-    this.can('role.delete') && !this.isReservedRow(row);
-
-  private isReservedRow(row: Record<string, unknown>): boolean {
+  isReservedRow(row: Record<string, unknown>): boolean {
     return row['isSystem'] === true || RESERVED_ROLE_NAMES.includes(row['roleName'] as string);
   }
 

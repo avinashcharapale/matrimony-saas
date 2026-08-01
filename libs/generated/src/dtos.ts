@@ -63,6 +63,22 @@ export interface UserListDto {
   isTenantAdmin?: boolean;
 }
 
+export interface CreatedUserResponseDto {
+  id?: number;
+  email?: string;
+}
+
+export interface UserDirectPermissionDto {
+  permissionId?: number;
+  permissionCode?: string;
+  displayName?: string;
+}
+
+export interface UserEffectivePermissionsDto {
+  direct?: UserDirectPermissionDto[];
+  fromRoles?: UserDirectPermissionDto[];
+}
+
 // ─── Profile DTOs ─────────────────────────────────────────────────────────────
 
 export interface MasterDataOptionDto {

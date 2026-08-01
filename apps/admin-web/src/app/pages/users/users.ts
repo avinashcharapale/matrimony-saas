@@ -11,11 +11,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UsersClient } from '@org/generated';
 import { RoleService, RoleDto } from '../../services/role.service';
-import { CROSS_TENANT_ROLE_NAMES } from '../../services/role.constants';
+import { PermissionService, PermissionDto } from '../../services/permission.service';
+import { CROSS_TENANT_ROLE_NAMES, MEMBER_ROLE_NAME, TENANT_ADMIN_ROLE_NAME } from '../../services/role.constants';
 import { forkJoin, Observable } from 'rxjs';
 
 function extractHttpError(err: unknown): string {
@@ -35,6 +37,7 @@ interface UserRow extends Record<string, unknown> {
   isActive?: boolean;
   isTenantAdmin?: boolean;
   createdAt?: string;
+  roles: string[];
   isActiveLabel: string;
   roleLabel: string;
   createdAtFormatted: string;
@@ -46,7 +49,7 @@ interface UserRow extends Record<string, unknown> {
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule,
-    MatInputModule, MatButtonModule, MatIconModule, MatSlideToggleModule,
+    MatInputModule, MatButtonModule, MatIconModule, MatSlideToggleModule, MatSelectModule,
   ],
   template: `
     <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Add New User' : 'Edit User' }}</h2>
@@ -76,6 +79,21 @@ interface UserRow extends Record<string, unknown> {
               <mat-error>Minimum 6 characters</mat-error>
             }
           </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="roleId" placeholder="Select a role">
+              @for (role of roles(); track role.roleId) {
+                <mat-option [value]="role.roleId">{{ role.roleName }}</mat-option>
+              }
+            </mat-select>
+            @if (roles().length === 0 && !loadingRoles()) {
+              <mat-hint>No assignable roles available.</mat-hint>
+            }
+            @if (form.get('roleId')?.hasError('required') && form.get('roleId')?.touched) {
+              <mat-error>Role is required</mat-error>
+            }
+          </mat-form-field>
         }
 
         <div class="toggle-row">
@@ -96,22 +114,39 @@ interface UserRow extends Record<string, unknown> {
     mat-dialog-content { min-width: 380px; }
   `],
 })
-export class UserFormDialogComponent {
+export class UserFormDialogComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<UserFormDialogComponent>);
+  private readonly roleService = inject(RoleService);
   readonly data = inject<{ mode: 'create' | 'edit'; user?: UserListDto }>(MAT_DIALOG_DATA);
+
+  readonly roles = signal<RoleDto[]>([]);
+  readonly loadingRoles = signal(true);
 
   readonly form = this.fb.nonNullable.group({
     email: [this.data.user?.email ?? '', [Validators.required, Validators.email]],
     password: ['', this.data.mode === 'create' ? [Validators.required, Validators.minLength(6)] : []],
+    roleId: [null as number | null, this.data.mode === 'create' ? [Validators.required] : []],
     isActive: [this.data.user?.isActive ?? true],
   });
+
+  ngOnInit(): void {
+    if (this.data.mode !== 'create') return;
+    this.roleService.getAll().subscribe({
+      next: (roles) => {
+        this.roles.set((roles ?? []).filter(r =>
+          !CROSS_TENANT_ROLE_NAMES.includes(r.roleName) && r.roleName !== MEMBER_ROLE_NAME));
+        this.loadingRoles.set(false);
+      },
+      error: () => this.loadingRoles.set(false),
+    });
+  }
 
   submit(): void {
     if (this.form.invalid) return;
     const val = this.form.getRawValue();
     if (this.data.mode === 'create') {
-      this.dialogRef.close({ email: val.email, password: val.password, isActive: val.isActive });
+      this.dialogRef.close({ email: val.email, password: val.password, roleId: val.roleId, isActive: val.isActive });
     } else {
       this.dialogRef.close({ email: val.email, isActive: val.isActive });
     }
@@ -134,13 +169,14 @@ export class UserFormDialogComponent {
         <p>No roles available.</p>
       } @else {
         @if (hiddenRoleCount() > 0) {
-          <p class="role-note">Platform-level roles are not assignable here.</p>
+          <p class="role-note">Platform-level roles and the member 'User' role are not assignable here.</p>
         }
         <div class="role-list">
           @for (role of allRoles(); track role.roleId) {
             <label class="role-item">
               <mat-checkbox
                 [checked]="userRoleIds().has(role.roleId)"
+                [disabled]="!data.isAdmin && role.roleName === tenantAdminRoleName"
                 (change)="toggleRole(role.roleId)"
               />
               <span>{{ role.roleName }}</span>
@@ -168,7 +204,8 @@ export class AssignRoleDialogComponent {
   private readonly roleService = inject(RoleService);
   private readonly usersClient = inject(UsersClient);
   private readonly snackbar = inject(MatSnackBar);
-  readonly data = inject<{ userId: number; userEmail: string }>(MAT_DIALOG_DATA);
+  readonly data = inject<{ userId: number; userEmail: string; isAdmin: boolean }>(MAT_DIALOG_DATA);
+  protected readonly tenantAdminRoleName = TENANT_ADMIN_ROLE_NAME;
 
   readonly loading = signal(true);
   readonly saving = signal(false);
@@ -185,7 +222,8 @@ export class AssignRoleDialogComponent {
     this.roleService.getAll().subscribe({
       next: (roles) => {
         const all = roles ?? [];
-        const filtered = all.filter(r => !CROSS_TENANT_ROLE_NAMES.includes(r.roleName));
+        const filtered = all.filter(r =>
+          !CROSS_TENANT_ROLE_NAMES.includes(r.roleName) && r.roleName !== MEMBER_ROLE_NAME);
         this.hiddenRoleCount.set(all.length - filtered.length);
         this.allRoles.set(filtered);
         this.loading.set(false);
@@ -210,6 +248,9 @@ export class AssignRoleDialogComponent {
   }
 
   toggleRole(id: number): void {
+    const role = this.allRoles().find(r => r.roleId === id);
+    if (!role) return;
+    if (!this.data.isAdmin && role.roleName === TENANT_ADMIN_ROLE_NAME) return;
     const set = new Set(this.userRoleIds());
     if (set.has(id)) set.delete(id); else set.add(id);
     this.userRoleIds.set(set);
@@ -227,6 +268,135 @@ export class AssignRoleDialogComponent {
     const ops: Observable<unknown>[] = [];
     for (const roleId of toAdd) ops.push(this.roleService.assignUsers(roleId, [this.data.userId]));
     for (const roleId of toRemove) ops.push(this.roleService.removeUser(roleId, this.data.userId));
+
+    if (ops.length === 0) {
+      this.dialogRef.close();
+      return;
+    }
+
+    forkJoin(ops).subscribe({
+      next: () => { this.saving.set(false); this.dialogRef.close(true); },
+      error: (err) => {
+        this.saving.set(false);
+        this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 });
+      },
+    });
+  }
+}
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-assign-user-permissions-dialog',
+  standalone: true,
+  imports: [
+    CommonModule, MatDialogModule, MatButtonModule, MatCheckboxModule, MatIconModule,
+  ],
+  template: `
+    <h2 mat-dialog-title>Permissions — {{ data.userEmail }}</h2>
+    <mat-dialog-content>
+      @if (loading()) {
+        <p>Loading permissions...</p>
+      } @else if (allPermissions().length === 0) {
+        <p>No permissions available.</p>
+      } @else {
+        <p class="perm-note">Permissions granted through the user's roles are shown selected and locked. Toggle direct permissions below.</p>
+        <div class="perm-list">
+          @for (perm of allPermissions(); track perm.permissionId) {
+            <label class="perm-item" [class.perm-locked]="roleDerivedIds().has(perm.permissionId)">
+              <mat-checkbox
+                [checked]="userDirectIds().has(perm.permissionId) || roleDerivedIds().has(perm.permissionId)"
+                [disabled]="roleDerivedIds().has(perm.permissionId)"
+                (change)="toggle(perm.permissionId)"
+              />
+              <span>{{ perm.displayName }}</span>
+              <span class="perm-code">{{ perm.permissionCode }}</span>
+              @if (roleDerivedIds().has(perm.permissionId)) {
+                <mat-icon class="perm-lock" title="Granted by role">lock</mat-icon>
+              }
+            </label>
+          }
+        </div>
+      }
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="primary" [disabled]="loading() || saving()" (click)="save()">Save</button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    mat-dialog-content { min-width: 420px; max-height: 420px; overflow-y: auto; }
+    .perm-list { display: flex; flex-direction: column; gap: 4px; }
+    .perm-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; }
+    .perm-item.perm-locked { cursor: default; }
+    .perm-code { font-size: 12px; color: #888; margin-left: auto; }
+    .perm-lock { font-size: 16px; color: #b0b0b0; }
+    .perm-note { font-size: 12px; color: #888; margin: 0 0 8px; }
+  `],
+})
+export class AssignUserPermissionsDialogComponent {
+  private readonly dialogRef = inject(MatDialogRef<AssignUserPermissionsDialogComponent>);
+  private readonly permissionService = inject(PermissionService);
+  private readonly usersClient = inject(UsersClient);
+  private readonly snackbar = inject(MatSnackBar);
+  readonly data = inject<{ userId: number; userEmail: string }>(MAT_DIALOG_DATA);
+
+  readonly loading = signal(true);
+  readonly saving = signal(false);
+  readonly allPermissions = signal<PermissionDto[]>([]);
+  readonly userDirectIds = signal<Set<number>>(new Set());
+  readonly roleDerivedIds = signal<Set<number>>(new Set());
+  readonly originalIds = signal<Set<number>>(new Set());
+
+  constructor() {
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.permissionService.getAll(undefined, true).subscribe({
+      next: (perms) => {
+        this.allPermissions.set(perms ?? []);
+        this.loadUserDirect();
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  loadUserDirect(): void {
+    this.usersClient.getEffectivePermissions(this.data.userId).subscribe({
+      next: (result) => {
+        const directIds = new Set((result?.direct ?? [])
+          .map((d) => d.permissionId)
+          .filter((x): x is number => x != null));
+        const roleIds = new Set((result?.fromRoles ?? [])
+          .map((d) => d.permissionId)
+          .filter((x): x is number => x != null));
+        this.userDirectIds.set(new Set(directIds));
+        this.roleDerivedIds.set(new Set(roleIds));
+        this.originalIds.set(new Set(directIds));
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  toggle(id: number): void {
+    const set = new Set(this.userDirectIds());
+    if (set.has(id)) set.delete(id); else set.add(id);
+    this.userDirectIds.set(set);
+  }
+
+  save(): void {
+    this.saving.set(true);
+    const current = this.userDirectIds();
+    const original = this.originalIds();
+    const toAdd: number[] = [];
+    const toRemove: number[] = [];
+    for (const id of current) if (!original.has(id)) toAdd.push(id);
+    for (const id of original) if (!current.has(id)) toRemove.push(id);
+
+    const ops: Observable<unknown>[] = [];
+    for (const pid of toAdd) ops.push(this.permissionService.assignToUser(this.data.userId, pid));
+    for (const pid of toRemove) ops.push(this.permissionService.revokeFromUser(this.data.userId, pid));
 
     if (ops.length === 0) {
       this.dialogRef.close();
@@ -289,7 +459,7 @@ export class AssignRoleDialogComponent {
               <mat-icon>edit</mat-icon>
             </button>
           }
-          @if (can('user.assign_roles')) {
+          @if (can('user.assign_roles') && isAdmin()) {
             <button
               mat-icon-button
               title="Promote to Tenant Admin"
@@ -297,6 +467,16 @@ export class AssignRoleDialogComponent {
               (click)="promoteToTenantAdmin(row); $event.stopPropagation()"
             >
               <mat-icon>admin_panel_settings</mat-icon>
+            </button>
+          }
+          @if (can('permission.assign')) {
+            <button
+              mat-icon-button
+              color="accent"
+              title="Permissions"
+              (click)="openAssignPermissionsDialog(row); $event.stopPropagation()"
+            >
+              <mat-icon>key</mat-icon>
             </button>
           }
           @if (can('user.delete')) {
@@ -327,6 +507,7 @@ export class Users implements OnInit {
   private readonly roleService = inject(RoleService);
 
   readonly can = this.authStore.can;
+  readonly isAdmin = this.authStore.isAdmin;
 
   readonly loading = signal(false);
   searchTerm = '';
@@ -343,11 +524,8 @@ export class Users implements OnInit {
     const term = this.searchTerm.trim().toLowerCase();
     return users
       .map((u) => this.toRow(u))
-      .filter((u) => {
-        if (u.isTenantAdmin === true) return true;
-        if (!term) return false;
-        return (u.email ?? '').toLowerCase().includes(term);
-      });
+      .filter((u) => u.roles.some(r => r !== MEMBER_ROLE_NAME))
+      .filter((u) => !term || (u.email ?? '').toLowerCase().includes(term));
   });
 
   ngOnInit(): void {
@@ -361,14 +539,16 @@ export class Users implements OnInit {
   }
 
   private toRow(user: UserListDto): UserRow {
+    const roles = user.roles ?? [];
     return {
       id: user.id,
       email: user.email,
       isActive: user.isActive,
       isTenantAdmin: user.isTenantAdmin,
       createdAt: user.createdAt,
+      roles,
       isActiveLabel: user.isActive ? 'Active' : 'Inactive',
-      roleLabel: (user.roles ?? []).join(', ') || 'None',
+      roleLabel: roles.join(', ') || 'None',
       createdAtFormatted: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-',
     };
   }
@@ -380,7 +560,18 @@ export class Users implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
       const session = this.authStore.session();
-      this.userStore.createUser({ ...result, tenantId: session?.tenantId ?? 0 }).subscribe(() => {
+      const roleId = result.roleId as number | undefined;
+      this.userStore.createUser({
+        email: result.email,
+        password: result.password,
+        isActive: result.isActive,
+        tenantId: session?.tenantId ?? 0,
+      }).subscribe((created) => {
+        if (created?.id != null && roleId != null) {
+          this.roleService.assignUsers(roleId, [created.id]).subscribe({
+            error: (err) => this.snackbar.open(extractHttpError(err), 'Close', { duration: 5000 }),
+          });
+        }
         const s = this.authStore.session();
         if (s?.tenantId) this.userStore.loadUsersByTenant(s.tenantId).subscribe();
       });
@@ -427,7 +618,7 @@ export class Users implements OnInit {
     const userId = row['id'] as number;
     const userEmail = row['email'] as string;
     const ref = this.dialog.open(AssignRoleDialogComponent, {
-      width: '480px', data: { userId, userEmail }, disableClose: true,
+      width: '480px', data: { userId, userEmail, isAdmin: this.isAdmin() }, disableClose: true,
     });
     ref.afterClosed().subscribe((changed) => {
       if (changed) {
@@ -441,7 +632,17 @@ export class Users implements OnInit {
     return (row['isTenantAdmin'] as boolean) ?? false;
   }
 
+  openAssignPermissionsDialog(row: Record<string, unknown>): void {
+    if (!this.can('permission.assign')) return;
+    const userId = row['id'] as number;
+    const userEmail = String(row['email'] ?? '');
+    this.dialog.open(AssignUserPermissionsDialogComponent, {
+      width: '520px', data: { userId, userEmail }, disableClose: true,
+    });
+  }
+
   promoteToTenantAdmin(row: Record<string, unknown>): void {
+    if (!this.isAdmin()) return;
     const userId = row['id'] as number;
     const userEmail = row['email'] as string;
     if (userId == null) return;

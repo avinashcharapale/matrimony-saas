@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { UserRepository } from './user.repository';
-import { UserDetailDto, UserListDto, CreateUserRequestDto, UpdateUserRequestDto } from '@org/generated';
+import { UserDetailDto, UserListDto, CreateUserRequestDto, UpdateUserRequestDto, CreatedUserResponseDto } from '@org/generated';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -72,7 +72,7 @@ export const UserStore = signalStore(
               ? String((error as { message: unknown }).message)
               : 'Failed to create user';
           patchState(store, { loading: false, error: message });
-          return of(void 0);
+          return of(null);
         }),
       );
     },

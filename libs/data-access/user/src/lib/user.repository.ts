@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { UsersClient, UserDetailDto, UserListDto, CreateUserRequestDto, UpdateUserRequestDto } from '@org/generated';
+import { UsersClient, UserDetailDto, UserListDto, CreateUserRequestDto, UpdateUserRequestDto, CreatedUserResponseDto } from '@org/generated';
 
 @Injectable({ providedIn: 'root' })
 export class UserRepository {
@@ -14,7 +14,7 @@ export class UserRepository {
     return this.users.getByTenant(tenantId);
   }
 
-  create(body: CreateUserRequestDto): Observable<void> {
+  create(body: CreateUserRequestDto): Observable<CreatedUserResponseDto> {
     return this.users.create(body);
   }
 

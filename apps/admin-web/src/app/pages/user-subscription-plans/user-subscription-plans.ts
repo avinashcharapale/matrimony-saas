@@ -42,6 +42,24 @@ import {
         </button>
       </div>
 
+      <div class="filter-bar">
+        <button
+          class="filter-btn"
+          [class.filter-btn--active]="viewFilter() === 'all'"
+          (click)="viewFilter.set('all')"
+        >All</button>
+        <button
+          class="filter-btn"
+          [class.filter-btn--active]="viewFilter() === 'active'"
+          (click)="viewFilter.set('active')"
+        >Active</button>
+        <button
+          class="filter-btn"
+          [class.filter-btn--active]="viewFilter() === 'inactive'"
+          (click)="viewFilter.set('inactive')"
+        >Inactive</button>
+      </div>
+
       @if (loading()) {
         <div class="loading-state">
           <mat-spinner diameter="32"></mat-spinner>
@@ -68,8 +86,8 @@ import {
               </tr>
             </thead>
             <tbody>
-              @for (plan of plans(); track plan.id) {
-                <tr>
+              @for (plan of visiblePlans(); track plan.id) {
+                <tr [class.row-inactive]="!plan.isActive">
                   <td class="cell-code">{{ plan.code }}</td>
                   <td class="cell-bold">{{ plan.name }}</td>
                   <td class="cell-price">{{ plan.price != null ? (plan.currency ?? 'INR') + ' ' + plan.price : '-' }}</td>
@@ -89,6 +107,11 @@ import {
                     }
                   </td>
                   <td class="cell-actions">
+                    @if (!plan.isActive) {
+                      <button mat-icon-button color="primary" title="Reactivate" (click)="reactivate(plan)">
+                        <mat-icon>restore</mat-icon>
+                      </button>
+                    }
                     <button mat-icon-button color="primary" title="Edit" (click)="openEditDialog(plan)">
                       <mat-icon>edit</mat-icon>
                     </button>
@@ -120,6 +143,14 @@ import {
   styles: [`
     .plans-page { position: relative; }
     .header-actions { margin-bottom: 1.5rem; }
+    .filter-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .filter-btn {
+      padding: 0.375rem 1rem; border: 1px solid #ddd; border-radius: 9999px;
+      background: white; color: #555; font-size: 0.8125rem; font-weight: 500;
+      cursor: pointer;
+    }
+    .filter-btn:hover { border-color: #1976d2; color: #1976d2; }
+    .filter-btn--active { background: #1976d2; border-color: #1976d2; color: white; }
     .loading-state, .empty-state {
       display: flex; flex-direction: column; align-items: center; gap: 12px;
       padding: 3rem; color: #757575; font-size: 14px;
@@ -140,6 +171,9 @@ import {
       border-bottom: 1px solid #f0f0f0;
     }
     .plans-table tbody tr:hover { background: #f5f5f5; }
+    .plans-table tbody tr.row-inactive td { color: #9e9e9e; background: #fafafa; }
+    .plans-table tbody tr.row-inactive .cell-price { color: #9e9e9e; }
+    .plans-table tbody tr.row-inactive .cell-code { color: #9e9e9e; }
     .cell-code { font-family: monospace; color: #1976d2; font-weight: 600; }
     .cell-bold { font-weight: 500; }
     .cell-center { text-align: center; }
@@ -168,6 +202,13 @@ export class UserSubscriptionPlans implements OnInit {
   readonly loading = signal(true);
   readonly plans = signal<UserSubscriptionPlanDto[]>([]);
   readonly expandedId = signal<number | null>(null);
+  readonly viewFilter = signal<'all' | 'active' | 'inactive'>('all');
+
+  readonly visiblePlans = computed(() => {
+    const filter = this.viewFilter();
+    return this.plans().filter(p =>
+      filter === 'all' ? true : filter === 'active' ? p.isActive : !p.isActive);
+  });
 
   toggleFeatures(planId: number | undefined): void {
     this.expandedId.update(id => (id === planId ? null : (planId ?? null)));
@@ -220,6 +261,11 @@ export class UserSubscriptionPlans implements OnInit {
         this.planService.delete(plan.id).subscribe(() => this.loadPlans());
       }
     });
+  }
+
+  reactivate(plan: UserSubscriptionPlanDto): void {
+    if (plan.id == null) return;
+    this.planService.update(plan.id, { isActive: true }).subscribe(() => this.loadPlans());
   }
 }
 

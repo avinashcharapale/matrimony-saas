@@ -10,6 +10,9 @@ import {
   UserListDto,
   CreateUserRequestDto as CreateUserRequest,
   UpdateUserRequestDto as UpdateUserRequest,
+  CreatedUserResponseDto,
+  UserDirectPermissionDto,
+  UserEffectivePermissionsDto,
 } from './dtos';
 
 @Injectable({ providedIn: 'root' })
@@ -57,7 +60,15 @@ export class UsersClient {
     return this.http.get<UserListDto[]>(`/identity/Users/by-tenant/${tenantId}`);
   }
 
-  create(body: CreateUserRequest): Observable<void> {
-    return this.http.post<void>('/identity/Users', body);
+  create(body: CreateUserRequest): Observable<CreatedUserResponseDto> {
+    return this.http.post<CreatedUserResponseDto>('/identity/Users', body);
+  }
+
+  getDirectPermissions(id: number): Observable<UserDirectPermissionDto[]> {
+    return this.http.get<UserDirectPermissionDto[]>(`/identity/Users/${id}/direct-permissions`);
+  }
+
+  getEffectivePermissions(id: number): Observable<UserEffectivePermissionsDto> {
+    return this.http.get<UserEffectivePermissionsDto>(`/identity/Users/${id}/effective-permissions`);
   }
 }
