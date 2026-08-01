@@ -1,9 +1,10 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthStore } from '@org/data-access-auth';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { NotificationStore } from '@org/data-access-notification';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +29,21 @@ import { MatButtonModule } from '@angular/material/button';
               <span>Staff</span>
             </a>
           }
+          <a routerLink="/notifications" routerLinkActive="active" class="nav-item">
+            <mat-icon>notifications</mat-icon>
+            <span>Notifications</span>
+            @if (store.hasUnread()) {
+              <span class="nav-badge">{{ store.unreadCount() }}</span>
+            }
+          </a>
+          <a routerLink="/master-data" routerLinkActive="active" class="nav-item">
+            <mat-icon>list_alt</mat-icon>
+            <span>Master Data</span>
+          </a>
+          <a routerLink="/settings" routerLinkActive="active" class="nav-item">
+            <mat-icon>settings</mat-icon>
+            <span>Settings</span>
+          </a>
           @if (can('role.read')) {
             <a routerLink="/roles" routerLinkActive="active" class="nav-item">
               <mat-icon>admin_panel_settings</mat-icon>
@@ -157,6 +173,21 @@ import { MatButtonModule } from '@angular/material/button';
       border-left-color: #1976d2;
     }
 
+    .nav-badge {
+      margin-left: auto;
+      background: #e91e63;
+      color: white;
+      border-radius: 9999px;
+      min-width: 20px;
+      height: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+    }
+
     .sidebar-footer {
       padding: 1rem 1.5rem;
       border-top: 1px solid #2a2a4a;
@@ -194,8 +225,9 @@ import { MatButtonModule } from '@angular/material/button';
     }
   `],
 })
-export class Layout {
+export class Layout implements OnInit {
   private readonly authStore = inject(AuthStore);
+  readonly store = inject(NotificationStore);
 
   private readonly session = this.authStore.session;
 
@@ -217,6 +249,10 @@ export class Layout {
     if (roles.includes('PlatformAdmin')) return 'Platform Admin';
     return s?.role ?? 'User';
   });
+
+  ngOnInit(): void {
+    this.store.loadUnreadCount();
+  }
 
   logout(): void {
     this.authStore.logout().subscribe(() => {

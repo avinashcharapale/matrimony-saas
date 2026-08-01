@@ -17,26 +17,26 @@ export class NotificationClient {
       .set('page', String(page))
       .set('pageSize', String(pageSize))
       .set('unreadOnly', String(unreadOnly));
-    return this.http.get<NotificationListResponse>('/notification/api/Notifications', { params });
+    return this.http.get<NotificationListResponse>('/notification/Notifications', { params });
   }
 
   getById(id: number): Observable<NotificationDetailResponse> {
-    return this.http.get<NotificationDetailResponse>(`/notification/api/Notifications/${id}`);
+    return this.http.get<NotificationDetailResponse>(`/notification/Notifications/${id}`);
   }
 
   getUnreadCount(): Observable<{ unreadCount: number }> {
-    return this.http.get<{ unreadCount: number }>('/notification/api/Notifications/unread-count');
+    return this.http.get<{ unreadCount: number }>('/notification/Notifications/unread-count');
   }
 
   markAsRead(id: number): Observable<void> {
-    return this.http.put<void>(`/notification/api/Notifications/${id}/read`, {});
+    return this.http.put<void>(`/notification/Notifications/${id}/read`, {});
   }
 
   markAllAsRead(): Observable<void> {
-    return this.http.put<void>('/notification/api/Notifications/read-all', {});
+    return this.http.put<void>('/notification/Notifications/read-all', {});
   }
 
   sendNotification(body: SendNotificationRequestDto): Observable<{ notificationId: number; title: string; status: string }> {
-    return this.http.post<{ notificationId: number; title: string; status: string }>('/notification/api/Notifications/send', body);
+    return this.http.post<{ notificationId: number; title: string; status: string }>('/notification/Notifications/send', body);
   }
 }

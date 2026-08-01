@@ -63,6 +63,21 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./pages/roles/roles').then((m) => m.Roles),
       },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./pages/notifications/notifications').then((m) => m.Notifications),
+      },
+      {
+        path: 'master-data',
+        loadComponent: () =>
+          import('./pages/master-data/master-data').then((m) => m.MasterData),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/settings/settings').then((m) => m.Settings),
+      },
     ],
   },
   {

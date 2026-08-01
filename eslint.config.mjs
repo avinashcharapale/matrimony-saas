@@ -37,6 +37,18 @@ export default [
               onlyDependOnLibsWithTags: ['scope:shop', 'scope:shared'],
             },
             {
+              sourceTag: 'scope:admin',
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:core', 'scope:data-access'],
+            },
+            {
+              sourceTag: 'scope:super-admin',
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:core', 'scope:data-access'],
+            },
+            {
+              sourceTag: 'scope:marketing',
+              onlyDependOnLibsWithTags: ['scope:shared', 'scope:core', 'scope:data-access'],
+            },
+            {
               sourceTag: 'scope:api',
               onlyDependOnLibsWithTags: ['scope:api', 'scope:shared'],
             },

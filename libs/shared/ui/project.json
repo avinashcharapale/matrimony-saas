@@ -1,10 +1,9 @@
 {
-  "name": "core",
+  "name": "shared-ui-components",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/core/src",
-  "prefix": "lib",
+  "sourceRoot": "libs/shared/ui/src",
   "projectType": "library",
-  "tags": ["scope:core"],
+  "tags": ["scope:shared"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"

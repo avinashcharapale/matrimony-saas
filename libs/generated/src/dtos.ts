@@ -1130,3 +1130,197 @@ export interface GeoTalukaDto {
   name?: string;
   nameMr?: string;
 }
+
+// ── Tenant Extensions: Master Categories ────────────────────────────────────
+
+export interface MasterCategoryDto {
+  masterCategoryId?: number;
+  categoryCode?: string;
+  categoryName?: string;
+  description?: string;
+  sortOrder?: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateMasterCategoryRequest {
+  categoryCode?: string;
+  categoryName?: string;
+  description?: string;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateMasterCategoryRequest {
+  categoryCode?: string;
+  categoryName?: string;
+  description?: string;
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+// ── Tenant Extensions: Master Data ──────────────────────────────────────────
+
+export interface TenantMasterDataDto {
+  tenantMasterDataId?: number;
+  tenantId?: number;
+  masterCategoryId?: number;
+  categoryName?: string;
+  masterId?: number;
+  parentMasterId?: number;
+  sortOrder?: number;
+  isEnabled?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateTenantMasterDataRequest {
+  masterCategoryId?: number;
+  masterId?: number;
+  parentMasterId?: number;
+  sortOrder?: number;
+}
+
+export interface UpdateTenantMasterDataRequest {
+  sortOrder?: number;
+  isEnabled?: boolean;
+}
+
+export interface TenantMasterDataSearchRequest {
+  tenantId?: number;
+  masterCategoryId?: number;
+  isEnabled?: boolean;
+  page?: number;
+  pageSize?: number;
+}
+
+// ── Tenant Extensions: Branding ─────────────────────────────────────────────
+
+export interface TenantBrandingDto {
+  tenantId?: number;
+  logoUrl?: string;
+  faviconUrl?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  accentColor?: string;
+  fontFamily?: string;
+  customCss?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SaveTenantBrandingRequest {
+  logoUrl?: string;
+  faviconUrl?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  accentColor?: string;
+  fontFamily?: string;
+  customCss?: string;
+}
+
+// ── Tenant Extensions: Domains ──────────────────────────────────────────────
+
+export interface TenantDomainDto {
+  domainId?: number;
+  tenantId?: number;
+  domain?: string;
+  isPrimary?: boolean;
+  isVerified?: boolean;
+  verifiedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateTenantDomainRequest {
+  domain?: string;
+  isPrimary?: boolean;
+}
+
+export interface UpdateTenantDomainRequest {
+  domain?: string;
+  isPrimary?: boolean;
+}
+
+// ── Tenant Extensions: Security Settings ────────────────────────────────────
+
+export interface TenantSecuritySettingDto {
+  tenantId?: number;
+  requireMfa?: boolean;
+  passwordMinLength?: number;
+  passwordRequireSpecialChars?: boolean;
+  passwordRequireNumbers?: boolean;
+  passwordRequireUpperLower?: boolean;
+  passwordExpiryDays?: number;
+  sessionTimeoutMinutes?: number;
+  maxFailedLoginAttempts?: number;
+  lockoutDurationMinutes?: number;
+  allowedIpRanges?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SaveTenantSecuritySettingRequest {
+  requireMfa?: boolean;
+  passwordMinLength?: number;
+  passwordRequireSpecialChars?: boolean;
+  passwordRequireNumbers?: boolean;
+  passwordRequireUpperLower?: boolean;
+  passwordExpiryDays?: number;
+  sessionTimeoutMinutes?: number;
+  maxFailedLoginAttempts?: number;
+  lockoutDurationMinutes?: number;
+  allowedIpRanges?: string;
+}
+
+// ── Tenant Extensions: Email Settings ───────────────────────────────────────
+
+export interface TenantEmailSettingDto {
+  tenantId?: number;
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUsername?: string;
+  fromAddress?: string;
+  fromName?: string;
+  replyToAddress?: string;
+  useSsl?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SaveTenantEmailSettingRequest {
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUsername?: string;
+  smtpPassword?: string;
+  fromAddress?: string;
+  fromName?: string;
+  replyToAddress?: string;
+  useSsl?: boolean;
+}
+
+// ── Tenant Extensions: Notification Settings ────────────────────────────────
+
+export interface TenantNotificationSettingDto {
+  tenantId?: number;
+  welcomeEmail?: boolean;
+  profileApprovalEmail?: boolean;
+  matchAlertEmail?: boolean;
+  messageAlertEmail?: boolean;
+  weeklyDigestEmail?: boolean;
+  smsNotifications?: boolean;
+  pushNotifications?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SaveTenantNotificationSettingRequest {
+  welcomeEmail?: boolean;
+  profileApprovalEmail?: boolean;
+  matchAlertEmail?: boolean;
+  messageAlertEmail?: boolean;
+  weeklyDigestEmail?: boolean;
+  smsNotifications?: boolean;
+  pushNotifications?: boolean;
+}

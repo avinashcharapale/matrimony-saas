@@ -7,6 +7,6 @@ export class BillingClient {
   private readonly http = inject(HttpClient);
 
   processWebhook(paymentGatewayId: number, body: any): Observable<void> {
-    return this.http.post<void>(`/billing/api/webhooks/${paymentGatewayId}`, body);
+    return this.http.post<void>(`/billing/webhooks/${paymentGatewayId}`, body);
   }
 }

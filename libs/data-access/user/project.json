@@ -1,10 +1,9 @@
 {
-  "name": "core",
+  "name": "data-access-user",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/core/src",
-  "prefix": "lib",
+  "sourceRoot": "libs/data-access/user/src",
   "projectType": "library",
-  "tags": ["scope:core"],
+  "tags": ["scope:data-access"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"
