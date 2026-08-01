@@ -55,10 +55,6 @@ import { MatButtonModule } from '@angular/material/button';
               <mat-icon>card_membership</mat-icon>
               <span>Plan Management</span>
             </a>
-            <a routerLink="/tenant-plans" routerLinkActive="active" class="nav-item">
-              <mat-icon>storefront</mat-icon>
-              <span>Tenant Plans</span>
-            </a>
             <a routerLink="/tenant-features" routerLinkActive="active" class="nav-item">
               <mat-icon>stars</mat-icon>
               <span>My Features</span>
