@@ -1,12 +1,12 @@
 import { computed, inject } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { SubscriptionRepository } from './subscription.repository';
-import { SubscriptionPlanDto, SubscriptionFeatureDto, SubscriptionStatusDto } from '@org/generated';
+import { SubscriptionPlanDto, SubscriptionFeatureDto, SubscriptionStatusDto, UserSubscriptionPlanDto } from '@org/generated';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 export interface SubscriptionState {
-  plans: SubscriptionPlanDto[];
+  plans: UserSubscriptionPlanDto[];
   features: SubscriptionFeatureDto[];
   selectedPlan: SubscriptionPlanDto | null;
   status: SubscriptionStatusDto | null;

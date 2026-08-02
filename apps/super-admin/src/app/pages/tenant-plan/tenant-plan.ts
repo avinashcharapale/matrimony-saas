@@ -447,13 +447,11 @@ export class TenantPlan implements OnInit {
   openAssignDialog(): void {
     const dialogRef = this.dialog.open(AssignPlanDialogComponent, {
       width: '480px',
-      data: { plans: this.plans() } satisfies PlanFormDialogData,
+      data: { plans: this.plans(), tenantId: this.tenantId() } satisfies PlanFormDialogData,
     });
 
     dialogRef.afterClosed().subscribe((result: CreateTenantSubscriptionRequest | undefined) => {
       if (!result) return;
-
-      result.tenantId = this.tenantId();
 
       this.saving.set(true);
       this.subscriptionClient.createTenantSubscription(result).subscribe({

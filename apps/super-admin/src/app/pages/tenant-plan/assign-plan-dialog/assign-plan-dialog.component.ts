@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { SubscriptionPlanDto, CreateTenantSubscriptionRequest } from '@org/generated';
 
 export interface PlanFormDialogData {
+  tenantId: number;
   plans: SubscriptionPlanDto[];
 }
 
@@ -99,7 +100,7 @@ export class AssignPlanDialogComponent {
       return `${y}-${m}-${day}`;
     };
     const result: CreateTenantSubscriptionRequest = {
-      tenantId: 0,
+      tenantId: this.data.tenantId,
       subscriptionPlanId: val.subscriptionPlanId,
       startDate: val.startDate ? fmt(val.startDate) : '',
       endDate: val.endDate ? fmt(val.endDate) : '',

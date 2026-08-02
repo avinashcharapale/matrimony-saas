@@ -4,16 +4,9 @@ import { TenantStore } from '@org/data-access-tenant';
 import {
   resolveTenant,
   TenantConfig,
-  TENANT_CODE_MAP,
-  TENANT_CONFIGS,
   THEME_PALETTES,
   ThemePalette,
 } from './tenant-config';
-
-function isLocalhost(): boolean {
-  const host = globalThis.location?.hostname ?? '';
-  return host === 'localhost' || host === '127.0.0.1';
-}
 
 function resolveTenantHost(): string {
   return globalThis.location?.hostname ?? '';
@@ -52,12 +45,6 @@ export class TenantService {
   }
 
   initialize() {
-    if (isLocalhost()) {
-      this.store.setResolvedTenant(1, 'demo');
-      this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
-      return of(void 0);
-    }
-
     return this.store
       .resolveTenant(
         resolveTenantHost(),

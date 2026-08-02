@@ -5,6 +5,7 @@ import {
   SubscriptionPlanDto,
   SubscriptionFeatureDto,
   SubscriptionStatusDto,
+  UserSubscriptionPlanDto,
   CreateSubscriptionPlanRequest,
   UpdateSubscriptionPlanRequest,
 } from '@org/generated';
@@ -13,8 +14,8 @@ import {
 export class SubscriptionRepository {
   private readonly subscription = inject(SubscriptionClient);
 
-  getAllPlans(): Observable<SubscriptionPlanDto[]> {
-    return this.subscription.getAllSubscriptionPlans();
+  getAllPlans(): Observable<UserSubscriptionPlanDto[]> {
+    return this.subscription.getActiveUserSubscriptionPlans();
   }
 
   getPlanById(id: number): Observable<SubscriptionPlanDto> {

@@ -4,7 +4,6 @@ import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MemberRecord, MemberService } from '../../services/member.service';
-import { TenantService } from '../../services/tenant.service';
 import { AuthStore } from '@org/data-access-auth';
 import { MatchClient } from '@org/generated';
 import { finalize } from 'rxjs/operators';
@@ -34,7 +33,6 @@ export class ProfileDetail implements OnInit {
   private readonly memberService = inject(MemberService);
   private readonly authStore = inject(AuthStore);
   private readonly http = inject(HttpClient);
-  private readonly tenantService = inject(TenantService);
   private readonly matchClient = inject(MatchClient);
 
   readonly profile = signal<MemberRecord | null>(null);
@@ -279,13 +277,10 @@ export class ProfileDetail implements OnInit {
     if (isNaN(targetProfileId)) return;
 
     this.isSendingInterest.set(true);
-    const tenantId = this.tenantService.tenant.id;
 
     this.http.post('/match/InterestRequests', {
       targetProfileId,
       message: '',
-    }, {
-      headers: tenantId ? { 'X-Tenant-Id': String(tenantId) } : {},
     }).pipe(
       finalize(() => this.isSendingInterest.set(false)),
     ).subscribe({

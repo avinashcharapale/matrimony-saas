@@ -181,6 +181,12 @@ export const AuthStore = signalStore(
       const all = roles();
       return all.includes('TenantAdmin') || all.includes('SuperAdmin') || all.includes('PlatformAdmin');
     }),
+    isPlatformAdmin: computed(() => {
+      const r = role();
+      if (r === 'PlatformAdmin' || r === 'SuperAdmin') return true;
+      const all = roles();
+      return all.includes('PlatformAdmin') || all.includes('SuperAdmin');
+    }),
     session: computed((): AuthSession | null => {
       const uid = userId();
       if (uid == null) return null;

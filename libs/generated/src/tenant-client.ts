@@ -8,6 +8,7 @@ import {
   CreateMasterCategoryRequest,
   UpdateMasterCategoryRequest,
   TenantMasterDataDto,
+  TenantMasterDataDtoPagedResult,
   CreateTenantMasterDataRequest,
   UpdateTenantMasterDataRequest,
   TenantBrandingDto,
@@ -83,7 +84,7 @@ export class TenantClient {
 
   // ── Tenant Master Data ───────────────────────────────────────────────────
 
-  getTenantMasterData(masterCategoryId?: number, isEnabled?: boolean, page?: number, pageSize?: number): Observable<TenantMasterDataDto[]> {
+  getTenantMasterData(masterCategoryId?: number, isEnabled?: boolean, page?: number, pageSize?: number): Observable<TenantMasterDataDtoPagedResult> {
     let params = new HttpParams();
     if (masterCategoryId !== undefined) {
       params = params.set('masterCategoryId', String(masterCategoryId));
@@ -97,7 +98,7 @@ export class TenantClient {
     if (pageSize !== undefined) {
       params = params.set('pageSize', String(pageSize));
     }
-    return this.http.get<TenantMasterDataDto[]>('/tenant/master-data', { params });
+    return this.http.get<TenantMasterDataDtoPagedResult>('/tenant/master-data', { params });
   }
 
   getTenantMasterDataById(id: number): Observable<TenantMasterDataDto> {

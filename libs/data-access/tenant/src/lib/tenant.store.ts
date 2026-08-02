@@ -29,7 +29,7 @@ export const TenantStore = signalStore(
     }),
   })),
   withMethods((store, repository = inject(TenantRepository)) => ({
-    setResolvedTenant(tenantId: number, tenantCode: string) {
+    setResolvedTenant(tenantId: number, tenantCode: string | null) {
       patchState(store, {
         resolvedTenantId: tenantId,
         tenantCode,

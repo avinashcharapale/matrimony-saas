@@ -768,6 +768,8 @@ export interface UserSubscriptionPlanDto {
   price?: number;
   durationMonths?: number;
   currency?: string;
+  displayOrder?: number;
+  isPopular?: boolean;
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -1173,6 +1175,13 @@ export interface TenantMasterDataDto {
   isEnabled?: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface TenantMasterDataDtoPagedResult {
+  items?: TenantMasterDataDto[];
+  totalCount?: number;
+  pageNumber?: number;
+  pageSize?: number;
 }
 
 export interface CreateTenantMasterDataRequest {

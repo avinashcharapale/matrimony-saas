@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { TenantService } from '../../services/tenant.service';
 import { AuthService } from '../../services/auth.service';
-import { SubscriptionPlanDto, PlanFeatureValueDto } from '@org/generated';
+import { UserSubscriptionPlanDto, PlanFeatureValueDto } from '@org/generated';
 import { finalize } from 'rxjs/operators';
 
 interface CheckoutResult {
@@ -46,7 +46,7 @@ export class PlansPage implements OnInit {
     this.subscriptionStore.loadPlans().subscribe();
   }
 
-  selectPlan(plan: SubscriptionPlanDto): void {
+  selectPlan(plan: UserSubscriptionPlanDto): void {
     if (this.isProcessing() || this.checkoutResult()) return;
 
     if (!this.isLoggedIn()) {

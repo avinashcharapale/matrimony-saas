@@ -9,9 +9,8 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { appRoutes } from './app.routes';
-import { tenantInterceptor } from './interceptors/tenant.interceptor';
 import { authInterceptor } from '@org/core-auth';
-import { errorInterceptor } from '@org/core';
+import { errorInterceptor, tenantInterceptor } from '@org/core';
 import { TenantService } from './services/tenant.service';
 
 export const appConfig: ApplicationConfig = {

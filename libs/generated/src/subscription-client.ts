@@ -154,6 +154,11 @@ export class SubscriptionClient {
     return this.http.get<UserSubscriptionPlanDto[]>('/subscription/UserSubscriptionPlans');
   }
 
+  getActiveUserSubscriptionPlans(tenantId?: number): Observable<UserSubscriptionPlanDto[]> {
+    const params = tenantId !== undefined ? new HttpParams().set('tenantId', tenantId) : undefined;
+    return this.http.get<UserSubscriptionPlanDto[]>('/subscription/UserSubscriptionPlans/active', { params });
+  }
+
   getUserSubscriptionPlanById(id: number): Observable<UserSubscriptionPlanDto> {
     return this.http.get<UserSubscriptionPlanDto>(`/subscription/UserSubscriptionPlans/${id}`);
   }

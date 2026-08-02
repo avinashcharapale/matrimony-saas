@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { TenantClient, TenantResolveResponse } from '@org/generated';
+import { catchError, map, of } from 'rxjs';
+import { TenantStore } from '@org/data-access-tenant';
+import { TenantResolveResponse } from '@org/generated';
 import { resolveTenant, TenantConfig, THEME_PALETTES, ThemePalette } from './tenant-config';
 
 @Injectable({
@@ -9,7 +11,7 @@ export class TenantService {
   private static readonly THEME_STORAGE_KEY = 'tenant_theme_id';
   private currentTenant: TenantConfig;
   private selectedThemeId = 'warm-ivory';
-  private readonly tenantClient = inject(TenantClient);
+  private readonly store = inject(TenantStore);
 
   constructor() {
     this.currentTenant = resolveTenant(window.location.hostname, window.location.search);
@@ -28,21 +30,35 @@ export class TenantService {
     return this.selectedThemeId;
   }
 
-  async initialize(): Promise<void> {
-    try {
-      const resolved = await this.tenantClient.resolveTenant(
+  initialize() {
+    return this.store
+      .resolveTenant(
         window.location.hostname,
         window.location.pathname,
-        window.location.search
-      ).toPromise();
+        window.location.search,
+      )
+      .pipe(
+        map((resolved) => this.applyResolvedTenant(resolved)),
+        catchError(() => {
+          this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
+          return of(void 0);
+        }),
+      );
+  }
 
-      if (resolved) {
-        this.currentTenant = { ...this.currentTenant, ...resolved };
-      }
-      this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
-    } catch {
-      this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
+  private applyResolvedTenant(resolved: TenantResolveResponse): void {
+    if (!resolved) {
+      return;
     }
+
+    this.currentTenant = {
+      ...this.currentTenant,
+      displayName: resolved.displayName || resolved.name || this.currentTenant.displayName,
+      logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
+      primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
+      accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
+    };
+    this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
   }
 
   setTheme(themeId: string): void {

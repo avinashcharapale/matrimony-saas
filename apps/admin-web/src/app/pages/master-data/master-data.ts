@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TenantClient, MasterCategoryDto, TenantMasterDataDto, CreateMasterCategoryRequest, UpdateMasterCategoryRequest } from '@org/generated';
 import { NotificationService } from '@org/core';
+import { AuthStore } from '@org/data-access-auth';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,11 +32,12 @@ import { NotificationService } from '@org/core';
             <mat-icon>refresh</mat-icon>
             Refresh
           </button>
-          <button mat-flat-button color="primary" (click)="openCategoryDialog()">
-            <mat-icon>add</mat-icon>
-            Add Category
-          </button>
-        </div>
+          @if (canManageCategories()) {
+            <button mat-flat-button color="primary" (click)="openCategoryDialog()">
+              <mat-icon>add</mat-icon>
+              Add Category
+            </button>
+          }        </div>
       </ui-page-header>
 
       <div class="grid">
@@ -61,9 +63,11 @@ import { NotificationService } from '@org/core';
                   </div>
                   <div class="category-actions">
                     <ui-status-badge [status]="cat.isActive ? 'Active' : 'Inactive'"></ui-status-badge>
-                    <button mat-icon-button color="primary" title="Edit" (click)="openCategoryDialog(cat)">
-                      <mat-icon>edit</mat-icon>
-                    </button>
+                    @if (canManageCategories()) {
+                      <button mat-icon-button color="primary" title="Edit" (click)="openCategoryDialog(cat)">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    }
                   </div>
                 </div>
               }
@@ -109,7 +113,7 @@ import { NotificationService } from '@org/core';
                     <tr>
                       <td class="cell-mono">{{ item.masterId }}</td>
                       <td>{{ item.categoryName ?? '—' }}</td>
-                      <td class="cell-muted">{{ item.parentMasterId != null ? 'Sub: ' + item.parentMasterId : 'Root' }}</td>
+                      <td class="cell-muted">{{ item.parentMasterId !== null ? 'Sub: ' + item.parentMasterId : 'Root' }}</td>
                       <td class="cell-center">{{ item.sortOrder }}</td>
                       <td class="cell-center">
                         <ui-status-badge [status]="item.isEnabled ? 'Active' : 'Inactive'"></ui-status-badge>
@@ -187,12 +191,15 @@ export class MasterData implements OnInit {
   private readonly tenantClient = inject(TenantClient);
   private readonly dialog = inject(MatDialog);
   private readonly notifications = inject(NotificationService);
+  private readonly authStore = inject(AuthStore);
 
   readonly loadingCategories = signal(true);
   readonly loadingItems = signal(true);
   readonly categories = signal<MasterCategoryDto[]>([]);
   readonly items = signal<TenantMasterDataDto[]>([]);
   readonly selectedCategoryId = signal<number | undefined>(undefined);
+
+  readonly canManageCategories = this.authStore.isPlatformAdmin;
 
   ngOnInit(): void {
     this.loadAll();
@@ -214,7 +221,7 @@ export class MasterData implements OnInit {
   loadItems(): void {
     this.loadingItems.set(true);
     this.tenantClient.getTenantMasterData(this.selectedCategoryId(), undefined, 1, 500).subscribe({
-      next: (data) => { this.items.set(data ?? []); this.loadingItems.set(false); },
+      next: (result) => { this.items.set(result?.items ?? []); this.loadingItems.set(false); },
       error: () => this.loadingItems.set(false),
     });
   }
