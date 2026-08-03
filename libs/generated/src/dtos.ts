@@ -280,6 +280,10 @@ export interface ProfileHoroscopeDetailDto {
   birthDistrictName?: string;
 }
 
+export interface SetProfileVerificationRequest {
+  isVerified?: boolean;
+}
+
 export interface CreateProfileDto {
   fullName?: string | null;
   age?: number | null;
@@ -312,6 +316,7 @@ export interface ProfileDetailDto {
   locationText?: string;
   occupationText?: string;
   isVerified?: boolean;
+  isActive?: boolean;
   profileCompletionPercent?: number;
   lastActiveAt?: string;
   photos?: ProfilePhotoDto[];
@@ -353,6 +358,7 @@ export interface ProfileListItemDto {
   incomeAmount?: number;
   thumbnailUrl?: string;
   isVerified?: boolean;
+  isActive?: boolean;
   isPremiumTenant?: boolean;
   publicDisplayName?: string;
   surname?: string;

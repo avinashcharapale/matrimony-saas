@@ -1,12 +1,12 @@
 import { Route } from '@angular/router';
-import { authGuard } from '@org/core';
+import { adminGuard } from '@org/core';
 
 export const appRoutes: Route[] = [
   {
     path: '',
     loadComponent: () =>
       import('./layout/layout').then((m) => m.Layout),
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
     children: [
       {
         path: '',
@@ -32,6 +32,11 @@ export const appRoutes: Route[] = [
         path: 'profiles/:id',
         loadComponent: () =>
           import('./pages/profile-detail/profile-detail').then((m) => m.ProfileDetail),
+      },
+      {
+        path: 'profiles/:id/edit',
+        loadComponent: () =>
+          import('./pages/edit-profile/edit-profile').then((m) => m.EditProfile),
       },
       {
         path: 'tenants',

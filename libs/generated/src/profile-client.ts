@@ -9,6 +9,7 @@ import {
   ProfileListItemDtoPagedResult,
   ProfileStatsDto,
   CreateProfileDto,
+  SetProfileVerificationRequest,
   GeoStateDto,
   GeoDistrictDto,
   GeoTalukaDto,
@@ -235,6 +236,32 @@ export class ProfileClient {
 
   update(id: number, body: CreateProfileDto): Observable<void> {
     return this.http.put<void>(`/profile/UserProfiles/${id}`, body);
+  }
+
+  activate(id: number): Observable<void> {
+    return this.http.post<void>(`/profile/UserProfiles/${id}/activate`, null);
+  }
+
+  deactivate(id: number): Observable<void> {
+    return this.http.post<void>(`/profile/UserProfiles/${id}/deactivate`, null);
+  }
+
+  setVerification(id: number, request: SetProfileVerificationRequest): Observable<void> {
+    return this.http.post<void>(`/profile/UserProfiles/${id}/verify`, request);
+  }
+
+  uploadProfilePhoto(id: number, slot: number, file: File): Observable<{ photoId: number; photoSlot: number; fileUrl: string; fileName: string }> {
+    const formData = new FormData();
+    formData.append('File', file);
+    formData.append('Slot', String(slot));
+    return this.http.post<{ photoId: number; photoSlot: number; fileUrl: string; fileName: string }>(
+      `/profile/UserProfiles/${id}/photos`,
+      formData,
+    );
+  }
+
+  deleteProfilePhoto(id: number, slot: number): Observable<void> {
+    return this.http.delete<void>(`/profile/UserProfiles/${id}/photos/${slot}`);
   }
 
   updateMyProfile(body: CreateProfileDto): Observable<void> {

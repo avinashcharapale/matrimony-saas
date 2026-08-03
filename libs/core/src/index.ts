@@ -1,4 +1,4 @@
-export { authGuard } from '../../core/auth/src/index';
+export { authGuard, adminGuard } from '../../core/auth/src/index';
 export { authInterceptor } from '../../core/auth/src/index';
 export { tenantInterceptor } from '../../core/tenant/src/index';
 export { correlationInterceptor } from '../../core/correlation/src/index';

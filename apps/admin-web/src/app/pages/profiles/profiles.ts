@@ -29,6 +29,9 @@ interface ProfileRow {
   genderLabel: string;
   locationText?: string;
   verifiedLabel: string;
+  activeLabel: string;
+  isActive?: boolean;
+  isVerified?: boolean;
 }
 
 @Component({
@@ -84,7 +87,8 @@ interface ProfileRow {
                 <th class="sortable" (click)="sort.toggleSort('fullName')">Name <mat-icon class="sort-icon">{{ sort.sortIcon('fullName') }}</mat-icon></th>
                 <th class="sortable" (click)="sort.toggleSort('genderLabel')">Gender <mat-icon class="sort-icon">{{ sort.sortIcon('genderLabel') }}</mat-icon></th>
                 <th class="sortable" (click)="sort.toggleSort('locationText')">City <mat-icon class="sort-icon">{{ sort.sortIcon('locationText') }}</mat-icon></th>
-                <th class="sortable" (click)="sort.toggleSort('verifiedLabel')">Status <mat-icon class="sort-icon">{{ sort.sortIcon('verifiedLabel') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('verifiedLabel')">Verified <mat-icon class="sort-icon">{{ sort.sortIcon('verifiedLabel') }}</mat-icon></th>
+                <th class="sortable" (click)="sort.toggleSort('activeLabel')">Active <mat-icon class="sort-icon">{{ sort.sortIcon('activeLabel') }}</mat-icon></th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -100,8 +104,19 @@ interface ProfileRow {
                       {{ row.verifiedLabel }}
                     </span>
                   </td>
+                  <td>
+                    <span class="status-badge" [class.active]="row.activeLabel === 'Active'" [class.inactive]="row.activeLabel === 'Inactive'">
+                      {{ row.activeLabel }}
+                    </span>
+                  </td>
                   <td class="cell-actions">
-                    <button mat-icon-button title="Delete" (click)="$event.stopPropagation(); confirmDelete(row)" (dblclick)="$event.stopPropagation()">
+                    <button mat-icon-button [title]="row.isActive ? 'Deactivate' : 'Activate'" [disabled]="busy()" (click)="$event.stopPropagation(); toggleActive(row)">
+                      <mat-icon [color]="row.isActive ? 'warn' : 'accent'">{{ row.isActive ? 'pause_circle_outline' : 'play_circle_outline' }}</mat-icon>
+                    </button>
+                    <button mat-icon-button [title]="row.isVerified ? 'Mark as Unverified' : 'Mark as Verified'" [disabled]="busy()" (click)="$event.stopPropagation(); toggleVerified(row)">
+                      <mat-icon [color]="row.isVerified ? 'accent' : undefined">{{ row.isVerified ? 'verified_user' : 'gpp_maybe' }}</mat-icon>
+                    </button>
+                    <button mat-icon-button title="Delete" [disabled]="busy()" (click)="$event.stopPropagation(); confirmDelete(row)" (dblclick)="$event.stopPropagation()">
                       <mat-icon color="warn">delete</mat-icon>
                     </button>
                   </td>
@@ -167,6 +182,8 @@ interface ProfileRow {
     .status-badge.verified { background: #e8f5e9; color: #2e7d32; }
     .status-badge.pending { background: #fff3e0; color: #e65100; }
     .status-badge.expired { background: #fce4ec; color: #c62828; }
+    .status-badge.active { background: #e3f2fd; color: #1565c0; }
+    .status-badge.inactive { background: #f5f5f5; color: #757575; }
   `],
 })
 export class Profiles implements OnInit {
@@ -175,6 +192,7 @@ export class Profiles implements OnInit {
   private readonly dialog = inject(MatDialog);
 
   readonly loading = signal(false);
+  readonly busy = signal(false);
   readonly profiles = signal<ProfileListItemDto[]>([]);
   readonly searchTerm = signal('');
 
@@ -198,6 +216,9 @@ export class Profiles implements OnInit {
       locationText: p.locationText,
       genderLabel: p.genderId === 1 ? 'Male' : p.genderId === 2 ? 'Female' : '-',
       verifiedLabel: p.isVerified ? 'Verified' : 'Pending',
+      activeLabel: p.isActive ? 'Active' : 'Inactive',
+      isActive: p.isActive,
+      isVerified: p.isVerified,
     } as ProfileRow));
   });
 
@@ -214,6 +235,7 @@ export class Profiles implements OnInit {
         case 'genderLabel': cmp = a.genderLabel.localeCompare(b.genderLabel); break;
         case 'locationText': cmp = (a.locationText ?? '').localeCompare(b.locationText ?? ''); break;
         case 'verifiedLabel': cmp = a.verifiedLabel.localeCompare(b.verifiedLabel); break;
+        case 'activeLabel': cmp = a.activeLabel.localeCompare(b.activeLabel); break;
       }
       return dir === 'asc' ? cmp : -cmp;
     });
@@ -246,6 +268,80 @@ export class Profiles implements OnInit {
     if (row.profileId != null) {
       this.router.navigate(['/profiles', row.profileId]);
     }
+  }
+
+  toggleActive(row: ProfileRow): void {
+    const profileId = row.profileId;
+    if (profileId == null) return;
+    const fullName = row.fullName ?? 'Unknown';
+    const activating = !row.isActive;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: activating ? 'Activate Profile' : 'Deactivate Profile',
+        message: activating
+          ? `Activate "${fullName}"? The profile will appear in search results again.`
+          : `Deactivate "${fullName}"? The profile will be hidden from search results and cannot be matched.`,
+        confirmText: activating ? 'Activate' : 'Deactivate',
+        cancelText: 'Cancel',
+      } satisfies ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed || profileId == null) return;
+      this.busy.set(true);
+      const action = activating
+        ? this.profileClient.activate(profileId)
+        : this.profileClient.deactivate(profileId);
+      action.subscribe({
+        next: () => {
+          this.updateRow(profileId, { isActive: activating });
+          this.busy.set(false);
+        },
+        error: () => this.busy.set(false),
+      });
+    });
+  }
+
+  toggleVerified(row: ProfileRow): void {
+    const profileId = row.profileId;
+    if (profileId == null) return;
+    const fullName = row.fullName ?? 'Unknown';
+    const verifying = !row.isVerified;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: verifying ? 'Mark as Verified' : 'Mark as Unverified',
+        message: verifying
+          ? `Mark "${fullName}" as verified?`
+          : `Mark "${fullName}" as unverified?`,
+        confirmText: verifying ? 'Verify' : 'Unverify',
+        cancelText: 'Cancel',
+      } satisfies ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed || profileId == null) return;
+      this.busy.set(true);
+      this.profileClient.setVerification(profileId, { isVerified: verifying }).subscribe({
+        next: () => {
+          this.updateRow(profileId, { isVerified: verifying });
+          this.busy.set(false);
+        },
+        error: () => this.busy.set(false),
+      });
+    });
+  }
+
+  private updateRow(profileId: number, patch: { isActive?: boolean; isVerified?: boolean }): void {
+    this.profiles.update((list) =>
+      list.map((p) => {
+        if (p.profileId !== profileId) return p;
+        const isActive = patch.isActive ?? p.isActive ?? true;
+        const isVerified = patch.isVerified ?? p.isVerified ?? false;
+        return { ...p, isActive, isVerified };
+      }),
+    );
   }
 
   confirmDelete(row: ProfileRow): void {

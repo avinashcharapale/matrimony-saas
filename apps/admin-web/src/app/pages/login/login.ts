@@ -218,7 +218,14 @@ export class Login {
     this.authStore.login(email, password).subscribe((result) => {
       this.isLoading.set(false);
       if (result.ok) {
-        this.router.navigate(['/dashboard']);
+        if (this.authStore.isAdmin()) {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.authStore.clearSession();
+          this.errorMessage.set(
+            'Access denied. Only administrator accounts can sign in to the admin portal.',
+          );
+        }
       } else {
         this.errorMessage.set(result.message);
       }

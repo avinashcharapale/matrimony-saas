@@ -1,10 +1,11 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProfileClient, ProfileDetailDto, SubscriptionClient, SubscriptionStatusDto } from '@org/generated';
-import { StatusBadgeComponent } from '@org/shared-ui';
+import { ConfirmDialogComponent, ConfirmDialogData, StatusBadgeComponent } from '@org/shared-ui';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { switchMap } from 'rxjs/operators';
 
 interface ProfileField {
@@ -21,7 +22,7 @@ interface ProfileSection {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, StatusBadgeComponent],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatDialogModule, StatusBadgeComponent],
   template: `
     <div class="detail-page">
       <div class="detail-header">
@@ -30,6 +31,22 @@ interface ProfileSection {
           <span>Back to Profiles</span>
         </a>
         <h1>{{ profile()?.fullName ?? 'Profile' }}</h1>
+        @if (profile(); as p) {
+          <div class="header-actions">
+            <button mat-stroked-button (click)="goToEdit()">
+              <mat-icon>edit</mat-icon>
+              Edit Profile
+            </button>
+            <button mat-stroked-button [color]="p.isActive ? 'warn' : 'primary'" [disabled]="busy()" (click)="toggleActive()">
+              <mat-icon>{{ p.isActive ? 'pause' : 'play_arrow' }}</mat-icon>
+              {{ p.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
+            <button mat-stroked-button [color]="p.isVerified ? 'warn' : 'primary'" [disabled]="busy()" (click)="toggleVerified()">
+              <mat-icon>{{ p.isVerified ? 'verified_user' : 'gpp_maybe' }}</mat-icon>
+              {{ p.isVerified ? 'Unverify' : 'Verify' }}
+            </button>
+          </div>
+        }
       </div>
 
       @if (loading()) {
@@ -37,18 +54,50 @@ interface ProfileSection {
       } @else if (profile(); as p) {
         <div class="detail-body">
           <aside class="detail-sidebar">
+            <div class="section-card">
+              <div class="section-card-header">
+                <mat-icon class="section-card-icon">manage_accounts</mat-icon>
+                <span>Profile Status</span>
+              </div>
+              <div class="section-card-body">
+                <div class="sc-row">
+                  <span class="sc-label">Verified</span>
+                  <span class="sc-value">
+                    <span class="status-badge" [class.verified]="profile()?.isVerified" [class.pending]="!profile()?.isVerified">
+                      {{ profile()?.isVerified ? 'Verified' : 'Pending' }}
+                    </span>
+                  </span>
+                </div>
+                <div class="sc-row">
+                  <span class="sc-label">Active</span>
+                  <span class="sc-value">
+                    <span class="status-badge" [class.active]="profile()?.isActive" [class.inactive]="!profile()?.isActive">
+                      {{ profile()?.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div class="photos-card">
               <div class="photos-header">
                 <h3>Photos ({{ (p.photos ?? []).length }})</h3>
-                @if (p.photos?.length) {
-                  <button class="view-all-btn" (click)="openGallery(0)">View all</button>
-                }
+                <div class="photos-actions">
+                  @if (p.photos?.length) {
+                    <button class="view-all-btn" (click)="openGallery(0)">View all</button>
+                  }
+                  <button class="view-all-btn" (click)="fileInput.click()">Add photo</button>
+                  <input #fileInput type="file" accept="image/*" class="hidden-file" (change)="onPhotoSelected($event)" />
+                </div>
               </div>
               @if (p.photos?.length) {
                 <div class="photo-grid">
                   @for (photo of p.photos; track photo.photoId; let i = $index) {
-                    <div class="photo-thumb" (click)="openGallery(i)">
+                    <div class="photo-thumb photo-thumb-admin" (click)="openGallery(i)">
                       <img [src]="photo.fileUrl" [alt]="photo.fileName" />
+                      <button class="photo-delete" title="Delete photo" (click)="$event.stopPropagation(); confirmDeletePhoto(photo.photoId!)">
+                        <mat-icon>close</mat-icon>
+                      </button>
                     </div>
                   }
                 </div>
@@ -161,6 +210,9 @@ interface ProfileSection {
     .detail-page { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
     .detail-header { margin-bottom: 1.5rem; }
     .detail-header h1 { font-size: 1.5rem; color: #2c003e; margin: 0.5rem 0 0; }
+    .header-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .header-actions button { font-size: 12px; }
+    .header-actions mat-icon { font-size: 16px; width: 16px; height: 16px; margin-right: 4px; }
     .back-link { display: inline-flex; align-items: center; gap: 4px; color: #7b1fa2; text-decoration: none; font-size: 0.875rem; font-weight: 500; }
     .back-link:hover { text-decoration: underline; }
     .loading-state, .empty-state { padding: 3rem; text-align: center; color: #888; }
@@ -173,10 +225,28 @@ interface ProfileSection {
       background: #fafafa; border: 1px solid #e8e0f0; border-radius: 8px; padding: 14px;
     }
     .photos-card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 600; color: #5c3d7a; text-transform: uppercase; letter-spacing: 0.5px; }
+    .photos-actions { display: flex; align-items: center; gap: 8px; }
+    .hidden-file { display: none; }
     .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-    .photo-thumb { aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #f0ecf3; }
+    .photo-thumb { aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #f0ecf3; position: relative; }
     .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-thumb-admin { cursor: pointer; }
+    .photo-delete {
+      position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,0,0,0.55); border: none; color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; padding: 0;
+    }
+    .photo-delete:hover { background: #c62828; }
+    .photo-delete mat-icon { font-size: 14px; width: 14px; height: 14px; line-height: 14px; }
     .no-photos { text-align: center; color: #bbb; font-size: 13px; padding: 2rem 0; }
+
+    .status-badge {
+      display: inline-block; padding: 2px 10px; border-radius: 9999px;
+      font-size: 0.75rem; font-weight: 600;
+    }
+    .status-badge.verified, .status-badge.active { background: #e8f5e9; color: #2e7d32; }
+    .status-badge.pending { background: #fff3e0; color: #e65100; }
+    .status-badge.inactive { background: #f5f5f5; color: #757575; }
 
     .section-card {
       background: #fafafa; border: 1px solid #e8e0f0; border-radius: 8px;
@@ -258,10 +328,13 @@ interface ProfileSection {
 })
 export class ProfileDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly profileClient = inject(ProfileClient);
   private readonly subscriptionClient = inject(SubscriptionClient);
+  private readonly dialog = inject(MatDialog);
 
   readonly loading = signal(true);
+  readonly busy = signal(false);
   readonly profile = signal<ProfileDetailDto | null>(null);
   readonly userSubscription = signal<SubscriptionStatusDto | null>(null);
   readonly openSections = signal<Set<number>>(new Set([0, 1]));
@@ -450,6 +523,130 @@ export class ProfileDetail implements OnInit {
 
   goToPhoto(index: number): void {
     this.currentGalleryIndex.set(index);
+  }
+
+  goToEdit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id != null) {
+      this.router.navigate(['/profiles', id, 'edit']);
+    }
+  }
+
+  toggleActive(): void {
+    const p = this.profile();
+    if (!p?.profileId) return;
+    const activating = !p.isActive;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: activating ? 'Activate Profile' : 'Deactivate Profile',
+        message: activating
+          ? `Activate "${p.fullName}"? The profile will appear in search results again.`
+          : `Deactivate "${p.fullName}"? The profile will be hidden from search results and cannot be matched.`,
+        confirmText: activating ? 'Activate' : 'Deactivate',
+        cancelText: 'Cancel',
+      } satisfies ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.busy.set(true);
+      const action = activating
+        ? this.profileClient.activate(p.profileId!)
+        : this.profileClient.deactivate(p.profileId!);
+      action.subscribe({
+        next: () => {
+          this.profile.update((cur) => (cur ? { ...cur, isActive: activating } : cur));
+          this.busy.set(false);
+        },
+        error: () => this.busy.set(false),
+      });
+    });
+  }
+
+  toggleVerified(): void {
+    const p = this.profile();
+    if (!p?.profileId) return;
+    const verifying = !p.isVerified;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: verifying ? 'Mark as Verified' : 'Mark as Unverified',
+        message: verifying
+          ? `Mark "${p.fullName}" as verified?`
+          : `Mark "${p.fullName}" as unverified?`,
+        confirmText: verifying ? 'Verify' : 'Unverify',
+        cancelText: 'Cancel',
+      } satisfies ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      this.busy.set(true);
+      this.profileClient.setVerification(p.profileId!, { isVerified: verifying }).subscribe({
+        next: () => {
+          this.profile.update((cur) => (cur ? { ...cur, isVerified: verifying } : cur));
+          this.busy.set(false);
+        },
+        error: () => this.busy.set(false),
+      });
+    });
+  }
+
+  onPhotoSelected(event: Event): void {
+    const p = this.profile();
+    if (!p?.profileId) return;
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    const usedSlots = new Set((p.photos ?? []).map((ph) => ph.photoSlot));
+    let slot = 1;
+    while (usedSlots.has(slot)) slot++;
+    this.busy.set(true);
+    this.profileClient.uploadProfilePhoto(p.profileId, slot, file).subscribe({
+      next: () => {
+        this.busy.set(false);
+        input.value = '';
+        this.reloadProfile();
+      },
+      error: () => {
+        this.busy.set(false);
+        input.value = '';
+      },
+    });
+  }
+
+  confirmDeletePhoto(photoId: number): void {
+    const p = this.profile();
+    if (!p?.profileId) return;
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Photo',
+        message: 'Are you sure you want to delete this photo?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      } satisfies ConfirmDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+      const photo = (p.photos ?? []).find((ph) => ph.photoId === photoId);
+      if (!photo) return;
+      this.busy.set(true);
+      this.profileClient.deleteProfilePhoto(p.profileId!, photo.photoSlot!).subscribe({
+        next: () => {
+          this.busy.set(false);
+          this.reloadProfile();
+        },
+        error: () => this.busy.set(false),
+      });
+    });
+  }
+
+  private reloadProfile(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.profileClient.getById(id).subscribe((detail) => this.profile.set(detail));
   }
 
   getUserSubStatusText(): string {
