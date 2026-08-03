@@ -78,6 +78,12 @@ export const appRoutes: Route[] = [
         canActivate: [authGuard],
       },
       {
+        path: 'payments',
+        loadComponent: () =>
+          import('./pages/payments/payments').then((m) => m.Payments),
+        canActivate: [authGuard],
+      },
+      {
         path: 'gallery',
         loadComponent: () =>
           import('./pages/photo-gallery/photo-gallery').then(

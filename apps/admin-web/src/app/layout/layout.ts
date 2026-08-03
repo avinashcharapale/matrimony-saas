@@ -80,6 +80,10 @@ import { NotificationStore } from '@org/data-access-notification';
             <mat-icon>subscriptions</mat-icon>
             <span>Subscriptions</span>
           </a>
+          <a routerLink="/payments" routerLinkActive="active" class="nav-item">
+            <mat-icon>payments</mat-icon>
+            <span>Payments</span>
+          </a>
         </nav>
         <div class="sidebar-footer">
           <div class="user-info">

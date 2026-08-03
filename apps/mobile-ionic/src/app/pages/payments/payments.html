@@ -1,0 +1,181 @@
+<ion-page>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/home"></ion-back-button>
+      </ion-buttons>
+      <ion-title>Payments</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <div class="payments-container">
+      <ion-segment [value]="activeTab()" (ionChange)="setTab($event.detail.value)">
+        <ion-segment-button value="transactions">Transactions</ion-segment-button>
+        <ion-segment-button value="invoices">Invoices</ion-segment-button>
+        <ion-segment-button value="wallet">Wallet</ion-segment-button>
+      </ion-segment>
+
+      @if (billingStore.loading()) {
+        <ion-card class="empty-state">
+          <ion-card-content><p>Loading...</p></ion-card-content>
+        </ion-card>
+      } @else if (billingStore.error()) {
+        <ion-card class="empty-state">
+          <ion-card-content><p class="error-text">{{ billingStore.error() }}</p></ion-card-content>
+        </ion-card>
+      } @else if (activeTab() === 'transactions') {
+        @if (billingStore.myPaymentHistory().length === 0) {
+          <ion-card class="empty-state">
+            <ion-card-content><p>No payment transactions yet.</p></ion-card-content>
+          </ion-card>
+        } @else {
+          @for (tx of billingStore.myPaymentHistory(); track tx.paymentTransactionId) {
+            <ion-card class="tx-card" button (click)="openDetail(tx.paymentTransactionId ?? 0)">
+              <ion-card-header>
+                <ion-card-title>{{ tx.description || tx.gatewayOrderId || 'Payment' }}</ion-card-title>
+                <ion-card-subtitle>{{ formatDate(tx.createdAt) }}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="tx-row">
+                  <span class="tx-amount">{{ formatCurrency(tx.amount) }}</span>
+                  <span class="badge" [class]="statusClass(tx.status)">{{ tx.status }}</span>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          }
+        }
+      } @else if (activeTab() === 'invoices') {
+        @if (billingStore.myInvoices().length === 0) {
+          <ion-card class="empty-state">
+            <ion-card-content><p>No invoices yet.</p></ion-card-content>
+          </ion-card>
+        } @else {
+          @for (inv of billingStore.myInvoices(); track inv.invoiceId) {
+            <ion-card class="tx-card">
+              <ion-card-header>
+                <ion-card-title>{{ inv.invoiceNumber }}</ion-card-title>
+                <ion-card-subtitle>{{ formatDate(inv.invoiceDate) }}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="tx-row">
+                  <span class="tx-amount">{{ formatCurrency(inv.totalAmount) }}</span>
+                  <span class="badge" [class]="statusClass(inv.status)">{{ inv.status }}</span>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          }
+        }
+      } @else {
+        <ion-card class="empty-state">
+          <ion-card-content>
+            <p class="wallet-balance">
+              Balance: <strong>{{ formatCurrency(billingStore.wallet()?.balance) }}</strong>
+            </p>
+          </ion-card-content>
+        </ion-card>
+        @if (billingStore.walletTransactions().length === 0) {
+          <ion-card class="empty-state">
+            <ion-card-content><p>No wallet transactions.</p></ion-card-content>
+          </ion-card>
+        } @else {
+          @for (wt of billingStore.walletTransactions(); track wt.walletTransactionId) {
+            <ion-card class="tx-card">
+              <ion-card-header>
+                <ion-card-title>{{ wt.transactionType }}</ion-card-title>
+                <ion-card-subtitle>{{ formatDate(wt.createdAt) }}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="tx-row">
+                  <span class="tx-amount">{{ formatCurrency(wt.amount) }}</span>
+                  <span class="tx-desc">{{ wt.description || '' }}</span>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          }
+        }
+      }
+    </div>
+  </ion-content>
+
+  @if (selectedDetail()) {
+    <ion-modal [isOpen]="true" (ionModalDidDismiss)="closeDetail()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Transaction detail</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closeDetail()">Close</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content>
+          <ion-list lines="full">
+            <ion-item>
+              <ion-label>
+                <h2>Status</h2>
+                <p><span class="badge" [class]="statusClass(selectedDetail()?.transaction?.status)">{{ selectedDetail()?.transaction?.status }}</span></p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Amount</h2>
+                <p>{{ formatCurrency(selectedDetail()?.transaction?.amount) }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Date</h2>
+                <p>{{ formatDate(selectedDetail()?.transaction?.createdAt) }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Invoice</h2>
+                <p>{{ selectedDetail()?.transaction?.invoiceNumber || '—' }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Receipt</h2>
+                <p>{{ selectedDetail()?.transaction?.receiptNumber || '—' }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+
+          <ion-item-divider>Attempts</ion-item-divider>
+          <ion-list lines="full">
+            @if (!(selectedDetail()?.attempts?.length)) {
+              <ion-item><ion-label><p>No attempts recorded.</p></ion-label></ion-item>
+            } @else {
+              @for (a of selectedDetail()?.attempts ?? []; track a.paymentAttemptId) {
+                <ion-item>
+                  <ion-label>
+                    <h2>Attempt #{{ a.attemptNumber }}</h2>
+                    <p>{{ formatCurrency(a.amount) }} • {{ a.status }} • {{ formatDate(a.attemptedAt) }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            }
+          </ion-list>
+
+          <ion-item-divider>Refunds</ion-item-divider>
+          <ion-list lines="full">
+            @if (!(selectedDetail()?.refunds?.length)) {
+              <ion-item><ion-label><p>No refunds recorded.</p></ion-label></ion-item>
+            } @else {
+              @for (r of selectedDetail()?.refunds ?? []; track r.refundId) {
+                <ion-item>
+                  <ion-label>
+                    <h2>{{ formatCurrency(r.amount) }}</h2>
+                    <p>{{ r.refundType }} • {{ r.status }} • {{ r.refundReason }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            }
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  }
+</ion-page>

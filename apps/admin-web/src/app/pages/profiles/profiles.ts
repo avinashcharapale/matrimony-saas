@@ -7,8 +7,10 @@ import {
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { ProfileClient, ProfileListItemDto } from '@org/generated';
+import { NotificationService } from '@org/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -30,8 +32,10 @@ interface ProfileRow {
   locationText?: string;
   verifiedLabel: string;
   activeLabel: string;
+  paymentLabel: string;
   isActive?: boolean;
   isVerified?: boolean;
+  hasSuccessfulPayment?: boolean;
 }
 
 @Component({
@@ -89,6 +93,7 @@ interface ProfileRow {
                 <th class="sortable" (click)="sort.toggleSort('locationText')">City <mat-icon class="sort-icon">{{ sort.sortIcon('locationText') }}</mat-icon></th>
                 <th class="sortable" (click)="sort.toggleSort('verifiedLabel')">Verified <mat-icon class="sort-icon">{{ sort.sortIcon('verifiedLabel') }}</mat-icon></th>
                 <th class="sortable" (click)="sort.toggleSort('activeLabel')">Active <mat-icon class="sort-icon">{{ sort.sortIcon('activeLabel') }}</mat-icon></th>
+                <th>Payment</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -107,6 +112,11 @@ interface ProfileRow {
                   <td>
                     <span class="status-badge" [class.active]="row.activeLabel === 'Active'" [class.inactive]="row.activeLabel === 'Inactive'">
                       {{ row.activeLabel }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="status-badge" [class.verified]="row.hasSuccessfulPayment" [class.pending]="!row.hasSuccessfulPayment">
+                      {{ row.paymentLabel }}
                     </span>
                   </td>
                   <td class="cell-actions">
@@ -190,6 +200,7 @@ export class Profiles implements OnInit {
   private readonly profileClient = inject(ProfileClient);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly notifications = inject(NotificationService);
 
   readonly loading = signal(false);
   readonly busy = signal(false);
@@ -217,8 +228,10 @@ export class Profiles implements OnInit {
       genderLabel: p.genderId === 1 ? 'Male' : p.genderId === 2 ? 'Female' : '-',
       verifiedLabel: p.isVerified ? 'Verified' : 'Pending',
       activeLabel: p.isActive ? 'Active' : 'Inactive',
+      paymentLabel: p.hasSuccessfulPayment ? 'Paid' : 'Unpaid',
       isActive: p.isActive,
       isVerified: p.isVerified,
+      hasSuccessfulPayment: p.hasSuccessfulPayment,
     } as ProfileRow));
   });
 
@@ -328,7 +341,12 @@ export class Profiles implements OnInit {
           this.updateRow(profileId, { isVerified: verifying });
           this.busy.set(false);
         },
-        error: () => this.busy.set(false),
+        error: (err: HttpErrorResponse) => {
+          if (err?.status === 409) {
+            this.notifications.error((err.error as { message?: string } | null)?.message ?? 'Profile could not be verified.');
+          }
+          this.busy.set(false);
+        },
       });
     });
   }

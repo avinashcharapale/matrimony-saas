@@ -1,0 +1,90 @@
+.payments-container {
+  padding: 12px;
+}
+
+ion-segment {
+  margin-bottom: 12px;
+}
+
+.empty-state ion-card-content p {
+  text-align: center;
+  color: #888;
+  padding: 8px 0;
+  margin: 0;
+}
+
+.error-text {
+  color: #c0392b;
+}
+
+.tx-card {
+  margin-bottom: 10px;
+}
+
+.tx-card ion-card-title {
+  font-size: 15px;
+}
+
+.tx-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tx-amount {
+  font-weight: 700;
+  font-size: 15px;
+  color: #2c003e;
+}
+
+.tx-desc {
+  color: #888;
+  font-size: 13px;
+}
+
+.wallet-balance {
+  text-align: center;
+  font-size: 16px;
+  color: #2c003e;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+  background: #f0f0f0;
+  color: #444;
+}
+
+.badge.success,
+.badge.completed,
+.badge.paid,
+.badge.succeeded {
+  background: #e4f3e9;
+  color: #1f7c3d;
+}
+
+.badge.failed,
+.badge.failure,
+.badge.cancelled,
+.badge.canceled {
+  background: #fdeaea;
+  color: #c0392b;
+}
+
+.badge.pending,
+.badge.processing,
+.badge.attempted {
+  background: #fff3d6;
+  color: #b7791f;
+}
+
+.badge.refunded,
+.badge.partially_refunded {
+  background: #efe7fb;
+  color: #6b46c1;
+}

@@ -24,6 +24,7 @@ export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
     req.url.startsWith('/subscription') ||
     req.url.startsWith('/match') ||
     req.url.startsWith('/chat') ||
+    req.url.startsWith('/billing') ||
     req.url.startsWith('/gateway') ||
     req.url.startsWith(absoluteApiPrefix) ||
     req.url.startsWith(absoluteProfilePrefix);

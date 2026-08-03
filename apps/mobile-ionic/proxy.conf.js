@@ -34,4 +34,9 @@ module.exports = {
     secure: false,
     changeOrigin: true,
   },
+  '/billing': {
+    target: 'http://127.0.0.1:8000',
+    secure: false,
+    changeOrigin: true,
+  },
 };

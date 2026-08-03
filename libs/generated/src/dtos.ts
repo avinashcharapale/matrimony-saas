@@ -338,6 +338,7 @@ export interface ProfileDetailDto {
 
 export interface ProfileListItemDto {
   profileId?: number;
+  userId?: number;
   profileCode?: string;
   fullName?: string;
   age?: number;
@@ -360,6 +361,7 @@ export interface ProfileListItemDto {
   isVerified?: boolean;
   isActive?: boolean;
   isPremiumTenant?: boolean;
+  hasSuccessfulPayment?: boolean;
   publicDisplayName?: string;
   surname?: string;
   createdAt?: Date;
@@ -1106,6 +1108,165 @@ export interface CheckoutResponseDto {
   startDate?: string;
   endDate?: string;
   amount?: number;
+}
+
+export interface PaymentAttemptDto {
+  paymentAttemptId?: number;
+  paymentTransactionId?: number;
+  attemptNumber?: number;
+  amount?: number;
+  gatewayPaymentId?: string;
+  status?: string;
+  gatewayResponseCode?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  attemptedAt?: string;
+}
+
+export interface RefundDto {
+  refundId?: number;
+  paymentTransactionId?: number;
+  invoiceId?: number;
+  amount?: number;
+  refundReason?: string;
+  refundType?: string;
+  status?: string;
+  gatewayRefundId?: string;
+  approvedAt?: string;
+  completedAt?: string;
+}
+
+export interface InvoiceItemDto {
+  invoiceItemId?: number;
+  invoiceId?: number;
+  description?: string;
+  quantity?: number;
+  unitPrice?: number;
+  lineTotal?: number;
+  taxRate?: number;
+  taxAmount?: number;
+  discountAmount?: number;
+  itemType?: string;
+  referenceId?: string;
+}
+
+export interface ReceiptDto {
+  receiptId?: number;
+  receiptNumber?: string;
+  invoiceId?: number;
+  paymentTransactionId?: number;
+  receiptDate?: string;
+  amount?: number;
+  receiptPdfUrl?: string;
+}
+
+export interface InvoiceDto {
+  invoiceId?: number;
+  invoiceNumber?: string;
+  tenantId?: number;
+  userId?: number;
+  userSubscriptionId?: number;
+  invoiceType?: string;
+  status?: string;
+  currencyCode?: string;
+  subTotal?: number;
+  taxAmount?: number;
+  discountAmount?: number;
+  totalAmount?: number;
+  amountPaid?: number;
+  amountDue?: number;
+  billingPeriodStart?: string;
+  billingPeriodEnd?: string;
+  invoiceDate?: string;
+  dueDate?: string;
+  paidAt?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+  invoicePdfUrl?: string;
+  items?: InvoiceItemDto[];
+  receipts?: ReceiptDto[];
+}
+
+export interface PaymentTransactionHistoryDto {
+  paymentTransactionId?: number;
+  tenantId?: number;
+  userId?: number;
+  userSubscriptionId?: number;
+  invoiceId?: number;
+  amount?: number;
+  currencyCode?: string;
+  paymentGatewayId?: number;
+  gatewayPaymentId?: string;
+  gatewayOrderId?: string;
+  status?: string;
+  idempotencyKey?: string;
+  description?: string;
+  createdAt?: string;
+  succeededAt?: string;
+  failedAt?: string;
+  failureReason?: string;
+  failureCode?: string;
+  refundedAmount?: number;
+  invoiceNumber?: string;
+  receiptNumber?: string;
+}
+
+export interface PaymentTransactionDetailDto {
+  transaction?: PaymentTransactionHistoryDto;
+  attempts?: PaymentAttemptDto[];
+  refunds?: RefundDto[];
+  invoice?: InvoiceDto;
+  receipt?: ReceiptDto;
+}
+
+export interface PaymentHistorySearchRequest {
+  userId?: number;
+  status?: string;
+  pageNumber?: number;
+  pageSize?: number;
+}
+
+export interface PaymentTransactionHistoryDtoPagedResult {
+  items?: PaymentTransactionHistoryDto[];
+  totalCount?: number;
+  pageNumber?: number;
+  pageSize?: number;
+}
+
+export interface PaymentMethodDto {
+  paymentMethodId?: number;
+  userId?: number;
+  paymentGatewayId?: number;
+  methodType?: string;
+  displayName?: string;
+  expiryMonth?: number;
+  expiryYear?: number;
+  cardLastFour?: string;
+  cardBrand?: string;
+  isDefault?: boolean;
+  isActive?: boolean;
+}
+
+export interface WalletDto {
+  walletId?: number;
+  tenantId?: number;
+  userId?: number;
+  currencyCode?: string;
+  balance?: number;
+  lifetimeCredits?: number;
+}
+
+export interface WalletTransactionDto {
+  walletTransactionId?: number;
+  walletId?: number;
+  transactionType?: string;
+  amount?: number;
+  balanceBefore?: number;
+  balanceAfter?: number;
+  referenceType?: string;
+  referenceId?: number;
+  description?: string;
+  createdAt?: string;
 }
 
 // ─── Geo DTOs ─────────────────────────────────────────────────────────────────

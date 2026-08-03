@@ -1,11 +1,14 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ProfileClient, ProfileDetailDto, SubscriptionClient, SubscriptionStatusDto } from '@org/generated';
+import { ProfileClient, ProfileDetailDto, SubscriptionClient, SubscriptionStatusDto, PaymentTransactionHistoryDto, InvoiceDto } from '@org/generated';
+import { BillingRepository } from '@org/data-access-billing';
+import { NotificationService } from '@org/core';
 import { ConfirmDialogComponent, ConfirmDialogData, StatusBadgeComponent } from '@org/shared-ui';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
 
 interface ProfileField {
@@ -73,6 +76,14 @@ interface ProfileSection {
                   <span class="sc-value">
                     <span class="status-badge" [class.active]="profile()?.isActive" [class.inactive]="!profile()?.isActive">
                       {{ profile()?.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </span>
+                </div>
+                <div class="sc-row">
+                  <span class="sc-label">Payment</span>
+                  <span class="sc-value">
+                    <span class="status-badge" [class.verified]="hasSuccessfulPayment()" [class.pending]="!hasSuccessfulPayment()">
+                      {{ hasSuccessfulPayment() ? 'Paid' : 'Unpaid' }}
                     </span>
                   </span>
                 </div>
@@ -176,6 +187,60 @@ interface ProfileSection {
                 }
               </div>
             }
+
+            <div class="section-card">
+              <div class="section-card-header">
+                <mat-icon class="section-card-icon">payments</mat-icon>
+                <span>Payment History</span>
+              </div>
+              <div class="section-card-body">
+                @if (paymentsLoading()) {
+                  <div class="sc-empty">Loading payments...</div>
+                } @else if (userPayments().length === 0) {
+                  <div class="sc-empty">
+                    <mat-icon>info_outline</mat-icon>
+                    <span>No payment transactions</span>
+                  </div>
+                } @else {
+                  <div class="pmt-table">
+                    <div class="pmt-table-row pmt-table-head">
+                      <span>Date</span>
+                      <span>Description</span>
+                      <span>Amount</span>
+                      <span>Status</span>
+                    </div>
+                    @for (tx of userPayments(); track tx.paymentTransactionId) {
+                      <div class="pmt-table-row">
+                        <span>{{ formatDate(tx.createdAt) }}</span>
+                        <span>{{ tx.description || tx.gatewayOrderId || 'Payment' }}</span>
+                        <span>{{ formatCurrency(tx.amount) }}</span>
+                        <span><ui-status-badge [status]="statusText(tx.status)"></ui-status-badge></span>
+                      </div>
+                    }
+                  </div>
+                }
+                @if (userInvoices().length > 0) {
+                  <div class="pmt-divider"></div>
+                  <div class="sc-features-title">Invoices</div>
+                  <div class="pmt-table">
+                    <div class="pmt-table-row pmt-table-head">
+                      <span>Invoice</span>
+                      <span>Date</span>
+                      <span>Status</span>
+                      <span>Amount</span>
+                    </div>
+                    @for (inv of userInvoices(); track inv.invoiceId) {
+                      <div class="pmt-table-row">
+                        <span>{{ inv.invoiceNumber }}</span>
+                        <span>{{ formatDate(inv.invoiceDate) }}</span>
+                        <span><ui-status-badge [status]="statusText(inv.status)"></ui-status-badge></span>
+                        <span>{{ formatCurrency(inv.totalAmount) }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
           </main>
         </div>
       } @else {
@@ -277,6 +342,11 @@ interface ProfileSection {
     .sc-feature-row { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #555; }
     .sc-feature-icon { font-size: 14px; width: 14px; height: 14px; color: #388e3c; }
     .sc-empty { display: flex; align-items: center; gap: 6px; color: #999; font-size: 12px; }
+    .pmt-table { display: flex; flex-direction: column; margin-top: 6px; }
+    .pmt-table-row { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid #f0ecf3; font-size: 12px; color: #333; align-items: center; }
+    .pmt-table-row:last-child { border-bottom: none; }
+    .pmt-table-head { color: #7b1fa2; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; font-size: 10px; }
+    .pmt-divider { height: 1px; background: #e8e0f0; margin: 8px 0; }
 
     .photos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .photos-header h3 { margin: 0; font-size: 13px; font-weight: 600; color: #5c3d7a; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -331,15 +401,24 @@ export class ProfileDetail implements OnInit {
   private readonly router = inject(Router);
   private readonly profileClient = inject(ProfileClient);
   private readonly subscriptionClient = inject(SubscriptionClient);
+  private readonly billing = inject(BillingRepository);
   private readonly dialog = inject(MatDialog);
+  private readonly notifications = inject(NotificationService);
 
   readonly loading = signal(true);
   readonly busy = signal(false);
   readonly profile = signal<ProfileDetailDto | null>(null);
   readonly userSubscription = signal<SubscriptionStatusDto | null>(null);
+  readonly userPayments = signal<PaymentTransactionHistoryDto[]>([]);
+  readonly userInvoices = signal<InvoiceDto[]>([]);
+  readonly paymentsLoading = signal(false);
   readonly openSections = signal<Set<number>>(new Set([0, 1]));
   readonly isGalleryOpen = signal(false);
   readonly currentGalleryIndex = signal(0);
+
+  readonly hasSuccessfulPayment = computed(() =>
+    this.userPayments().some((p) => (p.status ?? '').toLowerCase() === 'success'),
+  );
 
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
@@ -480,6 +559,7 @@ export class ProfileDetail implements OnInit {
             next: (sub) => this.userSubscription.set(sub),
             error: () => this.userSubscription.set(null),
           });
+          this.loadPayments(detail.userId);
         }
       },
       error: () => this.loading.set(false),
@@ -588,7 +668,12 @@ export class ProfileDetail implements OnInit {
           this.profile.update((cur) => (cur ? { ...cur, isVerified: verifying } : cur));
           this.busy.set(false);
         },
-        error: () => this.busy.set(false),
+        error: (err: HttpErrorResponse) => {
+          if (err?.status === 409) {
+            this.notifications.error((err.error as { message?: string } | null)?.message ?? 'Profile could not be verified.');
+          }
+          this.busy.set(false);
+        },
       });
     });
   }
@@ -656,6 +741,29 @@ export class ProfileDetail implements OnInit {
     if (s.isActive) return 'Active';
     if (s.isExpired) return 'Expired';
     return 'Inactive';
+  }
+
+  private loadPayments(userId: number): void {
+    this.paymentsLoading.set(true);
+    this.billing.getUserPaymentTransactions(userId).subscribe({
+      next: (payments) => {
+        this.userPayments.set(payments ?? []);
+        this.paymentsLoading.set(false);
+      },
+      error: () => this.paymentsLoading.set(false),
+    });
+    this.billing.getUserInvoices(userId).subscribe({
+      next: (invoices) => this.userInvoices.set(invoices ?? []),
+      error: () => this.userInvoices.set([]),
+    });
+  }
+
+  statusText(status?: string): string {
+    return status ?? 'Unknown';
+  }
+
+  formatCurrency(amount?: number): string {
+    return `₹${(amount ?? 0).toFixed(2)}`;
   }
 
   formatDate(dateStr?: string | null): string {
