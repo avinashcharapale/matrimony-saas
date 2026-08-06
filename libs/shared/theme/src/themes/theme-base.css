@@ -26,6 +26,9 @@
   --theme-surface: var(--surface-card);
   --theme-surface-raised: var(--color-white);
   --theme-surface-soft: var(--surface-soft);
+  --theme-surface-subtle: color-mix(in srgb, var(--tenant-bg-mid) 72%, var(--color-white) 28%);
+  --theme-surface-overlay: var(--surface-overlay);
+  --theme-accent-soft: color-mix(in srgb, var(--tenant-primary) 10%, var(--color-white));
   --theme-border: var(--border-soft);
   --theme-border-strong: var(--border-strong);
   --theme-text: var(--text-strong);

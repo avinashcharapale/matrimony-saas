@@ -8,7 +8,6 @@
 @import '@ionic/angular/css/text-transformation.css';
 @import '@ionic/angular/css/flex-utils.css';
 @import '@ionic/angular/css/display.css';
-@import '../../../libs/shared-ui/src/themes/tenant-themes.css';
 
 ion-app,
 ion-page,

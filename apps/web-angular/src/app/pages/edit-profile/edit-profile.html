@@ -1,4 +1,14 @@
-<section class="edit-profile-page">
+<section class="search-page">
+  <div class="search-shell">
+    <app-shared-sidebar
+      [userName]="userName()"
+      [userPhotoUrl]="userPhotoUrl()"
+      [userOccupation]="userOccupation()"
+      [subscriptionStatus]="subscriptionStatus()"
+      [subscriptionLoading]="subscriptionLoading()">
+    </app-shared-sidebar>
+
+    <div class="search-main">
   <div class="page-header">
     <h1>Edit Profile</h1>
     <a routerLink="/my-profile" class="back-link">&larr; Back to My Profile</a>
@@ -731,4 +741,6 @@
   </form>
   </div>
   }
+    </div>
+  </div>
 </section>

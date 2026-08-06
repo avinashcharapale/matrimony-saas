@@ -9,7 +9,7 @@
   background: var(--surface-card);
   border: 1px solid var(--border-soft);
   border-radius: 1rem;
-  box-shadow: 0 6px 18px rgba(24, 20, 16, 0.06);
+  box-shadow: var(--theme-shadow-sm);
 }
 
 .app-header.authenticated {
@@ -319,12 +319,22 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-y: auto;
     pointer-events: none;
-    padding-top: 4.5rem;
   }
 
   .public-mobile-drawer.open {
     transform: translateX(0);
     pointer-events: auto;
+  }
+
+  .drawer-brand {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .drawer-brand .brand-title {
+    font-size: 1.02rem;
   }
 
   .public-drawer-nav {

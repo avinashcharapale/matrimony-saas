@@ -2,6 +2,18 @@
   <button type="button" class="sidebar-close-btn" (click)="closeSidebar()" aria-label="Close sidebar">
     &#10005;
   </button>
+  <a routerLink="/home" class="sidebar-brand-link" (click)="closeSidebar()">
+    <div class="sidebar-brand-icon">
+      @if (tenant.logoUrl) {
+      <img [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" class="sidebar-brand-icon-img" />
+      } @else {
+      <span>{{ tenant.logoEmoji || '🌼' }}</span>
+      }
+    </div>
+    <div>
+      <p class="sidebar-brand-title">{{ tenant.displayName }}</p>
+    </div>
+  </a>
   <div class="sidebar-brand">
     <img
       class="brand-photo"
@@ -19,6 +31,7 @@
   <nav class="sidebar-nav">
     <a routerLink="/home"             routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8962;</span><span>Dashboard</span></a>
     <a routerLink="/my-profile"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128100;</span><span>My Profile</span></a>
+    <a routerLink="/my-photos"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128247;</span><span>My Photos</span></a>
     <a routerLink="/profiles"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8981;</span><span>Search Matches</span></a>
     <a routerLink="/interests"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9825;</span><span>Interests</span></a>
     <a routerLink="/shortlists"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9733;</span><span>Shortlists</span></a>

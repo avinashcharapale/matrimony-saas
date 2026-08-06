@@ -6,7 +6,7 @@ import { LandingRecentProfilesComponent } from './landing-recent-profiles.compon
 import { LandingTrustComponent } from './landing-trust.component';
 import { LandingCtaFooterComponent } from './landing-cta-footer.component';
 import { FeatureItem, ProfileItem, StatItem, TrustCardItem } from '../landing.models';
-import { TenantLandingContent } from '../../../services/tenant-config';
+import { TenantLandingContent } from '@org/tenant-config';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

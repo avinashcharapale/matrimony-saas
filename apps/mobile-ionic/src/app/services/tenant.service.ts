@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { catchError, map, of } from 'rxjs';
 import { TenantStore } from '@org/data-access-tenant';
 import { TenantResolveResponse } from '@org/generated';
-import { resolveTenant, TenantConfig, THEME_PALETTES, ThemePalette } from './tenant-config';
+import { resolveTenant, TenantConfig, THEME_PALETTES, ThemePalette } from '@org/tenant-config';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,11 @@ export class TenantService {
   private readonly store = inject(TenantStore);
 
   constructor() {
-    this.currentTenant = resolveTenant(window.location.hostname, window.location.search);
+    this.currentTenant = resolveTenant(
+      window.location.hostname,
+      window.location.search,
+      'anand-maratha',
+    );
     this.applyTheme(this.currentTenant);
   }
 

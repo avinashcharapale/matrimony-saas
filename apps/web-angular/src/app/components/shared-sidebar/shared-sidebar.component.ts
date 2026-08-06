@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, EventEmitter, Input, Output, inject
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { SidebarService } from '../../services/sidebar.service';
+import { TenantService } from '../../services/tenant.service';
 import { SubscriptionStatusDto } from '@org/generated';
 import { SubscriptionStatusCardComponent } from '../../pages/home/components/subscription-status-card.component';
 
@@ -22,7 +23,9 @@ export class SharedSidebarComponent {
 
   private readonly authService = inject(AuthService);
   private readonly sidebarService = inject(SidebarService);
+  private readonly tenantService = inject(TenantService);
 
+  readonly tenant = this.tenantService.tenant;
   readonly isOpen = this.sidebarService.isOpen;
 
   closeSidebar(): void {

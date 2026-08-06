@@ -40,7 +40,8 @@
       "@org/core-tenant": ["libs/core/tenant/src/index.ts"],
       "@org/generated": ["libs/generated/src/index.ts"],
       "@org/shared-utils": ["libs/shared/utils/src/index.ts"],
-      "@org/shared-ui": ["libs/shared/ui/src/index.ts"]
+      "@org/shared-ui": ["libs/shared/ui/src/index.ts"],
+      "@org/tenant-config": ["libs/shared/tenant-config/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

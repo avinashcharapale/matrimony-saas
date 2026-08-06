@@ -6,7 +6,7 @@ import {
   TenantConfig,
   THEME_PALETTES,
   ThemePalette,
-} from './tenant-config';
+} from '@org/tenant-config';
 
 function resolveTenantHost(): string {
   return globalThis.location?.hostname ?? '';

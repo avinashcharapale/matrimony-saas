@@ -54,6 +54,12 @@ export const appRoutes: Route[] = [
         canActivate: [authGuard],
       },
       {
+        path: 'my-photos',
+        loadComponent: () =>
+          import('./pages/my-photos/my-photos').then((m) => m.MyPhotos),
+        canActivate: [authGuard],
+      },
+      {
         path: 'interests',
         loadComponent: () =>
           import('./pages/interests/interests').then((m) => m.Interests),

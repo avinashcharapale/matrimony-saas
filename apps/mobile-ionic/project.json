@@ -19,7 +19,10 @@
             "input": "apps/mobile-ionic/public"
           }
         ],
-        "styles": ["apps/mobile-ionic/src/styles.css"]
+        "styles": [
+          "apps/mobile-ionic/src/styles.css",
+          "libs/shared/theme/src/themes/theme-base.css"
+        ]
       },
       "configurations": {
         "production": {

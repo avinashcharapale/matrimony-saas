@@ -54,7 +54,7 @@ const SETTINGS_KEY = 'matrimony_user_settings';
                   [attr.aria-checked]="activeThemeId() === theme.id"
                   role="radio"
                   (click)="selectTheme(theme.id)">
-                  <span [class]="'theme-swatch ' + theme.id" aria-hidden="true"></span>
+                  <span class="theme-swatch" [style.background]="'linear-gradient(135deg, ' + theme.primary + ', ' + theme.accent + ')'" aria-hidden="true"></span>
                   <span class="theme-option-copy">
                     <strong>{{ theme.name }}</strong>
                     <span>{{ theme.id === activeThemeId() ? 'Active theme' : 'Use this theme' }}</span>

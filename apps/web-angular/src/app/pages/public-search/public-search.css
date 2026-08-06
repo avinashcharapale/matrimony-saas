@@ -369,8 +369,8 @@
 }
 
 .btn-clear:hover {
-  border-color: #e5a0a0;
-  color: #b91c1c;
+  border-color: var(--theme-danger-border);
+  color: var(--theme-danger);
 }
 
 .btn-apply {
@@ -722,9 +722,9 @@
 }
 
 .detail-close:hover {
-  border-color: #e5a0a0;
-  color: #b91c1c;
-  background: #fef2f2;
+  border-color: var(--theme-danger-border);
+  color: var(--theme-danger);
+  background: var(--theme-danger-background);
 }
 
 .detail-photo-wrap {
@@ -749,9 +749,9 @@
   gap: 0.3rem;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #16a34a;
-  background: #dcfce7;
-  border: 1px solid #bbf7d0;
+  color: var(--theme-success);
+  background: var(--theme-success-background);
+  border: 1px solid var(--theme-success-border);
   border-radius: 999px;
   padding: 0.2rem 0.7rem;
 }

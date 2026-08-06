@@ -83,7 +83,7 @@ export class PlansPage implements OnInit {
   }
 
   goToProfiles(): void {
-    this.router.navigate(['/profiles']);
+    this.router.navigate(['/search']);
   }
 
   formatPrice(price?: number): string {

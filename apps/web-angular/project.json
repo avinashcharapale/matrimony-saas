@@ -19,7 +19,10 @@
             "input": "apps/web-angular/public"
           }
         ],
-        "styles": ["apps/web-angular/src/styles.css"]
+        "styles": [
+          "apps/web-angular/src/styles.css",
+          "libs/shared/theme/src/themes/theme-base.css"
+        ]
       },
       "configurations": {
         "production": {

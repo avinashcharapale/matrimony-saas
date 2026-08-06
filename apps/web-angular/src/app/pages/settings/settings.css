@@ -97,18 +97,6 @@ h2 {
   border-radius: 0.7rem;
 }
 
-.theme-swatch.warm-ivory {
-  background: linear-gradient(135deg, #a85436, #ca8a66);
-}
-
-.theme-swatch.royal-indigo {
-  background: linear-gradient(135deg, #4d56d6, #66a7ff);
-}
-
-.theme-swatch.emerald-sand {
-  background: linear-gradient(135deg, #17776d, #46bda8);
-}
-
 .theme-option-copy {
   display: grid;
   gap: 0.15rem;

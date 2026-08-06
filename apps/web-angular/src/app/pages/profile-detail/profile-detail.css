@@ -1,6 +1,6 @@
 .profile-detail-page {
   min-height: 100vh;
-  background: #f5f3f0;
+  background: var(--theme-page-background);
   padding: 1.5rem;
 }
 
@@ -21,11 +21,11 @@
 }
 
 .photo-section {
-  background: #fff;
-  border: 1px solid #ece0d8;
+  background: var(--theme-surface-raised);
+  border: 1px solid var(--theme-border);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--theme-shadow-sm);
 }
 
 .profile-main-photo {
@@ -40,7 +40,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   padding: 0.75rem;
-  background: #faf8f6;
+  background: var(--theme-surface-soft);
 }
 
 .photo-thumbnails img {
@@ -57,8 +57,8 @@
 }
 
 .member-header {
-  background: #fff;
-  border: 1px solid #ece0d8;
+  background: var(--theme-surface-raised);
+  border: 1px solid var(--theme-border);
   border-radius: 12px;
   padding: 1rem;
   text-align: center;
@@ -67,13 +67,13 @@
 .member-header h1 {
   margin: 0;
   font-size: 1.3rem;
-  color: #1f2230;
+  color: var(--theme-text);
   font-weight: 600;
 }
 
 .member-surname {
   font-weight: 700;
-  color: #9a5e45;
+  color: var(--tenant-primary);
 }
 
 .member-details {
@@ -92,14 +92,14 @@
 .member-label {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #9a5e45;
+  color: var(--tenant-primary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .member-value {
   font-size: 0.85rem;
-  color: #3d3f4e;
+  color: var(--theme-text);
   font-weight: 500;
 }
 
@@ -114,16 +114,16 @@
 .tag {
   font-size: 0.68rem;
   font-weight: 600;
-  color: #6d7285;
-  background: #f4ede8;
-  border: 1px solid #ece0d8;
+  color: var(--theme-text-muted);
+  background: var(--theme-surface-soft);
+  border: 1px solid var(--theme-border);
   border-radius: 999px;
   padding: 0.12rem 0.5rem;
 }
 
 .connect-button {
-  background: #9a5e45;
-  color: #fff;
+  background: var(--tenant-primary);
+  color: var(--on-primary);
   border: none;
   border-radius: 8px;
   padding: 0.85rem 1rem;
@@ -135,7 +135,7 @@
 }
 
 .connect-button:hover:not(:disabled) {
-  background: #7d4a37;
+  background: var(--tenant-accent);
 }
 
 .connect-button:disabled {
@@ -144,18 +144,18 @@
 }
 
 .connect-button.sent {
-  background: #6b8f71;
+  background: var(--theme-success);
 }
 
 .connect-button.declined {
-  background: #b0b0b0;
-  color: #fff;
+  background: var(--theme-text-subtle);
+  color: var(--on-primary);
 }
 
 .shortlist-button {
   background: transparent;
-  color: #9a5e45;
-  border: 2px solid #9a5e45;
+  color: var(--tenant-primary);
+  border: 2px solid var(--tenant-primary);
   border-radius: 8px;
   padding: 0.65rem 1rem;
   font-size: 0.85rem;
@@ -166,7 +166,7 @@
 }
 
 .shortlist-button:hover:not(:disabled) {
-  background: #f4ede8;
+  background: var(--theme-surface-soft);
 }
 
 .shortlist-button:disabled {
@@ -175,18 +175,18 @@
 }
 
 .shortlist-button.active {
-  background: #9a5e45;
-  color: #fff;
+  background: var(--tenant-primary);
+  color: var(--on-primary);
 }
 
 .shortlist-button.active:hover:not(:disabled) {
-  background: #7d4a37;
+  background: var(--tenant-accent);
 }
 
 .unlock-hint {
   margin: 0;
   font-size: 0.8rem;
-  color: #9a8f86;
+  color: var(--theme-text-subtle);
   text-align: center;
   font-style: italic;
 }
@@ -194,7 +194,7 @@
 .interest-error {
   margin: 0.4rem 0 0;
   font-size: 0.8rem;
-  color: #e74c3c;
+  color: var(--theme-danger);
   text-align: center;
   line-height: 1.3;
 }
@@ -208,21 +208,21 @@
 }
 
 .detail-section {
-  background: #fff;
-  border: 1px solid #ece0d8;
+  background: var(--theme-surface-raised);
+  border: 1px solid var(--theme-border);
   border-radius: 12px;
   padding: 1.2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--theme-shadow-sm);
 }
 
 .section-title {
   margin: 0 0 1rem;
   font-size: 0.95rem;
-  color: #3d3d3d;
+  color: var(--theme-text);
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  border-bottom: 2px solid #f0ede8;
+  border-bottom: 2px solid var(--theme-border);
   padding-bottom: 0.7rem;
 }
 
@@ -240,7 +240,7 @@
 
 .field-label {
   font-size: 0.75rem;
-  color: #9a8f86;
+  color: var(--theme-text-subtle);
   font-weight: 600;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -248,13 +248,13 @@
 
 .field-value {
   font-size: 0.9rem;
-  color: #1f2230;
+  color: var(--theme-text);
   font-weight: 500;
 }
 
 .field-value:empty::before {
   content: '-';
-  color: #bbb;
+  color: var(--theme-text-subtle);
 }
 
 /* Footer */
@@ -262,14 +262,14 @@
   text-align: center;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #ece0d8;
+  border-top: 1px solid var(--theme-border);
 }
 
 .back-link {
   display: inline-block;
   padding: 0.7rem 1.2rem;
-  background: #f5f3f0;
-  color: #4f566b;
+  background: var(--theme-surface-soft);
+  color: var(--theme-text);
   text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
@@ -278,13 +278,13 @@
 }
 
 .back-link:hover {
-  background: #ebe5de;
+  background: var(--theme-border);
 }
 
 .empty {
   text-align: center;
   padding: 2rem;
-  background: #fff;
+  background: var(--theme-surface-raised);
   border-radius: 12px;
 }
 
@@ -470,7 +470,7 @@
 }
 
 .dot.active {
-  background: #9a5e45;
+  background: var(--tenant-primary);
 }
 
 .dot:hover:not(.active) {
@@ -505,12 +505,12 @@
 
 .upgrade-modal {
   position: relative;
-  background: #fff;
+  background: var(--theme-surface-raised);
   border-radius: 12px;
   padding: 2rem;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--theme-shadow-md);
   text-align: center;
 }
 
@@ -521,33 +521,33 @@
   background: none;
   border: none;
   font-size: 1.2rem;
-  color: #9a8f86;
+  color: var(--theme-text-subtle);
   cursor: pointer;
   padding: 0.25rem;
   line-height: 1;
 }
 
 .upgrade-close:hover {
-  color: #3d3d3d;
+  color: var(--theme-text);
 }
 
 .upgrade-content h2 {
   margin: 0 0 0.75rem;
   font-size: 1.2rem;
-  color: #1f2230;
+  color: var(--theme-text);
 }
 
 .upgrade-content p {
   margin: 0 0 1.5rem;
   font-size: 0.9rem;
-  color: #6d7285;
+  color: var(--theme-text-muted);
   line-height: 1.5;
 }
 
 .upgrade-cta {
   display: inline-block;
-  background: #9a5e45;
-  color: #fff;
+  background: var(--tenant-primary);
+  color: var(--on-primary);
   border: none;
   border-radius: 8px;
   padding: 0.75rem 2rem;
@@ -560,19 +560,19 @@
 }
 
 .upgrade-cta:hover {
-  background: #7d4a37;
+  background: var(--tenant-accent);
 }
 
 .upgrade-cancel {
   display: inline-block;
   background: none;
   border: none;
-  color: #9a8f86;
+  color: var(--theme-text-subtle);
   font-size: 0.85rem;
   cursor: pointer;
   padding: 0.5rem;
 }
 
 .upgrade-cancel:hover {
-  color: #3d3d3d;
+  color: var(--theme-text);
 }

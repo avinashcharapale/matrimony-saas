@@ -15,12 +15,17 @@ import {
 import { ProfileDetailDto, CreateProfileDto } from '@org/generated';
 import { Subscription, forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
+import { SubscriptionStore } from '@org/data-access-subscription';
+import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
+import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
+import { computed } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-edit-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, SharedSidebarComponent],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.css',
 })
@@ -29,6 +34,14 @@ export class EditProfile implements OnInit {
   private readonly masterData = inject(RegisterMasterDataService);
   private readonly router = inject(Router);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly authService = inject(AuthService);
+  private readonly subscriptionStore = inject(SubscriptionStore);
+
+  readonly userName = signal('');
+  readonly userPhotoUrl = signal('');
+  readonly userOccupation = signal('');
+  readonly subscriptionStatus = this.subscriptionStore.status;
+  readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
 
   readonly isLoading = signal(true);
   readonly isSaving = signal(false);
@@ -198,6 +211,10 @@ export class EditProfile implements OnInit {
   get horoscope() { return this.profileForm.get('horoscope') as FormGroup; }
 
   ngOnInit(): void {
+    const userId = this.authService.getSession()?.userId ?? 0;
+    if (userId) {
+      this.subscriptionStore.loadSubscriptionStatus(userId).subscribe();
+    }
     this.loadLookups();
     this.loadProfile();
   }
@@ -536,12 +553,28 @@ export class EditProfile implements OnInit {
     this.memberService.getMyProfile().pipe(
       finalize(() => { this.isLoading.set(false); this.cdr.detectChanges(); })
     ).subscribe({
-      next: (profile) => this.populateForm(profile),
+      next: (profile) => {
+        this.populateForm(profile);
+        this.populateSidebar(profile);
+      },
       error: (err) => {
         console.error('Failed to load profile:', err);
         this.error.set('Failed to load profile. Please try again.');
       },
     });
+  }
+
+  private populateSidebar(profile: ProfileDetailDto): void {
+    const fullName = profile.fullName ?? '';
+    const genderId = profile.personalDetails?.genderId ?? null;
+    const primaryPhoto = (profile.photos ?? []).find(ph => ph.isPrimary) ?? profile.photos?.[0];
+    this.userName.set(fullName);
+    this.userPhotoUrl.set(
+      primaryPhoto
+        ? resolvePhotoUrl(primaryPhoto.fileUrl, fullName, genderId)
+        : getDefaultAvatar(fullName, genderId),
+    );
+    this.userOccupation.set(profile.occupationText ?? '');
   }
 
   private populateForm(profile: ProfileDetailDto): void {

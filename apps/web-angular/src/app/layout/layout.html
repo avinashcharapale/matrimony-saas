@@ -71,6 +71,21 @@
 } @else {
   <div class="sidebar-backdrop" [class.visible]="sidebarOpen()" (click)="closeMobileMenu()"></div>
   <div class="public-mobile-drawer" [class.open]="sidebarOpen()">
+    <div class="drawer-brand">
+      <a routerLink="/" class="brand-link" (click)="closeMobileMenu()">
+        <div class="brand-icon">
+          @if (tenant.logoUrl) {
+          <img [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" class="brand-icon-img" />
+          } @else {
+          <span>{{ tenant.logoEmoji || '🌼' }}</span>
+          }
+        </div>
+        <div>
+          <p class="brand-title">{{ tenant.displayName }}</p>
+          <p class="brand-subtitle">{{ tenant.tagline }}</p>
+        </div>
+      </a>
+    </div>
     <nav class="public-drawer-nav">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Home</a>
       <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>

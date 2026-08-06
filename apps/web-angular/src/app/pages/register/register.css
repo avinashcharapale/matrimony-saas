@@ -177,7 +177,7 @@
 }
 
 .form-field input::placeholder {
-  color: #9ca3af;
+  color: var(--theme-text-subtle);
 }
 
 /* Grouped inputs for date, height, time */
@@ -464,14 +464,14 @@ section {
   max-width: 1080px;
   margin: 0 auto;
   padding: 1.4rem;
-  background: #fffdfa;
+  background: var(--theme-surface-raised);
   border-radius: 0.7rem;
-  border: 1px solid #ece7e2;
+  border: 1px solid var(--theme-border);
 }
 
 .enroll-page h1 {
   margin: 0;
-  color: #3f3f3f;
+  color: var(--theme-text);
   font-size: 2.2rem;
 }
 
@@ -484,7 +484,7 @@ section {
   overflow: hidden;
   padding: 0.5rem;
   border-radius: 999px;
-  background: #fffdfa;
+  background: var(--theme-surface-raised);
   border: none;
 }
 
@@ -506,8 +506,8 @@ section {
   height: 64px;
   padding: 0 1.2rem 0 1.55rem;
   border: 0;
-  background: linear-gradient(180deg, #f8f3ee 0%, #f1ebe4 100%);
-  color: #4f443a;
+  background: linear-gradient(180deg, var(--theme-surface-soft) 0%, var(--theme-surface-subtle) 100%);
+  color: var(--theme-text);
   text-align: center;
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%, 18px 50%);
   z-index: 1;
@@ -540,25 +540,25 @@ section {
 }
 
 .step-item.done {
-  background: linear-gradient(180deg, #f2e8df 0%, #eadccd 100%);
-  color: #8d5639;
+  background: linear-gradient(180deg, var(--theme-surface-soft) 0%, var(--theme-surface-subtle) 100%);
+  color: var(--theme-text-muted);
 }
 
 .step-item.active {
-  background: linear-gradient(90deg, #a55336 0%, #c88763 100%);
-  color: #ffffff;
+  background: linear-gradient(90deg, var(--tenant-primary) 0%, var(--tenant-accent) 100%);
+  color: var(--on-primary);
   z-index: 2;
 }
 
 .enroll-form {
   margin-top: 1.35rem;
   padding-top: 0.55rem;
-  border-top: 1px solid #d8d3ce;
+  border-top: 1px solid var(--theme-border);
 }
 
 .enroll-form h2 {
   margin: 0.7rem 0 1rem;
-  color: #4b4b4b;
+  color: var(--theme-text);
   font-size: 1.85rem;
 }
 
@@ -583,13 +583,13 @@ section {
 }
 
 .group-label {
-  color: #555;
+  color: var(--theme-text);
   font-weight: 700;
   font-size: 1.05rem;
 }
 
 .required {
-  color: #c2410c;
+  color: var(--theme-danger);
 }
 
 .radio-row {
@@ -637,7 +637,7 @@ section {
   padding: 0.75rem 0.875rem;
   border: 1px solid var(--theme-border-strong);
   border-radius: 0.375rem;
-  background: #fff;
+  background: var(--theme-surface-raised);
   cursor: pointer;
   font-size: 0.95rem;
   font-family: inherit;
@@ -652,11 +652,11 @@ section {
 }
 
 .dropdown-placeholder {
-  color: #aaa;
+  color: var(--theme-text-subtle);
 }
 
 .dropdown-values {
-  color: #333;
+  color: var(--theme-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -682,10 +682,10 @@ section {
   right: 0;
   max-height: 220px;
   overflow-y: auto;
-  border: 1px solid #ccc;
+  border: 1px solid var(--theme-border);
   border-radius: 4px;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--theme-surface-raised);
+  box-shadow: var(--theme-shadow-sm);
 }
 
 .dropdown-option {
@@ -694,13 +694,13 @@ section {
   gap: 0.5rem;
   padding: 0.4rem 0.6rem;
   font-size: 0.88rem;
-  color: #333;
+  color: var(--theme-text);
   cursor: pointer;
   transition: background 0.1s ease;
 }
 
 .dropdown-option:hover {
-  background: #f5f0eb;
+  background: var(--theme-surface-soft);
 }
 
 .dropdown-option input[type="checkbox"] {
@@ -763,8 +763,8 @@ section {
   align-items: center;
   gap: 0.15rem;
   padding: 0.2rem 0.4rem 0.2rem 0.6rem;
-  background: #f0ebe5;
-  color: #4a3a2d;
+  background: var(--theme-surface-soft);
+  color: var(--theme-text);
   border-radius: 4px;
   font-size: 0.82rem;
   font-weight: 500;
@@ -781,7 +781,7 @@ section {
   padding: 0;
   border: none;
   background: transparent;
-  color: #999;
+  color: var(--theme-text-subtle);
   cursor: pointer;
   border-radius: 3px;
   font-size: 1rem;
@@ -790,19 +790,19 @@ section {
 }
 
 .tag-remove:hover {
-  color: #c0392b;
-  background: #e8e0d8;
+  color: var(--theme-danger);
+  background: var(--theme-danger-background);
 }
 
 .tag-input {
   width: 100%;
   border: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--theme-border);
   outline: none;
   font-size: 0.9rem;
   font-family: inherit;
   background: transparent;
-  color: #333;
+  color: var(--theme-text);
   padding: 0.25rem 0.1rem;
   line-height: 1.4;
 }
@@ -812,7 +812,7 @@ section {
 }
 
 .tag-input::placeholder {
-  color: #aaa;
+  color: var(--theme-text-subtle);
   font-weight: 400;
 }
 
@@ -826,13 +826,13 @@ section {
   width: fit-content;
   padding: 0.25rem 1.5rem;
   border-radius: 0.3rem;
-  border: 1px solid #d2cdca;
+  border: 1px solid var(--theme-border-strong);
   background: repeating-linear-gradient(
     180deg,
-    #f5f5f5,
-    #f5f5f5 4px,
-    #ffffff 4px,
-    #ffffff 8px
+    var(--theme-surface-soft),
+    var(--theme-surface-soft) 4px,
+    var(--theme-surface-raised) 4px,
+    var(--theme-surface-raised) 8px
   );
   font-size: 2rem;
   font-weight: 700;
@@ -841,25 +841,25 @@ section {
 
 .verification-block p {
   margin: 0.45rem 0 0;
-  color: #5a5a5a;
+  color: var(--theme-text-muted);
   font-weight: 600;
 }
 
 .photo-block {
   margin-top: 1.35rem;
   padding-top: 1rem;
-  border-top: 1px solid #d8d3ce;
+  border-top: 1px solid var(--theme-border);
 }
 
 .photo-block h3 {
   margin: 0 0 0.7rem;
-  color: #4b4b4b;
+  color: var(--theme-text);
   font-size: 1.9rem;
 }
 
 .photo-block p {
   margin: 0.45rem 0;
-  color: #5d5d5d;
+  color: var(--theme-text-muted);
   font-weight: 600;
 }
 
@@ -869,12 +869,12 @@ section {
 
 .enroll-form .mat-mdc-form-field {
   width: 100%;
-  --mdc-filled-text-field-container-color: #ffffff;
-  --mdc-filled-text-field-focus-container-color: #ffffff;
-  --mdc-filled-text-field-hover-container-color: #ffffff;
-  --mdc-filled-text-field-active-indicator-color: #d1d5db;
-  --mdc-filled-text-field-hover-active-indicator-color: #9ca3af;
-  --mdc-filled-text-field-focus-active-indicator-color: #2563eb;
+  --mdc-filled-text-field-container-color: var(--theme-surface-raised);
+  --mdc-filled-text-field-focus-container-color: var(--theme-surface-raised);
+  --mdc-filled-text-field-hover-container-color: var(--theme-surface-raised);
+  --mdc-filled-text-field-active-indicator-color: var(--theme-border-strong);
+  --mdc-filled-text-field-hover-active-indicator-color: var(--theme-text-subtle);
+  --mdc-filled-text-field-focus-active-indicator-color: var(--tenant-primary);
   --mdc-filled-text-field-label-text-color: var(--theme-text);
   --mdc-filled-text-field-input-text-color: var(--theme-text);
   --mat-form-field-container-text-size: 1rem;
@@ -903,7 +903,7 @@ section {
 :host ::ng-deep .enroll-page .mat-mdc-text-field-wrapper.mdc-text-field--filled,
 :host ::ng-deep .enroll-page .mat-mdc-text-field-wrapper.mdc-text-field--filled:hover,
 :host ::ng-deep .enroll-page .mdc-text-field--filled.mdc-text-field--focused {
-  background-color: #ffffff !important;
+  background-color: var(--theme-surface-raised) !important;
 }
 
 :host ::ng-deep .enroll-page .mat-mdc-form-field-focus-overlay {
@@ -918,7 +918,7 @@ section {
 
 :host ::ng-deep .enroll-page .mdc-text-field--filled.mdc-text-field--focused {
   border-color: var(--tenant-primary);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 0 2px var(--theme-focus);
 }
 
 :host ::ng-deep .enroll-page .mdc-line-ripple {
@@ -933,7 +933,7 @@ section {
 :host ::ng-deep .enroll-page .mdc-floating-label--float-above {
   transform: translateY(-175%) scale(0.9) !important;
   left: 0.55rem !important;
-  background: #ffffff;
+  background: var(--theme-surface-raised);
   padding: 0 0.25rem;
   z-index: 1;
 }
@@ -971,7 +971,7 @@ section {
 .form-footer {
   margin-top: 1.25rem;
   padding-top: 1rem;
-  border-top: 4px solid #1f1f1f;
+  border-top: 4px solid var(--theme-text);
   display: flex;
   justify-content: flex-end;
   gap: 0.65rem;
@@ -985,12 +985,12 @@ section {
 }
 
 .form-footer .submit-btn {
-  --mdc-filled-button-container-color: #6f7a86;
-  --mdc-filled-button-label-text-color: #ffffff;
+  --mdc-filled-button-container-color: var(--theme-text-muted);
+  --mdc-filled-button-label-text-color: var(--on-primary);
 }
 
 .form-footer .ghost {
-  --mdc-outlined-button-outline-color: #c5b7a7;
+  --mdc-outlined-button-outline-color: var(--theme-border-strong);
 }
 
 .form-footer button:disabled {
@@ -1001,11 +1001,11 @@ section {
 .form-message {
   margin-top: 0.65rem;
   font-weight: 700;
-  color: #0f766e;
+  color: var(--theme-success);
 }
 
 .form-message.error {
-  color: #b91c1c;
+  color: var(--theme-danger);
 }
 
 @media (max-width: 900px) {

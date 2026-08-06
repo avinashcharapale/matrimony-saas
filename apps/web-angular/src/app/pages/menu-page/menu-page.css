@@ -8,8 +8,8 @@
 .menu-hero,
 .menu-highlights,
 .menu-cta {
-  background: #ffffff;
-  border: 1px solid #eadfd7;
+  background: var(--theme-surface-raised);
+  border: 1px solid var(--theme-border);
   border-radius: 1rem;
   padding: 1.1rem;
 }
@@ -19,19 +19,19 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.72rem;
-  color: #9a5e45;
+  color: var(--tenant-primary);
   font-weight: 700;
 }
 
 .menu-hero h1 {
   margin: 0.5rem 0 0;
   font-size: clamp(1.8rem, 4vw, 2.6rem);
-  color: #2a2c3b;
+  color: var(--theme-text);
 }
 
 .menu-hero p {
   margin: 0.6rem 0 0;
-  color: #6f7486;
+  color: var(--theme-text-muted);
   line-height: 1.6;
 }
 
@@ -45,9 +45,9 @@
   grid-template-columns: 2rem 1fr;
   gap: 0.7rem;
   padding: 0.8rem;
-  border: 1px solid #efe2d9;
+  border: 1px solid var(--theme-border);
   border-radius: 0.85rem;
-  background: #fcf8f5;
+  background: var(--theme-surface-soft);
 }
 
 .highlight-no {
@@ -56,25 +56,25 @@
   border-radius: 999px;
   display: grid;
   place-items: center;
-  color: #8a4f36;
+  color: var(--tenant-primary);
   font-weight: 800;
-  background: #f2dfd4;
+  background: var(--accent-soft, color-mix(in srgb, var(--tenant-primary) 15%, #ffffff));
 }
 
 .highlight-card p {
   margin: 0;
-  color: #656b7e;
+  color: var(--theme-text-muted);
   line-height: 1.55;
 }
 
 .menu-cta h2 {
   margin: 0;
-  color: #2d2f3e;
+  color: var(--theme-text);
 }
 
 .menu-cta p {
   margin: 0.55rem 0 0;
-  color: #6c7285;
+  color: var(--theme-text-muted);
 }
 
 .cta-actions {
@@ -96,12 +96,12 @@
 }
 
 .btn-primary {
-  background: #b45a3a;
-  color: #ffffff;
+  background: var(--tenant-primary);
+  color: var(--on-primary);
 }
 
 .btn-muted {
-  background: #ffffff;
-  border-color: #ddcabe;
-  color: #4f566b;
+  background: var(--theme-surface-raised);
+  border-color: var(--theme-border-strong);
+  color: var(--theme-text);
 }

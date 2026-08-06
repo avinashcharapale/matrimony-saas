@@ -227,7 +227,11 @@ export const TENANT_CODE_MAP: Record<string, string> = {
 
 export const DEFAULT_TENANT = TENANT_CONFIGS[0];
 
-export function resolveTenant(hostname: string, search: string): TenantConfig {
+export function resolveTenant(
+  hostname: string,
+  search: string,
+  defaultTenantId = DEFAULT_TENANT.id,
+): TenantConfig {
   const params = new URLSearchParams(search);
   const tenantId = params.get('tenant');
 
@@ -246,5 +250,8 @@ export function resolveTenant(hostname: string, search: string): TenantConfig {
     return hostMatch;
   }
 
-  return DEFAULT_TENANT;
+  return (
+    TENANT_CONFIGS.find((config) => config.id === defaultTenantId) ??
+    DEFAULT_TENANT
+  );
 }
