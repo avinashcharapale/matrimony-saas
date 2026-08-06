@@ -1,18 +1,43 @@
 @import '../../../libs/shared-ui/src/themes/tenant-themes.css';
-@import '@angular/material/prebuilt-themes/rose-red.css';
 
 * {
 	box-sizing: border-box;
+}
+
+html,
+body {
+  color: var(--theme-text);
+}
+
+.mat-mdc-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-fab,
+.mat-mdc-mini-fab {
+  --mdc-filled-button-container-color: var(--tenant-primary);
+  --mdc-filled-button-label-text-color: var(--on-primary);
+  --mdc-outlined-button-outline-color: var(--theme-border-strong);
+  --mdc-outlined-button-label-text-color: var(--tenant-primary);
+}
+
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: var(--theme-border);
+  --mdc-outlined-text-field-hover-outline-color: var(--tenant-primary);
+  --mdc-outlined-text-field-focus-outline-color: var(--tenant-primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--tenant-primary);
+  --mdc-outlined-text-field-label-text-color: var(--theme-text-muted);
+  --mdc-outlined-text-field-input-text-color: var(--theme-text);
 }
 
 /* ── Dashboard Mobile Drawer (global, no Angular encapsulation) ───────────── */
 
 .sidebar-toggle-btn {
   display: none;
-  border: 1px solid var(--line, #e0e0e0);
+  border: 1px solid var(--line, var(--theme-border));
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--text-main, #333);
+  background: color-mix(in srgb, var(--theme-surface-raised) 85%, transparent);
+  color: var(--text-main, var(--theme-text));
   font-size: 1.15rem;
   line-height: 1;
   padding: 0.35rem 0.5rem;
@@ -21,16 +46,16 @@
 }
 
 .sidebar-toggle-btn:hover {
-  background: var(--accent-soft, rgba(0,0,0,0.04));
-  color: var(--accent, #6c3fb5);
+  background: var(--accent-soft, var(--theme-surface-soft));
+  color: var(--accent, var(--tenant-primary));
 }
 
 .sidebar-close-btn {
   display: none;
-  border: 1px solid var(--line, #e0e0e0);
+  border: 1px solid var(--line, var(--theme-border));
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--text-main, #333);
+  background: color-mix(in srgb, var(--theme-surface-raised) 85%, transparent);
+  color: var(--text-main, var(--theme-text));
   font-size: 1rem;
   line-height: 1;
   padding: 0.3rem 0.45rem;
@@ -42,8 +67,8 @@
 }
 
 .sidebar-close-btn:hover {
-  background: var(--accent-soft, rgba(0,0,0,0.04));
-  color: var(--accent, #6c3fb5);
+  background: var(--accent-soft, var(--theme-surface-soft));
+  color: var(--accent, var(--tenant-primary));
 }
 
 .sidebar-backdrop {
@@ -81,7 +106,7 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.32);
+    background: color-mix(in srgb, var(--color-black) 32%, transparent);
     z-index: 199;
     opacity: 0;
     pointer-events: none;

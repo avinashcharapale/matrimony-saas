@@ -9,6 +9,7 @@ export interface TenantConfig {
   heroSubtitle: string;
   heroDescription: string;
   heroImage: string;
+  authBannerImage?: string;
   primaryColor: string;
   accentColor: string;
   defaultThemeId?: string;
@@ -90,7 +91,8 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     heroTitle: 'Find Your Life Partner',
     heroSubtitle: 'Trusted by thousands of families',
     heroDescription: 'Join the trusted matrimonial platform with real profiles, guidance, and simple enrollment.',
-    heroImage: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1600&q=80',
+    heroImage: 'https://images.pexels.com/photos/32947298/pexels-photo-32947298.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    authBannerImage: 'https://images.pexels.com/photos/30184678/pexels-photo-30184678.jpeg?auto=compress&cs=tinysrgb&w=1600',
     primaryColor: '#b45309',
     accentColor: '#fbbf24',
     defaultThemeId: 'warm-ivory',
@@ -145,7 +147,8 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     heroTitle: 'आनंद मराठा वधूवर केंद्र',
     heroSubtitle: 'मराठा समाजासाठी महाराष्ट्रातील अग्रणी विवाहसंस्था',
     heroDescription: 'Join the trusted matrimonial platform for Marathi communities with real profiles, astrology guidance, and simple enrollment.',
-    heroImage: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1600&q=80',
+    heroImage: 'https://images.pexels.com/photos/32947298/pexels-photo-32947298.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    authBannerImage: 'https://images.pexels.com/photos/30184678/pexels-photo-30184678.jpeg?auto=compress&cs=tinysrgb&w=1600',
     primaryColor: '#b45309',
     accentColor: '#fbbf24',
     defaultThemeId: 'warm-ivory',

@@ -217,8 +217,8 @@
                 class="card-photo"
                 [src]="getPhotoUrl(profile)"
                 [alt]="getDisplayName(profile)"
-                loading="lazy"
-                referrerpolicy="no-referrer"
+                loading="eager"
+                decoding="async"
                 (error)="onPhotoError($event, profile)"
               />
             </div>
@@ -328,7 +328,6 @@
             class="detail-photo"
             [src]="getPhotoUrl(profile)"
             [alt]="profile.fullName"
-            referrerpolicy="no-referrer"
             (error)="onPhotoError($event, profile)"
           />
           @if (profile.isVerified) {

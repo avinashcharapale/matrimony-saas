@@ -1,15 +1,15 @@
 :host {
-  --bg-soft: #f9f8f6;
-  --card: #ffffff;
-  --line: #e8e3de;
-  --text-main: #1a1d2e;
-  --text-soft: #6b7189;
-  --text-muted: #9ca3af;
+  --bg-soft: var(--theme-surface-soft);
+  --card: var(--theme-surface-raised);
+  --line: var(--theme-border);
+  --text-main: var(--theme-text);
+  --text-soft: var(--theme-text-muted);
+  --text-muted: var(--theme-text-muted);
   --accent: var(--tenant-primary);
   --accent-dark: var(--tenant-accent);
   --accent-soft: color-mix(in srgb, var(--tenant-primary) 8%, #ffffff);
   --accent-border: color-mix(in srgb, var(--tenant-primary) 25%, #ffffff);
-  --accent-glow: color-mix(in srgb, var(--tenant-primary) 15%, transparent);
+  --accent-glow: var(--theme-focus);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
   --shadow-lg: 0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
@@ -69,10 +69,10 @@
 
 .form-error {
   padding: 0.6rem 0.85rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--theme-danger-background);
+  border: 1px solid var(--theme-danger-border);
   border-radius: var(--radius-sm);
-  color: #b91c1c;
+  color: var(--theme-danger);
   font-weight: 600;
   font-size: 0.82rem;
 }
@@ -116,7 +116,7 @@
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
-  background: #fff;
+  background: var(--theme-surface-raised);
 }
 
 .search-input::placeholder {
@@ -169,7 +169,7 @@
 .qf-field input:focus {
   outline: none;
   border-color: var(--accent-border);
-  background: #fff;
+  background: var(--theme-surface-raised);
 }
 
 .age-range {
@@ -193,7 +193,7 @@
   border: none;
   border-radius: var(--radius-md);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 700;
   font-size: 0.9rem;
   padding: 0.55rem 1.75rem;
@@ -256,7 +256,7 @@
 
 .filter-badge {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   font-size: 0.6rem;
   font-weight: 700;
   min-width: 1.15rem;
@@ -345,7 +345,7 @@
 .adv-field input[type="text"]:focus {
   outline: none;
   border-color: var(--accent-border);
-  background: #fff;
+  background: var(--theme-surface-raised);
 }
 
 .adv-footer {
@@ -377,7 +377,7 @@
   border: none;
   border-radius: var(--radius-sm);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 700;
   font-size: 0.8rem;
   padding: 0.45rem 1rem;
@@ -431,12 +431,19 @@
 }
 
 .card-photo {
+  display: block;
   width: 120px;
   height: 142px;
   border-radius: var(--radius-md);
   object-fit: cover;
+  background: var(--bg-soft);
   border: 2px solid var(--line);
   transition: border-color 0.2s ease;
+}
+
+.card-photo-fallback {
+  object-fit: contain;
+  padding: 0.35rem;
 }
 
 .profile-card:hover .card-photo {
@@ -543,7 +550,7 @@
 
 .btn-connect:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   box-shadow: 0 4px 12px var(--accent-glow);
   transform: translateY(-1px);
 }
@@ -586,7 +593,7 @@
 
 .pagination button.active {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   border-color: var(--accent);
   font-weight: 700;
 }
@@ -653,7 +660,7 @@
   border: none;
   border-radius: var(--radius-md);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 700;
   font-size: 0.95rem;
   padding: 0.65rem 2.25rem;

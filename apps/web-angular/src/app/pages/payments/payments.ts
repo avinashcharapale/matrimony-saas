@@ -249,63 +249,7 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
       </div>
     }
   `,
-  styles: [
-    `
-      :host { display: block; }
-      :host {
-        --bg-soft: #f7f4f1;
-        --card: #ffffff;
-        --line: #e5e0db;
-        --text-main: #1f2230;
-        --text-soft: #6d7285;
-        --text-muted: #9ca3af;
-        --accent: var(--tenant-primary);
-        --accent-dark: var(--tenant-accent);
-        --accent-soft: color-mix(in srgb, var(--tenant-primary) 8%, #ffffff);
-        --accent-border: color-mix(in srgb, var(--tenant-primary) 25%, #ffffff);
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-      }
-      .search-page { width: 100%; color: var(--text-main); }
-      .search-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 1.25rem; align-items: start; }
-      .page-content { display: grid; gap: 1rem; }
-      .page-header { background: #fff; border: 1px solid #eadfd7; border-radius: 1rem; padding: 1rem; }
-      .eyebrow { margin: 0; color: #9a5e45; text-transform: uppercase; font-size: 0.74rem; font-weight: 700; }
-      h1 { margin: 0.35rem 0 0; color: #24283a; }
-      .summary-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; }
-      .summary-card { background: #fff; border: 1px solid #eadfd7; border-radius: 1rem; padding: 0.9rem 1rem; display: grid; gap: 0.25rem; }
-      .summary-card span { color: var(--text-soft); font-size: 0.8rem; }
-      .summary-card strong { color: #24283a; font-size: 1.15rem; }
-      .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-      .tabs button { border: 1px solid #dcc8bc; background: #fff; color: #363d52; border-radius: 2rem; padding: 0.45rem 0.9rem; font-weight: 600; cursor: pointer; }
-      .tabs button.active { background: #9a5e45; border-color: #9a5e45; color: #fff; }
-      .table-card { background: #fff; border: 1px solid #eadfd7; border-radius: 1rem; padding: 1rem; overflow-x: auto; }
-      table { width: 100%; border-collapse: collapse; }
-      th { text-align: left; color: var(--text-soft); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--line); }
-      td { padding: 0.6rem; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
-      tbody tr:last-child td { border-bottom: none; }
-      tbody tr { cursor: pointer; }
-      .detail-link { color: #9a5e45; font-weight: 700; }
-      .badge { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 2rem; font-size: 0.72rem; font-weight: 700; text-transform: capitalize; background: #f0f0f0; color: #444; }
-      .badge.success, .badge.completed, .badge.paid, .badge.succeeded { background: #e4f3e9; color: #1f7c3d; }
-      .badge.failed, .badge.failure, .badge.cancelled, .badge.canceled { background: #fdeaea; color: #c0392b; }
-      .badge.pending, .badge.processing, .badge.attempted { background: #fff3d6; color: #b7791f; }
-      .badge.refunded, .badge.partially_refunded { background: #efe7fb; color: #6b46c1; }
-      .empty { color: var(--text-soft); padding: 1rem; margin: 0; }
-      .empty.error { color: #c0392b; }
-      .drawer-overlay { position: fixed; inset: 0; background: rgba(20, 16, 12, 0.45); z-index: 60; display: flex; justify-content: flex-end; }
-      .drawer { background: #fff; width: min(480px, 100%); height: 100%; overflow-y: auto; padding: 1.2rem; display: grid; align-content: start; gap: 0.5rem; }
-      .drawer header { display: flex; justify-content: space-between; align-items: center; }
-      .drawer h2 { margin: 0; color: #24283a; }
-      .drawer h3 { margin: 0.9rem 0 0; color: #363d52; }
-      .close { border: none; background: transparent; font-size: 1.6rem; line-height: 1; cursor: pointer; color: var(--text-soft); }
-      dl { display: grid; grid-template-columns: 130px 1fr; gap: 0.5rem 0.8rem; margin: 0.6rem 0 0; }
-      dt { color: var(--text-soft); font-size: 0.8rem; }
-      dd { margin: 0; font-size: 0.9rem; color: var(--text-main); }
-      @media (max-width: 900px) { .search-shell { grid-template-columns: 1fr; } .summary-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    `,
-  ],
+  styleUrl: './payments.css',
 })
 export class Payments implements OnInit {
   readonly activeTab = signal<PaymentsTab>('transactions');

@@ -1,10 +1,10 @@
 :host {
-  --bg-soft: #f7f4f1;
-  --card: #ffffff;
-  --line: #e5e0db;
-  --text-main: #1f2230;
-  --text-soft: #6d7285;
-  --text-muted: #9ca3af;
+  --bg-soft: var(--theme-surface-soft);
+  --card: var(--theme-surface-raised);
+  --line: var(--theme-border);
+  --text-main: var(--theme-text);
+  --text-soft: var(--theme-text-muted);
+  --text-muted: var(--theme-text-muted);
   --accent: var(--tenant-primary);
   --accent-dark: var(--tenant-accent);
   --accent-soft: color-mix(in srgb, var(--tenant-primary) 8%, #ffffff);
@@ -66,10 +66,10 @@
 /* Error */
 .form-error {
   padding: 0.5rem 0.75rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--theme-danger-background);
+  border: 1px solid var(--theme-danger-border);
   border-radius: var(--radius-sm);
-  color: #b91c1c;
+  color: var(--theme-danger);
   font-weight: 600;
   font-size: 0.82rem;
 }
@@ -113,7 +113,7 @@
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
-  background: #fff;
+  background: var(--theme-surface-raised);
 }
 
 .search-input::placeholder {
@@ -158,7 +158,7 @@
 .qf-field input:focus {
   outline: none;
   border-color: var(--accent-border);
-  background: #fff;
+  background: var(--theme-surface-raised);
 }
 
 .age-range {
@@ -181,7 +181,7 @@
   border: none;
   border-radius: var(--radius-sm);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 700;
   font-size: 0.88rem;
   padding: 0.5rem 1.5rem;
@@ -239,7 +239,7 @@
 
 .filter-badge {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   font-size: 0.65rem;
   font-weight: 700;
   min-width: 1.1rem;
@@ -331,7 +331,7 @@
 .adv-field input[type="text"]:focus {
   outline: none;
   border-color: var(--accent-border);
-  background: #fff;
+  background: var(--theme-surface-raised);
 }
 
 .adv-footer {
@@ -363,7 +363,7 @@
   border: none;
   border-radius: var(--radius-sm);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   font-weight: 700;
   font-size: 0.78rem;
   padding: 0.4rem 0.9rem;
@@ -570,7 +570,7 @@
 
 .btn-connect:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
 }
 
 /* ─── Pagination ─── */
@@ -607,7 +607,7 @@
 
 .pagination button.active {
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   border-color: var(--accent);
   font-weight: 700;
 }

@@ -218,6 +218,7 @@ export class PublicSearch implements OnInit {
   onPhotoError(event: Event, profile: ProfileListItemDto): void {
     const image = event.target as HTMLImageElement;
     image.onerror = null;
+    image.classList.add('card-photo-fallback');
     image.src = resolvePhotoUrl(null, profile.fullName, profile.genderId);
   }
 

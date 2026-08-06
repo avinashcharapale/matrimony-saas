@@ -28,6 +28,7 @@ export class LandingSectionsComponent {
     heroTitle: string;
     heroSubtitle: string;
     heroDescription: string;
+    heroImage: string;
     ctaEnroll: string;
     supportPhone: string;
     supportEmail: string;

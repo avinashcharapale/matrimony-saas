@@ -42,22 +42,7 @@ interface Story {
       </section>
     </section>
   `,
-  styles: [
-    `
-      .page-shell { width: min(100%, 980px); margin: 0 auto; display: grid; gap: 1rem; }
-      .page-header, .stories { background: #fff; border: 1px solid #eadfd7; border-radius: 1rem; padding: 1rem; }
-      .eyebrow { margin: 0; color: #9a5e45; text-transform: uppercase; font-size: 0.74rem; font-weight: 700; }
-      h1 { margin: 0.35rem 0 0; color: #24283a; }
-      .page-header p { margin: 0.45rem 0 0; color: #6f7486; }
-      .stories { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.8rem; }
-      .story-card { border: 1px solid #e8d9cf; border-radius: 0.8rem; padding: 0.85rem; background: #fcf8f5; }
-      .story-card h2 { margin: 0; color: #2d3348; font-size: 1.05rem; }
-      .story-card small { color: #7a8095; }
-      .story-card p { color: #5f667c; line-height: 1.55; }
-      .story-card button { border: none; background: #9a5e45; color: #fff; border-radius: 0.5rem; padding: 0.45rem 0.7rem; font-weight: 600; }
-      .empty-state { text-align: center; padding: 2rem; color: #6f7486; grid-column: 1 / -1; }
-    `,
-  ],
+  styleUrl: './success-stories.css',
 })
 export class SuccessStories {
   readonly stories = signal<Story[]>([]);

@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
+import { TenantService } from '../../services/tenant.service';
 
 interface UserSettings {
   profileVisibility: 'all' | 'verified' | 'matches';
@@ -38,9 +39,34 @@ const SETTINGS_KEY = 'matrimony_user_settings';
             <h1>Settings</h1>
           </header>
 
+          <section class="theme-preferences" aria-labelledby="theme-heading">
+            <div class="section-heading">
+              <p class="eyebrow">Appearance</p>
+              <h2 id="theme-heading">Choose a theme</h2>
+              <p class="section-description">Your selection is saved on this device and updates the app immediately.</p>
+            </div>
+            <div class="theme-options" role="radiogroup" aria-label="Available themes">
+              @for (theme of themes; track theme.id) {
+                <button
+                  type="button"
+                  class="theme-option"
+                  [class.selected]="activeThemeId() === theme.id"
+                  [attr.aria-checked]="activeThemeId() === theme.id"
+                  role="radio"
+                  (click)="selectTheme(theme.id)">
+                  <span [class]="'theme-swatch ' + theme.id" aria-hidden="true"></span>
+                  <span class="theme-option-copy">
+                    <strong>{{ theme.name }}</strong>
+                    <span>{{ theme.id === activeThemeId() ? 'Active theme' : 'Use this theme' }}</span>
+                  </span>
+                </button>
+              }
+            </div>
+          </section>
+
           <form class="settings-form" (ngSubmit)="save()">
-            <label>
-              Profile Visibility
+            <label class="field-label">
+              <span>Profile Visibility</span>
               <select [(ngModel)]="settings.profileVisibility" name="profileVisibility">
                 <option value="all">Visible to all members</option>
                 <option value="verified">Only verified profiles</option>
@@ -48,11 +74,11 @@ const SETTINGS_KEY = 'matrimony_user_settings';
               </select>
             </label>
 
-            <label><input type="checkbox" [(ngModel)]="settings.emailAlerts" name="emailAlerts" /> Email alerts</label>
-            <label><input type="checkbox" [(ngModel)]="settings.smsAlerts" name="smsAlerts" /> SMS alerts</label>
-            <label><input type="checkbox" [(ngModel)]="settings.eventReminders" name="eventReminders" /> Event reminders</label>
+            <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.emailAlerts" name="emailAlerts" /> <span>Email alerts</span></label>
+            <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.smsAlerts" name="smsAlerts" /> <span>SMS alerts</span></label>
+            <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.eventReminders" name="eventReminders" /> <span>Event reminders</span></label>
 
-            <button type="submit">Save Settings</button>
+            <button class="save-settings-button" type="submit">Save Settings</button>
             @if (savedMessage()) {
             <p class="saved">{{ savedMessage() }}</p>
             }
@@ -61,40 +87,7 @@ const SETTINGS_KEY = 'matrimony_user_settings';
       </div>
     </section>
   `,
-  styles: [
-    `
-      :host { display: block; }
-      :host {
-        --bg-soft: #f7f4f1;
-        --card: #ffffff;
-        --line: #e5e0db;
-        --text-main: #1f2230;
-        --text-soft: #6d7285;
-        --text-muted: #9ca3af;
-        --accent: var(--tenant-primary);
-        --accent-dark: var(--tenant-accent);
-        --accent-soft: color-mix(in srgb, var(--tenant-primary) 8%, #ffffff);
-        --accent-border: color-mix(in srgb, var(--tenant-primary) 25%, #ffffff);
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-        display: block;
-      }
-      .search-page { width: 100%; color: var(--text-main); }
-      .search-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 1.25rem; align-items: start; }
-      .page-content { display: grid; gap: 1rem; }
-      .page-header, .settings-form { background: #fff; border: 1px solid #eadfd7; border-radius: 1rem; padding: 1rem; }
-      .eyebrow { margin: 0; color: #9a5e45; text-transform: uppercase; font-size: 0.74rem; font-weight: 700; }
-      h1 { margin: 0.35rem 0 0; color: #24283a; }
-      .settings-form { display: grid; gap: 0.8rem; }
-      label { color: #363d52; font-weight: 600; display: grid; gap: 0.35rem; }
-      select { border: 1px solid #dcc8bc; border-radius: 0.6rem; padding: 0.55rem; }
-      input[type='checkbox'] { margin-right: 0.45rem; }
-      button { width: fit-content; border: none; border-radius: 0.6rem; background: #9a5e45; color: #fff; font-weight: 700; padding: 0.6rem 0.95rem; }
-      .saved { margin: 0; color: #1f7c3d; font-weight: 700; }
-      @media (max-width: 900px) { .search-shell { grid-template-columns: 1fr; } }
-    `,
-  ],
+  styleUrl: './settings.css',
 })
 export class Settings implements OnInit {
   readonly savedMessage = signal('');
@@ -108,6 +101,10 @@ export class Settings implements OnInit {
   private readonly memberService = inject(MemberService);
   private readonly authService = inject(AuthService);
   private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly tenantService = inject(TenantService);
+
+  readonly themes = this.tenantService.themes;
+  readonly activeThemeId = signal(this.tenantService.activeThemeId);
 
   readonly userName = signal('');
   readonly userPhotoUrl = signal('');
@@ -143,6 +140,11 @@ export class Settings implements OnInit {
       },
       error: () => {},
     });
+  }
+
+  selectTheme(themeId: string): void {
+    this.tenantService.setTheme(themeId);
+    this.activeThemeId.set(this.tenantService.activeThemeId);
   }
 
   save(): void {

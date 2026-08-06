@@ -1,9 +1,9 @@
 :host {
-  --bg-soft: color-mix(in srgb, var(--tenant-bg-start) 50%, #ffffff);
-  --card: #ffffff;
-  --line: color-mix(in srgb, var(--tenant-text) 12%, #ffffff);
-  --text-main: var(--tenant-text);
-  --text-soft: var(--text-muted);
+  --bg-soft: var(--theme-surface-soft);
+  --card: var(--theme-surface-raised);
+  --line: var(--theme-border);
+  --text-main: var(--theme-text);
+  --text-soft: var(--theme-text-muted);
   --accent: var(--tenant-primary);
   --accent-dark: var(--tenant-accent);
   --accent-soft: color-mix(in srgb, var(--tenant-primary) 10%, #ffffff);
@@ -45,7 +45,7 @@
   border: none;
   border-radius: 8px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   padding: 0.48rem 0.65rem;
   font-weight: 700;
   cursor: pointer;
@@ -98,7 +98,7 @@
 }
 
 .search-box {
-  background: #fff;
+  background: var(--theme-surface-raised);
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 0.52rem 0.9rem;
@@ -116,7 +116,7 @@
 .completion-card {
   border-radius: 12px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--theme-surface-raised);
   padding: 0.58rem 0.75rem;
   display: grid;
   gap: 0.2rem;
@@ -250,7 +250,7 @@
 .panel {
   border-radius: 14px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--theme-surface-raised);
   padding: 0.8rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
@@ -704,7 +704,7 @@
   height: 1rem;
   border-radius: 99px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-primary);
   display: inline-grid;
   place-items: center;
   font-size: 0.6rem;

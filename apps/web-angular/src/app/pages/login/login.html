@@ -1,4 +1,13 @@
 <section class="login-page">
+  <div class="login-banner">
+    <img [src]="tenant.authBannerImage ?? tenant.heroImage" [alt]="tenant.displayName + ' wedding banner'" />
+    <div class="login-banner-overlay"></div>
+    <div class="login-banner-copy">
+      <span>Trusted beginnings</span>
+      <strong>Meet with intention. Marry with confidence.</strong>
+    </div>
+  </div>
+
   <div class="login-box">
     <h1>{{ tenant.displayName }}</h1>
     <h2>Sign In</h2>

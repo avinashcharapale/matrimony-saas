@@ -18,7 +18,14 @@
 
   <aside class="hero-visual">
     <div class="hero-panel">
-      <div class="hero-emoji">👩‍❤️‍👨</div>
+      @if (heroImage) {
+        <img class="hero-banner-image" [src]="heroImage" [alt]="heroTitle || tenantDisplayName" />
+      }
+      <div class="hero-panel-overlay"></div>
+      <div class="hero-panel-content">
+        <span class="hero-panel-kicker">Begin your forever</span>
+        <strong>Beautiful beginnings, thoughtfully matched.</strong>
+      </div>
     </div>
     @for (badge of badges; track badge.text) {
       <div class="float-badge">{{ badge.text }}</div>

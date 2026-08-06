@@ -14,6 +14,7 @@ export class LandingHeroComponent {
   @Input() heroTitle = '';
   @Input() heroSubtitle = '';
   @Input() heroDescription = '';
+  @Input() heroImage = '';
   @Input() ctaEnroll = 'Register Now';
   @Input() eyebrow = '';
   @Input() badges: { text: string }[] = [];

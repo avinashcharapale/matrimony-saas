@@ -22,6 +22,40 @@
   --border-strong: color-mix(in srgb, var(--tenant-primary) 40%, var(--color-white) 60%);
   --accent-strong: color-mix(in srgb, var(--tenant-primary) 86%, var(--color-black) 14%);
 
+  --theme-page-background: var(--tenant-bg-end);
+  --theme-surface: var(--surface-card);
+  --theme-surface-raised: var(--color-white);
+  --theme-surface-soft: var(--surface-soft);
+  --theme-border: var(--border-soft);
+  --theme-border-strong: var(--border-strong);
+  --theme-text: var(--text-strong);
+  --theme-text-muted: var(--text-muted);
+  --theme-text-subtle: var(--text-subtle);
+  --theme-focus: color-mix(in srgb, var(--tenant-primary) 28%, transparent);
+  --theme-success: #166534;
+  --theme-success-background: #dcfce7;
+  --theme-success-border: #86efac;
+  --theme-danger: #991b1b;
+  --theme-danger-background: #fee2e2;
+  --theme-danger-border: #fca5a5;
+  --theme-warning: #92400e;
+  --theme-warning-background: #fef3c7;
+  --theme-warning-border: #fcd34d;
+  --theme-radius-sm: 0.375rem;
+  --theme-radius-md: 0.6rem;
+  --theme-radius-lg: 1rem;
+  --theme-shadow-sm: 0 4px 12px color-mix(in srgb, var(--tenant-text) 6%, transparent);
+  --theme-shadow-md: 0 16px 30px color-mix(in srgb, var(--tenant-text) 12%, transparent);
+
+  --mat-sys-primary: var(--tenant-primary);
+  --mat-sys-on-primary: var(--on-primary);
+  --mat-sys-secondary: var(--tenant-accent);
+  --mat-sys-on-secondary: var(--tenant-text);
+  --mat-sys-surface: var(--theme-surface-raised);
+  --mat-sys-on-surface: var(--theme-text);
+  --mat-sys-outline: var(--theme-border);
+  --mat-sys-error: var(--theme-danger);
+
   --ion-color-primary: var(--tenant-primary);
   --ion-color-primary-contrast: var(--color-white);
   --ion-color-secondary: var(--tenant-accent);

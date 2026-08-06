@@ -1,0 +1,53 @@
+:host {
+  --bg-soft: #f7f4f1;
+  --card: #ffffff;
+  --line: #e5e0db;
+  --text-main: #1f2230;
+  --text-soft: #6d7285;
+  --text-muted: #9ca3af;
+  --accent: var(--tenant-primary);
+  --accent-dark: var(--tenant-accent);
+  --accent-soft: color-mix(in srgb, var(--tenant-primary) 8%, #ffffff);
+  --accent-border: color-mix(in srgb, var(--tenant-primary) 25%, #ffffff);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  display: block;
+}
+.search-page { width: 100%; color: var(--text-main); }
+.search-shell {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+.page-content { display: grid; gap: 1rem; }
+.page-header, .tabs, .cards { background: #fff; border: 1px solid #eadfd7; border-radius: 1rem; padding: 1rem; }
+.eyebrow { margin: 0; color: #9a5e45; text-transform: uppercase; font-size: 0.74rem; font-weight: 700; }
+h1 { margin: 0.35rem 0 0; color: #24283a; }
+.page-header p { margin: 0.45rem 0 0; color: #6f7486; }
+.tabs { display: flex; gap: 0.6rem; }
+.tabs button { border: 1px solid #ddcabe; background: #fff; border-radius: 0.6rem; padding: 0.55rem 0.9rem; font-weight: 600; color: #4f566b; cursor: pointer; }
+.tabs button.active { background: #9a5e45; color: #fff; border-color: #9a5e45; }
+.cards { display: grid; gap: 0.7rem; }
+.card { display: flex; justify-content: space-between; gap: 1rem; border: 1px solid #efe2d9; border-radius: 0.8rem; padding: 0.8rem; background: #fcf8f5; }
+.card-body { min-width: 0; }
+.card h2 { margin: 0; font-size: 1rem; color: #2c3042; }
+.profile-link { color: #9a5e45; text-decoration: none; }
+.profile-link:hover { text-decoration: underline; }
+.card p { margin: 0.35rem 0 0; color: #6c7285; }
+.card-date { font-size: 0.78rem; color: #9a9ab0; }
+.card-actions { display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0; }
+.status { text-transform: capitalize; font-size: 0.8rem; color: #8a5d49; background: #f4e7df; padding: 0.25rem 0.55rem; border-radius: 999px; }
+.status.accepted { background: #e2f4e8; color: #1f7c3d; }
+.status.declined { background: #f8e3e3; color: #9e2c2c; }
+.status.withdrawn { background: #e8e8f0; color: #5a5a7a; }
+.accept, .decline, .withdraw { border: none; border-radius: 0.5rem; padding: 0.45rem 0.7rem; cursor: pointer; font-weight: 600; }
+.accept { background: #2f8d4e; color: #fff; }
+.decline { background: #be4343; color: #fff; }
+.withdraw { background: #6f7486; color: #fff; }
+.empty-state { text-align: center; padding: 2rem; color: #6f7486; }
+@media (max-width: 900px) {
+  .search-shell { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) { .card { flex-direction: column; } }
