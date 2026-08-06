@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { TenantService } from '../../services/tenant.service';
 
 interface MenuPageData {
@@ -13,7 +14,7 @@ interface MenuPageData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-menu-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './menu-page.html',
   styleUrls: ['./menu-page.css'],
 })

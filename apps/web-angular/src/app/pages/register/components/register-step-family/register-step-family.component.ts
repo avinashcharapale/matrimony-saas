@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   RegisterMasterDataService,
   RegisterStateOption,
@@ -11,7 +12,7 @@ import {
 @Component({
   selector: 'app-register-step-family',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule],
   templateUrl: './register-step-family.component.html',
   styleUrl: '../../register.css',
 })

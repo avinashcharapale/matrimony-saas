@@ -1,10 +1,10 @@
 <section class="cta-banner">
   <div>
-    <h2>{{ ctaHeading || 'Get Started Today' }}</h2>
+    <h2>{{ ctaHeading || ('landing.getStartedToday' | translate) }}</h2>
     @if (ctaDescription) {
       <p>{{ ctaDescription }}</p>
     } @else {
-      <p>Join families who found their perfect match through {{ tenant.displayName }}.</p>
+      <p>{{ 'landing.joinFamilies' | translate: { name: tenant.displayName } }}</p>
     }
   </div>
   <div class="cta-actions">
@@ -23,13 +23,13 @@
     </section>
 
     <section>
-      <h4>Enquiry & Support</h4>
+      <h4>{{ 'landing.enquirySupport' | translate }}</h4>
       <p>{{ tenant.supportPhone }}</p>
       <p>{{ tenant.supportEmail }}</p>
     </section>
 
     <section>
-      <h4>Address</h4>
+      <h4>{{ 'landing.address' | translate }}</h4>
       <p>{{ tenant.supportAddress }}</p>
     </section>
   </div>

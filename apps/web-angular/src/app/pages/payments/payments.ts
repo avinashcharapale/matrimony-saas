@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { LocaleService } from '@org/i18n';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
@@ -13,7 +15,7 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-payments',
   standalone: true,
-  imports: [CommonModule, SharedSidebarComponent],
+  imports: [CommonModule, TranslateModule, SharedSidebarComponent],
   template: `
     <section class="search-page">
       <div class="search-shell">
@@ -27,52 +29,52 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
 
         <div class="page-content">
           <header class="page-header">
-            <p class="eyebrow">Billing</p>
-            <h1>Payments</h1>
+            <p class="eyebrow">{{ 'payments.eyebrow' | translate }}</p>
+            <h1>{{ 'nav.payments' | translate }}</h1>
           </header>
 
           <div class="summary-row">
             <div class="summary-card">
-              <span>Total spent</span>
+              <span>{{ 'payments.totalSpent' | translate }}</span>
               <strong>{{ formatCurrency(totalSpent()) }}</strong>
             </div>
             <div class="summary-card">
-              <span>Wallet balance</span>
+              <span>{{ 'payments.walletBalance' | translate }}</span>
               <strong>{{ walletBalance() }}</strong>
             </div>
             <div class="summary-card">
-              <span>Saved methods</span>
+              <span>{{ 'payments.savedMethods' | translate }}</span>
               <strong>{{ paymentMethodsCount() }}</strong>
             </div>
             <div class="summary-card">
-              <span>Invoices</span>
+              <span>{{ 'payments.invoices' | translate }}</span>
               <strong>{{ invoicesCount() }}</strong>
             </div>
           </div>
 
           <nav class="tabs">
-            <button [class.active]="activeTab() === 'transactions'" (click)="setTab('transactions')">Transactions</button>
-            <button [class.active]="activeTab() === 'invoices'" (click)="setTab('invoices')">Invoices</button>
-            <button [class.active]="activeTab() === 'methods'" (click)="setTab('methods')">Payment Methods</button>
-            <button [class.active]="activeTab() === 'wallet'" (click)="setTab('wallet')">Wallet</button>
+            <button [class.active]="activeTab() === 'transactions'" (click)="setTab('transactions')">{{ 'payments.transactions' | translate }}</button>
+            <button [class.active]="activeTab() === 'invoices'" (click)="setTab('invoices')">{{ 'payments.invoices' | translate }}</button>
+            <button [class.active]="activeTab() === 'methods'" (click)="setTab('methods')">{{ 'payments.paymentMethods' | translate }}</button>
+            <button [class.active]="activeTab() === 'wallet'" (click)="setTab('wallet')">{{ 'payments.wallet' | translate }}</button>
           </nav>
 
           @if (loading()) {
-            <p class="empty">Loading...</p>
+            <p class="empty">{{ 'common.loading' | translate }}</p>
           } @else if (error()) {
             <p class="empty error">{{ error() }}</p>
           } @else if (activeTab() === 'transactions') {
             <div class="table-card">
               @if (transactions().length === 0) {
-                <p class="empty">No payment transactions yet.</p>
+                <p class="empty">{{ 'payments.noTransactions' | translate }}</p>
               } @else {
                 <table>
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Description</th>
-                      <th>Amount</th>
-                      <th>Status</th>
+                      <th>{{ 'payments.date' | translate }}</th>
+                      <th>{{ 'payments.description' | translate }}</th>
+                      <th>{{ 'payments.amount' | translate }}</th>
+                      <th>{{ 'payments.status' | translate }}</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -80,10 +82,10 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
                     @for (tx of transactions(); track tx.paymentTransactionId) {
                       <tr (click)="openDetail(tx.paymentTransactionId ?? 0)" tabindex="0" (keydown.enter)="openDetail(tx.paymentTransactionId ?? 0)">
                         <td>{{ formatDate(tx.createdAt) }}</td>
-                        <td>{{ tx.description || tx.gatewayOrderId || 'Payment' }}</td>
+                        <td>{{ tx.description || tx.gatewayOrderId || ('payments.payment' | translate) }}</td>
                         <td>{{ formatCurrency(tx.amount) }}</td>
                         <td><span class="badge" [class]="statusClass(tx.status)">{{ tx.status }}</span></td>
-                        <td class="detail-link">View</td>
+                        <td class="detail-link">{{ 'payments.view' | translate }}</td>
                       </tr>
                     }
                   </tbody>
@@ -93,15 +95,15 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
           } @else if (activeTab() === 'invoices') {
             <div class="table-card">
               @if (invoices().length === 0) {
-                <p class="empty">No invoices yet.</p>
+                <p class="empty">{{ 'payments.noInvoices' | translate }}</p>
               } @else {
                 <table>
                   <thead>
                     <tr>
-                      <th>Invoice</th>
-                      <th>Date</th>
-                      <th>Status</th>
-                      <th>Amount</th>
+                      <th>{{ 'payments.invoice' | translate }}</th>
+                      <th>{{ 'payments.date' | translate }}</th>
+                      <th>{{ 'payments.status' | translate }}</th>
+                      <th>{{ 'payments.amount' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -120,15 +122,15 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
           } @else if (activeTab() === 'methods') {
             <div class="table-card">
               @if (methods().length === 0) {
-                <p class="empty">No saved payment methods.</p>
+                <p class="empty">{{ 'payments.noMethods' | translate }}</p>
               } @else {
                 <table>
                   <thead>
                     <tr>
-                      <th>Method</th>
-                      <th>Card</th>
-                      <th>Expiry</th>
-                      <th>Default</th>
+                      <th>{{ 'payments.method' | translate }}</th>
+                      <th>{{ 'payments.card' | translate }}</th>
+                      <th>{{ 'payments.expiry' | translate }}</th>
+                      <th>{{ 'payments.default' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -137,7 +139,7 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
                         <td>{{ m.methodType }}</td>
                         <td>{{ m.cardBrand || '' }} {{ m.cardLastFour ? '•••• ' + m.cardLastFour : '' }}</td>
                         <td>{{ m.expiryMonth }} / {{ m.expiryYear }}</td>
-                        <td>{{ m.isDefault ? 'Yes' : 'No' }}</td>
+                        <td>{{ m.isDefault ? ('common.yes' | translate) : ('common.no' | translate) }}</td>
                       </tr>
                     }
                   </tbody>
@@ -147,18 +149,18 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
           } @else {
             <div class="table-card">
               <p class="empty">
-                Wallet: <strong>{{ walletBalance() }}</strong>
+                {{ 'payments.wallet' | translate }}: <strong>{{ walletBalance() }}</strong>
               </p>
               @if (walletTransactions().length === 0) {
-                <p class="empty">No wallet transactions.</p>
+                <p class="empty">{{ 'payments.noWalletTransactions' | translate }}</p>
               } @else {
                 <table>
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Type</th>
-                      <th>Description</th>
-                      <th>Amount</th>
+                      <th>{{ 'payments.date' | translate }}</th>
+                      <th>{{ 'payments.type' | translate }}</th>
+                      <th>{{ 'payments.description' | translate }}</th>
+                      <th>{{ 'payments.amount' | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -181,36 +183,36 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
 
     @if (selectedDetail()) {
       <div class="drawer-overlay" (click)="onOverlayClick($event)" (keydown.escape)="closeDetail()" tabindex="0" role="presentation">
-        <div class="drawer" role="dialog" aria-label="Transaction detail">
+        <div class="drawer" role="dialog" [attr.aria-label]="'payments.transactionDetail' | translate">
           <header>
-            <h2>Transaction detail</h2>
-            <button class="close" (click)="closeDetail()" aria-label="Close">&times;</button>
+            <h2>{{ 'payments.transactionDetail' | translate }}</h2>
+            <button class="close" (click)="closeDetail()" [attr.aria-label]="'common.close' | translate">&times;</button>
           </header>
 
           <dl>
-            <dt>Status</dt>
+            <dt>{{ 'payments.status' | translate }}</dt>
             <dd><span class="badge" [class]="statusClass(selectedDetail()?.transaction?.status)">{{ selectedDetail()?.transaction?.status }}</span></dd>
-            <dt>Amount</dt>
+            <dt>{{ 'payments.amount' | translate }}</dt>
             <dd>{{ formatCurrency(selectedDetail()?.transaction?.amount) }}</dd>
-            <dt>Date</dt>
+            <dt>{{ 'payments.date' | translate }}</dt>
             <dd>{{ formatDate(selectedDetail()?.transaction?.createdAt) }}</dd>
-            <dt>Gateway order</dt>
+            <dt>{{ 'payments.gatewayOrder' | translate }}</dt>
             <dd>{{ selectedDetail()?.transaction?.gatewayOrderId || '—' }}</dd>
-            <dt>Gateway payment</dt>
+            <dt>{{ 'payments.gatewayPayment' | translate }}</dt>
             <dd>{{ selectedDetail()?.transaction?.gatewayPaymentId || '—' }}</dd>
-            <dt>Invoice</dt>
+            <dt>{{ 'payments.invoice' | translate }}</dt>
             <dd>{{ selectedDetail()?.transaction?.invoiceNumber || '—' }}</dd>
-            <dt>Receipt</dt>
+            <dt>{{ 'payments.receipt' | translate }}</dt>
             <dd>{{ selectedDetail()?.transaction?.receiptNumber || '—' }}</dd>
           </dl>
 
-          <h3>Attempts</h3>
+          <h3>{{ 'payments.attempts' | translate }}</h3>
           @if ((selectedDetail()?.attempts?.length ?? 0) === 0) {
-            <p class="empty">No attempts recorded.</p>
+            <p class="empty">{{ 'payments.noAttempts' | translate }}</p>
           } @else {
             <table>
               <thead>
-                <tr><th>#</th><th>Amount</th><th>Status</th><th>At</th></tr>
+                <tr><th>#</th><th>{{ 'payments.amount' | translate }}</th><th>{{ 'payments.status' | translate }}</th><th>{{ 'payments.at' | translate }}</th></tr>
               </thead>
               <tbody>
                 @for (a of selectedDetail()?.attempts ?? []; track a.paymentAttemptId) {
@@ -225,13 +227,13 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
             </table>
           }
 
-          <h3>Refunds</h3>
+          <h3>{{ 'payments.refunds' | translate }}</h3>
           @if ((selectedDetail()?.refunds?.length ?? 0) === 0) {
-            <p class="empty">No refunds recorded.</p>
+            <p class="empty">{{ 'payments.noRefunds' | translate }}</p>
           } @else {
             <table>
               <thead>
-                <tr><th>Amount</th><th>Type</th><th>Status</th><th>Reason</th></tr>
+                <tr><th>{{ 'payments.amount' | translate }}</th><th>{{ 'payments.type' | translate }}</th><th>{{ 'payments.status' | translate }}</th><th>{{ 'payments.reason' | translate }}</th></tr>
               </thead>
               <tbody>
                 @for (r of selectedDetail()?.refunds ?? []; track r.refundId) {
@@ -260,6 +262,7 @@ export class Payments implements OnInit {
   private readonly memberService = inject(MemberService);
   private readonly authService = inject(AuthService);
   private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly localeService = inject(LocaleService);
   readonly billingStore = inject(BillingStore);
 
   readonly loading = this.billingStore.loading;
@@ -340,12 +343,15 @@ export class Payments implements OnInit {
   }
 
   formatCurrency(amount?: number): string {
-    return `₹${(amount ?? 0).toFixed(2)}`;
+    return this.localeService.formatCurrency(amount ?? 0, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   }
 
   formatDate(value?: string): string {
     if (!value) return '—';
     const d = new Date(value);
-    return isNaN(d.getTime()) ? value : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    return isNaN(d.getTime()) ? value : this.localeService.formatDate(d);
   }
 }

@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
+import { LanguageSelectorComponent } from '../../components/language-selector/language-selector.component';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 import { TenantService } from '../../services/tenant.service';
 
@@ -21,72 +23,8 @@ const SETTINGS_KEY = 'matrimony_user_settings';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedSidebarComponent],
-  template: `
-    <section class="search-page">
-      <div class="search-shell">
-        <app-shared-sidebar
-          [userName]="userName()"
-          [userPhotoUrl]="userPhotoUrl()"
-          [userOccupation]="userOccupation()"
-          [subscriptionStatus]="subscriptionStatus()"
-          [subscriptionLoading]="subscriptionLoading()">
-        </app-shared-sidebar>
-
-        <div class="page-content">
-          <header class="page-header">
-            <p class="eyebrow">Preferences</p>
-            <h1>Settings</h1>
-          </header>
-
-          <section class="theme-preferences" aria-labelledby="theme-heading">
-            <div class="section-heading">
-              <p class="eyebrow">Appearance</p>
-              <h2 id="theme-heading">Choose a theme</h2>
-              <p class="section-description">Your selection is saved on this device and updates the app immediately.</p>
-            </div>
-            <div class="theme-options" role="radiogroup" aria-label="Available themes">
-              @for (theme of themes; track theme.id) {
-                <button
-                  type="button"
-                  class="theme-option"
-                  [class.selected]="activeThemeId() === theme.id"
-                  [attr.aria-checked]="activeThemeId() === theme.id"
-                  role="radio"
-                  (click)="selectTheme(theme.id)">
-                  <span class="theme-swatch" [style.background]="'linear-gradient(135deg, ' + theme.primary + ', ' + theme.accent + ')'" aria-hidden="true"></span>
-                  <span class="theme-option-copy">
-                    <strong>{{ theme.name }}</strong>
-                    <span>{{ theme.id === activeThemeId() ? 'Active theme' : 'Use this theme' }}</span>
-                  </span>
-                </button>
-              }
-            </div>
-          </section>
-
-          <form class="settings-form" (ngSubmit)="save()">
-            <label class="field-label">
-              <span>Profile Visibility</span>
-              <select [(ngModel)]="settings.profileVisibility" name="profileVisibility">
-                <option value="all">Visible to all members</option>
-                <option value="verified">Only verified profiles</option>
-                <option value="matches">Only suggested matches</option>
-              </select>
-            </label>
-
-            <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.emailAlerts" name="emailAlerts" /> <span>Email alerts</span></label>
-            <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.smsAlerts" name="smsAlerts" /> <span>SMS alerts</span></label>
-            <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.eventReminders" name="eventReminders" /> <span>Event reminders</span></label>
-
-            <button class="save-settings-button" type="submit">Save Settings</button>
-            @if (savedMessage()) {
-            <p class="saved">{{ savedMessage() }}</p>
-            }
-          </form>
-        </div>
-      </div>
-    </section>
-  `,
+  imports: [CommonModule, FormsModule, SharedSidebarComponent, TranslateModule, LanguageSelectorComponent],
+  templateUrl: './settings.html',
   styleUrl: './settings.css',
 })
 export class Settings implements OnInit {
@@ -102,6 +40,7 @@ export class Settings implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly subscriptionStore = inject(SubscriptionStore);
   private readonly tenantService = inject(TenantService);
+  private readonly translate = inject(TranslateService);
 
   readonly themes = this.tenantService.themes;
   readonly activeThemeId = signal(this.tenantService.activeThemeId);
@@ -149,6 +88,6 @@ export class Settings implements OnInit {
 
   save(): void {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(this.settings));
-    this.savedMessage.set('Settings saved successfully.');
+    this.savedMessage.set(this.translate.instant('settings.saved'));
   }
 }

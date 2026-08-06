@@ -385,6 +385,11 @@
     padding: 0.7rem 1rem;
   }
 
+  .public-drawer-actions app-language-selector {
+    display: flex;
+    justify-content: center;
+  }
+
   .app-content {
     padding: 1rem 0.85rem 2rem;
   }

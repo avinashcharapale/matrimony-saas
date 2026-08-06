@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
@@ -15,7 +16,7 @@ const MAX_PHOTOS = 6;
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-my-photos',
   standalone: true,
-  imports: [CommonModule, RouterModule, SharedSidebarComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, SharedSidebarComponent],
   templateUrl: './my-photos.html',
   styleUrl: './my-photos.css',
 })
@@ -24,6 +25,7 @@ export class MyPhotos implements OnInit {
   private readonly profileClient = inject(ProfileClient);
   private readonly authService = inject(AuthService);
   private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly translate = inject(TranslateService);
 
   @ViewChild('replaceFileInput') replaceFileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('addFileInput') addFileInput!: ElementRef<HTMLInputElement>;
@@ -90,7 +92,7 @@ export class MyPhotos implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load my photos:', err);
-        this.error.set('Failed to load photos. Please try again.');
+        this.error.set(this.translate.instant('myPhotos.errors.load'));
       },
     });
   }
@@ -171,7 +173,7 @@ export class MyPhotos implements OnInit {
         next: () => this.loadMyProfile(),
         error: (err) => {
           console.error('Photo delete failed', err);
-          this.error.set('Failed to delete photo. Please try again.');
+          this.error.set(this.translate.instant('myPhotos.errors.delete'));
         },
       });
   }
@@ -182,7 +184,7 @@ export class MyPhotos implements OnInit {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      this.error.set('Please select a valid image file.');
+      this.error.set(this.translate.instant('myPhotos.errors.invalidFile'));
       input.value = '';
       return;
     }
@@ -202,7 +204,7 @@ export class MyPhotos implements OnInit {
     }
 
     if (!file.type.startsWith('image/')) {
-      this.error.set('Please select a valid image file.');
+      this.error.set(this.translate.instant('myPhotos.errors.invalidFile'));
       this.replacingSlot.set(null);
       input.value = '';
       return;
@@ -225,7 +227,7 @@ export class MyPhotos implements OnInit {
         next: () => this.loadMyProfile(),
         error: (err) => {
           console.error('Photo upload failed', err);
-          this.error.set('Failed to upload photo. Please try again.');
+          this.error.set(this.translate.instant('myPhotos.errors.upload'));
         },
       });
   }

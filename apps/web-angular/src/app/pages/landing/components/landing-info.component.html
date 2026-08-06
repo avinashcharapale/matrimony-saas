@@ -1,8 +1,8 @@
 <section class="section-block split">
   <div>
-    <p class="section-label">Why Choose Us</p>
-    <h2>Why Choose {{ tenantDisplayName }}?</h2>
-    <p class="section-subtitle">The most trusted matrimony platform with decades of service.</p>
+    <p class="section-label">{{ 'landing.whyChooseLabel' | translate }}</p>
+    <h2>{{ 'landing.whyChooseTitle' | translate: { name: tenantDisplayName } }}</h2>
+    <p class="section-subtitle">{{ 'landing.whyChooseSubtitle' | translate }}</p>
     <div class="stack-cards">
       @for (feature of whyChoose; track feature.title) {
       <article class="info-card">
@@ -14,7 +14,7 @@
   </div>
 
   <div>
-    <h2>How It Works</h2>
+    <h2>{{ 'nav.howItWorks' | translate }}</h2>
     <div class="stack-cards">
       @for (step of howItWorks; track step.title; let idx = $index) {
       <article class="step-card">

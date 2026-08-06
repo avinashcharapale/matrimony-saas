@@ -1,4 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, computed } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { LocaleService } from '@org/i18n';
 import { TenantService } from '../../services/tenant.service';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
@@ -37,6 +39,9 @@ export class Home implements OnInit {
   private readonly matchClient = inject(MatchClient);
   private readonly chatClient = inject(ChatClient);
   private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly translate = inject(TranslateService);
+  private readonly localeService = inject(LocaleService);
+  private readonly langTick = signal(0);
 
   readonly subscriptionStatus = this.subscriptionStore.status;
   readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
@@ -55,7 +60,31 @@ export class Home implements OnInit {
   readonly userPhotoUrl = signal('');
   readonly userOccupation = signal('');
   readonly currentDate = signal('');
-  readonly quickStats = signal<NotificationCard[]>([]);
+  readonly quickStats = computed<NotificationCard[]>(() => {
+    if (!this.quickStatsLoaded()) {
+      return [];
+    }
+    this.langTick();
+    return [
+      {
+        label: this.translate.instant('home.stats.interestsReceived'),
+        value: String(this.interestsCount()),
+        hint: this.translate.instant('home.stats.interestsHint'),
+        icon: '\u{1F48C}',
+        tone: 'orange',
+      },
+      {
+        label: this.translate.instant('home.stats.savedProfiles'),
+        value: String(this.shortlistsCount()),
+        hint: this.translate.instant('home.stats.savedHint'),
+        icon: '\u2B50',
+        tone: 'gold',
+      },
+    ];
+  });
+  private readonly quickStatsLoaded = signal(false);
+  private readonly interestsCount = signal(0);
+  private readonly shortlistsCount = signal(0);
   readonly topMatches = signal<MatchItem[]>([]);
   readonly interests = signal<InterestItem[]>([]);
   readonly activities = signal<ActivityItem[]>([]);
@@ -68,15 +97,14 @@ export class Home implements OnInit {
   private myUserId: number | null = null;
 
   ngOnInit(): void {
+    this.translate.onLangChange.subscribe(() => this.langTick.update((v) => v + 1));
     this.currentDate.set(this.formatDate(new Date()));
     this.loadMyProfile();
     this.loadSubscriptionStatus();
   }
 
   private formatDate(date: Date): string {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+    return this.localeService.formatDate(date);
   }
 
   private formatShortDate(iso: string): string {
@@ -304,10 +332,10 @@ export class Home implements OnInit {
           this.recentlyShortlisted.set(
             top.map((s) => ({
               profileId: s.targetProfileId ?? 0,
-              name: `Profile #${s.targetProfileId}`,
+              name: this.profileLabel(s.targetProfileId),
               detail: s.createdAt
-                ? `Saved ${this.formatShortDate(s.createdAt)}`
-                : 'Saved',
+                ? `${this.translate.instant('home.saved')} ${this.formatShortDate(s.createdAt)}`
+                : this.translate.instant('home.saved'),
             }))
           );
           return;
@@ -324,10 +352,10 @@ export class Home implements OnInit {
                 : undefined;
               return {
                 profileId: s.targetProfileId ?? 0,
-                name: profile?.fullName ?? `Profile #${s.targetProfileId}`,
+                name: profile?.fullName ?? this.profileLabel(s.targetProfileId),
                 detail: s.createdAt
-                  ? `Saved ${this.formatShortDate(s.createdAt)}`
-                  : 'Saved',
+                  ? `${this.translate.instant('home.saved')} ${this.formatShortDate(s.createdAt)}`
+                  : this.translate.instant('home.saved'),
                 photoUrl: profile
                   ? this.getProfilePhoto(profile.photos)
                   : undefined,
@@ -350,22 +378,9 @@ export class Home implements OnInit {
     const done = () => {
       completed++;
       if (completed >= 2) {
-        this.quickStats.set([
-          {
-            label: 'Interests Received',
-            value: String(interestsCount),
-            hint: 'from other profiles',
-            icon: '\u{1F48C}',
-            tone: 'orange',
-          },
-          {
-            label: 'Saved Profiles',
-            value: String(shortlistsCount),
-            hint: 'in your shortlist',
-            icon: '\u2B50',
-            tone: 'gold',
-          },
-        ]);
+        this.interestsCount.set(interestsCount);
+        this.shortlistsCount.set(shortlistsCount);
+        this.quickStatsLoaded.set(true);
       }
     };
 
@@ -430,12 +445,16 @@ export class Home implements OnInit {
     const tags: string[] = [];
     if (horoscope.rashiName) tags.push(horoscope.rashiName);
     if (horoscope.nakshatraName) tags.push(horoscope.nakshatraName);
-    if (horoscope.ganName) tags.push(`Gan: ${horoscope.ganName}`);
-    if (horoscope.nadiName) tags.push(`Nadi: ${horoscope.nadiName}`);
+    if (horoscope.ganName) tags.push(`${this.translate.instant('home.horoscope.gan')}: ${horoscope.ganName}`);
+    if (horoscope.nadiName) tags.push(`${this.translate.instant('home.horoscope.nadi')}: ${horoscope.nadiName}`);
     if (horoscope.charanName) tags.push(horoscope.charanName);
-    if (horoscope.devak) tags.push(`Devak: ${horoscope.devak}`);
-    if (horoscope.manglik) tags.push('Manglik');
+    if (horoscope.devak) tags.push(`${this.translate.instant('home.horoscope.devak')}: ${horoscope.devak}`);
+    if (horoscope.manglik) tags.push(this.translate.instant('home.horoscope.manglik'));
     this.horoscopeTags.set(tags);
+  }
+
+  private profileLabel(id: number | null | undefined): string {
+    return `${this.translate.instant('home.profileLabel')} ${id ?? ''}`.trim();
   }
 
   toggleSidebar(): void {

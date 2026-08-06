@@ -1,10 +1,10 @@
 @if (hasResults) {
 <section class="results-list">
   <div class="results-topbar">
-    <p>{{ currentPage }} / {{ totalPages }} <span>pages</span></p>
+    <p>{{ currentPage }} / {{ totalPages }} <span>{{ 'profileList.results.pages' | translate }}</span></p>
     <div class="pager-mini">
-      <button type="button" [disabled]="currentPage <= 1" (click)="pageChange.emit(currentPage - 1)">&#x2039; Prev</button>
-      <button type="button" [disabled]="currentPage >= totalPages" (click)="pageChange.emit(currentPage + 1)">Next &#x203A;</button>
+      <button type="button" [disabled]="currentPage <= 1" (click)="pageChange.emit(currentPage - 1)">&#x2039; {{ 'profileList.results.prev' | translate }}</button>
+      <button type="button" [disabled]="currentPage >= totalPages" (click)="pageChange.emit(currentPage + 1)">{{ 'profileList.results.next' | translate }} &#x203A;</button>
     </div>
   </div>
 
@@ -29,43 +29,43 @@
       <div class="card-details">
         @if (profile.createdAtDate) {
           <div class="card-row">
-            <span class="card-label">DOR</span>
+            <span class="card-label">{{ 'profileList.results.dor' | translate }}</span>
             <span class="card-value">{{ profile.createdAtDate }}</span>
           </div>
         }
         @if (profile.dobText) {
           <div class="card-row">
-            <span class="card-label">Birth Date</span>
+            <span class="card-label">{{ 'profileList.results.birthDate' | translate }}</span>
             <span class="card-value">{{ profile.dobText }}</span>
           </div>
         }
         @if (profile.heightText) {
           <div class="card-row">
-            <span class="card-label">Height</span>
+            <span class="card-label">{{ 'profile.height' | translate }}</span>
             <span class="card-value">{{ profile.heightText }}</span>
           </div>
         }
         @if (profile.location && isPaidUser) {
           <div class="card-row">
-            <span class="card-label">Residence</span>
+            <span class="card-label">{{ 'profileList.results.residence' | translate }}</span>
             <span class="card-value">{{ profile.location }}</span>
           </div>
         }
         @if (profile.nativeDistrictName) {
           <div class="card-row">
-            <span class="card-label">Native District</span>
+            <span class="card-label">{{ 'profile.nativeDistrict' | translate }}</span>
             <span class="card-value">{{ profile.nativeDistrictName }}</span>
           </div>
         }
         @if (profile.educationText) {
           <div class="card-row">
-            <span class="card-label">Education</span>
+            <span class="card-label">{{ 'profile.education' | translate }}</span>
             <span class="card-value">{{ profile.educationText }}</span>
           </div>
         }
         @if (profile.occupationIncomeText) {
           <div class="card-row">
-            <span class="card-label">Occupation</span>
+            <span class="card-label">{{ 'profile.occupation' | translate }}</span>
             <span class="card-value">{{ profile.occupationIncomeText }}</span>
           </div>
         }
@@ -83,7 +83,7 @@
 
     <div class="card-action-col">
       <button type="button" class="btn-connect" (click)="$event.stopPropagation(); profileSelect.emit(profile)">
-        &#x2764; Connect
+        &#x2764; {{ 'profileList.results.connect' | translate }}
       </button>
     </div>
   </article>
@@ -105,7 +105,7 @@
 } @else {
 <div class="empty-state">
   <p class="empty-icon">&#x1F50D;</p>
-  <p class="empty-title">No profiles found</p>
-  <p class="empty-sub">Try adjusting your filters or search with different keywords.</p>
+  <p class="empty-title">{{ 'profileList.results.noProfilesFound' | translate }}</p>
+  <p class="empty-sub">{{ 'profileList.results.noResultsHint' | translate }}</p>
 </div>
 }

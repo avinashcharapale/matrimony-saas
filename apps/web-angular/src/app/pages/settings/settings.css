@@ -20,6 +20,7 @@
 }
 
 .page-header,
+.language-preferences,
 .theme-preferences,
 .settings-form {
   background: var(--theme-surface-raised);
@@ -42,6 +43,7 @@ h2 {
   color: var(--theme-text);
 }
 
+.language-preferences,
 .theme-preferences {
   display: grid;
   gap: 1rem;

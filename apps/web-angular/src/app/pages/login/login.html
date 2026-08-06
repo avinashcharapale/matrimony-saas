@@ -1,51 +1,42 @@
 <section class="login-page">
-  <div class="login-banner">
-    <img [src]="tenant.authBannerImage ?? tenant.heroImage" [alt]="tenant.displayName + ' wedding banner'" />
-    <div class="login-banner-overlay"></div>
-    <div class="login-banner-copy">
-      <span>Trusted beginnings</span>
-      <strong>Meet with intention. Marry with confidence.</strong>
-    </div>
-  </div>
-
   <div class="login-box">
     <h1>{{ tenant.displayName }}</h1>
-    <h2>Sign In</h2>
+    <h2>{{ 'auth.signIn' | translate }}</h2>
 
     <form class="login-form" #loginForm="ngForm" (ngSubmit)="submit(loginForm)" novalidate>
       <div class="form-field">
-        <label for="email">Email Address</label>
+        <label for="email">{{ 'auth.emailAddress' | translate }}</label>
         <input
           type="email"
           id="email"
           name="email"
           [(ngModel)]="email"
           #emailModel="ngModel"
-          placeholder="Enter your email"
+          [placeholder]="'auth.emailPlaceholder' | translate"
           required
           email
           maxlength="120"
         />
         @if (emailModel.invalid && (emailModel.dirty || emailModel.touched)) {
-        <small class="form-message error">Please enter a valid email address.</small>
+        <small class="form-message error">{{ 'auth.invalidEmail' | translate }}</small>
         }
       </div>
 
       <div class="form-field">
-        <label for="password">Password</label>
+        <label for="password">{{ 'auth.password' | translate }}</label>
         <input
           type="password"
           id="password"
           name="password"
           [(ngModel)]="password"
           #passwordModel="ngModel"
-          placeholder="Enter your password"
+          [placeholder]="'auth.passwordPlaceholder' | translate"
           required
           minlength="6"
           maxlength="64"
         />
         @if (passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)) {
-        <small class="form-message error">Password must be 6 to 64 characters.</small>
+        <small class="form-message error">{{ 'auth.passwordRange' | translate }}</small>
         }
       </div>
 
@@ -56,9 +47,9 @@
       @if (message()) { <div class="form-message error">{{ message() }}</div> }
 
       <p class="login-links">
-        <a href="#">Forgot your password?</a>
+        <a href="#">{{ 'auth.forgotPassword' | translate }}</a>
         &nbsp;&nbsp;|&nbsp;&nbsp;
-        First time here? <a routerLink="/register">Register now</a>
+        {{ 'auth.firstTimeHere' | translate }} <a routerLink="/register">{{ 'nav.register' | translate }}</a>
       </p>
     </form>
   </div>

@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Subscription, forkJoin } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   RegisterMasterDataService,
   RegisterLookupOption,
@@ -10,7 +11,7 @@ import {
 @Component({
   selector: 'app-register-step-expectation',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule],
+  imports: [ReactiveFormsModule, FormsModule, TranslateModule],
   templateUrl: './register-step-expectation.component.html',
   styleUrl: '../../register.css',
 })

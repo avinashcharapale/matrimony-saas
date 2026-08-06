@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, EventEmitter, Input, Output, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { SidebarService } from '../../services/sidebar.service';
 import { TenantService } from '../../services/tenant.service';
@@ -10,7 +11,7 @@ import { SubscriptionStatusCardComponent } from '../../pages/home/components/sub
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-shared-sidebar',
   standalone: true,
-  imports: [RouterModule, SubscriptionStatusCardComponent],
+  imports: [RouterModule, TranslateModule, SubscriptionStatusCardComponent],
   templateUrl: './shared-sidebar.component.html',
   styleUrl: './shared-sidebar.css',
 })

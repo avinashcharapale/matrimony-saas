@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { Subscription, forkJoin } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   RegisterMasterDataService,
   RegisterLookupOption,
@@ -11,7 +12,7 @@ import {
 @Component({
   selector: 'app-register-step-horoscope',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule],
   templateUrl: './register-step-horoscope.component.html',
   styleUrl: '../../register.css',
 })

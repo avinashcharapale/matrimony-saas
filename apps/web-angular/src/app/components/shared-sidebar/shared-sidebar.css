@@ -72,6 +72,13 @@
   line-height: 1.15;
 }
 
+/* Brand (logo + site name) is mobile-only; hide on desktop web */
+@media (min-width: 901px) {
+  .sidebar-brand-link {
+    display: none;
+  }
+}
+
 .sidebar-brand {
   display: grid;
   grid-template-columns: auto 1fr;

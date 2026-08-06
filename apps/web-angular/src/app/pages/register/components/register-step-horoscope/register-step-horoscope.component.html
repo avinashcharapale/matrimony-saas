@@ -1,50 +1,50 @@
 <section>
-  <h2>Horoscope Details</h2>
+  <h2>{{ 'register.horoscopeDetails' | translate }}</h2>
   <div class="field-grid compact" [formGroup]="horoscope">
     <div class="form-field">
-      <label>Rashi</label>
+      <label>{{ 'editProfile.rashi' | translate }}</label>
       <select formControlName="rashiId">
-        <option [ngValue]="null">Unspecified</option>
+        <option [ngValue]="null">{{ 'register.unspecified' | translate }}</option>
         @for (opt of rashiOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Nakshatra</label>
+      <label>{{ 'editProfile.nakshatra' | translate }}</label>
       <select formControlName="nakshatraId">
-        <option [ngValue]="null">Unspecified</option>
+        <option [ngValue]="null">{{ 'register.unspecified' | translate }}</option>
         @for (opt of nakshatraOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Charan</label>
+      <label>{{ 'editProfile.charan' | translate }}</label>
       <select formControlName="charanId">
-        <option [ngValue]="null">Unspecified</option>
+        <option [ngValue]="null">{{ 'register.unspecified' | translate }}</option>
         @for (opt of charanOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Nadi</label>
+      <label>{{ 'editProfile.nadi' | translate }}</label>
       <select formControlName="nadiId">
-        <option [ngValue]="null">Unspecified</option>
+        <option [ngValue]="null">{{ 'register.unspecified' | translate }}</option>
         @for (opt of nadiOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Gan</label>
+      <label>{{ 'editProfile.gan' | translate }}</label>
       <select formControlName="ganId">
-        <option [ngValue]="null">Unspecified</option>
+        <option [ngValue]="null">{{ 'register.unspecified' | translate }}</option>
         @for (opt of ganOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Mangal</label>
+      <label>{{ 'register.mangal' | translate }}</label>
       <select formControlName="manglik">
-        <option [ngValue]="false">No</option>
-        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+        <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
       </select>
     </div>
     <div class="form-field">
-      <label>Birth Time (It's important)</label>
+      <label>{{ 'register.birthTime' | translate }}</label>
       <div class="time-group">
         <select formControlName="birthHour">
           @for (h of [1,2,3,4,5,6,7,8,9,10,11,12]; track h) { <option [ngValue]="h">{{ h < 10 ? '0' + h : h }}</option> }
@@ -53,48 +53,48 @@
           @for (m of [0,5,10,15,20,25,30,35,40,45,50,55]; track m) { <option [ngValue]="m">{{ m < 10 ? '0' + m : m }}</option> }
         </select>
         <select formControlName="birthPeriod">
-          <option value="">Select</option>
-          <option value="AM">AM</option>
-          <option value="PM">PM</option>
+          <option value="">{{ 'common.select' | translate }}</option>
+          <option value="AM">{{ 'common.am' | translate }}</option>
+          <option value="PM">{{ 'common.pm' | translate }}</option>
         </select>
       </div>
     </div>
     <div class="form-field">
-      <label>Birth State</label>
+      <label>{{ 'editProfile.birthState' | translate }}</label>
       <select formControlName="birthStateId">
-        <option [ngValue]="null">Select State</option>
+        <option [ngValue]="null">{{ 'common.selectState' | translate }}</option>
         @for (s of birthStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
-        <option [ngValue]="0">Other</option>
+        <option [ngValue]="0">{{ 'common.other' | translate }}</option>
       </select>
     </div>
     @if (horoscope.get('birthStateId')?.value === 0) {
       <div class="form-field">
-        <label>Birth State (Other)</label>
-        <input type="text" formControlName="birthStateOther" placeholder="Enter state name" maxlength="100" />
+        <label>{{ 'editProfile.birthStateOtherLbl' | translate }}</label>
+        <input type="text" formControlName="birthStateOther" [attr.placeholder]="'editProfile.enterStateName' | translate" maxlength="100" />
       </div>
       <div class="form-field">
-        <label>Birth District (Other)</label>
-        <input type="text" formControlName="birthDistrictOther" placeholder="Enter district name" maxlength="80" />
+        <label>{{ 'editProfile.birthDistrictOtherLbl' | translate }}</label>
+        <input type="text" formControlName="birthDistrictOther" [attr.placeholder]="'editProfile.enterDistrictName' | translate" maxlength="80" />
       </div>
     }
     @if (horoscope.get('birthStateId')?.value && horoscope.get('birthStateId')?.value !== 0) {
       <div class="form-field">
-        <label>Birth District</label>
+        <label>{{ 'editProfile.birthDistrict' | translate }}</label>
         <select formControlName="birthDistrictId" [disabled]="birthDistricts.length === 0">
-          <option [ngValue]="null">Select District</option>
+          <option [ngValue]="null">{{ 'common.selectDistrict' | translate }}</option>
           @for (d of birthDistricts; track d.districtId) { <option [ngValue]="d.districtId">{{ d.name }}</option> }
-          <option [ngValue]="0">Other</option>
+          <option [ngValue]="0">{{ 'common.other' | translate }}</option>
         </select>
       </div>
       @if (horoscope.get('birthDistrictId')?.value === 0) {
         <div class="form-field">
-          <label>Birth District (Other)</label>
-          <input type="text" formControlName="birthDistrictOther" placeholder="Enter district name" maxlength="80" />
+          <label>{{ 'editProfile.birthDistrictOtherLbl' | translate }}</label>
+          <input type="text" formControlName="birthDistrictOther" [attr.placeholder]="'editProfile.enterDistrictName' | translate" maxlength="80" />
         </div>
       }
     }
     <div class="form-field">
-      <label>Devak</label>
+      <label>{{ 'editProfile.devak' | translate }}</label>
       <input type="text" formControlName="devak" />
     </div>
   </div>

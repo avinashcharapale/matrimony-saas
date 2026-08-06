@@ -1,5 +1,5 @@
 <aside class="dashboard-sidebar" [class.open]="isOpen()">
-  <button type="button" class="sidebar-close-btn" (click)="closeSidebar()" aria-label="Close sidebar">
+  <button type="button" class="sidebar-close-btn" (click)="closeSidebar()" [attr.aria-label]="'common.close' | translate">
     &#10005;
   </button>
   <a routerLink="/home" class="sidebar-brand-link" (click)="closeSidebar()">
@@ -23,23 +23,23 @@
       referrerpolicy="no-referrer"
     />
     <div>
-      <span class="brand-label">{{ userName || 'Loading...' }}</span>
+      <span class="brand-label">{{ userName || ('common.loading' | translate) }}</span>
       <p>{{ userOccupation || '' }}</p>
     </div>
   </div>
 
   <nav class="sidebar-nav">
-    <a routerLink="/home"             routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8962;</span><span>Dashboard</span></a>
-    <a routerLink="/my-profile"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128100;</span><span>My Profile</span></a>
-    <a routerLink="/my-photos"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128247;</span><span>My Photos</span></a>
-    <a routerLink="/profiles"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8981;</span><span>Search Matches</span></a>
-    <a routerLink="/interests"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9825;</span><span>Interests</span></a>
-    <a routerLink="/shortlists"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9733;</span><span>Shortlists</span></a>
-    <a routerLink="/messages"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9993;</span><span>Messages</span></a>
-    <a routerLink="/events"           routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9783;</span><span>Events &amp; Meets</span></a>
-    <a routerLink="/payments"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128176;</span><span>Payments</span></a>
-    <a routerLink="/settings"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9881;</span><span>Settings</span></a>
-    <button type="button" class="sidebar-logout" (click)="logout(); closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8618;</span><span>Logout</span></button>
+    <a routerLink="/home"             routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8962;</span><span>{{ 'nav.home' | translate }}</span></a>
+    <a routerLink="/my-profile"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128100;</span><span>{{ 'nav.myProfile' | translate }}</span></a>
+    <a routerLink="/my-photos"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128247;</span><span>{{ 'nav.myPhotos' | translate }}</span></a>
+    <a routerLink="/profiles"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8981;</span><span>{{ 'nav.search' | translate }}</span></a>
+    <a routerLink="/interests"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9825;</span><span>{{ 'nav.interests' | translate }}</span></a>
+    <a routerLink="/shortlists"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9733;</span><span>{{ 'nav.shortlists' | translate }}</span></a>
+    <a routerLink="/messages"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9993;</span><span>{{ 'nav.messages' | translate }}</span></a>
+    <a routerLink="/events"           routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9783;</span><span>{{ 'nav.events' | translate }}</span></a>
+    <a routerLink="/payments"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128176;</span><span>{{ 'nav.payments' | translate }}</span></a>
+    <a routerLink="/settings"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9881;</span><span>{{ 'nav.settings' | translate }}</span></a>
+    <button type="button" class="sidebar-logout" (click)="logout(); closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8618;</span><span>{{ 'nav.logout' | translate }}</span></button>
   </nav>
 
   <app-subscription-status-card

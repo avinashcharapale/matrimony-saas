@@ -1,34 +1,34 @@
 <section class="plans-page">
   <div class="plans-container">
     <div class="plans-header">
-      <h1>Choose Your Plan</h1>
+      <h1>{{ 'plans.title' | translate }}</h1>
       @if (isLoggedIn()) {
-      <p>Unlock premium features to find your perfect match</p>
+      <p>{{ 'plans.subtitleLoggedIn' | translate }}</p>
       } @else {
-      <p>Simple, transparent pricing for every family. Register to get started.</p>
+      <p>{{ 'plans.subtitleGuest' | translate }}</p>
       }
     </div>
 
     @if (isLoggedIn() && checkoutResult()) {
     <div class="checkout-success">
       <div class="success-icon">&#x2713;</div>
-      <h2>Payment Successful!</h2>
+      <h2>{{ 'plans.paymentSuccess' | translate }}</h2>
       <p class="success-detail">
-        <strong>{{ checkoutResult()!.planName }}</strong> plan activated
+        <strong>{{ checkoutResult()!.planName }}</strong> {{ 'plans.planActivated' | translate }}
       </p>
       <p class="success-dates">
-        Valid from {{ checkoutResult()!.startDate | date:'mediumDate' }}
-        to {{ checkoutResult()!.endDate | date:'mediumDate' }}
+        {{ 'plans.validFrom' | translate }} {{ checkoutResult()!.startDate | date:'mediumDate' }}
+        {{ 'plans.to' | translate }} {{ checkoutResult()!.endDate | date:'mediumDate' }}
       </p>
-      <p class="success-amount">Amount paid: {{ formatPrice(checkoutResult()!.amount) }}</p>
-      <button class="cta-button" (click)="goToProfiles()">Browse Profiles</button>
+      <p class="success-amount">{{ 'plans.amountPaid' | translate }} {{ formatPrice(checkoutResult()!.amount) }}</p>
+      <button class="cta-button" (click)="goToProfiles()">{{ 'plans.browseProfiles' | translate }}</button>
     </div>
     } @else {
     <div class="plans-grid">
       @for (plan of plans(); track plan.id) {
       <div class="plan-card" [class.popular]="plan.isPopular" [class.processing]="selectedPlanId() === plan.id">
         @if (plan.isPopular) {
-        <div class="popular-badge">Most Popular</div>
+        <div class="popular-badge">{{ 'plans.mostPopular' | translate }}</div>
         }
         <div class="plan-name">{{ plan.name }}</div>
         <div class="plan-price">{{ formatPrice(plan.price) }}</div>
@@ -53,14 +53,14 @@
           [disabled]="isProcessing()"
           (click)="selectPlan(plan)">
           @if (selectedPlanId() === plan.id) {
-          Processing...
+          {{ 'plans.processing' | translate }}
           } @else {
-          Select Plan
+          {{ 'plans.selectPlan' | translate }}
           }
         </button>
         } @else {
         <a routerLink="/register" class="plan-select-btn register" [class.primary]="plan.isPopular">
-          Register to Subscribe
+          {{ 'plans.registerToSubscribe' | translate }}
         </a>
         }
       </div>
@@ -75,7 +75,7 @@
 
     @if (plans().length === 0 && !loading()) {
     <div class="no-plans">
-      <p>No plans available at the moment.</p>
+      <p>{{ 'plans.noPlans' | translate }}</p>
     </div>
     }
     }

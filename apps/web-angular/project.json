@@ -17,6 +17,11 @@
           {
             "glob": "**/*",
             "input": "apps/web-angular/public"
+          },
+          {
+            "glob": "**/*.json",
+            "input": "libs/shared/i18n/src/assets/i18n",
+            "output": "/assets/i18n"
           }
         ],
         "styles": [

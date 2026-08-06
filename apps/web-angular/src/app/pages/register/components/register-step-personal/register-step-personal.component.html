@@ -1,72 +1,72 @@
 <section>
-  <h2>Personal Details</h2>
+  <h2>{{ 'register.personalDetails' | translate }}</h2>
   <div class="field-grid" [formGroup]="personal">
     <div class="form-field">
-      <label for="firstName">First Name</label>
+      <label for="firstName">{{ 'editProfile.firstName' | translate }}</label>
       <input type="text" id="firstName" formControlName="firstName" maxlength="40" />
     </div>
     <div class="form-field">
-      <label for="middleName">Middle Name</label>
+      <label for="middleName">{{ 'editProfile.middleName' | translate }}</label>
       <input type="text" id="middleName" formControlName="middleName" maxlength="40" />
     </div>
     <div class="form-field">
-      <label for="lastName">Last Name</label>
+      <label for="lastName">{{ 'editProfile.lastName' | translate }}</label>
       <input type="text" id="lastName" formControlName="lastName" maxlength="40" />
     </div>
     <div class="form-field">
-      <label>Date of Birth</label>
+      <label>{{ 'editProfile.dob' | translate }}</label>
       <div class="date-group">
         <select formControlName="dobDay">
-          <option [ngValue]="null">DD</option>
+          <option [ngValue]="null">{{ 'register.dd' | translate }}</option>
           @for (d of days; track d) { <option [ngValue]="d">{{ d }}</option> }
         </select>
         <select formControlName="dobMonth">
-          <option value="">MM</option>
-          @for (m of months; track m) { <option [value]="m">{{ m }}</option> }
+          <option value="">{{ 'register.mm' | translate }}</option>
+          @for (m of monthLabels(); track m.value) { <option [value]="m.value">{{ m.label }}</option> }
         </select>
         <select formControlName="dobYear">
-          <option [ngValue]="null">YYYY</option>
+          <option [ngValue]="null">{{ 'register.yyyy' | translate }}</option>
           @for (y of years; track y) { <option [ngValue]="y">{{ y }}</option> }
         </select>
       </div>
     </div>
     <div class="form-field">
-      <label>Gender</label>
+      <label>{{ 'editProfile.gender' | translate }}</label>
       <select formControlName="genderId" [disabled]="lookupsLoading">
-        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
         @for (opt of genderOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Religion</label>
+      <label>{{ 'editProfile.religion' | translate }}</label>
       <select formControlName="religionId" [disabled]="lookupsLoading">
-        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
         @for (opt of religionOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Caste</label>
+      <label>{{ 'editProfile.caste' | translate }}</label>
       <select formControlName="casteId">
-        <option [ngValue]="null">Select</option>
+        <option [ngValue]="null">{{ 'common.select' | translate }}</option>
         @for (opt of casteOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Sub Cast</label>
+      <label>{{ 'register.subCast' | translate }}</label>
       <select formControlName="subCasteId">
-        <option [ngValue]="null">Select</option>
+        <option [ngValue]="null">{{ 'common.select' | translate }}</option>
         @for (opt of subCastOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Marital Status</label>
+      <label>{{ 'editProfile.maritalStatus' | translate }}</label>
       <select formControlName="maritalStatusId" [disabled]="lookupsLoading">
-        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
         @for (opt of maritalStatusOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Height</label>
+      <label>{{ 'editProfile.height' | translate }}</label>
       <div class="height-group">
         <select formControlName="heightFt">
           @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }}</option> }
@@ -77,61 +77,61 @@
       </div>
     </div>
     <div class="form-field">
-      <label>Weight</label>
+      <label>{{ 'register.weight' | translate }}</label>
       <select formControlName="weightKg">
         @for (w of [40,45,50,55,60,65,70,75,80]; track w) { <option [ngValue]="w">{{ w }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Blood Group</label>
+      <label>{{ 'editProfile.bloodGroup' | translate }}</label>
       <select formControlName="bloodGroupId" [disabled]="lookupsLoading">
-        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
         @for (opt of bloodGroupOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Complexion</label>
+      <label>{{ 'editProfile.complexion' | translate }}</label>
       <select formControlName="complexionId" [disabled]="lookupsLoading">
-        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
         @for (opt of complexionOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Physical Disabilities</label>
+      <label>{{ 'editProfile.physicalDisability' | translate }}</label>
       <select formControlName="physicalDisability">
-        <option [ngValue]="false">No</option>
-        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+        <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
       </select>
     </div>
     <div class="form-field">
-      <label>If Yes, Please Specify</label>
+      <label>{{ 'register.disabilityPrompt' | translate }}</label>
       <input type="text" formControlName="disabilityDetail" />
     </div>
     <div class="form-field">
-      <label>Diet</label>
+      <label>{{ 'editProfile.diet' | translate }}</label>
       <select formControlName="dietId" [disabled]="lookupsLoading">
-        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
         @for (opt of dietOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Spectacles</label>
+      <label>{{ 'editProfile.spectacles' | translate }}</label>
       <select formControlName="spectacles">
-        <option [ngValue]="false">No</option>
-        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+        <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
       </select>
     </div>
     <div class="form-field">
-      <label>Lens</label>
+      <label>{{ 'editProfile.lens' | translate }}</label>
       <select formControlName="lens">
-        <option [ngValue]="false">No</option>
-        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+        <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
       </select>
     </div>
     <div class="form-field">
-      <label>Personality</label>
+      <label>{{ 'editProfile.personality' | translate }}</label>
       <select formControlName="personalityId" [disabled]="lookupsLoading">
-        <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+        <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
         @for (opt of personalityOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>

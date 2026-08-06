@@ -8,7 +8,7 @@
           [alt]="displayName()" 
           class="profile-main-photo" 
           (click)="openGallery()"
-          title="Click to view gallery" 
+          [title]="'myPhotos.viewGallery' | translate" 
         />
         @if ((profile()!.registrationDetails?.photos?.length || 0) > 1) {
         <div class="photo-thumbnails">
@@ -24,7 +24,7 @@
         <div class="member-details">
           @if (profile()!.age) {
             <div class="member-row">
-              <span class="member-value">{{ profile()!.age }} years old</span>
+              <span class="member-value">{{ profile()!.age }} {{ 'profileDetail.yearsOld' | translate }}</span>
             </div>
           }
         </div>
@@ -41,23 +41,23 @@
 
       <button class="connect-button" [class.sent]="interestSent() || (existingInterestStatus() === 'Pending')" [class.declined]="existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" [disabled]="isSendingInterest() || existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" (click)="onConnect()">
         @if (isVisitor()) {
-          Register to Connect
+          {{ 'profileDetail.registerToConnect' | translate }}
         } @else if (isFreeUser() && !existingInterestStatus()) {
-          Upgrade to Connect
+          {{ 'profileDetail.upgradeToConnect' | translate }}
         } @else if (existingInterestStatus() === 'Pending') {
-          Interest Sent
+          {{ 'profileDetail.interestSent' | translate }}
         } @else if (existingInterestStatus() === 'Accepted') {
-          Accepted &#10003;
+          {{ 'profileDetail.accepted' | translate }} &#10003;
         } @else if (existingInterestStatus() === 'Declined') {
-          Interest Declined
+          {{ 'profileDetail.interestDeclined' | translate }}
         } @else if (existingInterestStatus() === 'Withdrawn') {
-          Interest Withdrawn
+          {{ 'profileDetail.interestWithdrawn' | translate }}
         } @else if (interestSent()) {
-          Interest Sent
+          {{ 'profileDetail.interestSent' | translate }}
         } @else if (isSendingInterest()) {
-          Sending...
+          {{ 'profileDetail.sending' | translate }}
         } @else {
-          &#x2764; Connect
+          &#x2764; {{ 'profileDetail.connect' | translate }}
         }
       </button>
 
@@ -68,11 +68,11 @@
       @if (!isVisitor()) {
       <button class="shortlist-button" [class.active]="isShortlisted()" [disabled]="isTogglingShortlist()" (click)="toggleShortlist()">
         @if (isTogglingShortlist()) {
-          Saving...
+          {{ 'common.saving' | translate }}
         } @else if (isShortlisted()) {
-          &#9733; Saved
+          &#9733; {{ 'home.saved' | translate }}
         } @else {
-          &#9734; Save Profile
+          &#9734; {{ 'profileDetail.saveProfile' | translate }}
         }
       </button>
       @if (shortlistError()) {
@@ -81,7 +81,7 @@
       }
 
       @if (!isContactUnlocked() && !isVisitor()) {
-      <p class="unlock-hint">Subscribe to view contact details</p>
+      <p class="unlock-hint">{{ 'profileDetail.subscribeToViewContact' | translate }}</p>
       }
     </aside>
 
@@ -103,7 +103,7 @@
   </div>
 
   <footer class="detail-footer">
-    <a routerLink="/profiles" class="back-link">← Back to Profiles</a>
+    <a routerLink="/profiles" class="back-link">← {{ 'profileDetail.backToProfiles' | translate }}</a>
   </footer>
 
   <!-- Gallery Modal -->
@@ -118,7 +118,7 @@
         <div class="gallery-image-wrapper">
           <img 
             [src]="galleryPhotos()[currentGalleryIndex()]" 
-            [alt]="profile()!.name + ' - photo ' + (currentGalleryIndex() + 1)"
+            [attr.alt]="profile()!.name + ' - ' + ('profileDetail.photo' | translate) + ' ' + (currentGalleryIndex() + 1)"
             class="gallery-image"
           />
         </div>
@@ -134,7 +134,7 @@
             class="dot" 
             [class.active]="i === currentGalleryIndex()"
             (click)="goToPhoto($index)"
-            [attr.aria-label]="'Go to photo ' + (i + 1)"
+            [attr.aria-label]="('profileDetail.goToPhoto' | translate) + ' ' + (i + 1)"
           ></button>
           }
         </div>
@@ -149,10 +149,10 @@
     <div class="upgrade-modal" (click)="$event.stopPropagation()">
       <button class="upgrade-close" (click)="dismissUpgradePrompt()">&#x2715;</button>
       <div class="upgrade-content">
-        <h2>Upgrade to Connect</h2>
-        <p>You need an active subscription to send interests and view contact details.</p>
-        <button class="upgrade-cta" (click)="goToPlans()">View Plans</button>
-        <button class="upgrade-cancel" (click)="dismissUpgradePrompt()">Maybe Later</button>
+        <h2>{{ 'profileDetail.upgradeToConnect' | translate }}</h2>
+        <p>{{ 'profileDetail.upgradePromptBody' | translate }}</p>
+        <button class="upgrade-cta" (click)="goToPlans()">{{ 'profileDetail.viewPlans' | translate }}</button>
+        <button class="upgrade-cancel" (click)="dismissUpgradePrompt()">{{ 'profileDetail.maybeLater' | translate }}</button>
       </div>
     </div>
   </div>
@@ -160,9 +160,9 @@
 
   } @else {
   <article class="detail-card empty">
-    <h2>Profile not found</h2>
-    <p>The selected profile is unavailable.</p>
-    <a routerLink="/profiles" class="back-link">Return to Profiles</a>
+    <h2>{{ 'myPhotos.profileNotFound' | translate }}</h2>
+    <p>{{ 'profileDetail.profileUnavailable' | translate }}</p>
+    <a routerLink="/profiles" class="back-link">{{ 'profileDetail.returnToProfiles' | translate }}</a>
   </article>
   }
 </section>

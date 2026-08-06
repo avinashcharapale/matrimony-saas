@@ -17,22 +17,22 @@
           class="search-input"
           [(ngModel)]="filters.name"
           name="name"
-          placeholder="Search by name, city, or keyword..."
+          [attr.placeholder]="'publicSearch.searchPlaceholder' | translate"
           maxlength="60"
         />
       </div>
 
       <div class="search-quick-filters">
         <div class="qf-field">
-          <label>Looking For</label>
+          <label>{{ 'publicSearch.lookingFor' | translate }}</label>
           <select [(ngModel)]="filters.lookingFor" name="lookingFor">
-            <option value="">Any</option>
-            <option value="Bride">Bride</option>
-            <option value="Groom">Groom</option>
+            <option value="">{{ 'common.all' | translate }}</option>
+            <option value="Bride">{{ 'publicSearch.lookingForBride' | translate }}</option>
+            <option value="Groom">{{ 'publicSearch.lookingForGroom' | translate }}</option>
           </select>
         </div>
         <div class="qf-field">
-          <label>Age</label>
+          <label>{{ 'publicSearch.age' | translate }}</label>
           <div class="age-range">
             <select [(ngModel)]="filters.ageMin" name="ageMin">
               <option [ngValue]="18">18</option>
@@ -53,7 +53,7 @@
               <option [ngValue]="48">48</option>
               <option [ngValue]="50">50</option>
             </select>
-            <span class="range-sep">to</span>
+            <span class="range-sep">{{ 'publicSearch.to' | translate }}</span>
             <select [(ngModel)]="filters.ageMax" name="ageMax">
               <option [ngValue]="20">20</option>
               <option [ngValue]="22">22</option>
@@ -77,31 +77,31 @@
           </div>
         </div>
         <div class="qf-field">
-          <label>City</label>
-          <input type="text" [(ngModel)]="filters.city" name="city" placeholder="Any" maxlength="60" />
+          <label>{{ 'publicSearch.city' | translate }}</label>
+          <input type="text" [(ngModel)]="filters.city" name="city" [attr.placeholder]="'common.all' | translate" maxlength="60" />
         </div>
-        <button type="submit" class="btn-search">Search</button>
+        <button type="submit" class="btn-search">{{ 'common.search' | translate }}</button>
       </div>
     </div>
 
     <div class="search-meta-bar">
       <button type="button" class="filter-toggle" (click)="showAdvanced = !showAdvanced" [class.active]="showAdvanced">
         <span class="toggle-arrow" [class.open]="showAdvanced">&#x25B8;</span>
-        Filters
+        {{ 'publicSearch.filters' | translate }}
         @if (advancedFilterCount() > 0) {
           <span class="filter-badge">{{ advancedFilterCount() }}</span>
         }
       </button>
       <div class="result-summary">
         <strong>{{ totalCount() }}</strong>
-        <span> matching profiles</span>
+        <span>{{ 'publicSearch.matchingProfiles' | translate }}</span>
       </div>
       <label class="sort-control">
-        Sort by
+        {{ 'publicSearch.sortBy' | translate }}
         <select [(ngModel)]="filters.sortBy" name="sortBy" (ngModelChange)="onSearch()">
-          <option value="relevance">Relevance</option>
-          <option value="age-asc">Age: Low to High</option>
-          <option value="age-desc">Age: High to Low</option>
+          <option value="relevance">{{ 'publicSearch.sortRelevance' | translate }}</option>
+          <option value="age-asc">{{ 'publicSearch.sortAgeLowToHigh' | translate }}</option>
+          <option value="age-desc">{{ 'publicSearch.sortAgeHighToLow' | translate }}</option>
         </select>
       </label>
     </div>
@@ -110,79 +110,79 @@
       <div class="advanced-panel">
         <div class="adv-grid">
           <div class="adv-field">
-            <label>Religion</label>
+            <label>{{ 'publicSearch.religion' | translate }}</label>
             <select [(ngModel)]="filters.religionId" name="religionId" (ngModelChange)="onReligionChange()">
-              <option value="">Any</option>
+              <option value="">{{ 'common.all' | translate }}</option>
               @for (opt of religionOptions(); track opt.id) {
                 <option [value]="opt.id">{{ opt.label }}</option>
               }
             </select>
           </div>
           <div class="adv-field">
-            <label>Caste</label>
+            <label>{{ 'publicSearch.caste' | translate }}</label>
             <select [(ngModel)]="filters.casteId" name="casteId">
-              <option value="">Any</option>
+              <option value="">{{ 'common.all' | translate }}</option>
               @for (opt of casteOptions(); track opt.id) {
                 <option [value]="opt.id">{{ opt.label }}</option>
               }
             </select>
           </div>
           <div class="adv-field">
-            <label>Education</label>
+            <label>{{ 'publicSearch.education' | translate }}</label>
             <select [(ngModel)]="filters.educationId" name="educationId">
-              <option value="">Any</option>
+              <option value="">{{ 'common.all' | translate }}</option>
               @for (opt of educationOptions(); track opt.id) {
                 <option [value]="opt.id">{{ opt.label }}</option>
               }
             </select>
           </div>
           <div class="adv-field">
-            <label>Marital Status</label>
+            <label>{{ 'publicSearch.maritalStatus' | translate }}</label>
             <select [(ngModel)]="filters.maritalStatusId" name="maritalStatusId">
-              <option value="">Any</option>
+              <option value="">{{ 'common.all' | translate }}</option>
               @for (opt of maritalStatusOptions(); track opt.id) {
                 <option [value]="opt.id">{{ opt.label }}</option>
               }
             </select>
           </div>
           <div class="adv-field">
-            <label>Occupation</label>
+            <label>{{ 'publicSearch.occupation' | translate }}</label>
             <select [(ngModel)]="filters.occupationId" name="occupationId">
-              <option value="">Any</option>
+              <option value="">{{ 'common.all' | translate }}</option>
               @for (opt of occupationOptions(); track opt.id) {
                 <option [value]="opt.id">{{ opt.label }}</option>
               }
             </select>
           </div>
           <div class="adv-field">
-            <label>Occupation Place</label>
-            <input type="text" [(ngModel)]="filters.occupationPlace" name="occupationPlace" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
+            <label>{{ 'publicSearch.occupationPlace' | translate }}</label>
+            <input type="text" [(ngModel)]="filters.occupationPlace" name="occupationPlace" [attr.placeholder]="'common.all' | translate" maxlength="60" pattern="[A-Za-z .-]*" />
           </div>
           <div class="adv-field">
-            <label>Income Range Per Annum</label>
+            <label>{{ 'publicSearch.incomeRangePerAnnum' | translate }}</label>
             <select [(ngModel)]="filters.annualIncomeFrom" name="annualIncomeFrom">
-              <option value="">Any</option>
-              <option [ngValue]="0">0+</option>
-              <option [ngValue]="200000">2L+</option>
-              <option [ngValue]="400000">4L+</option>
-              <option [ngValue]="600000">6L+</option>
-              <option [ngValue]="800000">8L+</option>
-              <option [ngValue]="1000000">10L+</option>
-              <option [ngValue]="1500000">15L+</option>
-              <option [ngValue]="2000000">20L+</option>
-              <option [ngValue]="3000000">30L+</option>
-              <option [ngValue]="5000000">50L+</option>
-              <option [ngValue]="10000000">1Cr+</option>
+              <option value="">{{ 'common.all' | translate }}</option>
+              <option [ngValue]="0">{{ 'publicSearch.income.above0' | translate }}</option>
+              <option [ngValue]="200000">{{ 'publicSearch.income.above2L' | translate }}</option>
+              <option [ngValue]="400000">{{ 'publicSearch.income.above4L' | translate }}</option>
+              <option [ngValue]="600000">{{ 'publicSearch.income.above6L' | translate }}</option>
+              <option [ngValue]="800000">{{ 'publicSearch.income.above8L' | translate }}</option>
+              <option [ngValue]="1000000">{{ 'publicSearch.income.above10L' | translate }}</option>
+              <option [ngValue]="1500000">{{ 'publicSearch.income.above15L' | translate }}</option>
+              <option [ngValue]="2000000">{{ 'publicSearch.income.above20L' | translate }}</option>
+              <option [ngValue]="3000000">{{ 'publicSearch.income.above30L' | translate }}</option>
+              <option [ngValue]="5000000">{{ 'publicSearch.income.above50L' | translate }}</option>
+              <option [ngValue]="10000000">{{ 'publicSearch.income.above1Cr' | translate }}</option>
             </select>
           </div>
           <div class="adv-field">
-            <label>Native Place</label>
-            <input type="text" [(ngModel)]="filters.nativePlace" name="nativePlace" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
+            <label>{{ 'publicSearch.nativePlace' | translate }}</label>
+            <input type="text" [(ngModel)]="filters.nativePlace" name="nativePlace" [attr.placeholder]="'common.all' | translate" maxlength="60" pattern="[A-Za-z .-]*" />
           </div>
           <div class="adv-field">
-            <label>Height</label>
+            <label>{{ 'publicSearch.height' | translate }}</label>
             <select [(ngModel)]="filters.height" name="height">
-              <option value="Any">Any</option>
+              <option value="Any">{{ 'common.all' | translate }}</option>
               <option value="4'10&quot; - 5'0&quot;">4'10&quot; - 5'0&quot;</option>
               <option value="5'0&quot; - 5'2&quot;">5'0&quot; - 5'2&quot;</option>
               <option value="5'2&quot; - 5'4&quot;">5'2&quot; - 5'4&quot;</option>
@@ -196,8 +196,8 @@
           </div>
         </div>
         <div class="adv-footer">
-          <button type="button" class="btn-clear" (click)="clearFilters()">Clear All</button>
-          <button type="button" class="btn-apply" (click)="onSearch()">Apply Filters</button>
+          <button type="button" class="btn-clear" (click)="clearFilters()">{{ 'publicSearch.clearAll' | translate }}</button>
+          <button type="button" class="btn-apply" (click)="onSearch()">{{ 'publicSearch.applyFilters' | translate }}</button>
         </div>
       </div>
     }
@@ -206,7 +206,7 @@
   <div class="results-section">
     @if (loading()) {
       <div class="loading-state">
-        <p>Loading profiles...</p>
+        <p>{{ 'publicSearch.loadingProfiles' | translate }}</p>
       </div>
     } @else if (results().length > 0) {
       <div class="results-list">
@@ -229,44 +229,44 @@
               <div class="card-details">
                 @if (getCreatedAtText(profile)) {
                   <div class="card-row">
-                    <span class="card-label">DOR</span>
+                    <span class="card-label">{{ 'publicSearch.dor' | translate }}</span>
                     <span class="card-value">{{ getCreatedAtText(profile) }}</span>
                   </div>
                 }
                 @if (getDobText(profile)) {
                   <div class="card-row">
-                    <span class="card-label">Birth Date</span>
+                    <span class="card-label">{{ 'publicSearch.birthDate' | translate }}</span>
                     <span class="card-value">{{ getDobText(profile) }}</span>
                   </div>
                 }
                 @if (getHeightText(profile)) {
                   <div class="card-row">
-                    <span class="card-label">Height</span>
+                    <span class="card-label">{{ 'publicSearch.height' | translate }}</span>
                     <span class="card-value">{{ getHeightText(profile) }}</span>
                   </div>
                 }
                 @if (profile.maritalStatusName) {
                   <div class="card-row">
-                    <span class="card-label">Marital Status</span>
+                    <span class="card-label">{{ 'publicSearch.maritalStatus' | translate }}</span>
                     <span class="card-value">{{ profile.maritalStatusName }}</span>
                   </div>
                 }
 
                 @if (profile.nativeDistrictName) {
                   <div class="card-row">
-                    <span class="card-label">Native District</span>
+                    <span class="card-label">{{ 'publicSearch.nativeDistrict' | translate }}</span>
                     <span class="card-value">{{ profile.nativeDistrictName }}</span>
                   </div>
                 }
                 @if (profile.educationName) {
                   <div class="card-row">
-                    <span class="card-label">Education</span>
+                    <span class="card-label">{{ 'publicSearch.education' | translate }}</span>
                     <span class="card-value">{{ profile.educationName }}</span>
                   </div>
                 }
                 @if (getOccupationIncomeText(profile)) {
                   <div class="card-row">
-                    <span class="card-label">Occupation</span>
+                    <span class="card-label">{{ 'publicSearch.occupation' | translate }}</span>
                     <span class="card-value">{{ getOccupationIncomeText(profile) }}</span>
                   </div>
                 }
@@ -306,16 +306,16 @@
     } @else {
       <div class="empty-state">
         <p class="empty-icon">&#x1F50D;</p>
-        <p class="empty-title">No profiles found</p>
-        <p class="empty-sub">Try adjusting your filters or search with different keywords.</p>
+        <p class="empty-title">{{ 'publicSearch.noProfilesFound' | translate }}</p>
+        <p class="empty-sub">{{ 'publicSearch.noProfilesFoundHint' | translate }}</p>
       </div>
     }
   </div>
 
   <div class="cta-banner">
-    <h2>Interested in someone?</h2>
-    <p>Register free to view full profiles and connect</p>
-    <button class="cta-btn" (click)="onBottomCta()">Register Now &mdash; It's Free</button>
+    <h2>{{ 'publicSearch.interestedTitle' | translate }}</h2>
+    <p>{{ 'publicSearch.registerFreeCta' | translate }}</p>
+    <button class="cta-btn" (click)="onBottomCta()">{{ 'publicSearch.registerNowFree' | translate }}</button>
   </div>
 
   @if (selectedProfile(); as profile) {
@@ -331,7 +331,7 @@
             (error)="onPhotoError($event, profile)"
           />
           @if (profile.isVerified) {
-            <span class="detail-verified">&#x2713; Verified</span>
+            <span class="detail-verified">&#x2713; {{ 'publicSearch.verified' | translate }}</span>
           }
         </div>
 
@@ -341,43 +341,43 @@
           <div class="detail-grid">
             @if (getCreatedAtText(profile)) {
               <div class="detail-field">
-                <span class="detail-label">DOR</span>
+                <span class="detail-label">{{ 'publicSearch.dor' | translate }}</span>
                 <span class="detail-value">{{ getCreatedAtText(profile) }}</span>
               </div>
             }
             @if (getDobText(profile)) {
               <div class="detail-field">
-                <span class="detail-label">Birth Date</span>
+                <span class="detail-label">{{ 'publicSearch.birthDate' | translate }}</span>
                 <span class="detail-value">{{ getDobText(profile) }}</span>
               </div>
             }
             @if (getHeightText(profile)) {
               <div class="detail-field">
-                <span class="detail-label">Height</span>
+                <span class="detail-label">{{ 'publicSearch.height' | translate }}</span>
                 <span class="detail-value">{{ getHeightText(profile) }}</span>
               </div>
             }
             @if (profile.maritalStatusName) {
               <div class="detail-field">
-                <span class="detail-label">Marital Status</span>
+                <span class="detail-label">{{ 'publicSearch.maritalStatus' | translate }}</span>
                 <span class="detail-value">{{ profile.maritalStatusName }}</span>
               </div>
             }
             @if (profile.nativeDistrictName) {
               <div class="detail-field">
-                <span class="detail-label">Native District</span>
+                <span class="detail-label">{{ 'publicSearch.nativeDistrict' | translate }}</span>
                 <span class="detail-value">{{ profile.nativeDistrictName }}</span>
               </div>
             }
             @if (getEducationLabel(profile) || profile.educationName) {
               <div class="detail-field">
-                <span class="detail-label">Education</span>
+                <span class="detail-label">{{ 'publicSearch.education' | translate }}</span>
                 <span class="detail-value">{{ profile.educationName || getEducationLabel(profile) }}</span>
               </div>
             }
             @if (getOccupationIncomeText(profile)) {
               <div class="detail-field">
-                <span class="detail-label">Occupation</span>
+                <span class="detail-label">{{ 'publicSearch.occupation' | translate }}</span>
                 <span class="detail-value">{{ getOccupationIncomeText(profile) }}</span>
               </div>
             }
@@ -394,8 +394,8 @@
         </div>
 
         <div class="detail-cta">
-          <p class="detail-cta-text">Register free to view full profile and connect</p>
-          <button class="btn-connect" (click)="onCardCtaClick(profile, $event)">Register to Connect</button>
+          <p class="detail-cta-text">{{ 'publicSearch.registerFreeDetailCta' | translate }}</p>
+          <button class="btn-connect" (click)="onCardCtaClick(profile, $event)">{{ 'publicSearch.registerConnect' | translate }}</button>
         </div>
       </div>
     </div>

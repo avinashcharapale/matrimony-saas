@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { MatchClient, InterestRequestDto, InterestRequestStatus } from '@org/generated';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
@@ -23,7 +24,7 @@ interface InterestCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-interests',
   standalone: true,
-  imports: [CommonModule, RouterModule, SharedSidebarComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, SharedSidebarComponent],
   template: `
     <section class="search-page">
       <div class="search-shell">
@@ -37,25 +38,25 @@ interface InterestCard {
 
         <div class="page-content">
           <header class="page-header">
-            <p class="eyebrow">My Activity</p>
-            <h1>Interests</h1>
-            <p>Review who connected with you and track requests you sent.</p>
+            <p class="eyebrow">{{ 'interests.eyebrow' | translate }}</p>
+            <h1>{{ 'nav.interests' | translate }}</h1>
+            <p>{{ 'interests.subtitle' | translate }}</p>
           </header>
 
           <div class="tabs">
-            <button type="button" [class.active]="activeTab() === 'received'" (click)="activeTab.set('received')">Received ({{ receivedCount() }})</button>
-            <button type="button" [class.active]="activeTab() === 'sent'" (click)="activeTab.set('sent')">Sent ({{ sentCount() }})</button>
+            <button type="button" [class.active]="activeTab() === 'received'" (click)="activeTab.set('received')">{{ 'interests.received' | translate }} ({{ receivedCount() }})</button>
+            <button type="button" [class.active]="activeTab() === 'sent'" (click)="activeTab.set('sent')">{{ 'interests.sent' | translate }} ({{ sentCount() }})</button>
           </div>
 
           <section class="cards">
             @if (isLoading()) {
-              <div class="empty-state">Loading...</div>
+              <div class="empty-state">{{ 'common.loading' | translate }}</div>
             } @else if (visibleInterests().length > 0) {
               @for (item of visibleInterests(); track item.id) {
               <article class="card">
                 <div class="card-body">
-                  <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name }}</a></h2>
-                  <p>{{ item.detail }}</p>
+                  <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name || ('interests.unknown' | translate) }}</a></h2>
+                  <p>{{ item.detail || (('interests.interest' | translate) + ' ' + item.status) }}</p>
                   @if (item.date) {
                     <p class="card-date">{{ item.date }}</p>
                   }
@@ -65,18 +66,22 @@ interface InterestCard {
                     {{ item.status }}
                   </span>
                   @if (activeTab() === 'received' && item.status === 'Pending') {
-                  <button type="button" class="accept" (click)="respondToInterest(item.id, InterestRequestStatus.Accepted)">Accept</button>
-                  <button type="button" class="decline" (click)="respondToInterest(item.id, InterestRequestStatus.Declined)">Decline</button>
+                  <button type="button" class="accept" (click)="respondToInterest(item.id, InterestRequestStatus.Accepted)">{{ 'interests.accept' | translate }}</button>
+                  <button type="button" class="decline" (click)="respondToInterest(item.id, InterestRequestStatus.Declined)">{{ 'interests.decline' | translate }}</button>
                   }
                   @if (activeTab() === 'sent' && item.status === 'Pending') {
-                  <button type="button" class="withdraw" (click)="withdrawInterest(item.id)">Withdraw</button>
+                  <button type="button" class="withdraw" (click)="withdrawInterest(item.id)">{{ 'interests.withdraw' | translate }}</button>
                   }
                 </div>
               </article>
               }
             } @else {
               <div class="empty-state">
-                <p>No {{ activeTab() }} interests yet.</p>
+                @if (activeTab() === 'received') {
+                <p>{{ 'interests.noReceivedYet' | translate }}</p>
+                } @else {
+                <p>{{ 'interests.noSentYet' | translate }}</p>
+                }
               </div>
             }
           </section>
@@ -178,14 +183,14 @@ export class Interests implements OnInit {
   }
 
   private mapToCard(r: InterestRequestDto, type: 'received' | 'sent'): InterestCard {
-    const name = type === 'received' ? (r.requesterName ?? 'Unknown') : (r.targetName ?? 'Unknown');
+    const name = type === 'received' ? (r.requesterName ?? '') : (r.targetName ?? '');
     const status = r.status ?? InterestRequestStatus.Pending;
     const profileId = type === 'received' ? (r.requesterProfileId ?? 0) : (r.targetProfileId ?? 0);
     const date = r.createdAt ? this.formatDate(r.createdAt) : '';
     return {
       id: String(r.interestRequestId ?? ''),
       name,
-      detail: r.message ?? `Interest ${status}`,
+      detail: r.message ?? '',
       status,
       type,
       profileId,

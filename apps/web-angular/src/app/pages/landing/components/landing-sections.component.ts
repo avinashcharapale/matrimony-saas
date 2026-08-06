@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { LandingHeroComponent } from './landing-hero.component';
 import { LandingStatsComponent } from './landing-stats.component';
 import { LandingInfoComponent } from './landing-info.component';
@@ -19,6 +20,7 @@ import { TenantLandingContent } from '@org/tenant-config';
     LandingRecentProfilesComponent,
     LandingTrustComponent,
     LandingCtaFooterComponent,
+    TranslateModule,
   ],
   templateUrl: './landing-sections.component.html',
 })

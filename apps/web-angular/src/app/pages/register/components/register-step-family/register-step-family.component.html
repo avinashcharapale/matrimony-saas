@@ -1,136 +1,136 @@
 <section>
-  <h2>Family Details</h2>
+  <h2>{{ 'register.familyDetails' | translate }}</h2>
   <div class="field-grid" [formGroup]="family">
     <div class="form-field">
-      <label>Father Status</label>
+      <label>{{ 'editProfile.fatherStatus' | translate }}</label>
       <select formControlName="fatherStatus">
-        <option [ngValue]="true">Yes</option>
-        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
+        <option [ngValue]="false">{{ 'common.no' | translate }}</option>
       </select>
     </div>
     <div class="form-field">
-      <label>Mother Status</label>
+      <label>{{ 'editProfile.motherStatus' | translate }}</label>
       <select formControlName="motherStatus">
-        <option [ngValue]="true">Yes</option>
-        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
+        <option [ngValue]="false">{{ 'common.no' | translate }}</option>
       </select>
     </div>
     <div class="form-field">
-      <label>Brothers</label>
+      <label>{{ 'editProfile.brothers' | translate }}</label>
       <select formControlName="brothers">
         @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Married Brothers</label>
+      <label>{{ 'editProfile.marriedBrothers' | translate }}</label>
       <select formControlName="marriedBrothers">
         @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
       </select>
       @if (family.hasError('marriedBrothersExceeds')) {
-        <small class="field-error">Cannot exceed total brothers count</small>
+        <small class="field-error">{{ 'register.marriedBrothersExceed' | translate }}</small>
       }
     </div>
     <div class="form-field">
-      <label>Sisters</label>
+      <label>{{ 'editProfile.sisters' | translate }}</label>
       <select formControlName="sisters">
         @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Married Sisters</label>
+      <label>{{ 'editProfile.marriedSisters' | translate }}</label>
       <select formControlName="marriedSisters">
         @for (n of [0,1,2,3,4,5,6,7,8]; track n) { <option [ngValue]="n">{{ n }}</option> }
       </select>
       @if (family.hasError('marriedSistersExceeds')) {
-        <small class="field-error">Cannot exceed total sisters count</small>
+        <small class="field-error">{{ 'register.marriedSistersExceed' | translate }}</small>
       }
     </div>
     <div class="form-field">
-      <label>Parents Full Name</label>
+      <label>{{ 'editProfile.parentsFullName' | translate }}</label>
       <input type="text" formControlName="parentsFullName" maxlength="100" />
     </div>
     <div class="form-field">
-      <label>Parents Occupation</label>
+      <label>{{ 'editProfile.parentsOccupation' | translate }}</label>
       <input type="text" formControlName="parentsOccupation" maxlength="100" />
     </div>
     <div class="form-field">
-      <label>Parents Resident City</label>
+      <label>{{ 'editProfile.parentsResidentCity' | translate }}</label>
       <input type="text" formControlName="parentsResidentCity" maxlength="60" />
     </div>
     <div class="form-field">
-      <label>Family Wealth</label>
+      <label>{{ 'editProfile.familyWealth' | translate }}</label>
       <input type="text" formControlName="familyWealth" maxlength="60" />
     </div>
     <div class="form-field">
-      <label>Mama Surname &amp; Place</label>
+      <label>{{ 'editProfile.mamaSurnamePlace' | translate }}</label>
       <input type="text" formControlName="mamaSurnamePlace" maxlength="100" />
     </div>
     <div class="form-field">
-      <label>Native State</label>
+      <label>{{ 'editProfile.nativeState' | translate }}</label>
       <select formControlName="nativeStateId">
-        <option [ngValue]="null">Select State</option>
+        <option [ngValue]="null">{{ 'common.selectState' | translate }}</option>
         @for (s of nativeStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
-        <option [ngValue]="0">Other</option>
+        <option [ngValue]="0">{{ 'common.other' | translate }}</option>
       </select>
     </div>
     @if (family.get('nativeStateId')?.value === 0) {
       <div class="form-field">
-        <label>Native State (Other)</label>
-        <input type="text" formControlName="nativeStateOther" placeholder="Enter state name" maxlength="100" />
+        <label>{{ 'editProfile.nativeStateOtherLbl' | translate }}</label>
+        <input type="text" formControlName="nativeStateOther" [attr.placeholder]="'editProfile.enterStateName' | translate" maxlength="100" />
       </div>
       <div class="form-field">
-        <label>Native District (Other)</label>
-        <input type="text" formControlName="nativeDistrictOther" placeholder="Enter district name" maxlength="80" />
+        <label>{{ 'editProfile.nativeDistrictOtherLbl' | translate }}</label>
+        <input type="text" formControlName="nativeDistrictOther" [attr.placeholder]="'editProfile.enterDistrictName' | translate" maxlength="80" />
       </div>
     }
     @if (family.get('nativeStateId')?.value && family.get('nativeStateId')?.value !== 0) {
       <div class="form-field">
-        <label>Native District</label>
+        <label>{{ 'editProfile.nativeDistrict' | translate }}</label>
         <select formControlName="nativeDistrictId" [disabled]="nativeDistricts.length === 0">
-          <option [ngValue]="null">Select District</option>
+          <option [ngValue]="null">{{ 'common.selectDistrict' | translate }}</option>
           @for (d of nativeDistricts; track d.districtId) { <option [ngValue]="d.districtId">{{ d.name }}</option> }
-          <option [ngValue]="0">Other</option>
+          <option [ngValue]="0">{{ 'common.other' | translate }}</option>
         </select>
       </div>
       @if (family.get('nativeDistrictId')?.value === 0) {
         <div class="form-field">
-          <label>Native District (Other)</label>
-          <input type="text" formControlName="nativeDistrictOther" placeholder="Enter district name" maxlength="80" />
+          <label>{{ 'editProfile.nativeDistrictOtherLbl' | translate }}</label>
+          <input type="text" formControlName="nativeDistrictOther" [attr.placeholder]="'editProfile.enterDistrictName' | translate" maxlength="80" />
         </div>
       }
       @if (family.get('nativeDistrictId')?.value && family.get('nativeDistrictId')?.value !== 0) {
         <div class="form-field">
-          <label>Native Taluka</label>
+          <label>{{ 'editProfile.nativeTaluka' | translate }}</label>
           <select formControlName="nativeTalukaId" [disabled]="nativeTalukas.length === 0">
-            <option [ngValue]="null">Select Taluka</option>
+            <option [ngValue]="null">{{ 'common.selectTaluka' | translate }}</option>
             @for (t of nativeTalukas; track t.talukaId) { <option [ngValue]="t.talukaId">{{ t.name }}</option> }
-            <option [ngValue]="0">Other</option>
+            <option [ngValue]="0">{{ 'common.other' | translate }}</option>
           </select>
         </div>
         @if (family.get('nativeTalukaId')?.value === 0) {
           <div class="form-field">
-            <label>Native Taluka (Other)</label>
-            <input type="text" formControlName="nativeTalukaOther" placeholder="Enter taluka name" maxlength="120" />
+            <label>{{ 'editProfile.nativeTalukaOtherLbl' | translate }}</label>
+            <input type="text" formControlName="nativeTalukaOther" [attr.placeholder]="'editProfile.enterTalukaName' | translate" maxlength="120" />
           </div>
         }
       }
     }
     <div class="form-field">
-      <label>Intercast Marriage</label>
+      <label>{{ 'editProfile.intercastMarriage' | translate }}</label>
       <select formControlName="intercastMarriage">
-        <option [ngValue]="false">No</option>
-        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+        <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
       </select>
     </div>
     <div class="form-field">
-      <label>If Yes, Relation</label>
+      <label>{{ 'register.intercastRelationPrompt' | translate }}</label>
       <input type="text" formControlName="intercastRelation" maxlength="60" />
     </div>
   </div>
 
   <div class="field-grid">
     <div class="form-field">
-      <label>Relatives Surnames</label>
+      <label>{{ 'register.relativesSurnames' | translate }}</label>
       <input type="text" [formControl]="relativesSurnamesCtrl" maxlength="200" />
     </div>
   </div>

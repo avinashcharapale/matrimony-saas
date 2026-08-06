@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, FormArray, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MemberService } from '../../services/member.service';
 import { RegisterDraftContext, RegisterDraftService } from '../../services/register-draft.service';
 import { normalizeText, normalizePhone, isValidTenDigitPhone, isValidEmail, isValidName } from '@org/shared-utils';
@@ -35,6 +36,7 @@ const STEP_GROUP_NAMES: Record<number, string> = {
   imports: [
     ReactiveFormsModule,
     RouterModule,
+    TranslateModule,
     RegisterStepperComponent,
     RegisterStepPersonalComponent,
     RegisterStepHoroscopeComponent,
@@ -52,6 +54,7 @@ export class Register implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly registerDraftService = inject(RegisterDraftService);
   private readonly tenantStore = inject(TenantStore);
+  private readonly translate = inject(TranslateService);
 
   private static readonly CAPTCHA_LENGTH = 6;
   private static readonly CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -197,14 +200,27 @@ export class Register implements OnInit, OnDestroy {
     }
   });
 
-  readonly steps: EnrollStep[] = [
-    { title: 'Personal' },
-    { title: 'Horoscope' },
-    { title: 'Education' },
-    { title: 'Address' },
-    { title: 'Family' },
-    { title: 'Expectation' },
-  ];
+  get steps(): EnrollStep[] {
+    return this.stepsSignal();
+  }
+
+  readonly stepsSignal = computed<EnrollStep[]>(() => {
+    this.langTick();
+    return [
+      { title: this.t('register.steps.personal') },
+      { title: this.t('register.steps.horoscope') },
+      { title: this.t('register.steps.education') },
+      { title: this.t('register.steps.address') },
+      { title: this.t('register.steps.family') },
+      { title: this.t('register.steps.expectation') },
+    ];
+  });
+
+  private readonly langTick = signal(0);
+
+  private t(key: string): string {
+    return this.translate.instant(key);
+  }
 
   currentStep = signal(1);
   message = signal('');
@@ -219,6 +235,7 @@ export class Register implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.draftContext = this.registerDraftService.resolveContext(this.route.snapshot.queryParamMap);
+    this.translate.onLangChange.subscribe(() => this.langTick.update((v) => v + 1));
     this.restoreDraftFromStorage();
     this.refreshCaptcha();
   }
@@ -290,21 +307,21 @@ export class Register implements OnInit, OnDestroy {
 
     if (!name || !ct.contactEmail || !account.password) {
       this.isError.set(true);
-      this.message.set('Please fill required fields including email and account password.');
+      this.message.set(this.t('register.errors.fillRequired'));
       this.isLoading.set(false);
       return;
     }
 
     if (account.password.length < 8) {
       this.isError.set(true);
-      this.message.set('Password must be at least 8 characters.');
+      this.message.set(this.t('register.errors.passwordMin'));
       this.isLoading.set(false);
       return;
     }
 
     if (account.password !== account.confirmPassword) {
       this.isError.set(true);
-      this.message.set('Password and confirm password must match.');
+      this.message.set(this.t('register.errors.passwordMatch'));
       this.isLoading.set(false);
       return;
     }
@@ -340,7 +357,7 @@ export class Register implements OnInit, OnDestroy {
     const file = input.files?.[0];
     if (file && !/\.(jpg|jpeg|png|webp)$/i.test(file.name)) {
       this.isError.set(true);
-      this.message.set('Only JPG, JPEG, PNG, or WEBP files are allowed.');
+      this.message.set(this.t('register.errors.invalidPhoto'));
       input.value = '';
       return;
     }
@@ -353,7 +370,7 @@ export class Register implements OnInit, OnDestroy {
     const file = input.files?.[0];
     if (file && !/\.(jpg|jpeg|png|webp)$/i.test(file.name)) {
       this.isError.set(true);
-      this.message.set('Only JPG, JPEG, PNG, or WEBP files are allowed.');
+      this.message.set(this.t('register.errors.invalidPhoto'));
       input.value = '';
       return;
     }
@@ -388,7 +405,7 @@ export class Register implements OnInit, OnDestroy {
       },
       error: (error: unknown) => {
         this.isError.set(true);
-        this.message.set(error instanceof Error ? error.message : 'Registration failed. Please try again.');
+        this.message.set(error instanceof Error ? error.message : this.t('register.errors.registrationFailed'));
         this.persistAllSteps();
       },
     });
@@ -556,75 +573,75 @@ export class Register implements OnInit, OnDestroy {
 
     if (step === 1) {
       if (!normalizeText(pd.firstName) || !normalizeText(pd.lastName)) {
-        return 'First name and last name are required.';
+        return this.t('register.errors.nameRequired');
       }
       if (!isValidName(pd.firstName || '') || !isValidName(pd.lastName || '')) {
-        return 'Name fields can contain letters and spaces only.';
+        return this.t('register.errors.nameCharsOnly');
       }
       if (!pd.dobDay || !pd.dobMonth || !pd.dobYear) {
-        return 'Please select complete date of birth.';
+        return this.t('register.errors.dobComplete');
       }
       if (!pd.genderId) {
-        return 'Please select gender.';
+        return this.t('register.errors.genderRequired');
       }
       if (!pd.religionId) {
-        return 'Please select religion.';
+        return this.t('register.errors.religionRequired');
       }
       const age = new Date().getFullYear() - (pd.dobYear || 0);
       if (Number.isNaN(age) || age < 18 || age > 80) {
-        return 'Age must be between 18 and 80 years.';
+        return this.t('register.errors.ageRange');
       }
       if (pd.physicalDisability && !normalizeText(pd.disabilityDetail || '')) {
-        return 'Please specify disability details.';
+        return this.t('register.errors.disabilityDetail');
       }
     }
 
     if (step === 2) {
       if (!hd.birthPeriod) {
-        return 'Please select birth time period.';
+        return this.t('register.errors.birthPeriod');
       }
       const birthStateIsOther = hd.birthStateId === 0;
       const birthDistrictIsSelected = hd.birthDistrictId && hd.birthDistrictId !== 0;
       const birthDistrictIsOther = hd.birthDistrictId === 0;
       if (!birthStateIsOther && !birthDistrictIsSelected && !birthDistrictIsOther) {
-        return 'Please select birth district.';
+        return this.t('register.errors.birthDistrict');
       }
     }
 
     if (step === 3) {
       if (!cd.educationAreaId || !cd.educationId) {
-        return 'Please provide education details.';
+        return this.t('register.errors.educationDetails');
       }
       if (!cd.occupationId || !normalizeText(cd.occupationDetails || '')) {
-        return 'Please provide occupation details.';
+        return this.t('register.errors.occupationDetails');
       }
       if (!cd.workingCity) {
-        return 'Please select working city/country.';
+        return this.t('register.errors.workingCity');
       }
       if (cd.incomeAmount && !Number.isFinite(Number(cd.incomeAmount))) {
-        return 'Income amount must be numeric.';
+        return this.t('register.errors.incomeNumeric');
       }
     }
 
     if (step === 4) {
       const address = normalizeText(ct.residenceAddress || '');
       if (!address || address.length < 10) {
-        return 'Please enter a valid residence address.';
+        return this.t('register.errors.residenceAddress');
       }
       if (!isValidEmail(ct.contactEmail || '')) {
-        return 'Please enter a valid contact email.';
+        return this.t('register.errors.contactEmail');
       }
       if (!isValidTenDigitPhone(ct.smsMobile || '')) {
-        return 'Mobile for SMS alert must be a 10-digit number.';
+        return this.t('register.errors.smsMobile');
       }
       if (ct.mobile2 && !isValidTenDigitPhone(ct.mobile2)) {
-        return 'Mobile II must be a 10-digit number.';
+        return this.t('register.errors.mobile2');
       }
       if (ct.phone1 && !isValidTenDigitPhone(ct.phone1)) {
-        return 'Phone I must be a 10-digit number.';
+        return this.t('register.errors.phone1');
       }
       if (ct.phone2 && !isValidTenDigitPhone(ct.phone2)) {
-        return 'Phone II must be a 10-digit number.';
+        return this.t('register.errors.phone2');
       }
 
       const normalize = (v: string) => normalizePhone(v);
@@ -641,31 +658,31 @@ export class Register implements OnInit, OnDestroy {
 
     if (step === 5) {
       if (!normalizeText(fd.parentsFullName || '')) {
-        return 'Please enter parents full name.';
+        return this.t('register.errors.parentsFullName');
       }
       const stateIsOther = fd.nativeStateId === 0;
       const districtIsSelected = fd.nativeDistrictId && fd.nativeDistrictId !== 0;
       const districtIsOther = fd.nativeDistrictId === 0;
       if (!stateIsOther && !districtIsSelected && !districtIsOther) {
-        return 'Please select native district.';
+        return this.t('register.errors.nativeDistrict');
       }
     }
 
     if (step === 6) {
       if (!normalizeText(this.profileForm.get('preferredCities')!.value || '')) {
-        return 'Please enter preferred cities.';
+        return this.t('register.errors.preferredCities');
       }
       if (!account.password || !account.confirmPassword) {
-        return 'Please set your account password and confirm it.';
+        return this.t('register.errors.accountPassword');
       }
       if (account.password.length < 8) {
-        return 'Password must be at least 8 characters.';
+        return this.t('register.errors.passwordMin');
       }
       if (account.password !== account.confirmPassword) {
-        return 'Password and confirm password must match.';
+        return this.t('register.errors.passwordMatch');
       }
       if ((verification.input || '').trim().toUpperCase() !== (verification.code || '')) {
-        return 'Please enter correct verification code.';
+        return this.t('register.errors.verificationCode');
       }
     }
 

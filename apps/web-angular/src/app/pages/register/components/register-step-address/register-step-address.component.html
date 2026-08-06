@@ -1,32 +1,32 @@
 <section>
-  <h2>Address</h2>
+  <h2>{{ 'register.address' | translate }}</h2>
   <div class="field-grid" [formGroup]="contact">
     <div class="form-field">
-      <label>PAN / Aadhar / Driving License / Passport No.</label>
+      <label>{{ 'register.idProof' | translate }}</label>
       <input type="text" formControlName="idProofNumber" />
     </div>
     <div class="form-field">
-      <label>Residence Address With City</label>
+      <label>{{ 'register.residenceAddress' | translate }}</label>
       <textarea formControlName="residenceAddress" rows="3" maxlength="250"></textarea>
     </div>
     <div class="form-field">
-      <label><span class="required">*</span>Email id (It's important)</label>
+      <label><span class="required">*</span>{{ 'register.emailImportant' | translate }}</label>
       <input type="email" formControlName="contactEmail" maxlength="120" />
     </div>
     <div class="form-field">
-      <label><span class="required">*</span>Mobile For SMS Alert (It's important)</label>
+      <label><span class="required">*</span>{{ 'register.smsMobileImportant' | translate }}</label>
       <input type="tel" formControlName="smsMobile" inputmode="numeric" maxlength="16" />
     </div>
     <div class="form-field">
-      <label>Mobile II</label>
+      <label>{{ 'register.mobile2' | translate }}</label>
       <input type="tel" formControlName="mobile2" inputmode="numeric" maxlength="16" />
     </div>
     <div class="form-field">
-      <label>Phone I</label>
+      <label>{{ 'register.phone1' | translate }}</label>
       <input type="tel" formControlName="phone1" inputmode="numeric" maxlength="16" />
     </div>
     <div class="form-field">
-      <label>Phone II</label>
+      <label>{{ 'register.phone2' | translate }}</label>
       <input type="tel" formControlName="phone2" inputmode="numeric" maxlength="16" />
     </div>
   </div>

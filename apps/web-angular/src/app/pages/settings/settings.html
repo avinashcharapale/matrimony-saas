@@ -1,0 +1,72 @@
+<section class="search-page">
+  <div class="search-shell">
+    <app-shared-sidebar
+      [userName]="userName()"
+      [userPhotoUrl]="userPhotoUrl()"
+      [userOccupation]="userOccupation()"
+      [subscriptionStatus]="subscriptionStatus()"
+      [subscriptionLoading]="subscriptionLoading()">
+    </app-shared-sidebar>
+
+    <div class="page-content">
+      <header class="page-header">
+        <p class="eyebrow">{{ 'settings.preferences' | translate }}</p>
+        <h1>{{ 'settings.title' | translate }}</h1>
+      </header>
+
+      <section class="language-preferences" aria-labelledby="language-heading">
+        <div class="section-heading">
+          <p class="eyebrow">{{ 'settings.languageLabel' | translate }}</p>
+          <h2 id="language-heading">{{ 'settings.languageTitle' | translate }}</h2>
+          <p class="section-description">{{ 'settings.languageHint' | translate }}</p>
+        </div>
+        <app-language-selector></app-language-selector>
+      </section>
+
+      <section class="theme-preferences" aria-labelledby="theme-heading">
+        <div class="section-heading">
+          <p class="eyebrow">{{ 'settings.appearance' | translate }}</p>
+          <h2 id="theme-heading">{{ 'settings.chooseTheme' | translate }}</h2>
+          <p class="section-description">{{ 'settings.themeHint' | translate }}</p>
+        </div>
+        <div class="theme-options" role="radiogroup" [attr.aria-label]="'settings.availableThemes' | translate">
+          @for (theme of themes; track theme.id) {
+            <button
+              type="button"
+              class="theme-option"
+              [class.selected]="activeThemeId() === theme.id"
+              [attr.aria-checked]="activeThemeId() === theme.id"
+              role="radio"
+              (click)="selectTheme(theme.id)">
+              <span class="theme-swatch" [style.background]="'linear-gradient(135deg, ' + theme.primary + ', ' + theme.accent + ')'" aria-hidden="true"></span>
+              <span class="theme-option-copy">
+                <strong>{{ theme.name }}</strong>
+                <span>{{ theme.id === activeThemeId() ? ('settings.activeTheme' | translate) : ('settings.useThisTheme' | translate) }}</span>
+              </span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <form class="settings-form" (ngSubmit)="save()">
+        <label class="field-label">
+          <span>{{ 'settings.profileVisibility' | translate }}</span>
+          <select [(ngModel)]="settings.profileVisibility" name="profileVisibility">
+            <option value="all">{{ 'settings.visibilityAll' | translate }}</option>
+            <option value="verified">{{ 'settings.visibilityVerified' | translate }}</option>
+            <option value="matches">{{ 'settings.visibilityMatches' | translate }}</option>
+          </select>
+        </label>
+
+        <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.emailAlerts" name="emailAlerts" /> <span>{{ 'settings.emailAlerts' | translate }}</span></label>
+        <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.smsAlerts" name="smsAlerts" /> <span>{{ 'settings.smsAlerts' | translate }}</span></label>
+        <label class="checkbox-label"><input type="checkbox" [(ngModel)]="settings.eventReminders" name="eventReminders" /> <span>{{ 'settings.eventReminders' | translate }}</span></label>
+
+        <button class="save-settings-button" type="submit">{{ 'settings.save' | translate }}</button>
+        @if (savedMessage()) {
+        <p class="saved">{{ savedMessage() }}</p>
+        }
+      </form>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,11 @@
+<label class="language-selector">
+  <span class="language-selector-icon" aria-hidden="true">&#127760;</span>
+  <select
+    (change)="onLanguageChange($event)"
+    [attr.aria-label]="'common.language' | translate"
+  >
+    @for (lang of languages; track lang.code) {
+      <option [value]="lang.code" [selected]="lang.code === currentLanguage()">{{ lang.label }}</option>
+    }
+  </select>
+</label>

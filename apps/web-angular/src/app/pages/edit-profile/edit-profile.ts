@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, OnInit, signal, ChangeDetec
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MemberService } from '../../services/member.service';
 import {
   RegisterMasterDataService,
@@ -25,7 +26,7 @@ import { computed } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-edit-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, SharedSidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TranslateModule, SharedSidebarComponent],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.css',
 })
@@ -36,6 +37,7 @@ export class EditProfile implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly authService = inject(AuthService);
   private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly translate = inject(TranslateService);
 
   readonly userName = signal('');
   readonly userPhotoUrl = signal('');
@@ -559,7 +561,7 @@ export class EditProfile implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load profile:', err);
-        this.error.set('Failed to load profile. Please try again.');
+        this.error.set(this.translate.instant('editProfile.errors.load'));
       },
     });
   }
@@ -961,7 +963,7 @@ export class EditProfile implements OnInit {
       finalize(() => { this.isSaving.set(false); this.cdr.detectChanges(); })
     ).subscribe({
       next: () => {
-        this.successMessage.set('Profile updated successfully!');
+        this.successMessage.set(this.translate.instant('editProfile.success'));
         setTimeout(() => this.router.navigate(['/my-profile']), 1200);
       },
       error: (err) => {
@@ -977,7 +979,7 @@ export class EditProfile implements OnInit {
           }
           this.validationErrors.set(messages);
         } else {
-          this.error.set('Failed to update profile. Please try again.');
+          this.error.set(this.translate.instant('editProfile.errors.update'));
         }
       },
     });

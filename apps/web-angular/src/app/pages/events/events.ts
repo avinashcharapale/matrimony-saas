@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
@@ -19,7 +20,7 @@ interface MeetEvent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-events',
   standalone: true,
-  imports: [CommonModule, SharedSidebarComponent],
+  imports: [CommonModule, TranslateModule, SharedSidebarComponent],
   template: `
     <section class="search-page">
       <div class="search-shell">
@@ -33,9 +34,9 @@ interface MeetEvent {
 
         <div class="page-content">
           <header class="page-header">
-            <p class="eyebrow">Community</p>
-            <h1>Events & Meets</h1>
-            <p>Join local and virtual sessions to connect families and profiles safely.</p>
+            <p class="eyebrow">{{ 'events.eyebrow' | translate }}</p>
+            <h1>{{ 'nav.events' | translate }}</h1>
+            <p>{{ 'events.subtitle' | translate }}</p>
           </header>
 
           <section class="cards">
@@ -48,13 +49,13 @@ interface MeetEvent {
                   <small>{{ event.date }} &#8226; {{ event.time }}</small>
                 </div>
                 <button type="button" [class.joined]="event.joined" (click)="toggleJoin(event.id)">
-                  {{ event.joined ? 'RSVP Confirmed' : 'RSVP Now' }}
+                  {{ event.joined ? ('events.rsvpConfirmed' | translate) : ('events.rsvpNow' | translate) }}
                 </button>
               </article>
               }
             } @else {
               <div class="empty-state">
-                <p>No upcoming events at this time.</p>
+                <p>{{ 'events.noEvents' | translate }}</p>
               </div>
             }
           </section>

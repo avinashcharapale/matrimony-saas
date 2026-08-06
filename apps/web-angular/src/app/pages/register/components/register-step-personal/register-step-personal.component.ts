@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription, forkJoin } from 'rxjs';
 import {
   RegisterMasterDataService,
@@ -9,7 +10,7 @@ import {
 @Component({
   selector: 'app-register-step-personal',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslateModule],
   templateUrl: './register-step-personal.component.html',
   styleUrl: '../../register.css',
 })
@@ -21,7 +22,18 @@ export class RegisterStepPersonalComponent implements OnInit, OnDestroy {
 
   private readonly masterData = inject(RegisterMasterDataService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly translate = inject(TranslateService);
+  private readonly langTick = signal(0);
   private subs: Subscription[] = [];
+
+  private t(key: string): string {
+    return this.translate.instant(key);
+  }
+
+  readonly monthLabels = computed(() => {
+    this.langTick();
+    return this.months.map((m) => ({ value: m, label: this.t(`register.months.${m.toLowerCase()}`) }));
+  });
 
   genderOptions: RegisterLookupOption[] = [];
   religionOptions: RegisterLookupOption[] = [];
@@ -37,6 +49,7 @@ export class RegisterStepPersonalComponent implements OnInit, OnDestroy {
   get personal(): FormGroup { return this.form.get('personalDetails') as FormGroup; }
 
   ngOnInit(): void {
+    this.translate.onLangChange.subscribe(() => this.langTick.update((v) => v + 1));
     forkJoin({
       genders: this.masterData.getGenders(),
       religions: this.masterData.getReligions(),

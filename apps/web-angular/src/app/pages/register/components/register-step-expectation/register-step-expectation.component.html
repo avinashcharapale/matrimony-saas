@@ -1,46 +1,46 @@
 <section>
-  <h2>Expectation</h2>
+  <h2>{{ 'register.expectation' | translate }}</h2>
   <div class="field-grid" [formGroup]="partner">
     <div class="form-field">
-      <label>Preferred Cities</label>
+      <label>{{ 'editProfile.preferredCities' | translate }}</label>
       <div class="tag-input-container">
         <div class="tag-list">
           @for (tag of getTags(preferredCitiesCtrl); track tag) {
             <span class="tag-chip">{{ tag }}<button type="button" class="tag-remove" (click)="removeTag(preferredCitiesCtrl, tag)">&times;</button></span>
           }
         </div>
-        <input type="text" class="tag-input" placeholder="Type and press Enter" maxlength="120"
+        <input type="text" class="tag-input" [attr.placeholder]="'editProfile.typePressEnter' | translate" maxlength="120"
           (keydown)="onTagKeydown($event, preferredCitiesCtrl)" (blur)="addTagFromInput(preferredCitiesCtrl, $event)" />
       </div>
     </div>
     <div class="form-field">
-      <label>Interests</label>
+      <label>{{ 'editProfile.interests' | translate }}</label>
       <div class="tag-input-container">
         <div class="tag-list">
           @for (tag of getTags(interestsCtrl); track tag) {
             <span class="tag-chip">{{ tag }}<button type="button" class="tag-remove" (click)="removeTag(interestsCtrl, tag)">&times;</button></span>
           }
         </div>
-        <input type="text" class="tag-input" placeholder="Type and press Enter" maxlength="250"
+        <input type="text" class="tag-input" [attr.placeholder]="'editProfile.typePressEnter' | translate" maxlength="250"
           (keydown)="onTagKeydown($event, interestsCtrl)" (blur)="addTagFromInput(interestsCtrl, $event)" />
       </div>
     </div>
     <div class="form-field">
-      <label>Mangal</label>
+      <label>{{ 'register.mangal' | translate }}</label>
       <select formControlName="expectedManglik">
-        <option [ngValue]="false">No</option>
-        <option [ngValue]="true">Yes</option>
+        <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+        <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
       </select>
     </div>
     <div class="form-field" [class.has-open-dropdown]="casteDropdownOpen">
-      <label>Expected Caste</label>
+      <label>{{ 'editProfile.expectedCaste' | translate }}</label>
       @if (!partner.get('expectedCasteNoBar')?.value) {
         <div class="inline-select-row">
-          <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> No Bar</label>
+          <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> {{ 'profile.noBar' | translate }}</label>
           <div class="dropdown-select">
             <div class="dropdown-trigger" (click)="toggleCasteDropdown($event)">
               @if (getSelectedCasteLabels().length === 0) {
-                <span class="dropdown-placeholder">Select caste</span>
+                <span class="dropdown-placeholder">{{ 'editProfile.selectCaste' | translate }}</span>
               } @else {
                 <span class="dropdown-values">{{ getSelectedCasteLabels().join(', ') }}</span>
               }
@@ -59,17 +59,17 @@
           </div>
         </div>
       } @else {
-        <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> No Bar</label>
+        <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> {{ 'profile.noBar' | translate }}</label>
       }
     </div>
     <div class="form-field">
-      <label>Max Age Difference</label>
+      <label>{{ 'editProfile.maxAgeDifference' | translate }}</label>
       <select formControlName="maxAgeDifference">
         @for (n of [0,1,2,3,4,5]; track n) { <option [ngValue]="n">{{ n }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Expected Height</label>
+      <label>{{ 'register.expectedHeight' | translate }}</label>
       <div class="height-group">
         <select formControlName="expectedHeightFt">
           @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }}</option> }
@@ -80,14 +80,14 @@
       </div>
     </div>
     <div class="form-field" [class.has-open-dropdown]="educationDropdownOpen">
-      <label>Expected Education</label>
+      <label>{{ 'editProfile.expectedEducation' | translate }}</label>
       @if (!partner.get('expectedEducationNoBar')?.value) {
         <div class="inline-select-row">
-          <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> No Bar</label>
+          <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> {{ 'profile.noBar' | translate }}</label>
           <div class="dropdown-select">
             <div class="dropdown-trigger" (click)="toggleEducationDropdown($event)">
               @if (getSelectedEducationLabels().length === 0) {
-                <span class="dropdown-placeholder">Select education</span>
+                <span class="dropdown-placeholder">{{ 'editProfile.selectEducation' | translate }}</span>
               } @else {
                 <span class="dropdown-values">{{ getSelectedEducationLabels().join(', ') }}</span>
               }
@@ -106,18 +106,18 @@
           </div>
         </div>
       } @else {
-        <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> No Bar</label>
+        <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> {{ 'profile.noBar' | translate }}</label>
       }
     </div>
     <div class="form-field" [class.has-open-dropdown]="occupationDropdownOpen">
-      <label>Expected Occupation</label>
+      <label>{{ 'editProfile.expectedOccupation' | translate }}</label>
       @if (!partner.get('expectedOccupationNoBar')?.value) {
         <div class="inline-select-row">
-          <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> No Bar</label>
+          <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> {{ 'profile.noBar' | translate }}</label>
           <div class="dropdown-select">
             <div class="dropdown-trigger" (click)="toggleOccupationDropdown($event)">
               @if (getSelectedOccupationLabels().length === 0) {
-                <span class="dropdown-placeholder">Select occupation</span>
+                <span class="dropdown-placeholder">{{ 'editProfile.selectOccupation' | translate }}</span>
               } @else {
                 <span class="dropdown-values">{{ getSelectedOccupationLabels().join(', ') }}</span>
               }
@@ -136,64 +136,64 @@
           </div>
         </div>
       } @else {
-        <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> No Bar</label>
+        <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> {{ 'profile.noBar' | translate }}</label>
       }
     </div>
     <div class="form-field">
-      <label>Expected Income Range</label>
+      <label>{{ 'editProfile.expectedIncomeRange' | translate }}</label>
       <select formControlName="expectedIncomeRangeId">
-        <option [ngValue]="null">Select</option>
+        <option [ngValue]="null">{{ 'common.select' | translate }}</option>
         @for (opt of incomeRangeOptions; track opt.incomeRangeId) { <option [ngValue]="opt.incomeRangeId">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Divorcee</label>
+      <label>{{ 'editProfile.divorcee' | translate }}</label>
       <div class="radio-group">
-        <label><input type="radio" name="divorceeRadio" [checked]="partner.get('divorcee')?.value === true" (change)="partner.get('divorcee')!.setValue(true)" /> Yes</label>
-        <label><input type="radio" name="divorceeRadio" [checked]="partner.get('divorcee')?.value === false" (change)="partner.get('divorcee')!.setValue(false)" /> No</label>
+        <label><input type="radio" name="divorceeRadio" [checked]="partner.get('divorcee')?.value === true" (change)="partner.get('divorcee')!.setValue(true)" /> {{ 'common.yes' | translate }}</label>
+        <label><input type="radio" name="divorceeRadio" [checked]="partner.get('divorcee')?.value === false" (change)="partner.get('divorcee')!.setValue(false)" /> {{ 'common.no' | translate }}</label>
       </div>
     </div>
   </div>
 
   <div class="verification-section" [formGroup]="verification">
     <div class="verification-code">
-      <img [src]="verification.get('imageDataUrl')?.value" alt="Captcha verification" class="captcha-image" />
+      <img [src]="verification.get('imageDataUrl')?.value" [attr.alt]="'register.captchaAlt' | translate" class="captcha-image" />
     </div>
-    <button type="button" class="btn-secondary captcha-refresh-btn" (click)="onRefreshCaptcha()">Refresh Captcha</button>
-    <p>Please Enter Above Verification Code</p>
+    <button type="button" class="btn-secondary captcha-refresh-btn" (click)="onRefreshCaptcha()">{{ 'register.refreshCaptcha' | translate }}</button>
+    <p>{{ 'register.enterCaptchaCode' | translate }}</p>
     <div class="form-field">
-      <input type="text" formControlName="input" placeholder="Enter verification code" maxlength="6" autocomplete="off" />
+      <input type="text" formControlName="input" [attr.placeholder]="'register.captchaPlaceholder' | translate" maxlength="6" autocomplete="off" />
     </div>
-    <p class="verification-hint">* Please enter verification code then click submit.</p>
+    <p class="verification-hint">{{ 'register.captchaHint' | translate }}</p>
   </div>
 
   <div class="profile-photos-section" [formGroup]="account">
-    <h3>Account Credentials</h3>
+    <h3>{{ 'register.accountCredentials' | translate }}</h3>
     <div class="field-grid">
       <div class="form-field">
-        <label>Password</label>
+        <label>{{ 'auth.password' | translate }}</label>
         <input type="password" formControlName="password" minlength="8" />
       </div>
       <div class="form-field">
-        <label>Confirm Password</label>
+        <label>{{ 'register.confirmPassword' | translate }}</label>
         <input type="password" formControlName="confirmPassword" minlength="8" />
       </div>
     </div>
   </div>
 
   <div class="profile-photos-section" [formGroup]="photos">
-    <h3>Profile Photos</h3>
-    <p class="photo-hint">* Kindly bring cropping lines on photo at proper position and then click on submit.</p>
+    <h3>{{ 'register.profilePhotos' | translate }}</h3>
+    <p class="photo-hint">{{ 'register.photoHint' | translate }}</p>
     <div class="photo-upload">
-      <p>1) Upload your first profile picture (Close-up preferred)</p>
+      <p>{{ 'register.photoFirst' | translate }}</p>
       <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPhoto($event)" />
       @if (photos.get('photo1Name')?.value) { <span>{{ photos.get('photo1Name')?.value }}</span> }
     </div>
     <div class="photo-upload">
-      <p>2) Upload your second profile picture, If interested</p>
+      <p>{{ 'register.photoSecond' | translate }}</p>
       <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPhoto2($event)" />
       @if (photos.get('photo2Name')?.value) { <span>{{ photos.get('photo2Name')?.value }}</span> }
     </div>
-    <p class="photo-note">You can also submit your photos after getting registration number through photo edit option.</p>
+    <p class="photo-note">{{ 'register.photoNote' | translate }}</p>
   </div>
 </section>

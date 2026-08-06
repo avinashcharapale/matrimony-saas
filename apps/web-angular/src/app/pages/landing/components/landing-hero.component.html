@@ -11,8 +11,8 @@
       <p class="hero-description">{{ heroDescription }}</p>
     }
     <div class="hero-actions">
-      <a routerLink="/register" class="btn btn-primary">{{ ctaEnroll }}</a>
-      <a routerLink="/search" class="btn btn-muted">Browse Profiles</a>
+      <a routerLink="/register" class="btn btn-primary">{{ resolvedCtaEnroll }}</a>
+      <a routerLink="/search" class="btn btn-muted">{{ 'landing.browseProfiles' | translate }}</a>
     </div>
   </div>
 
@@ -23,8 +23,8 @@
       }
       <div class="hero-panel-overlay"></div>
       <div class="hero-panel-content">
-        <span class="hero-panel-kicker">Begin your forever</span>
-        <strong>Beautiful beginnings, thoughtfully matched.</strong>
+        <span class="hero-panel-kicker">{{ 'landing.beginYourForever' | translate }}</span>
+        <strong>{{ 'landing.heroPanelTagline' | translate }}</strong>
       </div>
     </div>
     @for (badge of badges; track badge.text) {

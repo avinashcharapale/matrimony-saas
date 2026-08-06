@@ -1,0 +1,56 @@
+<section class="search-page">
+  <div class="search-shell">
+    <app-shared-sidebar
+      [userName]="userName()"
+      [userPhotoUrl]="userPhotoUrl()"
+      [userOccupation]="userOccupation()"
+      [subscriptionStatus]="subscriptionStatus()"
+      [subscriptionLoading]="subscriptionLoading()">
+    </app-shared-sidebar>
+
+    <div class="page-content">
+      <header class="page-header">
+        <p class="eyebrow">{{ 'shortlists.eyebrow' | translate }}</p>
+        <h1>{{ 'nav.shortlists' | translate }}</h1>
+        <p>{{ 'shortlists.subtitle' | translate }}</p>
+      </header>
+
+      <div class="tabs">
+        <button type="button" [class.active]="activeTab() === 'saved'" (click)="activeTab.set('saved')">{{ 'shortlists.saved' | translate }} ({{ savedCount() }})</button>
+        <button type="button" [class.active]="activeTab() === 'viewed'" (click)="activeTab.set('viewed')">{{ 'shortlists.viewedByOthers' | translate }} ({{ viewedCount() }})</button>
+      </div>
+
+      <section class="cards">
+        @if (isLoading()) {
+          <div class="empty-state">{{ 'common.loading' | translate }}</div>
+        } @else if (activeTab() === 'saved' && savedItems().length > 0) {
+          @for (item of savedItems(); track item.profileId) {
+          <article class="card">
+            <div class="card-body">
+              <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name }}</a></h2>
+              <p class="card-date">{{ 'shortlists.savedOn' | translate }} {{ item.date }}</p>
+            </div>
+          </article>
+          }
+        } @else if (activeTab() === 'viewed' && viewedItems().length > 0) {
+          @for (item of viewedItems(); track item.profileId) {
+          <article class="card">
+            <div class="card-body">
+              <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name }}</a></h2>
+              <p class="card-date">{{ 'shortlists.viewedOn' | translate }} {{ item.date }}</p>
+            </div>
+          </article>
+          }
+        } @else {
+          <div class="empty-state">
+            @if (activeTab() === 'saved') {
+              <p>{{ 'shortlists.noSaved' | translate }}</p>
+            } @else {
+              <p>{{ 'shortlists.noViews' | translate }}</p>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+</section>

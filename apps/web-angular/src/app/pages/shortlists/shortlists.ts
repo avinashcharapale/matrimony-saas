@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LocaleService } from '@org/i18n';
 import { MatchClient, ProfileShortlistDto, ProfileViewDto } from '@org/generated';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
@@ -21,65 +23,8 @@ interface ShortlistItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-shortlists',
   standalone: true,
-  imports: [CommonModule, RouterModule, SharedSidebarComponent],
-  template: `
-    <section class="search-page">
-      <div class="search-shell">
-        <app-shared-sidebar
-          [userName]="userName()"
-          [userPhotoUrl]="userPhotoUrl()"
-          [userOccupation]="userOccupation()"
-          [subscriptionStatus]="subscriptionStatus()"
-          [subscriptionLoading]="subscriptionLoading()">
-        </app-shared-sidebar>
-
-        <div class="page-content">
-          <header class="page-header">
-            <p class="eyebrow">My Activity</p>
-            <h1>Shortlists</h1>
-            <p>Manage profiles you saved and see who viewed you.</p>
-          </header>
-
-          <div class="tabs">
-            <button type="button" [class.active]="activeTab() === 'saved'" (click)="activeTab.set('saved')">Saved ({{ savedCount() }})</button>
-            <button type="button" [class.active]="activeTab() === 'viewed'" (click)="activeTab.set('viewed')">Viewed By Others ({{ viewedCount() }})</button>
-          </div>
-
-          <section class="cards">
-            @if (isLoading()) {
-              <div class="empty-state">Loading...</div>
-            } @else if (activeTab() === 'saved' && savedItems().length > 0) {
-              @for (item of savedItems(); track item.profileId) {
-              <article class="card">
-                <div class="card-body">
-                  <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name }}</a></h2>
-                  <p class="card-date">Saved {{ item.date }}</p>
-                </div>
-              </article>
-              }
-            } @else if (activeTab() === 'viewed' && viewedItems().length > 0) {
-              @for (item of viewedItems(); track item.profileId) {
-              <article class="card">
-                <div class="card-body">
-                  <h2><a [routerLink]="['/profiles', item.profileId]" class="profile-link">{{ item.name }}</a></h2>
-                  <p class="card-date">Viewed {{ item.date }}</p>
-                </div>
-              </article>
-              }
-            } @else {
-              <div class="empty-state">
-                @if (activeTab() === 'saved') {
-                  <p>No saved profiles yet. Browse profiles and tap Save to add them here.</p>
-                } @else {
-                  <p>No one has viewed your profile yet.</p>
-                }
-              </div>
-            }
-          </section>
-        </div>
-      </div>
-    </section>
-  `,
+  imports: [CommonModule, RouterModule, SharedSidebarComponent, TranslateModule],
+  templateUrl: './shortlists.html',
   styleUrl: './shortlists.css',
 })
 export class Shortlists implements OnInit {
@@ -88,6 +33,8 @@ export class Shortlists implements OnInit {
   private readonly profileClient = inject(ProfileClient);
   private readonly authService = inject(AuthService);
   private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly translate = inject(TranslateService);
+  private readonly localeService = inject(LocaleService);
 
   readonly subscriptionStatus = this.subscriptionStore.status;
   readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
@@ -201,12 +148,12 @@ export class Shortlists implements OnInit {
 
       this.profileClient.getPublicProfileById(item.profileId).subscribe({
         next: (profile) => {
-          results[index] = { ...item, name: profile.fullName ?? profile.profileCode ?? `Profile #${item.profileId}` };
+          results[index] = { ...item, name: profile.fullName ?? profile.profileCode ?? this.profileLabel(item.profileId) };
           resolved++;
           if (resolved >= results.length) finalize();
         },
         error: () => {
-          results[index] = { ...item, name: `Profile #${item.profileId}` };
+          results[index] = { ...item, name: this.profileLabel(item.profileId) };
           resolved++;
           if (resolved >= results.length) finalize();
         },
@@ -214,10 +161,13 @@ export class Shortlists implements OnInit {
     });
   }
 
+  private profileLabel(id: number): string {
+    return `${this.translate.instant('home.profileLabel')} ${id}`.trim();
+  }
+
   private formatDate(iso: string): string {
     const d = new Date(iso);
     if (isNaN(d.getTime())) return '';
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    return this.localeService.formatDate(d);
   }
 }

@@ -1,5 +1,5 @@
 <section class="enroll-page">
-  <h1>Enroll Form</h1>
+  <h1>{{ 'register.title' | translate }}</h1>
 
   <app-register-stepper [steps]="steps" [currentStep]="currentStep()"></app-register-stepper>
 
@@ -29,9 +29,9 @@
     }
 
     <div class="form-actions">
-      @if (currentStep() > 1) { <button type="button" class="btn-secondary" (click)="previousStep()">Previous</button> }
-      @if (!isLastStep()) { <button type="button" class="btn-primary" (click)="nextStep()">Next</button> }
-      @if (isLastStep()) { <button type="submit" class="btn-primary">Submit</button> }
+      @if (currentStep() > 1) { <button type="button" class="btn-secondary" (click)="previousStep()">{{ 'common.previous' | translate }}</button> }
+      @if (!isLastStep()) { <button type="button" class="btn-primary" (click)="nextStep()">{{ 'common.next' | translate }}</button> }
+      @if (isLastStep()) { <button type="submit" class="btn-primary">{{ 'register.submit' | translate }}</button> }
     </div>
 
     @if (message()) {

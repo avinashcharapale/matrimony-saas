@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { ChatClient } from '@org/generated';
 import { AuthService } from '../../services/auth.service';
 import { MemberService } from '../../services/member.service';
@@ -18,7 +19,7 @@ interface Conversation {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedSidebarComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, SharedSidebarComponent],
   template: `
     <section class="search-page">
       <div class="search-shell">
@@ -32,8 +33,8 @@ interface Conversation {
 
         <div class="page-content">
           <header class="page-header">
-            <p class="eyebrow">Communication</p>
-            <h1>Messages</h1>
+            <p class="eyebrow">{{ 'messages.eyebrow' | translate }}</p>
+            <h1>{{ 'nav.messages' | translate }}</h1>
           </header>
 
           <section class="chat-layout">
@@ -41,33 +42,33 @@ interface Conversation {
               @if (conversations().length > 0) {
                 @for (chat of conversations(); track chat.id) {
                 <button type="button" [class.active]="chat.id === activeId()" (click)="activeId.set(chat.id)">
-                  <strong>{{ chat.name }}</strong>
+                  <strong>{{ chat.name || ('messages.unknown' | translate) }}</strong>
                   <span>{{ chat.messages[chat.messages.length - 1]?.text }}</span>
                 </button>
                 }
               } @else {
-                <p class="empty-hint">No conversations yet.</p>
+                <p class="empty-hint">{{ 'messages.noConversations' | translate }}</p>
               }
             </aside>
 
             <main class="chat-panel">
               @if (activeConversation()) {
-                <h2>{{ activeConversation()?.name }}</h2>
+                <h2>{{ activeConversation()?.name || ('messages.unknown' | translate) }}</h2>
                 <div class="messages-box">
                   @for (msg of activeConversation()?.messages || []; track $index) {
                   <div class="bubble" [class.me]="msg.byMe">
                     <p>{{ msg.text }}</p>
-                    <small>{{ msg.time }}</small>
+                    <small>{{ msg.time || ('messages.now' | translate) }}</small>
                   </div>
                   }
                 </div>
                 <form class="composer" (ngSubmit)="sendMessage()">
-                  <input type="text" name="message" [ngModel]="draft()" (ngModelChange)="draft.set($event)" placeholder="Type message" />
-                  <button type="submit" [disabled]="!draft().trim()">Send</button>
+                  <input type="text" name="message" [ngModel]="draft()" (ngModelChange)="draft.set($event)" [attr.placeholder]="'messages.sendPlaceholder' | translate" />
+                  <button type="submit" [disabled]="!draft().trim()">{{ 'messages.send' | translate }}</button>
                 </form>
               } @else {
                 <div class="empty-chat">
-                  <p>Select a conversation to start messaging.</p>
+                  <p>{{ 'messages.selectConversation' | translate }}</p>
                 </div>
               }
             </main>
@@ -131,7 +132,7 @@ export class Messages implements OnInit {
       next: (convos) => {
         const mapped: Conversation[] = (convos ?? []).map((c) => ({
           id: String(c.conversationId ?? ''),
-          name: c.conversationName ?? 'Unknown',
+          name: c.conversationName ?? '',
           messages: c.lastMessage
             ? [{ byMe: false, text: c.lastMessage.content ?? '', time: c.lastMessage.sentDate ?? '' }]
             : [],
@@ -152,7 +153,7 @@ export class Messages implements OnInit {
     this.conversations.update(convos =>
       convos.map((c) =>
         c.id === active.id
-          ? { ...c, messages: [...c.messages, { byMe: true, text: draftValue, time: 'Now' }] }
+          ? { ...c, messages: [...c.messages, { byMe: true, text: draftValue, time: '' }] }
           : c
       )
     );

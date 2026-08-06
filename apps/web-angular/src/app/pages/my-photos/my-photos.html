@@ -11,16 +11,16 @@
     <div class="search-main">
       @if (isLoading()) {
       <div class="loading-state">
-        <p>Loading your photos...</p>
+        <p>{{ 'myPhotos.loading' | translate }}</p>
       </div>
       } @else if (error()) {
       <div class="error-state">
         <p>{{ error() }}</p>
-        <button class="btn-primary" (click)="loadMyProfile()">Try Again</button>
+        <button class="btn-primary" (click)="loadMyProfile()">{{ 'common.retry' | translate }}</button>
       </div>
       } @else if (profile()) {
       <header class="search-title">
-        <h1>My Photos</h1>
+        <h1>{{ 'myPhotos.title' | translate }}</h1>
       </header>
 
       <!-- Hidden file inputs -->
@@ -35,9 +35,9 @@
               [alt]="profile()!.fullName"
               class="profile-main-photo"
               (click)="openGallery(0)"
-              title="Click to view gallery"
+              [title]="'myPhotos.viewGallery' | translate"
             />
-            <button class="change-photo-btn" (click)="triggerReplacePhoto(photos()[0]?.photoSlot ?? 1, $event)" [disabled]="isUploading()" title="Change main photo">
+            <button class="change-photo-btn" (click)="triggerReplacePhoto(photos()[0]?.photoSlot ?? 1, $event)" [disabled]="isUploading()" [title]="'myPhotos.changePhoto' | translate">
               @if (isUploading() && replacingSlot() === photos()[0]?.photoSlot) {
                 <span class="upload-spinner"></span>
               } @else {
@@ -56,7 +56,7 @@
                   class="thumb-action-btn thumb-edit"
                   (click)="triggerReplacePhoto(photo.photoSlot!, $event)"
                   [disabled]="isUploading()"
-                  title="Replace photo"
+                  [title]="'myPhotos.replacePhoto' | translate"
                 >
                   @if (isUploading() && replacingSlot() === photo.photoSlot) {
                     <span class="upload-spinner-sm"></span>
@@ -68,7 +68,7 @@
                   class="thumb-action-btn thumb-delete"
                   (click)="deletePhoto(photo.photoSlot!, $event)"
                   [disabled]="deletingSlot() === photo.photoSlot"
-                  title="Delete photo"
+                  [title]="'myPhotos.deletePhoto' | translate"
                 >
                   @if (deletingSlot() === photo.photoSlot) {
                     <span class="upload-spinner-sm"></span>
@@ -78,7 +78,7 @@
                 </button>
               </div>
               @if (i === 0) {
-              <span class="photo-primary-badge">Primary</span>
+              <span class="photo-primary-badge">{{ 'myPhotos.setAsPrimary' | translate }}</span>
               }
             </div>
             }
@@ -86,21 +86,21 @@
             @if (canAddPhoto()) {
             <div class="photo-thumb photo-add" (click)="triggerAddPhoto()" [class.disabled]="isUploading()">
               <span class="photo-add-icon">+</span>
-              <span class="photo-add-label">Add Photo</span>
+              <span class="photo-add-label">{{ 'myPhotos.addPhoto' | translate }}</span>
             </div>
             }
           </div>
           } @else {
           <div class="photo-empty">
             <button class="photo-add-btn" (click)="triggerAddPhoto()" [disabled]="isUploading()">
-              + Add Your First Photo
+              + {{ 'myPhotos.addFirst' | translate }}
             </button>
           </div>
           }
         </div>
       </section>
 
-      <p class="photos-hint">Click a photo to preview it. Hover a thumbnail to replace or delete it.</p>
+      <p class="photos-hint">{{ 'myPhotos.hint' | translate }}</p>
 
       <!-- Gallery Modal -->
       @if (isGalleryOpen()) {
@@ -130,7 +130,7 @@
                 class="dot"
                 [class.active]="i === currentGalleryIndex()"
                 (click)="goToPhoto($index)"
-                [attr.aria-label]="'Go to photo ' + (i + 1)"
+                [attr.aria-label]="('myPhotos.goToPhoto' | translate) + ' ' + (i + 1)"
               ></button>
               }
             </div>
@@ -141,8 +141,8 @@
 
       } @else {
       <article class="empty-state">
-        <h2>Profile not found</h2>
-        <p>Your profile could not be loaded. Please try again later.</p>
+        <h2>{{ 'myPhotos.profileNotFound' | translate }}</h2>
+        <p>{{ 'myPhotos.profileNotFoundMsg' | translate }}</p>
       </article>
       }
     </div>

@@ -1,7 +1,7 @@
 <section class="bottom-grid">
   <article class="panel small-panel">
     <div class="panel-title">
-      <h3>My Horoscope</h3>
+      <h3>{{ 'home.horoscope.title' | translate }}</h3>
     </div>
     @if (horoscopeTags.length > 0) {
       <div class="tag-row">
@@ -12,16 +12,16 @@
     } @else {
       <div class="empty-state">
         <span class="empty-icon">&#9788;</span>
-        <p>No horoscope data yet.</p>
-        <a routerLink="/my-profile" class="empty-cta">Add Horoscope</a>
+        <p>{{ 'home.horoscope.empty' | translate }}</p>
+        <a routerLink="/my-profile" class="empty-cta">{{ 'home.horoscope.add' | translate }}</a>
       </div>
     }
-    <a routerLink="/my-profile" class="panel-link">View Full Report</a>
+    <a routerLink="/my-profile" class="panel-link">{{ 'home.horoscope.fullReport' | translate }}</a>
   </article>
 
   <article class="panel small-panel">
     <div class="panel-title">
-      <h3>Messages</h3>
+      <h3>{{ 'home.messages.title' | translate }}</h3>
     </div>
     @if (messages.length > 0) {
       <div class="message-list">
@@ -48,8 +48,8 @@
     } @else {
       <div class="empty-state">
         <span class="empty-icon">&#9993;</span>
-        <p>No messages yet.</p>
-        <p class="empty-hint-sm">Start a conversation from a profile.</p>
+        <p>{{ 'home.messages.empty' | translate }}</p>
+        <p class="empty-hint-sm">{{ 'home.messages.emptyHint' | translate }}</p>
       </div>
     }
   </article>

@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-landing-cta-footer',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, TranslateModule],
   templateUrl: './landing-cta-footer.component.html',
   styleUrl: '../landing.css',
 })

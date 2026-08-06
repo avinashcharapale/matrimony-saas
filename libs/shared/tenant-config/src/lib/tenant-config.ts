@@ -1,6 +1,8 @@
 export interface TenantConfig {
   id: string;
   displayName: string;
+  defaultLanguage: string;
+  defaultCurrency: string;
   logoText: string;
   logoEmoji?: string;
   logoUrl?: string;
@@ -85,6 +87,8 @@ export const TENANT_CONFIGS: TenantConfig[] = [
   {
     id: 'demo',
     displayName: 'Matrimony Demo',
+    defaultLanguage: 'en',
+    defaultCurrency: 'INR',
     logoText: 'Matrimony',
     logoEmoji: '💍',
     tagline: 'Trusted Matrimony Platform',
@@ -141,6 +145,8 @@ export const TENANT_CONFIGS: TenantConfig[] = [
   {
     id: 'anand-maratha',
     displayName: 'Anand Maratha',
+    defaultLanguage: 'mr',
+    defaultCurrency: 'INR',
     logoText: 'Anand Maratha',
     logoEmoji: '🌼',
     tagline: 'Maratha Matrimony',
@@ -197,6 +203,8 @@ export const TENANT_CONFIGS: TenantConfig[] = [
   {
     id: 'petwatch',
     displayName: '24Petwatch',
+    defaultLanguage: 'en',
+    defaultCurrency: 'CAD',
     logoText: '24Petwatch',
     logoEmoji: '🐾',
     tagline: 'Pet Care Platform',

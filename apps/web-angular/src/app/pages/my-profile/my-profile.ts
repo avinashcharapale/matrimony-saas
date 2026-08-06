@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MemberService } from '../../services/member.service';
 import { RegisterMasterDataService } from '../../services/register-master-data.service';
 import { AuthService } from '../../services/auth.service';
@@ -25,7 +26,7 @@ interface ProfileSection {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-my-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, SharedSidebarComponent],
+  imports: [CommonModule, RouterModule, TranslateModule, SharedSidebarComponent],
   templateUrl: './my-profile.html',
   styleUrl: './my-profile.css',
 })
@@ -34,6 +35,9 @@ export class MyProfile implements OnInit {
   private readonly masterData = inject(RegisterMasterDataService);
   private readonly authService = inject(AuthService);
   private readonly subscriptionStore = inject(SubscriptionStore);
+  private readonly translate = inject(TranslateService);
+
+  private readonly langTick = signal(0);
 
   readonly profile = signal<ProfileDetailDto | null>(null);
   readonly isLoading = signal(true);
@@ -51,9 +55,19 @@ export class MyProfile implements OnInit {
   private occupationMap = new Map<number, string>();
   private incomeRangeMap = new Map<number, string>();
 
+  constructor() {
+    this.translate.onLangChange.subscribe(() => this.langTick.update(v => v + 1));
+  }
+
+  private t(key: string): string {
+    return this.translate.instant(key);
+  }
+
   readonly sections = computed(() => {
     const p = this.profile();
     if (!p) return [];
+
+    this.langTick();
 
     const personal = p.personalDetails;
     const career = p.career;
@@ -64,110 +78,110 @@ export class MyProfile implements OnInit {
 
     return [
       {
-        title: 'Personal Details',
+        title: this.t('profile.personalDetails'),
         fields: [
-          this.field('Full Name', p.fullName),
-          this.field('Age', p.age),
-          this.field('Date of Birth', this.dobText(personal)),
-          this.field('Gender', personal?.genderName),
-          this.field('Religion', personal?.religionName),
-          this.field('Caste', personal?.casteName),
-          this.field('Sub Caste', personal?.subCasteName),
-          this.field('Marital Status', personal?.maritalStatusName),
-          this.field('Bio', p.bio),
-          this.field('Location', p.locationText),
-          this.field('Height', this.heightText(personal?.heightFt, personal?.heightIn)),
-          this.field('Weight', personal?.weightKg ? `${personal.weightKg} kg` : null),
-          this.field('Blood Group', personal?.bloodGroupName),
-          this.field('Complexion', personal?.complexionName),
-          this.field('Diet', personal?.dietName),
-          this.field('Personality', personal?.personalityName),
-          this.field('Spectacles', this.boolText(personal?.spectacles)),
-          this.field('Lens', this.boolText(personal?.lens)),
-          this.field('Physical Disability', this.boolText(personal?.physicalDisability)),
-          this.field('Disability Detail', personal?.disabilityDetail),
+          this.field('profile.fullName', p.fullName),
+          this.field('profile.age', p.age),
+          this.field('profile.dob', this.dobText(personal)),
+          this.field('profile.gender', personal?.genderName),
+          this.field('profile.religion', personal?.religionName),
+          this.field('profile.caste', personal?.casteName),
+          this.field('profile.subCaste', personal?.subCasteName),
+          this.field('profile.maritalStatus', personal?.maritalStatusName),
+          this.field('profile.bio', p.bio),
+          this.field('profile.location', p.locationText),
+          this.field('profile.height', this.heightText(personal?.heightFt, personal?.heightIn)),
+          this.field('profile.weight', personal?.weightKg ? `${personal.weightKg} ${this.t('common.kg')}` : null),
+          this.field('profile.bloodGroup', personal?.bloodGroupName),
+          this.field('profile.complexion', personal?.complexionName),
+          this.field('profile.diet', personal?.dietName),
+          this.field('profile.personality', personal?.personalityName),
+          this.field('profile.spectacles', this.boolText(personal?.spectacles)),
+          this.field('profile.lens', this.boolText(personal?.lens)),
+          this.field('profile.physicalDisability', this.boolText(personal?.physicalDisability)),
+          this.field('profile.disabilityDetail', personal?.disabilityDetail),
         ],
       },
       {
-        title: 'Horoscope & Astrology',
+        title: this.t('profile.horoscope'),
         fields: [
-          this.field('Manglik', this.boolText(horoscope?.manglik)),
-          this.field('Rashi', horoscope?.rashiName),
-          this.field('Nakshatra', horoscope?.nakshatraName),
-          this.field('Charan', horoscope?.charanName),
-          this.field('Nadi', horoscope?.nadiName),
-          this.field('Gan', horoscope?.ganName),
-          this.field('Birth Hour', horoscope?.birthHour),
-          this.field('Birth Minute', horoscope?.birthMinute),
-          this.field('Birth Period', horoscope?.birthPeriod),
-          this.field('Devak', horoscope?.devak),
-          this.field('Birth State', horoscope?.birthStateName || horoscope?.birthStateOther),
-          this.field('Birth District', horoscope?.birthDistrictName || horoscope?.birthDistrictOther),
+          this.field('profile.manglik', this.boolText(horoscope?.manglik)),
+          this.field('profile.rashi', horoscope?.rashiName),
+          this.field('profile.nakshatra', horoscope?.nakshatraName),
+          this.field('profile.charan', horoscope?.charanName),
+          this.field('profile.nadi', horoscope?.nadiName),
+          this.field('profile.gan', horoscope?.ganName),
+          this.field('profile.birthHour', horoscope?.birthHour),
+          this.field('profile.birthMinute', horoscope?.birthMinute),
+          this.field('profile.birthPeriod', horoscope?.birthPeriod),
+          this.field('profile.devak', horoscope?.devak),
+          this.field('profile.birthState', horoscope?.birthStateName || horoscope?.birthStateOther),
+          this.field('profile.birthDistrict', horoscope?.birthDistrictName || horoscope?.birthDistrictOther),
         ],
       },
       {
-        title: 'Career & Education',
+        title: this.t('profile.careerEducation'),
         fields: [
-          this.field('Education Area', career?.educationAreaName),
-          this.field('Education', career?.educationName),
-          this.field('Occupation', career?.occupationName),
-          this.field('Occupation Details', career?.occupationDetails),
-          this.field('Working City', career?.workingCity),
-          this.field('Working State', career?.workingStateName || career?.workingStateOther),
-          this.field('Working Country', career?.workingCountryName || career?.workingCountryOther),
-          this.field('Income Amount', career?.incomeAmount),
-          this.field('Income Period', career?.incomePeriodName),
+          this.field('profile.educationArea', career?.educationAreaName),
+          this.field('profile.education', career?.educationName),
+          this.field('profile.occupation', career?.occupationName),
+          this.field('profile.occupationDetails', career?.occupationDetails),
+          this.field('profile.workingCity', career?.workingCity),
+          this.field('profile.workingState', career?.workingStateName || career?.workingStateOther),
+          this.field('profile.workingCountry', career?.workingCountryName || career?.workingCountryOther),
+          this.field('profile.incomeAmount', career?.incomeAmount),
+          this.field('profile.incomePeriod', career?.incomePeriodName),
         ],
       },
       {
-        title: 'Contact',
+        title: this.t('profile.contact'),
         fields: [
-          this.field('Email', contact?.contactEmail),
-          this.field('Address', contact?.residenceAddress),
-          this.field('ID Proof', contact?.idProofNumber),
-          this.field('SMS Mobile', this.getPhone('sms_mobile')),
-          this.field('Secondary Mobile', this.getPhone('mobile_secondary')),
-          this.field('Phone (Primary)', this.getPhone('phone_primary')),
-          this.field('Phone (Secondary)', this.getPhone('phone_secondary')),
+          this.field('profile.email', contact?.contactEmail),
+          this.field('profile.address', contact?.residenceAddress),
+          this.field('profile.idProof', contact?.idProofNumber),
+          this.field('profile.smsMobile', this.getPhone('sms_mobile')),
+          this.field('profile.secondaryMobile', this.getPhone('mobile_secondary')),
+          this.field('profile.phonePrimary', this.getPhone('phone_primary')),
+          this.field('profile.phoneSecondary', this.getPhone('phone_secondary')),
         ],
       },
       {
-        title: 'Family Background',
+        title: this.t('profile.familyBackground'),
         fields: [
-          this.field('Father', this.boolText(family?.fatherStatus)),
-          this.field('Mother', this.boolText(family?.motherStatus)),
-          this.field('Brothers', family?.brothers),
-          this.field('Married Brothers', family?.marriedBrothers),
-          this.field('Sisters', family?.sisters),
-          this.field('Married Sisters', family?.marriedSisters),
-          this.field('Parents Full Name', family?.parentsFullName),
-          this.field('Parents Occupation', family?.parentsOccupation),
-          this.field('Parents Resident City', family?.parentsResidentCity),
-          this.field('Family Wealth', family?.familyWealth),
-          this.field('Mama Surname/Place', family?.mamaSurnamePlace),
-          this.field('Native District', family?.nativeDistrictName || family?.nativeDistrictOther),
-          this.field('Native Taluka', family?.nativeTalukaName || family?.nativeTalukaOther),
-          this.field('Intercast Marriage', this.boolText(family?.intercastMarriage)),
-          this.field('Intercast Relation', family?.intercastRelation),
+          this.field('profile.father', this.boolText(family?.fatherStatus)),
+          this.field('profile.mother', this.boolText(family?.motherStatus)),
+          this.field('profile.brothers', family?.brothers),
+          this.field('profile.marriedBrothers', family?.marriedBrothers),
+          this.field('profile.sisters', family?.sisters),
+          this.field('profile.marriedSisters', family?.marriedSisters),
+          this.field('profile.parentsFullName', family?.parentsFullName),
+          this.field('profile.parentsOccupation', family?.parentsOccupation),
+          this.field('profile.parentsResidentCity', family?.parentsResidentCity),
+          this.field('profile.familyWealth', family?.familyWealth),
+          this.field('profile.mamaSurnamePlace', family?.mamaSurnamePlace),
+          this.field('profile.nativeDistrict', family?.nativeDistrictName || family?.nativeDistrictOther),
+          this.field('profile.nativeTaluka', family?.nativeTalukaName || family?.nativeTalukaOther),
+          this.field('profile.intercastMarriage', this.boolText(family?.intercastMarriage)),
+          this.field('profile.intercastRelation', family?.intercastRelation),
         ],
       },
       {
-        title: 'Partner Preferences',
+        title: this.t('profile.partnerPreferences'),
         fields: [
-          this.field('Preferred Cities', p.preferredCities?.join(', ')),
-          this.field('Interests', p.interests?.join(', ')),
-          this.field('Expected Manglik', this.boolText(partner?.expectedManglik)),
-          this.field('Max Age Difference', partner?.maxAgeDifference),
-          this.field('Expected Height Ft', partner?.expectedHeightFt),
-          this.field('Expected Height In', partner?.expectedHeightIn),
-          this.field('Divorcee', this.boolText(partner?.divorcee)),
-          this.field('Expected Caste', this.resolveIds(this.casteMap, p.expectedCasteIds) ?? (partner?.expectedCasteNoBar ? 'No Bar' : null)),
-          this.field('Expected Education', this.resolveIds(this.educationMap, p.expectedEducationIds) ?? (partner?.expectedEducationNoBar ? 'No Bar' : null)),
-          this.field('Expected Occupation', this.resolveIds(this.occupationMap, p.expectedOccupationIds) ?? (partner?.expectedOccupationNoBar ? 'No Bar' : null)),
-          this.field('Expected Income Range', this.resolveName(this.incomeRangeMap, partner?.expectedIncomeRangeId)),
-          this.field('Caste No Bar', this.boolText(partner?.expectedCasteNoBar)),
-          this.field('Education No Bar', this.boolText(partner?.expectedEducationNoBar)),
-          this.field('Occupation No Bar', this.boolText(partner?.expectedOccupationNoBar)),
+          this.field('profile.preferredCities', p.preferredCities?.join(', ')),
+          this.field('profile.interests', p.interests?.join(', ')),
+          this.field('profile.expectedManglik', this.boolText(partner?.expectedManglik)),
+          this.field('profile.maxAgeDifference', partner?.maxAgeDifference),
+          this.field('profile.expectedHeightFt', partner?.expectedHeightFt),
+          this.field('profile.expectedHeightIn', partner?.expectedHeightIn),
+          this.field('profile.divorcee', this.boolText(partner?.divorcee)),
+          this.field('profile.expectedCaste', this.resolveIds(this.casteMap, p.expectedCasteIds) ?? (partner?.expectedCasteNoBar ? this.t('profile.noBar') : null)),
+          this.field('profile.expectedEducation', this.resolveIds(this.educationMap, p.expectedEducationIds) ?? (partner?.expectedEducationNoBar ? this.t('profile.noBar') : null)),
+          this.field('profile.expectedOccupation', this.resolveIds(this.occupationMap, p.expectedOccupationIds) ?? (partner?.expectedOccupationNoBar ? this.t('profile.noBar') : null)),
+          this.field('profile.expectedIncomeRange', this.resolveName(this.incomeRangeMap, partner?.expectedIncomeRangeId)),
+          this.field('profile.casteNoBar', this.boolText(partner?.expectedCasteNoBar)),
+          this.field('profile.educationNoBar', this.boolText(partner?.expectedEducationNoBar)),
+          this.field('profile.occupationNoBar', this.boolText(partner?.expectedOccupationNoBar)),
         ],
       },
     ];
@@ -195,7 +209,7 @@ export class MyProfile implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load my profile:', err);
-        this.error.set('Failed to load profile. Please try again.');
+        this.error.set(this.translate.instant('profile.errors.load'));
       },
     });
   }
@@ -259,17 +273,17 @@ export class MyProfile implements OnInit {
 
   private boolText(value: boolean | undefined | null): string {
     if (value === null || value === undefined) return '-';
-    return value ? 'Yes' : 'No';
+    return value ? this.t('common.yes') : this.t('common.no');
   }
 
   private heightText(ft?: number | null, inch?: number | null): string {
     if (!ft && !inch) return '-';
-    return `${ft ?? 0} ft ${inch ?? 0} in`;
+    return `${ft ?? 0} ${this.t('common.ft')} ${inch ?? 0} ${this.t('common.in')}`;
   }
 
   private field(label: string, value: unknown): ProfileField {
     const text = `${value ?? ''}`.trim();
-    return { label, value: text || '-' };
+    return { label: this.t(label), value: text || '-' };
   }
 
   private resolveName(map: Map<number, string>, id?: number | null): string | null {

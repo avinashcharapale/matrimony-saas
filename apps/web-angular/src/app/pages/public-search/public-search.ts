@@ -1,6 +1,8 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LocaleService } from '@org/i18n';
 import { ProfileClient, ProfileListItemDto } from '@org/generated';
 import { RegisterMasterDataService, RegisterLookupOption, RegisterStateOption, RegisterDistrictOption } from '../../services/register-master-data.service';
 import { AuthService } from '../../services/auth.service';
@@ -10,19 +12,42 @@ import { resolvePhotoUrl } from '../../utils/default-avatar';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-public-search',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslateModule],
   templateUrl: './public-search.html',
   styleUrl: './public-search.css',
 })
 export class PublicSearch implements OnInit {
-  private readonly profileClient = inject(ProfileClient);
-  private readonly masterData = inject(RegisterMasterDataService);
-  private readonly router = inject(Router);
-  private readonly authService = inject(AuthService);
+private readonly profileClient = inject(ProfileClient);
+private readonly masterData = inject(RegisterMasterDataService);
+private readonly router = inject(Router);
+private readonly authService = inject(AuthService);
+private readonly translate = inject(TranslateService);
+private readonly localeService = inject(LocaleService);
 
-  readonly heading = 'Find Your Perfect Match';
-  readonly subtitle = 'Browse profiles and register to connect';
-  readonly ctaLabel = '\u2764 Register to Connect';
+  private readonly langTick = signal(0);
+
+  constructor() {
+    this.translate.onLangChange.subscribe(() => this.langTick.update((v) => v + 1));
+  }
+
+  private t(key: string): string {
+    return this.translate.instant(key);
+  }
+
+  get heading(): string {
+    this.langTick();
+    return this.t('publicSearch.heading');
+  }
+
+  get subtitle(): string {
+    this.langTick();
+    return this.t('publicSearch.subtitle');
+  }
+
+  get ctaLabel(): string {
+    this.langTick();
+    return this.t('publicSearch.registerToConnect');
+  }
 
   readonly results = signal<ProfileListItemDto[]>([]);
   readonly totalCount = signal(0);
@@ -166,7 +191,7 @@ export class PublicSearch implements OnInit {
       },
       error: () => {
         this.loading.set(false);
-        this.error.set('Search failed. Please try again.');
+        this.error.set(this.t('publicSearch.errors.searchFailed'));
       },
     });
   }
@@ -296,16 +321,10 @@ export class PublicSearch implements OnInit {
     if (profile.workingCountryName) parts.push(profile.workingCountryName);
     if (parts.length > 0) {
       let text = parts.join(', ');
-      if (profile.incomeAmount) text += ` / ${this.formatCurrency(profile.incomeAmount)}`;
+      if (profile.incomeAmount) text += ` / ${this.localeService.formatCompactCurrency(profile.incomeAmount)}`;
       return text;
     }
     return profile.occupationText ?? '';
-  }
-
-  private formatCurrency(amount: number): string {
-    if (amount >= 10000000) return `${(amount / 10000000).toFixed(amount % 10000000 === 0 ? 0 : 1)} Cr`;
-    if (amount >= 100000) return `${(amount / 100000).toFixed(amount % 100000 === 0 ? 0 : 1)} L`;
-    return amount.toLocaleString('en-IN');
   }
 
   closeProfileDetail(): void {

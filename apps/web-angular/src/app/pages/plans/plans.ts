@@ -2,6 +2,8 @@ import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } 
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LocaleService } from '@org/i18n';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { TenantService } from '../../services/tenant.service';
 import { AuthService } from '../../services/auth.service';
@@ -22,7 +24,7 @@ interface CheckoutResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-plans',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './plans.html',
   styleUrl: './plans.css',
 })
@@ -32,6 +34,10 @@ export class PlansPage implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
+  private readonly localeService = inject(LocaleService);
+
+  private readonly langTick = signal(0);
 
   readonly isProcessing = signal(false);
   readonly selectedPlanId = signal<number | null>(null);
@@ -41,6 +47,14 @@ export class PlansPage implements OnInit {
   readonly isLoggedIn = computed(() => this.authService.isAuthenticated());
   readonly plans = this.subscriptionStore.plans;
   readonly loading = this.subscriptionStore.loading;
+
+  constructor() {
+    this.translate.onLangChange.subscribe(() => this.langTick.update(v => v + 1));
+  }
+
+  private t(key: string): string {
+    return this.translate.instant(key);
+  }
 
   ngOnInit(): void {
     this.subscriptionStore.loadPlans().subscribe();
@@ -76,7 +90,7 @@ export class PlansPage implements OnInit {
       },
       error: (err) => {
         console.error('Checkout failed:', err);
-        this.error.set('Payment failed. Please try again.');
+        this.error.set(this.t('plans.errors.checkout'));
         this.selectedPlanId.set(null);
       },
     });
@@ -87,17 +101,19 @@ export class PlansPage implements OnInit {
   }
 
   formatPrice(price?: number): string {
-    if (!price) return 'Free';
-    return `\u20B9${price.toLocaleString('en-IN')}`;
+    this.langTick();
+    if (!price) return this.t('plans.free');
+    return this.localeService.formatCurrency(price);
   }
 
   formatDuration(months?: number): string {
+    this.langTick();
     if (!months) return '';
     if (months >= 12) {
       const years = Math.floor(months / 12);
-      return years === 1 ? '1 Year' : `${years} Years`;
+      return years === 1 ? this.t('plans.oneYear') : this.translate.instant('plans.years', { count: years });
     }
-    return months === 1 ? '1 Month' : `${months} Months`;
+    return months === 1 ? this.t('plans.oneMonth') : this.translate.instant('plans.months', { count: months });
   }
 
   formatFeatureValue(feature: PlanFeatureValueDto): string {

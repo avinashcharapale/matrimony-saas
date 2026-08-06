@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TenantService } from '../../services/tenant.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -9,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -17,6 +18,7 @@ export class Login {
   readonly tenant = inject(TenantService).tenant;
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
 
   email = '';
   password = '';
@@ -27,7 +29,7 @@ export class Login {
     this.message.set('');
 
     if (form.invalid) {
-      this.message.set('Please enter a valid email and password.');
+      this.message.set(this.translate.instant('auth.invalidEmailPassword'));
       return;
     }
 
@@ -35,7 +37,7 @@ export class Login {
     const password = this.password.trim();
 
     if (password.length < 6) {
-      this.message.set('Password must be at least 6 characters.');
+      this.message.set(this.translate.instant('auth.passwordTooShort'));
       return;
     }
 
@@ -52,7 +54,7 @@ export class Login {
       },
       error: () => {
         this.isLoading.set(false);
-        this.message.set('Login failed. Please try again.');
+        this.message.set(this.translate.instant('auth.loginFailed'));
       },
     });
   }

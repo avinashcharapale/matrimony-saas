@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 import { RegisterMasterDataService, RegisterLookupOption } from '../../services/register-master-data.service';
@@ -21,6 +22,7 @@ import { ProfileListResultsComponent } from './components/profile-list-results.c
     ProfileListTitleComponent,
     ProfileListSearchPanelComponent,
     ProfileListResultsComponent,
+    TranslateModule,
   ],
   templateUrl: './profile-list.html',
   styleUrl: './profile-list.css',
@@ -32,6 +34,11 @@ export class ProfileList implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly subscriptionStore = inject(SubscriptionStore);
   private readonly tenantService = inject(TenantService);
+  private readonly translate = inject(TranslateService);
+
+  private t(key: string): string {
+    return this.translate.instant(key);
+  }
 
   readonly isAuthenticated = signal(false);
   readonly isPaidUser = computed(() => this.subscriptionStore.isActive());
@@ -213,7 +220,7 @@ export class ProfileList implements OnInit {
     this.error.set('');
 
     if (form && form.invalid) {
-      this.error.set('Use letters, spaces, dot or hyphen only in filters.');
+      this.error.set(this.t('profileList.search.errors.invalidChars'));
       return;
     }
 
@@ -291,7 +298,7 @@ export class ProfileList implements OnInit {
         error: (error) => {
           this.isLoading.set(false);
           console.error('Search failed:', error);
-          this.error.set('Search failed. Please try again.');
+          this.error.set(this.t('profileList.search.errors.searchFailed'));
         },
       });
   }

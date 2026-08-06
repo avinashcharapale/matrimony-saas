@@ -9,54 +9,6 @@
   background: transparent;
 }
 
-.login-banner {
-  position: relative;
-  width: min(100%, 700px);
-  height: 230px;
-  overflow: hidden;
-  border: 1px solid var(--theme-border);
-  border-radius: 1.25rem;
-  background: var(--theme-surface-soft);
-  box-shadow: var(--theme-shadow-sm);
-}
-
-.login-banner img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 35%;
-}
-
-.login-banner-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(35, 18, 12, 0.74), rgba(35, 18, 12, 0.08));
-}
-
-.login-banner-copy {
-  position: absolute;
-  left: 1.5rem;
-  bottom: 1.35rem;
-  display: grid;
-  gap: 0.25rem;
-  max-width: 280px;
-  color: var(--color-white);
-}
-
-.login-banner-copy span {
-  color: var(--tenant-accent);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.login-banner-copy strong {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 1.55rem;
-  line-height: 1.12;
-}
-
 .login-box {
   width: 100%;
   max-width: 460px;
@@ -184,20 +136,6 @@
   .login-page {
     padding: 1rem;
     align-items: stretch;
-  }
-
-  .login-banner {
-    width: 100%;
-    height: 180px;
-  }
-
-  .login-banner-copy {
-    left: 1rem;
-    bottom: 1rem;
-  }
-
-  .login-banner-copy strong {
-    font-size: 1.25rem;
   }
 
   .login-box {

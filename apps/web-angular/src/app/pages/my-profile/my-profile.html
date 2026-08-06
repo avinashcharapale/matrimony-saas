@@ -11,18 +11,18 @@
     <div class="search-main">
       @if (isLoading()) {
       <div class="loading-state">
-        <p>Loading your profile...</p>
+        <p>{{ 'profile.loading' | translate }}</p>
       </div>
       } @else if (error()) {
       <div class="error-state">
         <p>{{ error() }}</p>
-        <button class="btn-primary" (click)="loadMyProfile()">Try Again</button>
+        <button class="btn-primary" (click)="loadMyProfile()">{{ 'common.retry' | translate }}</button>
       </div>
       } @else if (profile()) {
       <header class="search-title">
-        <h1>My Profile</h1>
+        <h1>{{ 'nav.myProfile' | translate }}</h1>
         <div class="header-actions">
-          <a routerLink="/my-profile/edit" class="edit-profile-btn">Edit Profile</a>
+          <a routerLink="/my-profile/edit" class="edit-profile-btn">{{ 'nav.editProfile' | translate }}</a>
         </div>
       </header>
 
@@ -46,8 +46,8 @@
 
       } @else {
       <article class="empty-state">
-        <h2>Profile not found</h2>
-        <p>Your profile could not be loaded. Please try again later.</p>
+        <h2>{{ 'myPhotos.profileNotFound' | translate }}</h2>
+        <p>{{ 'myPhotos.profileNotFoundMsg' | translate }}</p>
       </article>
       }
     </div>

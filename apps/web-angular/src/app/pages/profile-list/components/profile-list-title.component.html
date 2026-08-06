@@ -1,4 +1,4 @@
 <header class="search-title">
-  <p class="welcome">Namaste, {{ userFirstName || 'User' }}</p>
-  <h1>Search Matches</h1>
+  <p class="welcome">{{ 'home.greeting' | translate }}, {{ userFirstName || ('home.user' | translate) }}</p>
+  <h1>{{ 'nav.search' | translate }}</h1>
 </header>

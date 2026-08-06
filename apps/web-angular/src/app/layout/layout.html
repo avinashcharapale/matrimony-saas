@@ -20,32 +20,33 @@
     <div class="toolbar-center">
       @if (isLoggedIn()) {
       <nav class="main-nav auth-nav">
-        <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Dashboard</a>
-        <a routerLink="/my-profile" routerLinkActive="active" (click)="closeMobileMenu()">My Profile</a>
-        <a routerLink="/profiles" routerLinkActive="active" (click)="closeMobileMenu()">Search Matches</a>
-        <a routerLink="/interests" routerLinkActive="active" (click)="closeMobileMenu()">Interests</a>
-        <a routerLink="/shortlists" routerLinkActive="active" (click)="closeMobileMenu()">Shortlists</a>
-        <a routerLink="/messages" routerLinkActive="active" (click)="closeMobileMenu()">Messages</a>
+        <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.dashboard' | translate }}</a>
+        <a routerLink="/my-profile" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.myProfile' | translate }}</a>
+        <a routerLink="/profiles" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.search' | translate }}</a>
+        <a routerLink="/interests" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.interests' | translate }}</a>
+        <a routerLink="/shortlists" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.shortlists' | translate }}</a>
+        <a routerLink="/messages" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.messages' | translate }}</a>
       </nav>
       } @else {
       <nav class="main-nav public-nav">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Home</a>
-        <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
-        <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">How It Works</a>
-        <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileMenu()">Plans</a>
-        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Contact</a>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.home' | translate }}</a>
+        <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'common.search' | translate }}</a>
+        <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.howItWorks' | translate }}</a>
+        <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.plans' | translate }}</a>
+        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.contact' | translate }}</a>
       </nav>
       }
     </div>
 
     <div class="toolbar-right">
+      <app-language-selector></app-language-selector>
       @if (isLoggedIn()) {
-        <button class="logout-btn" (click)="logout(); closeMobileMenu()">Logout</button>
+        <button class="logout-btn" (click)="logout(); closeMobileMenu()">{{ 'nav.logout' | translate }}</button>
       } @else {
         <p class="toolbar-contact">{{ tenant.supportPhone }} | {{ tenant.supportEmail }}</p>
         <div class="auth-actions">
-          <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">Login</a>
-          <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">Register Now</a>
+          <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">{{ 'nav.login' | translate }}</a>
+          <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">{{ 'nav.register' | translate }}</a>
         </div>
       }
     </div>
@@ -54,7 +55,7 @@
       type="button"
       class="menu-toggle"
       [attr.aria-expanded]="sidebarOpen()"
-      aria-label="Toggle navigation menu"
+      [attr.aria-label]="'common.toggleMenu' | translate"
       (click)="toggleMobileMenu()"
     >
       <span class="hamburger-icon" [class.open]="sidebarOpen()">
@@ -87,15 +88,16 @@
       </a>
     </div>
     <nav class="public-drawer-nav">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Home</a>
-      <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
-      <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">How It Works</a>
-      <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileMenu()">Plans</a>
-      <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Contact</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.home' | translate }}</a>
+      <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'common.search' | translate }}</a>
+      <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.howItWorks' | translate }}</a>
+      <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.plans' | translate }}</a>
+      <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.contact' | translate }}</a>
     </nav>
     <div class="public-drawer-actions">
-      <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">Login</a>
-      <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">Register Now</a>
+      <app-language-selector></app-language-selector>
+      <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">{{ 'nav.login' | translate }}</a>
+      <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">{{ 'nav.register' | translate }}</a>
     </div>
   </div>
 }

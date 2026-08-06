@@ -1,6 +1,6 @@
 <section class="section-block">
-  <p class="section-label">Why Trusted</p>
-  <h2>Best {{ tenantDisplayName }} Matrimony</h2>
+  <p class="section-label">{{ 'landing.whyTrusted' | translate }}</p>
+  <h2>{{ 'landing.bestMatrimony' | translate: { name: tenantDisplayName } }}</h2>
   <div class="trust-grid">
     @for (card of trustCards; track card.title) {
     <article class="trust-card">

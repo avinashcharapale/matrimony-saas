@@ -1,9 +1,9 @@
 <header class="dashboard-header">
-  <button type="button" class="sidebar-toggle-btn" [class.active]="sidebarOpen" (click)="toggleSidebar.emit()" aria-label="Toggle sidebar menu">
+  <button type="button" class="sidebar-toggle-btn" [class.active]="sidebarOpen" (click)="toggleSidebar.emit()" [attr.aria-label]="'common.toggleMenu' | translate">
     {{ sidebarOpen ? '&#10005;' : '&#9776;' }}
   </button>
   <div class="header-left">
     <p class="header-eyebrow">{{ currentDate }}</p>
-    <h1>Namaste, {{ userName || 'User' }}</h1>
+    <h1>{{ 'home.greeting' | translate }}, {{ userName || ('home.user' | translate) }}</h1>
   </div>
 </header>

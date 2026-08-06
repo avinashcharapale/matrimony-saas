@@ -1,89 +1,89 @@
 <section>
-  <h2>Educational / Professional Details</h2>
+  <h2>{{ 'register.educationDetails' | translate }}</h2>
   <div class="field-grid compact" [formGroup]="career">
     <div class="form-field">
-      <label>Education Area (It's important)</label>
+      <label>{{ 'register.educationAreaImportant' | translate }}</label>
       <select formControlName="educationAreaId">
-        <option [ngValue]="null">Select</option>
+        <option [ngValue]="null">{{ 'common.select' | translate }}</option>
         @for (opt of educationAreaOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Education</label>
+      <label>{{ 'editProfile.education' | translate }}</label>
       <select formControlName="educationId">
-        <option [ngValue]="null">Select</option>
+        <option [ngValue]="null">{{ 'common.select' | translate }}</option>
         @for (opt of educationOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Occupation Type (It's important)</label>
+      <label>{{ 'register.occupationTypeImportant' | translate }}</label>
       <select formControlName="occupationId">
-        <option [ngValue]="null">Select</option>
+        <option [ngValue]="null">{{ 'common.select' | translate }}</option>
         @for (opt of occupationTypeOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>
     <div class="form-field">
-      <label>Occupation Details</label>
+      <label>{{ 'editProfile.occupationDetails' | translate }}</label>
       <input type="text" formControlName="occupationDetails" maxlength="120" />
     </div>
     <div class="form-field">
-      <label>Working Country</label>
+      <label>{{ 'editProfile.workingCountry' | translate }}</label>
       <select formControlName="workingCountryId">
-        <option [ngValue]="null">Select Country</option>
+        <option [ngValue]="null">{{ 'common.selectCountry' | translate }}</option>
         @for (c of countryOptions; track c.countryId) { <option [ngValue]="c.countryId">{{ c.name }}</option> }
-        <option [ngValue]="0">Other</option>
+        <option [ngValue]="0">{{ 'common.other' | translate }}</option>
       </select>
     </div>
     @if (isWorkingCountryOther) {
       <div class="form-field">
-        <label>Working Country (Other)</label>
-        <input type="text" formControlName="workingCountryOther" placeholder="Enter country name" maxlength="100" />
+        <label>{{ 'editProfile.workingCountryOtherLbl' | translate }}</label>
+        <input type="text" formControlName="workingCountryOther" [attr.placeholder]="'editProfile.enterCountryName' | translate" maxlength="100" />
       </div>
     }
     @if (career.get('workingCountryId')?.value && career.get('workingCountryId')?.value !== 0) {
       <div class="form-field">
-        <label>Working State</label>
+        <label>{{ 'editProfile.workingState' | translate }}</label>
         <select formControlName="workingStateId">
-          <option [ngValue]="null">Select State</option>
+          <option [ngValue]="null">{{ 'common.selectState' | translate }}</option>
           @for (s of workingStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
-          <option [ngValue]="0">Other</option>
+          <option [ngValue]="0">{{ 'common.other' | translate }}</option>
         </select>
       </div>
       @if (isWorkingStateOther) {
         <div class="form-field">
-          <label>Working State (Other)</label>
-          <input type="text" formControlName="workingStateOther" placeholder="Enter state name" maxlength="100" />
+          <label>{{ 'editProfile.workingStateOtherLbl' | translate }}</label>
+          <input type="text" formControlName="workingStateOther" [attr.placeholder]="'editProfile.enterStateName' | translate" maxlength="100" />
         </div>
         <div class="form-field">
-          <label>Working City (Other)</label>
-          <input type="text" formControlName="workingCity" placeholder="Enter city name" maxlength="120" />
+          <label>{{ 'editProfile.workingCityOtherLbl' | translate }}</label>
+          <input type="text" formControlName="workingCity" [attr.placeholder]="'editProfile.enterCityName' | translate" maxlength="120" />
         </div>
       }
       @if (!isWorkingStateOther && career.get('workingStateId')?.value) {
         <div class="form-field">
-          <label>Working City / District</label>
+          <label>{{ 'editProfile.workingCityDistrictLbl' | translate }}</label>
           <select formControlName="workingCity" [disabled]="workingDistricts.length === 0">
-            <option value="">Select District</option>
+            <option value="">{{ 'common.selectDistrict' | translate }}</option>
             @for (d of workingDistricts; track d.districtId) { <option [value]="d.name!">{{ d.name }}</option> }
-            <option value="__other__">Other</option>
+            <option value="__other__">{{ 'common.other' | translate }}</option>
           </select>
         </div>
         @if (isWorkingCityOther) {
           <div class="form-field">
-            <label>Working City (Other)</label>
-            <input type="text" formControlName="workingCityOther" placeholder="Enter city name" maxlength="120" />
+            <label>{{ 'editProfile.workingCityOtherLbl' | translate }}</label>
+            <input type="text" formControlName="workingCityOther" [attr.placeholder]="'editProfile.enterCityName' | translate" maxlength="120" />
           </div>
         }
       }
     }
     <div class="form-field">
-      <label>Income Amount</label>
+      <label>{{ 'editProfile.incomeAmount' | translate }}</label>
       <input type="number" formControlName="incomeAmount" maxlength="12" min="0" />
     </div>
     <div class="form-field">
-      <label>Income Period</label>
+      <label>{{ 'editProfile.incomePeriod' | translate }}</label>
       <select formControlName="incomePeriodId">
-        <option [ngValue]="null">Select</option>
+        <option [ngValue]="null">{{ 'common.select' | translate }}</option>
         @for (opt of incomePeriodOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
       </select>
     </div>

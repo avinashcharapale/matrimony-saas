@@ -12,7 +12,7 @@
         class="search-input"
         name="name"
         [(ngModel)]="filters['name']"
-        placeholder="Search by name, city, or keyword..."
+        [placeholder]="'profileList.search.placeholders.search' | translate"
         maxlength="60"
         pattern="[A-Za-z .-]*"
       />
@@ -21,15 +21,15 @@
     <div class="search-quick-filters">
       @if (!isAuthenticated) {
       <div class="qf-field">
-        <label>Looking For</label>
+        <label>{{ 'profileList.search.lookingFor' | translate }}</label>
         <select name="lookingForQuick" [(ngModel)]="filters['lookingFor']">
-          <option value="Bride">Bride</option>
-          <option value="Groom">Groom</option>
+          <option value="Bride">{{ 'profileList.search.bride' | translate }}</option>
+          <option value="Groom">{{ 'profileList.search.groom' | translate }}</option>
         </select>
       </div>
       }
       <div class="qf-field">
-        <label>Age</label>
+        <label>{{ 'profileList.search.age' | translate }}</label>
         <div class="age-range">
           <select name="ageMin" [(ngModel)]="filters['ageMin']">
             <option [ngValue]="18">18</option>
@@ -50,7 +50,7 @@
             <option [ngValue]="48">48</option>
             <option [ngValue]="50">50</option>
           </select>
-          <span class="range-sep">to</span>
+          <span class="range-sep">{{ 'profileList.search.to' | translate }}</span>
           <select name="ageMax" [(ngModel)]="filters['ageMax']">
             <option [ngValue]="20">20</option>
             <option [ngValue]="22">22</option>
@@ -74,17 +74,17 @@
         </div>
       </div>
       <div class="qf-field">
-        <label>City</label>
-        <input type="text" name="location" [(ngModel)]="filters['location']" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
+        <label>{{ 'profileList.search.city' | translate }}</label>
+        <input type="text" name="location" [(ngModel)]="filters['location']" [placeholder]="'profileList.search.any' | translate" maxlength="60" pattern="[A-Za-z .-]*" />
       </div>
-      <button type="submit" class="btn-search">Search</button>
+      <button type="submit" class="btn-search">{{ 'common.search' | translate }}</button>
     </div>
   </div>
 
   <div class="search-meta-bar">
     <button type="button" class="filter-toggle" (click)="showAdvanced = !showAdvanced" [class.active]="showAdvanced">
       <span class="toggle-arrow" [class.open]="showAdvanced">&#x25B8;</span>
-      Filters
+      {{ 'profileList.search.filters' | translate }}
       @if (activeFilterCount > 0) {
         <span class="filter-badge">{{ activeFilterCount }}</span>
       }
@@ -92,15 +92,15 @@
 
     <div class="result-summary">
       <strong>{{ resultsCount }}</strong>
-      <span>matching profiles</span>
+      <span>{{ 'profileList.search.matchingProfiles' | translate }}</span>
     </div>
 
     <label class="sort-control">
-      Sort by
+      {{ 'profileList.search.sortBy' | translate }}
       <select name="sortBy" [ngModel]="sortBy" (ngModelChange)="sortByChange.emit($event)">
-        <option value="relevance">Relevance</option>
-        <option value="age-asc">Age: Low to High</option>
-        <option value="age-desc">Age: High to Low</option>
+        <option value="relevance">{{ 'profileList.search.sortRelevance' | translate }}</option>
+        <option value="age-asc">{{ 'profileList.search.ageLowToHigh' | translate }}</option>
+        <option value="age-desc">{{ 'profileList.search.ageHighToLow' | translate }}</option>
       </select>
     </label>
   </div>
@@ -109,79 +109,79 @@
   <div class="advanced-panel">
     <div class="adv-grid">
       <div class="adv-field">
-        <label>Religion</label>
+        <label>{{ 'profile.religion' | translate }}</label>
         <select name="religion" [(ngModel)]="filters['religion']" (ngModelChange)="religionChange.emit()">
-          <option value="">Any</option>
+          <option value="">{{ 'profileList.search.any' | translate }}</option>
           @for (opt of religionOptions; track opt.id) {
             <option [value]="opt.id">{{ opt.label }}</option>
           }
         </select>
       </div>
       <div class="adv-field">
-        <label>Caste</label>
+        <label>{{ 'profile.caste' | translate }}</label>
         <select name="caste" [(ngModel)]="filters['caste']">
-          <option value="">Any</option>
+          <option value="">{{ 'profileList.search.any' | translate }}</option>
           @for (opt of casteOptions; track opt.id) {
             <option [value]="opt.id">{{ opt.label }}</option>
           }
         </select>
       </div>
       <div class="adv-field">
-        <label>Education</label>
+        <label>{{ 'profile.education' | translate }}</label>
         <select name="education" [(ngModel)]="filters['education']">
-          <option value="">Any</option>
+          <option value="">{{ 'profileList.search.any' | translate }}</option>
           @for (opt of educationOptions; track opt.id) {
             <option [value]="opt.id">{{ opt.label }}</option>
           }
         </select>
       </div>
       <div class="adv-field">
-        <label>Marital Status</label>
+        <label>{{ 'profile.maritalStatus' | translate }}</label>
         <select name="maritalStatus" [(ngModel)]="filters['maritalStatus']">
-          <option value="">Any</option>
+          <option value="">{{ 'profileList.search.any' | translate }}</option>
           @for (opt of maritalStatusOptions; track opt.id) {
             <option [value]="opt.id">{{ opt.label }}</option>
           }
         </select>
       </div>
       <div class="adv-field">
-        <label>Occupation</label>
+        <label>{{ 'profile.occupation' | translate }}</label>
         <select name="occupationFilter" [(ngModel)]="filters['occupationId']">
-          <option value="">Any</option>
+          <option value="">{{ 'profileList.search.any' | translate }}</option>
           @for (opt of occupationOptions; track opt.id) {
             <option [value]="opt.id">{{ opt.label }}</option>
           }
         </select>
       </div>
       <div class="adv-field">
-        <label>Occupation Place</label>
-        <input type="text" name="workingCity" [(ngModel)]="filters['workingCity']" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
+        <label>{{ 'profileList.search.occupationPlace' | translate }}</label>
+        <input type="text" name="workingCity" [(ngModel)]="filters['workingCity']" [placeholder]="'profileList.search.any' | translate" maxlength="60" pattern="[A-Za-z .-]*" />
       </div>
       <div class="adv-field">
-        <label>Income Range Per Annum</label>
+        <label>{{ 'profileList.search.incomeRangePerAnnum' | translate }}</label>
         <select name="annualIncomeFrom" [(ngModel)]="filters['annualIncomeFrom']">
-          <option value="">Any</option>
-          <option [ngValue]="0">0+</option>
-          <option [ngValue]="200000">2L+</option>
-          <option [ngValue]="400000">4L+</option>
-          <option [ngValue]="600000">6L+</option>
-          <option [ngValue]="800000">8L+</option>
-          <option [ngValue]="1000000">10L+</option>
-          <option [ngValue]="1500000">15L+</option>
-          <option [ngValue]="2000000">20L+</option>
-          <option [ngValue]="3000000">30L+</option>
-          <option [ngValue]="5000000">50L+</option>
-          <option [ngValue]="10000000">1Cr+</option>
+          <option value="">{{ 'profileList.search.any' | translate }}</option>
+          <option [ngValue]="0">{{ 'profileList.search.income0' | translate }}</option>
+          <option [ngValue]="200000">{{ 'profileList.search.income2L' | translate }}</option>
+          <option [ngValue]="400000">{{ 'profileList.search.income4L' | translate }}</option>
+          <option [ngValue]="600000">{{ 'profileList.search.income6L' | translate }}</option>
+          <option [ngValue]="800000">{{ 'profileList.search.income8L' | translate }}</option>
+          <option [ngValue]="1000000">{{ 'profileList.search.income10L' | translate }}</option>
+          <option [ngValue]="1500000">{{ 'profileList.search.income15L' | translate }}</option>
+          <option [ngValue]="2000000">{{ 'profileList.search.income20L' | translate }}</option>
+          <option [ngValue]="3000000">{{ 'profileList.search.income30L' | translate }}</option>
+          <option [ngValue]="5000000">{{ 'profileList.search.income50L' | translate }}</option>
+          <option [ngValue]="10000000">{{ 'profileList.search.income1Cr' | translate }}</option>
         </select>
       </div>
       <div class="adv-field">
-        <label>Native Place</label>
-        <input type="text" name="nativePlace" [(ngModel)]="filters['nativePlace']" placeholder="Any" maxlength="60" pattern="[A-Za-z .-]*" />
+        <label>{{ 'profileList.search.nativePlace' | translate }}</label>
+        <input type="text" name="nativePlace" [(ngModel)]="filters['nativePlace']" [placeholder]="'profileList.search.any' | translate" maxlength="60" pattern="[A-Za-z .-]*" />
       </div>
       <div class="adv-field">
-        <label>Height</label>
+        <label>{{ 'profile.height' | translate }}</label>
         <select name="height" [(ngModel)]="filters['height']">
-          <option value="Any">Any</option>
+          <option value="Any">{{ 'profileList.search.any' | translate }}</option>
           <option value="4'10&quot; - 5'0&quot;">4'10&quot; - 5'0&quot;</option>
           <option value="5'0&quot; - 5'2&quot;">5'0&quot; - 5'2&quot;</option>
           <option value="5'2&quot; - 5'4&quot;">5'2&quot; - 5'4&quot;</option>
@@ -195,8 +195,8 @@
       </div>
     </div>
     <div class="adv-footer">
-      <button type="button" class="btn-clear" (click)="clearFilters()">Clear All</button>
-      <button type="button" class="btn-apply" (click)="searchRequested.emit(searchForm)">Apply Filters</button>
+      <button type="button" class="btn-clear" (click)="clearFilters()">{{ 'profileList.search.clearAll' | translate }}</button>
+      <button type="button" class="btn-apply" (click)="searchRequested.emit(searchForm)">{{ 'profileList.search.applyFilters' | translate }}</button>
     </div>
   </div>
   }

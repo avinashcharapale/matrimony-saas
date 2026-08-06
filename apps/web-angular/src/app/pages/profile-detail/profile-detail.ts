@@ -1,6 +1,8 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LocaleService } from '@org/i18n';
 import { HttpClient } from '@angular/common/http';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { RegisterFormDetails, createEmptyRegisterFormDetails } from '@org/models';
@@ -168,7 +170,7 @@ interface MappedProfileDetail {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   templateUrl: './profile-detail.html',
   styleUrl: './profile-detail.css',
 })
@@ -182,6 +184,18 @@ export class ProfileDetail implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly masterData = inject(RegisterMasterDataService);
   private readonly matchClient = inject(MatchClient);
+  private readonly translate = inject(TranslateService);
+  private readonly localeService = inject(LocaleService);
+
+  private readonly langTick = signal(0);
+
+  constructor() {
+    this.translate.onLangChange.subscribe(() => this.langTick.update((v) => v + 1));
+  }
+
+  private t(key: string): string {
+    return this.translate.instant(key);
+  }
 
   readonly profile = signal<MemberRecord | null>(null);
   readonly isGalleryOpen = signal(false);
@@ -245,73 +259,75 @@ export class ProfileDetail implements OnInit {
     const expectations = details?.expectations;
     const casteLookup = this.casteMap();
 
+    this.langTick();
+
     const contactSection = this.isContactUnlocked()
       ? [{
-          title: 'Contact',
+          title: this.t('profile.contact'),
           fields: [
-            this.field('Email', contact?.contactEmail || this.profile()?.email),
-            this.field('Address', contact?.residenceAddress || this.profile()?.location),
-            this.field('Primary Mobile', contact?.smsMobile),
-            this.field('Secondary Mobile', contact?.mobileSecondary),
+            this.field('profile.email', contact?.contactEmail || this.profile()?.email),
+            this.field('profile.address', contact?.residenceAddress || this.profile()?.location),
+            this.field('profileDetail.primaryMobile', contact?.smsMobile),
+            this.field('profile.secondaryMobile', contact?.mobileSecondary),
           ],
         }]
       : [];
 
     return [
       {
-        title: 'Profile Details',
+        title: this.t('profileDetail.profileDetails'),
         fields: [
-          this.field('Date of Birth', this.dateText(personal?.dobDay, personal?.dobMonth, personal?.dobYear)),
-          this.field('Height', this.heightText(personal?.heightFt, personal?.heightIn)),
-          this.field('Sex', this.profileSex(personal)),
-          this.field('Religion', personal?.religion),
-          this.field('Caste', personal?.caste),
-          this.field('Sub Caste', personal?.subCast),
-          this.field('Education', professional?.education || this.profile()?.bio),
-          this.field('Occupation', professional?.occupationDetails || this.profile()?.occupation),
-          this.field('Blood Group / Weight', `${personal?.bloodGroup || '-'} / ${personal?.weightKg || 'N/A'}`),
-          this.field('Spectacle / Lens', `${personal?.spectacles || '-'} / ${personal?.lens || '-'}`),
-          this.field('Complexion', personal?.complexion),
-          this.field('Birth Place', horoscope?.birthDistrict),
-          this.field('Diet', personal?.diet),
+          this.field('profile.dob', this.dateText(personal?.dobDay, personal?.dobMonth, personal?.dobYear)),
+          this.field('profile.height', this.heightText(personal?.heightFt, personal?.heightIn)),
+          this.field('profileDetail.sex', this.profileSex(personal)),
+          this.field('profile.religion', personal?.religion),
+          this.field('profile.caste', personal?.caste),
+          this.field('profile.subCaste', personal?.subCast),
+          this.field('profile.education', professional?.education || this.profile()?.bio),
+          this.field('profile.occupation', professional?.occupationDetails || this.profile()?.occupation),
+          this.field('profileDetail.bloodGroupWeight', `${personal?.bloodGroup || '-'} / ${personal?.weightKg || this.t('profileDetail.na')}`),
+          this.field('profileDetail.spectacleLens', `${personal?.spectacles || '-'} / ${personal?.lens || '-'}`),
+          this.field('profile.complexion', personal?.complexion),
+          this.field('profileDetail.birthPlace', horoscope?.birthDistrict),
+          this.field('profile.diet', personal?.diet),
           this.field(
-            'Horoscope Details',
+            'profileDetail.horoscopeDetails',
             `${horoscope?.rashi || '-'} / ${horoscope?.nakshatra || '-'} / ${horoscope?.charan || '-'}`,
           ),
-          this.field('Gotra & Devak', horoscope?.devak),
-          this.field('Mangal', horoscope?.manglik),
+          this.field('profileDetail.gotraDevak', horoscope?.devak),
+          this.field('profileDetail.mangal', horoscope?.manglik),
         ],
       },
       ...contactSection,
       {
-        title: 'Family Background',
+        title: this.t('profile.familyBackground'),
         fields: [
-          this.field('Father', family?.fatherStatus),
-          this.field('Mother', family?.motherStatus),
-          this.field('Brother', family?.brothers),
-          this.field('Sister', family?.sisters),
-          this.field('Mama', family?.mamaSurnamePlace),
-          this.field('Native Place', `${family?.nativeDistrict || ''} ${family?.nativeTaluka || ''}`),
-          this.field('Relatives', family?.relativesSurnames),
-          this.field('Parents Residing In', family?.parentsResidentCity),
-          this.field('Family Wealth', family?.familyWealth),
+          this.field('profile.father', family?.fatherStatus),
+          this.field('profile.mother', family?.motherStatus),
+          this.field('profileDetail.brother', family?.brothers),
+          this.field('profileDetail.sister', family?.sisters),
+          this.field('profileDetail.mama', family?.mamaSurnamePlace),
+          this.field('profileDetail.nativePlace', `${family?.nativeDistrict || ''} ${family?.nativeTaluka || ''}`),
+          this.field('profileDetail.relatives', family?.relativesSurnames),
+          this.field('profileDetail.parentsResidingIn', family?.parentsResidentCity),
+          this.field('profile.familyWealth', family?.familyWealth),
         ],
       },
       {
-        title: 'Expectations',
+        title: this.t('profileDetail.expectations'),
         fields: [
-          this.field('Age Difference Up To', expectations?.maxAgeDifference),
-          this.field('Expected Height', this.heightText(expectations?.expectedHeightFt, expectations?.expectedHeightIn)),
-          this.field('Education', expectations?.expectedEducation),
-          this.field('Occupation', expectations?.expectedOccupationIncome),
-          this.field('Expected Caste', this.resolveExpectationIds(
+          this.field('profileDetail.ageDifferenceUpTo', expectations?.maxAgeDifference),
+          this.field('profileDetail.expectedHeight', this.heightText(expectations?.expectedHeightFt, expectations?.expectedHeightIn)),
+          this.field('profile.education', expectations?.expectedEducation),
+          this.field('profile.occupation', expectations?.expectedOccupationIncome),
+          this.field('profile.expectedCaste', this.resolveExpectationIds(
             expectations?.expectedCasteIds,
             expectations?.expectedCasteNoBar,
             casteLookup,
           )),
-          this.field('Divorce', expectations?.divorcee),
-          this.field('Mangal', expectations?.expectedManglik),
-          this.field('Preferred City', expectations?.preferredCities),
+          this.field('profileDetail.divorce', expectations?.divorcee),
+          this.field('profileDetail.mangal', expectations?.expectedManglik),
+          this.field('profileDetail.preferredCity', expectations?.preferredCities),
         ],
       },
     ];
@@ -331,7 +347,7 @@ export class ProfileDetail implements OnInit {
     if (profileIdParam) {
       this.loadProfile(profileIdParam);
     } else {
-      this.error.set('Profile ID not found.');
+      this.error.set(this.t('profileDetail.errors.profileIdNotFound'));
       this.isLoading.set(false);
     }
   }
@@ -361,7 +377,7 @@ export class ProfileDetail implements OnInit {
 
     const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
     if (isNaN(numericId)) {
-      this.error.set('Invalid profile ID.');
+      this.error.set(this.t('profileDetail.errors.invalidProfileId'));
       this.isLoading.set(false);
       return;
     }
@@ -405,7 +421,7 @@ export class ProfileDetail implements OnInit {
       },
       error: (error: unknown) => {
         console.error('Failed to load profile:', error);
-        this.error.set('Failed to load profile. Please try again.');
+        this.error.set(this.t('profile.errors.load'));
       },
     });
   }
@@ -543,11 +559,7 @@ export class ProfileDetail implements OnInit {
     if (parts.length > 0) {
       let text = parts.join(', ');
       if (income) {
-        let formatted: string;
-        if (income >= 10000000) formatted = `${(income / 10000000).toFixed(income % 10000000 === 0 ? 0 : 1)} Cr`;
-        else if (income >= 100000) formatted = `${(income / 100000).toFixed(income % 100000 === 0 ? 0 : 1)} L`;
-        else formatted = income.toLocaleString();
-        text += ` / ${formatted}`;
+        text += ` / ${this.localeService.formatCompactCurrency(income)}`;
         if (period) text += ` / ${period}`;
       }
       return text;
@@ -643,7 +655,7 @@ export class ProfileDetail implements OnInit {
         return httpErr.error;
       }
     }
-    return 'Failed to send interest. Please try again.';
+    return this.t('profileDetail.errors.interestSend');
   }
 
   toggleShortlist(): void {
@@ -820,7 +832,7 @@ export class ProfileDetail implements OnInit {
 
   private field(label: string, value: unknown): ProfileField {
     const text = `${value ?? ''}`.trim();
-    return { label, value: text || '-' };
+    return { label: this.t(label), value: text || '-' };
   }
 
   private dateText(day?: string, month?: string, year?: string): string {
@@ -833,7 +845,7 @@ export class ProfileDetail implements OnInit {
       return '-';
     }
 
-    return `${ft || '0'} ft ${inch || '0'} in`;
+    return `${ft || '0'} ${this.t('common.ft')} ${inch || '0'} ${this.t('common.in')}`;
   }
 
   private resolveExpectationIds(
@@ -841,7 +853,7 @@ export class ProfileDetail implements OnInit {
     noBar?: boolean,
     lookup?: Map<number, string>,
   ): string {
-    if (noBar) return 'No Bar';
+    if (noBar) return this.t('profile.noBar');
     if (!ids || ids.length === 0) return '';
     if (!lookup || lookup.size === 0) return ids.join(', ');
     return ids.map(id => lookup.get(id) ?? String(id)).join(', ');

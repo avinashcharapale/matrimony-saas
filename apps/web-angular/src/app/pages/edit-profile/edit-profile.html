@@ -1,4 +1,4 @@
-<section class="search-page">
+﻿<section class="search-page">
   <div class="search-shell">
     <app-shared-sidebar
       [userName]="userName()"
@@ -10,18 +10,18 @@
 
     <div class="search-main">
   <div class="page-header">
-    <h1>Edit Profile</h1>
-    <a routerLink="/my-profile" class="back-link">&larr; Back to My Profile</a>
+    <h1>{{ 'editProfile.title' | translate }}</h1>
+    <a routerLink="/my-profile" class="back-link">&larr; {{ 'editProfile.backToProfile' | translate }}</a>
   </div>
 
   @if (isLoading()) {
   <div class="loading-state">
-    <p>Loading your profile...</p>
+    <p>{{ 'profile.loading' | translate }}</p>
   </div>
   } @else if (error() && !successMessage()) {
   <div class="error-state">
     <p>{{ error() }}</p>
-    <button class="btn-primary" (click)="loadProfile()">Try Again</button>
+    <button class="btn-primary" (click)="loadProfile()">{{ 'common.retry' | translate }}</button>
   </div>
   } @else {
   <div class="form-card">
@@ -30,24 +30,24 @@
     <!-- Personal Details -->
     <div class="form-section" [class.collapsed]="!isSectionOpen(0)">
       <h2 class="accordion-header" (click)="toggleSection(0)">
-        Personal Details
+        {{ 'editProfile.personalDetails' | translate }}
       </h2>
       @if (isSectionOpen(0)) {
       <div class="field-grid" formGroupName="personalDetails">
         <div class="form-field">
-          <label>First Name</label>
+          <label>{{ 'editProfile.firstName' | translate }}</label>
           <input type="text" formControlName="firstName" />
         </div>
         <div class="form-field">
-          <label>Middle Name</label>
+          <label>{{ 'editProfile.middleName' | translate }}</label>
           <input type="text" formControlName="middleName" />
         </div>
         <div class="form-field">
-          <label>Last Name</label>
+          <label>{{ 'editProfile.lastName' | translate }}</label>
           <input type="text" formControlName="lastName" />
         </div>
         <div class="form-field">
-          <label>Date of Birth</label>
+          <label>{{ 'editProfile.dob' | translate }}</label>
           <div class="date-group">
             <select formControlName="dobDay">
               <option [ngValue]="null">DD</option>
@@ -64,119 +64,119 @@
           </div>
         </div>
         <div class="form-field">
-          <label>Gender</label>
+          <label>{{ 'editProfile.gender' | translate }}</label>
           <select formControlName="genderId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of genderOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Religion</label>
+          <label>{{ 'editProfile.religion' | translate }}</label>
           <select formControlName="religionId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of religionOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Caste</label>
+          <label>{{ 'editProfile.caste' | translate }}</label>
           <select formControlName="casteId">
-            <option [ngValue]="null">Select</option>
+            <option [ngValue]="null">{{ 'common.select' | translate }}</option>
             @for (opt of casteOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Sub Caste</label>
+          <label>{{ 'editProfile.subCaste' | translate }}</label>
           <select formControlName="subCasteId">
-            <option [ngValue]="null">Select</option>
+            <option [ngValue]="null">{{ 'common.select' | translate }}</option>
             @for (opt of subCasteOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Marital Status</label>
+          <label>{{ 'editProfile.maritalStatus' | translate }}</label>
           <select formControlName="maritalStatusId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of maritalStatusOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Height</label>
+          <label>{{ 'editProfile.height' | translate }}</label>
           <div class="height-group">
             <select formControlName="heightFt">
-              @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }} ft</option> }
+              @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }} {{ 'common.ft' | translate }}</option> }
             </select>
             <select formControlName="heightIn">
-              @for (inch of [0,1,2,3,4,5,6,7,8,9,10,11]; track inch) { <option [ngValue]="inch">{{ inch }} in</option> }
+              @for (inch of [0,1,2,3,4,5,6,7,8,9,10,11]; track inch) { <option [ngValue]="inch">{{ inch }} {{ 'common.in' | translate }}</option> }
             </select>
           </div>
         </div>
         <div class="form-field">
-          <label>Weight (kg)</label>
+          <label>{{ 'editProfile.weight' | translate }}</label>
           <select formControlName="weightKg">
             @for (w of [40,45,50,55,60,65,70,75,80,85,90]; track w) { <option [ngValue]="w">{{ w }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Blood Group</label>
+          <label>{{ 'editProfile.bloodGroup' | translate }}</label>
           <select formControlName="bloodGroupId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of bloodGroupOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Complexion</label>
+          <label>{{ 'editProfile.complexion' | translate }}</label>
           <select formControlName="complexionId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of complexionOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Physical Disability</label>
+          <label>{{ 'editProfile.physicalDisability' | translate }}</label>
           <select formControlName="physicalDisability">
-            <option [ngValue]="false">No</option>
-            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+            <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Disability Detail</label>
+          <label>{{ 'editProfile.disabilityDetail' | translate }}</label>
           <input type="text" formControlName="disabilityDetail" />
         </div>
         <div class="form-field">
-          <label>Diet</label>
+          <label>{{ 'editProfile.diet' | translate }}</label>
           <select formControlName="dietId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of dietOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Spectacles</label>
+          <label>{{ 'editProfile.spectacles' | translate }}</label>
           <select formControlName="spectacles">
-            <option [ngValue]="false">No</option>
-            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+            <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Lens</label>
+          <label>{{ 'editProfile.lens' | translate }}</label>
           <select formControlName="lens">
-            <option [ngValue]="false">No</option>
-            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+            <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Personality</label>
+          <label>{{ 'editProfile.personality' | translate }}</label>
           <select formControlName="personalityId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of personalityOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
       </div>
       <div class="field-grid">
         <div class="form-field full-width">
-          <label>Bio</label>
-          <textarea formControlName="bio" rows="3" placeholder="Tell us about yourself"></textarea>
+          <label>{{ 'editProfile.bio' | translate }}</label>
+          <textarea formControlName="bio" rows="3" [attr.placeholder]="'editProfile.bioPlaceholder' | translate"></textarea>
         </div>
         <div class="form-field">
-          <label>Location</label>
-          <input type="text" formControlName="locationText" placeholder="City, State" />
+          <label>{{ 'editProfile.location' | translate }}</label>
+          <input type="text" formControlName="locationText" [attr.placeholder]="'editProfile.locationPlaceholder' | translate" />
         </div>
       </div>
       }
@@ -185,107 +185,107 @@
     <!-- Horoscope -->
     <div class="form-section" [class.collapsed]="!isSectionOpen(1)">
       <h2 class="accordion-header" (click)="toggleSection(1)">
-        Horoscope &amp; Astrology
+        {{ 'editProfile.horoscope' | translate }}
       </h2>
       @if (isSectionOpen(1)) {
       <div class="field-grid" formGroupName="horoscope">
         <div class="form-field">
-          <label>Manglik</label>
+          <label>{{ 'editProfile.manglik' | translate }}</label>
           <select formControlName="manglik">
-            <option [ngValue]="false">No</option>
-            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+            <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Rashi</label>
+          <label>{{ 'editProfile.rashi' | translate }}</label>
           <select formControlName="rashiId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of rashisOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Nakshatra</label>
+          <label>{{ 'editProfile.nakshatra' | translate }}</label>
           <select formControlName="nakshatraId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of nakshatrasOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Charan</label>
+          <label>{{ 'editProfile.charan' | translate }}</label>
           <select formControlName="charanId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of charansOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Nadi</label>
+          <label>{{ 'editProfile.nadi' | translate }}</label>
           <select formControlName="nadiId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of nadisOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Gan</label>
+          <label>{{ 'editProfile.gan' | translate }}</label>
           <select formControlName="ganId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of gansOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Birth Period</label>
+          <label>{{ 'editProfile.birthPeriod' | translate }}</label>
           <select formControlName="birthPeriod">
-            <option value="">Select</option>
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
+            <option value="">{{ 'common.select' | translate }}</option>
+            <option value="AM">{{ 'common.am' | translate }}</option>
+            <option value="PM">{{ 'common.pm' | translate }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Birth Hour</label>
+          <label>{{ 'editProfile.birthHour' | translate }}</label>
           <select formControlName="birthHour">
             @for (h of [1,2,3,4,5,6,7,8,9,10,11,12]; track h) { <option [ngValue]="h">{{ h }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Birth Minute</label>
+          <label>{{ 'editProfile.birthMinute' | translate }}</label>
           <select formControlName="birthMinute">
             @for (m of [0,15,30,45]; track m) { <option [ngValue]="m">{{ m }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Devak</label>
+          <label>{{ 'editProfile.devak' | translate }}</label>
           <input type="text" formControlName="devak" />
         </div>
         <div class="form-field">
-          <label>Birth State</label>
+          <label>{{ 'editProfile.birthState' | translate }}</label>
           <select formControlName="birthStateId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select State' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.selectState' | translate) }}</option>
             @for (s of birthStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
-            <option [ngValue]="0">Other</option>
+            <option [ngValue]="0">{{ 'common.other' | translate }}</option>
           </select>
         </div>
         @if (horoscope.get('birthStateId')?.value === 0) {
           <div class="form-field">
-            <label>Birth State (Other)</label>
-            <input type="text" formControlName="birthStateOther" placeholder="Enter state name" maxlength="100" />
+            <label>{{ 'editProfile.birthStateOtherLbl' | translate }}</label>
+            <input type="text" formControlName="birthStateOther" [attr.placeholder]="'editProfile.enterStateName' | translate" maxlength="100" />
           </div>
           <div class="form-field">
-            <label>Birth District (Other)</label>
-            <input type="text" formControlName="birthDistrictOther" placeholder="Enter district name" maxlength="80" />
+            <label>{{ 'editProfile.birthDistrictOtherLbl' | translate }}</label>
+            <input type="text" formControlName="birthDistrictOther" [attr.placeholder]="'editProfile.enterDistrictName' | translate" maxlength="80" />
           </div>
         }
         @if (horoscope.get('birthStateId')?.value && horoscope.get('birthStateId')?.value !== 0) {
           <div class="form-field">
-            <label>Birth District</label>
+            <label>{{ 'editProfile.birthDistrict' | translate }}</label>
             <select formControlName="birthDistrictId" [disabled]="birthDistricts.length === 0">
-              <option [ngValue]="null">Select District</option>
+              <option [ngValue]="null">{{ 'common.selectDistrict' | translate }}</option>
               @for (d of birthDistricts; track d.districtId) { <option [ngValue]="d.districtId">{{ d.name }}</option> }
-              <option [ngValue]="0">Other</option>
+              <option [ngValue]="0">{{ 'common.other' | translate }}</option>
             </select>
           </div>
           @if (horoscope.get('birthDistrictId')?.value === 0) {
             <div class="form-field">
-              <label>Birth District (Other)</label>
-              <input type="text" formControlName="birthDistrictOther" placeholder="Enter district name" maxlength="80" />
+              <label>{{ 'editProfile.birthDistrictOtherLbl' | translate }}</label>
+              <input type="text" formControlName="birthDistrictOther" [attr.placeholder]="'editProfile.enterDistrictName' | translate" maxlength="80" />
             </div>
           }
         }
@@ -296,93 +296,93 @@
     <!-- Career & Education -->
     <div class="form-section" [class.collapsed]="!isSectionOpen(2)">
       <h2 class="accordion-header" (click)="toggleSection(2)">
-        Career &amp; Education
+        {{ 'editProfile.careerEducation' | translate }}
       </h2>
       @if (isSectionOpen(2)) {
       <div class="field-grid" formGroupName="careerDetails">
         <div class="form-field">
-          <label>Education Area</label>
+          <label>{{ 'editProfile.educationArea' | translate }}</label>
           <select formControlName="educationAreaId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of educationAreasOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Education</label>
+          <label>{{ 'editProfile.education' | translate }}</label>
           <select formControlName="educationId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of educationsOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Occupation</label>
+          <label>{{ 'editProfile.occupation' | translate }}</label>
           <select formControlName="occupationId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of occupationsOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Occupation Details</label>
+          <label>{{ 'editProfile.occupationDetails' | translate }}</label>
           <input type="text" formControlName="occupationDetails" />
         </div>
         <div class="form-field">
-          <label>Working Country</label>
+          <label>{{ 'editProfile.workingCountry' | translate }}</label>
           <select formControlName="workingCountryId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select Country' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.selectCountry' | translate) }}</option>
             @for (c of countries; track c.countryId) { <option [ngValue]="c.countryId">{{ c.name }}</option> }
-            <option [ngValue]="0">Other</option>
+            <option [ngValue]="0">{{ 'common.other' | translate }}</option>
           </select>
         </div>
         @if (career.get('workingCountryId')?.value === 0) {
           <div class="form-field">
-            <label>Working Country (Other)</label>
-            <input type="text" formControlName="workingCountryOther" placeholder="Enter country name" maxlength="100" />
+            <label>{{ 'editProfile.workingCountryOtherLbl' | translate }}</label>
+            <input type="text" formControlName="workingCountryOther" [attr.placeholder]="'editProfile.enterCountryName' | translate" maxlength="100" />
           </div>
         }
         @if (career.get('workingCountryId')?.value && career.get('workingCountryId')?.value !== 0) {
           <div class="form-field">
-            <label>Working State</label>
+            <label>{{ 'editProfile.workingState' | translate }}</label>
             <select formControlName="workingStateId" [disabled]="lookupsLoading">
-              <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select State' }}</option>
+              <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.selectState' | translate) }}</option>
               @for (s of workingStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
-              <option [ngValue]="0">Other</option>
+              <option [ngValue]="0">{{ 'common.other' | translate }}</option>
             </select>
           </div>
           @if (career.get('workingStateId')?.value === 0) {
             <div class="form-field">
-              <label>Working State (Other)</label>
-              <input type="text" formControlName="workingStateOther" placeholder="Enter state name" maxlength="100" />
+              <label>{{ 'editProfile.workingStateOtherLbl' | translate }}</label>
+              <input type="text" formControlName="workingStateOther" [attr.placeholder]="'editProfile.enterStateName' | translate" maxlength="100" />
             </div>
             <div class="form-field">
-              <label>Working City</label>
-              <input type="text" formControlName="workingCity" placeholder="Enter city name" maxlength="120" />
+              <label>{{ 'editProfile.workingCity' | translate }}</label>
+              <input type="text" formControlName="workingCity" [attr.placeholder]="'editProfile.enterCityName' | translate" maxlength="120" />
             </div>
           }
           @if (career.get('workingStateId')?.value && career.get('workingStateId')?.value !== 0) {
             <div class="form-field">
-              <label>Working City / District</label>
+              <label>{{ 'editProfile.workingCityDistrictLbl' | translate }}</label>
               <select formControlName="workingCity" [disabled]="workingDistricts.length === 0">
-                <option value="">Select District</option>
+                <option value="">{{ 'common.selectDistrict' | translate }}</option>
                 @for (d of workingDistricts; track d.districtId) { <option [value]="d.name!">{{ d.name }}</option> }
-                <option value="__other__">Other</option>
+                <option value="__other__">{{ 'common.other' | translate }}</option>
               </select>
             </div>
             @if (career.get('workingCity')?.value === '__other__') {
               <div class="form-field">
-                <label>Working City (Other)</label>
-                <input type="text" formControlName="workingCityOther" placeholder="Enter city name" maxlength="120" />
+                <label>{{ 'editProfile.workingCityOtherLbl' | translate }}</label>
+                <input type="text" formControlName="workingCityOther" [attr.placeholder]="'editProfile.enterCityName' | translate" maxlength="120" />
               </div>
             }
           }
         }
         <div class="form-field">
-          <label>Income Amount</label>
+          <label>{{ 'editProfile.incomeAmount' | translate }}</label>
           <input type="number" formControlName="incomeAmount" />
         </div>
         <div class="form-field">
-          <label>Income Period</label>
+          <label>{{ 'editProfile.incomePeriod' | translate }}</label>
           <select formControlName="incomePeriodId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of incomePeriodsOptions; track opt.id) { <option [ngValue]="opt.id">{{ opt.label }}</option> }
           </select>
         </div>
@@ -393,37 +393,37 @@
     <!-- Contact Details -->
     <div class="form-section" [class.collapsed]="!isSectionOpen(3)">
       <h2 class="accordion-header" (click)="toggleSection(3)">
-        Contact Details
+        {{ 'editProfile.contactDetails' | translate }}
       </h2>
       @if (isSectionOpen(3)) {
       <div class="field-grid" formGroupName="contactDetails">
         <div class="form-field full-width">
-          <label>Residence Address</label>
+          <label>{{ 'editProfile.residenceAddress' | translate }}</label>
           <input type="text" formControlName="residenceAddress" />
         </div>
         <div class="form-field">
-          <label>Contact Email</label>
+          <label>{{ 'editProfile.contactEmail' | translate }}</label>
           <input type="email" formControlName="contactEmail" />
         </div>
         <div class="form-field">
-          <label>ID Proof Number</label>
+          <label>{{ 'editProfile.idProof' | translate }}</label>
           <input type="text" formControlName="idProofNumber" />
         </div>
         <div class="form-field">
-          <label>SMS Mobile</label>
-          <input type="tel" formControlName="smsMobile" inputmode="numeric" maxlength="16" placeholder="Primary mobile number" />
+          <label>{{ 'editProfile.smsMobile' | translate }}</label>
+          <input type="tel" formControlName="smsMobile" inputmode="numeric" maxlength="16" [attr.placeholder]="'editProfile.primaryMobilePlaceholder' | translate" />
         </div>
         <div class="form-field">
-          <label>Secondary Mobile</label>
-          <input type="tel" formControlName="mobile2" inputmode="numeric" maxlength="16" placeholder="Secondary mobile" />
+          <label>{{ 'editProfile.secondaryMobile' | translate }}</label>
+          <input type="tel" formControlName="mobile2" inputmode="numeric" maxlength="16" [attr.placeholder]="'editProfile.secondaryMobilePlaceholder' | translate" />
         </div>
         <div class="form-field">
-          <label>Phone (Primary)</label>
-          <input type="tel" formControlName="phone1" inputmode="numeric" maxlength="16" placeholder="Landline / phone" />
+          <label>{{ 'editProfile.phonePrimary' | translate }}</label>
+          <input type="tel" formControlName="phone1" inputmode="numeric" maxlength="16" [attr.placeholder]="'editProfile.landlinePlaceholder' | translate" />
         </div>
         <div class="form-field">
-          <label>Phone (Secondary)</label>
-          <input type="tel" formControlName="phone2" inputmode="numeric" maxlength="16" placeholder="Secondary phone" />
+          <label>{{ 'editProfile.phoneSecondary' | translate }}</label>
+          <input type="tel" formControlName="phone2" inputmode="numeric" maxlength="16" [attr.placeholder]="'editProfile.secondaryPhonePlaceholder' | translate" />
         </div>
       </div>
       }
@@ -432,119 +432,119 @@
     <!-- Family Details -->
     <div class="form-section" [class.collapsed]="!isSectionOpen(4)">
       <h2 class="accordion-header" (click)="toggleSection(4)">
-        Family Details
+        {{ 'editProfile.familyDetails' | translate }}
       </h2>
       @if (isSectionOpen(4)) {
       <div class="field-grid" formGroupName="familyDetails">
         <div class="form-field">
-          <label>Father Status</label>
+          <label>{{ 'editProfile.fatherStatus' | translate }}</label>
           <select formControlName="fatherStatus">
-            <option [ngValue]="false">Not Alive</option>
-            <option [ngValue]="true">Alive</option>
+            <option [ngValue]="false">{{ 'editProfile.notAlive' | translate }}</option>
+            <option [ngValue]="true">{{ 'editProfile.alive' | translate }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Mother Status</label>
+          <label>{{ 'editProfile.motherStatus' | translate }}</label>
           <select formControlName="motherStatus">
-            <option [ngValue]="false">Not Alive</option>
-            <option [ngValue]="true">Alive</option>
+            <option [ngValue]="false">{{ 'editProfile.notAlive' | translate }}</option>
+            <option [ngValue]="true">{{ 'editProfile.alive' | translate }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Brothers</label>
+          <label>{{ 'editProfile.brothers' | translate }}</label>
           <input type="number" formControlName="brothers" min="0" />
         </div>
         <div class="form-field">
-          <label>Married Brothers</label>
+          <label>{{ 'editProfile.marriedBrothers' | translate }}</label>
           <input type="number" formControlName="marriedBrothers" min="0" />
         </div>
         <div class="form-field">
-          <label>Sisters</label>
+          <label>{{ 'editProfile.sisters' | translate }}</label>
           <input type="number" formControlName="sisters" min="0" />
         </div>
         <div class="form-field">
-          <label>Married Sisters</label>
+          <label>{{ 'editProfile.marriedSisters' | translate }}</label>
           <input type="number" formControlName="marriedSisters" min="0" />
         </div>
         <div class="form-field">
-          <label>Parents Full Name</label>
+          <label>{{ 'editProfile.parentsFullName' | translate }}</label>
           <input type="text" formControlName="parentsFullName" />
         </div>
         <div class="form-field">
-          <label>Parents Occupation</label>
+          <label>{{ 'editProfile.parentsOccupation' | translate }}</label>
           <input type="text" formControlName="parentsOccupation" />
         </div>
         <div class="form-field">
-          <label>Parents Resident City</label>
+          <label>{{ 'editProfile.parentsResidentCity' | translate }}</label>
           <input type="text" formControlName="parentsResidentCity" />
         </div>
         <div class="form-field">
-          <label>Family Wealth</label>
+          <label>{{ 'editProfile.familyWealth' | translate }}</label>
           <input type="text" formControlName="familyWealth" />
         </div>
         <div class="form-field">
-          <label>Mama Surname / Place</label>
+          <label>{{ 'editProfile.mamaSurnamePlace' | translate }}</label>
           <input type="text" formControlName="mamaSurnamePlace" />
         </div>
         <div class="form-field">
-          <label>Native State</label>
+          <label>{{ 'editProfile.nativeState' | translate }}</label>
           <select formControlName="nativeStateId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select State' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.selectState' | translate) }}</option>
             @for (s of nativeStates; track s.stateId) { <option [ngValue]="s.stateId">{{ s.name }}</option> }
-            <option [ngValue]="0">Other</option>
+            <option [ngValue]="0">{{ 'common.other' | translate }}</option>
           </select>
         </div>
         @if (family.get('nativeStateId')?.value === 0) {
           <div class="form-field">
-            <label>Native State (Other)</label>
-            <input type="text" formControlName="nativeStateOther" placeholder="Enter state name" maxlength="100" />
+            <label>{{ 'editProfile.nativeStateOtherLbl' | translate }}</label>
+            <input type="text" formControlName="nativeStateOther" [attr.placeholder]="'editProfile.enterStateName' | translate" maxlength="100" />
           </div>
           <div class="form-field">
-            <label>Native District (Other)</label>
-            <input type="text" formControlName="nativeDistrictOther" placeholder="Enter district name" maxlength="80" />
+            <label>{{ 'editProfile.nativeDistrictOtherLbl' | translate }}</label>
+            <input type="text" formControlName="nativeDistrictOther" [attr.placeholder]="'editProfile.enterDistrictName' | translate" maxlength="80" />
           </div>
         }
         @if (family.get('nativeStateId')?.value && family.get('nativeStateId')?.value !== 0) {
           <div class="form-field">
-            <label>Native District</label>
+            <label>{{ 'editProfile.nativeDistrict' | translate }}</label>
             <select formControlName="nativeDistrictId" [disabled]="nativeDistricts.length === 0">
-              <option [ngValue]="null">Select District</option>
+              <option [ngValue]="null">{{ 'common.selectDistrict' | translate }}</option>
               @for (d of nativeDistricts; track d.districtId) { <option [ngValue]="d.districtId">{{ d.name }}</option> }
-              <option [ngValue]="0">Other</option>
+              <option [ngValue]="0">{{ 'common.other' | translate }}</option>
             </select>
           </div>
           @if (family.get('nativeDistrictId')?.value === 0) {
             <div class="form-field">
-              <label>Native District (Other)</label>
-              <input type="text" formControlName="nativeDistrictOther" placeholder="Enter district name" maxlength="80" />
+              <label>{{ 'editProfile.nativeDistrictOtherLbl' | translate }}</label>
+              <input type="text" formControlName="nativeDistrictOther" [attr.placeholder]="'editProfile.enterDistrictName' | translate" maxlength="80" />
             </div>
           }
           @if (family.get('nativeDistrictId')?.value && family.get('nativeDistrictId')?.value !== 0) {
             <div class="form-field">
-              <label>Native Taluka</label>
+              <label>{{ 'editProfile.nativeTaluka' | translate }}</label>
               <select formControlName="nativeTalukaId" [disabled]="nativeTalukas.length === 0">
-                <option [ngValue]="null">Select Taluka</option>
+                <option [ngValue]="null">{{ 'common.selectTaluka' | translate }}</option>
                 @for (t of nativeTalukas; track t.talukaId) { <option [ngValue]="t.talukaId">{{ t.name }}</option> }
-                <option [ngValue]="0">Other</option>
+                <option [ngValue]="0">{{ 'common.other' | translate }}</option>
               </select>
             </div>
             @if (family.get('nativeTalukaId')?.value === 0) {
               <div class="form-field">
-                <label>Native Taluka (Other)</label>
-                <input type="text" formControlName="nativeTalukaOther" placeholder="Enter taluka name" maxlength="120" />
+                <label>{{ 'editProfile.nativeTalukaOtherLbl' | translate }}</label>
+                <input type="text" formControlName="nativeTalukaOther" [attr.placeholder]="'editProfile.enterTalukaName' | translate" maxlength="120" />
               </div>
             }
           }
         }
         <div class="form-field">
-          <label>Intercast Marriage</label>
+          <label>{{ 'editProfile.intercastMarriage' | translate }}</label>
           <select formControlName="intercastMarriage">
-            <option [ngValue]="false">No</option>
-            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+            <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
           </select>
         </div>
         <div class="form-field full-width">
-          <label>Intercast Relation</label>
+          <label>{{ 'editProfile.intercastRelation' | translate }}</label>
           <input type="text" formControlName="intercastRelation" />
         </div>
       </div>
@@ -554,75 +554,75 @@
     <!-- Partner Preferences -->
     <div class="form-section" [class.collapsed]="!isSectionOpen(5)">
       <h2 class="accordion-header" (click)="toggleSection(5)">
-        Partner Preferences
+        {{ 'editProfile.partnerPreferences' | translate }}
       </h2>
       @if (isSectionOpen(5)) {
       <div class="field-grid">
         <div class="form-field">
-          <label>Preferred Cities</label>
+          <label>{{ 'editProfile.preferredCities' | translate }}</label>
           <div class="tag-input-container">
             <div class="tag-list">
               @for (tag of getTags('preferredCities'); track tag) {
                 <span class="tag-chip">{{ tag }}<button type="button" class="tag-remove" (click)="removeTag('preferredCities', tag)">&times;</button></span>
               }
             </div>
-            <input type="text" class="tag-input" placeholder="Type and press Enter" maxlength="120"
+            <input type="text" class="tag-input" [attr.placeholder]="'editProfile.typePressEnter' | translate" maxlength="120"
               (keydown)="onTagKeydown($event, 'preferredCities')" (blur)="addTagFromInput('preferredCities', $event)" />
           </div>
         </div>
         <div class="form-field">
-          <label>Interests</label>
+          <label>{{ 'editProfile.interests' | translate }}</label>
           <div class="tag-input-container">
             <div class="tag-list">
               @for (tag of getTags('interests'); track tag) {
                 <span class="tag-chip">{{ tag }}<button type="button" class="tag-remove" (click)="removeTag('interests', tag)">&times;</button></span>
               }
             </div>
-            <input type="text" class="tag-input" placeholder="Type and press Enter" maxlength="250"
+            <input type="text" class="tag-input" [attr.placeholder]="'editProfile.typePressEnter' | translate" maxlength="250"
               (keydown)="onTagKeydown($event, 'interests')" (blur)="addTagFromInput('interests', $event)" />
           </div>
         </div>
       </div>
       <div class="field-grid" formGroupName="partnerPreference">
         <div class="form-field">
-          <label>Expected Manglik</label>
+          <label>{{ 'editProfile.expectedManglik' | translate }}</label>
           <select formControlName="expectedManglik">
-            <option [ngValue]="false">No</option>
-            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+            <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
           </select>
         </div>
         <div class="form-field">
-          <label>Max Age Difference</label>
+          <label>{{ 'editProfile.maxAgeDifference' | translate }}</label>
           <input type="number" formControlName="maxAgeDifference" min="0" />
         </div>
         <div class="form-field">
-          <label>Expected Height (ft)</label>
+          <label>{{ 'editProfile.expectedHeightFt' | translate }}</label>
           <select formControlName="expectedHeightFt">
-            @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }} ft</option> }
+            @for (ft of [4,5,6,7]; track ft) { <option [ngValue]="ft">{{ ft }} {{ 'common.ft' | translate }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Expected Height (in)</label>
+          <label>{{ 'editProfile.expectedHeightIn' | translate }}</label>
           <select formControlName="expectedHeightIn">
-            @for (inch of [0,1,2,3,4,5,6,7,8,9,10,11]; track inch) { <option [ngValue]="inch">{{ inch }} in</option> }
+            @for (inch of [0,1,2,3,4,5,6,7,8,9,10,11]; track inch) { <option [ngValue]="inch">{{ inch }} {{ 'common.in' | translate }}</option> }
           </select>
         </div>
         <div class="form-field">
-          <label>Divorcee</label>
+          <label>{{ 'editProfile.divorcee' | translate }}</label>
           <select formControlName="divorcee">
-            <option [ngValue]="false">No</option>
-            <option [ngValue]="true">Yes</option>
+            <option [ngValue]="false">{{ 'common.no' | translate }}</option>
+            <option [ngValue]="true">{{ 'common.yes' | translate }}</option>
           </select>
         </div>
         <div class="form-field" [class.has-open-dropdown]="casteDropdownOpen">
-          <label>Expected Caste</label>
+          <label>{{ 'editProfile.expectedCaste' | translate }}</label>
           @if (!partner.get('expectedCasteNoBar')?.value) {
             <div class="inline-select-row">
-              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> No Bar</label>
+              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> {{ 'profile.noBar' | translate }}</label>
               <div class="dropdown-select">
                 <div class="dropdown-trigger" (click)="toggleCasteDropdown($event)">
                   @if (getSelectedCasteLabels().length === 0) {
-                    <span class="dropdown-placeholder">Select caste</span>
+                    <span class="dropdown-placeholder">{{ 'editProfile.selectCaste' | translate }}</span>
                   } @else {
                     <span class="dropdown-values">{{ getSelectedCasteLabels().join(', ') }}</span>
                   }
@@ -641,18 +641,18 @@
               </div>
             </div>
           } @else {
-            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> No Bar</label>
+            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedCasteNoBar" /> {{ 'profile.noBar' | translate }}</label>
           }
         </div>
         <div class="form-field" [class.has-open-dropdown]="educationDropdownOpen">
-          <label>Expected Education</label>
+          <label>{{ 'editProfile.expectedEducation' | translate }}</label>
           @if (!partner.get('expectedEducationNoBar')?.value) {
             <div class="inline-select-row">
-              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> No Bar</label>
+              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> {{ 'profile.noBar' | translate }}</label>
               <div class="dropdown-select">
                 <div class="dropdown-trigger" (click)="toggleEducationDropdown($event)">
                   @if (getSelectedEducationLabels().length === 0) {
-                    <span class="dropdown-placeholder">Select education</span>
+                    <span class="dropdown-placeholder">{{ 'editProfile.selectEducation' | translate }}</span>
                   } @else {
                     <span class="dropdown-values">{{ getSelectedEducationLabels().join(', ') }}</span>
                   }
@@ -671,18 +671,18 @@
               </div>
             </div>
           } @else {
-            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> No Bar</label>
+            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedEducationNoBar" /> {{ 'profile.noBar' | translate }}</label>
           }
         </div>
         <div class="form-field" [class.has-open-dropdown]="occupationDropdownOpen">
-          <label>Expected Occupation</label>
+          <label>{{ 'editProfile.expectedOccupation' | translate }}</label>
           @if (!partner.get('expectedOccupationNoBar')?.value) {
             <div class="inline-select-row">
-              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> No Bar</label>
+              <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> {{ 'profile.noBar' | translate }}</label>
               <div class="dropdown-select">
                 <div class="dropdown-trigger" (click)="toggleOccupationDropdown($event)">
                   @if (getSelectedOccupationLabels().length === 0) {
-                    <span class="dropdown-placeholder">Select occupation</span>
+                    <span class="dropdown-placeholder">{{ 'editProfile.selectOccupation' | translate }}</span>
                   } @else {
                     <span class="dropdown-values">{{ getSelectedOccupationLabels().join(', ') }}</span>
                   }
@@ -701,13 +701,13 @@
               </div>
             </div>
           } @else {
-            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> No Bar</label>
+            <label class="no-bar-toggle"><input type="checkbox" formControlName="expectedOccupationNoBar" /> {{ 'profile.noBar' | translate }}</label>
           }
         </div>
         <div class="form-field">
-          <label>Expected Income Range</label>
+          <label>{{ 'editProfile.expectedIncomeRange' | translate }}</label>
           <select formControlName="expectedIncomeRangeId" [disabled]="lookupsLoading">
-            <option [ngValue]="null">{{ lookupsLoading ? 'Loading...' : 'Select' }}</option>
+            <option [ngValue]="null">{{ lookupsLoading ? ('common.loading' | translate) : ('common.select' | translate) }}</option>
             @for (opt of incomeRangeOptions; track opt.incomeRangeId) { <option [ngValue]="opt.incomeRangeId">{{ opt.label }}</option> }
           </select>
         </div>
@@ -721,7 +721,7 @@
     }
     @if (validationErrors().length > 0) {
     <div class="form-message error">
-      <strong>Please fix the following:</strong>
+      <strong>{{ 'editProfile.fixErrors' | translate }}</strong>
       <ul class="validation-error-list">
         @for (msg of validationErrors(); track msg) { <li>{{ msg }}</li> }
       </ul>
@@ -733,9 +733,9 @@
 
     <!-- Actions -->
     <div class="form-actions">
-      <a routerLink="/my-profile" class="btn-secondary">Cancel</a>
+      <a routerLink="/my-profile" class="btn-secondary">{{ 'common.cancel' | translate }}</a>
       <button type="submit" class="btn-primary" [disabled]="isSaving() || profileForm.invalid">
-        {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+        {{ isSaving() ? ('common.saving' | translate) : ('editProfile.saveChanges' | translate) }}
       </button>
     </div>
   </form>
@@ -744,3 +744,9 @@
     </div>
   </div>
 </section>
+
+
+
+
+
+

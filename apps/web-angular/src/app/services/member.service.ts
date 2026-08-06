@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { LocaleService } from '@org/i18n';
 import {
   MemberRecord,
   RegisterFormDetails,
@@ -94,12 +95,6 @@ const MEMBERS_KEY_PREFIX = 'matrimony_members';
 const SESSION_KEY_PREFIX = 'matrimony_session_user';
 const LEGACY_MEMBERS_KEY = 'matrimony_members';
 
-function formatCurrency(amount: number): string {
-  if (amount >= 10000000) return `${(amount / 10000000).toFixed(amount % 10000000 === 0 ? 0 : 1)} Cr`;
-  if (amount >= 100000) return `${(amount / 100000).toFixed(amount % 100000 === 0 ? 0 : 1)} L`;
-  return amount.toLocaleString('en-IN');
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -109,6 +104,11 @@ export class MemberService {
   private readonly authService = inject(AuthService);
   private readonly profileClient = inject(ProfileClient);
   private readonly registerSyncService = inject(RegisterSyncService);
+  private readonly localeService = inject(LocaleService);
+
+  private formatCompactCurrency(amount: number): string {
+    return this.localeService.formatCompactCurrency(amount);
+  }
 
   private get tenantId(): string {
     return (this.tenantService.tenantHeaderId ?? this.tenantService.tenant.id ?? 'default') as string;
@@ -642,7 +642,7 @@ export class MemberService {
     if (profile.workingCity) parts.push(profile.workingCity);
     if (profile.workingCountryName) parts.push(profile.workingCountryName);
     const occupationIncomeText = parts.length > 0
-      ? parts.join(', ') + (profile.incomeAmount ? ` / ${formatCurrency(profile.incomeAmount)}` : '')
+      ? parts.join(', ') + (profile.incomeAmount ? ` / ${this.formatCompactCurrency(profile.incomeAmount)}` : '')
       : profile.occupationText ?? undefined;
 
     return {
