@@ -41,6 +41,7 @@
       "@org/generated": ["libs/generated/src/index.ts"],
       "@org/shared-utils": ["libs/shared/utils/src/index.ts"],
       "@org/shared-ui": ["libs/shared/ui/src/index.ts"],
+      "@org/tenant-settings": ["libs/tenant-settings/src/index.ts"],
       "@org/tenant-config": ["libs/shared/tenant-config/src/index.ts"],
       "@org/i18n": ["libs/shared/i18n/src/index.ts"]
     }

@@ -418,6 +418,14 @@ export interface TenantResolveResponse {
   accentColor?: string | null;
 }
 
+export interface FileUploadResult {
+  originalFileName: string;
+  storedFileName: string;
+  url: string;
+  contentType: string;
+  size: number;
+}
+
 // ─── Chat DTOs ────────────────────────────────────────────────────────────────
 
 export enum ConversationStatus {

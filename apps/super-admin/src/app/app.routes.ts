@@ -30,6 +30,11 @@ export const appRoutes: Route[] = [
           import('./pages/tenant-plan/tenant-plan').then((m) => m.TenantPlan),
       },
       {
+        path: 'tenants/:tenantId/settings',
+        loadComponent: () =>
+          import('./pages/tenant-settings/tenant-settings').then((m) => m.TenantSettings),
+      },
+      {
         path: 'platform-admins',
         loadComponent: () =>
           import('./pages/platform-admins/platform-admins').then((m) => m.PlatformAdmins),

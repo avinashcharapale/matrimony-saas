@@ -1,0 +1,12 @@
+{
+  "name": "tenant-settings",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/tenant-settings/src",
+  "projectType": "library",
+  "tags": ["scope:core"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

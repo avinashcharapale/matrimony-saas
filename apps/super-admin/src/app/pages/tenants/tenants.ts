@@ -108,6 +108,9 @@ import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dial
                     <button mat-icon-button title="Plan" (click)="navigateToPlan(tenant.tenantId!)">
                       <mat-icon>assignment</mat-icon>
                     </button>
+                    <button mat-icon-button title="Settings" (click)="navigateToSettings(tenant.tenantId!)">
+                      <mat-icon>settings</mat-icon>
+                    </button>
                     <button mat-icon-button title="Edit" (click)="openEditDialog(tenant)">
                       <mat-icon>edit</mat-icon>
                     </button>
@@ -240,6 +243,10 @@ export class Tenants implements OnInit {
 
   navigateToPlan(tenantId: number): void {
     this.router.navigate(['/tenants', tenantId, 'plan']);
+  }
+
+  navigateToSettings(tenantId: number): void {
+    this.router.navigate(['/tenants', tenantId, 'settings']);
   }
 
   onSearch(event: Event): void {

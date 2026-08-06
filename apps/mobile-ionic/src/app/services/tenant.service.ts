@@ -59,6 +59,7 @@ export class TenantService {
       ...this.currentTenant,
       displayName: resolved.displayName || resolved.name || this.currentTenant.displayName,
       logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
+      faviconUrl: resolved.faviconUrl ?? this.currentTenant.faviconUrl,
       primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
       accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
     };
@@ -105,8 +106,9 @@ export class TenantService {
     root.style.setProperty('--ion-background-color', mergedTheme.bgEnd);
     document.title = tenant.displayName;
 
-    if (tenant.logoUrl) {
-      this.setFavicon(tenant.logoUrl);
+    const iconUrl = tenant.faviconUrl ?? tenant.logoUrl;
+    if (iconUrl) {
+      this.setFavicon(iconUrl);
     }
   }
 

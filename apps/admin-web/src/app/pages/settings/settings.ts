@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { PageHeaderComponent } from '@org/shared-ui';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
-  BrandingPanel,
-  DomainsPanel,
   SecuritySettingsPanel,
   EmailSettingsPanel,
   NotificationSettingsPanel,
@@ -16,23 +14,13 @@ import {
   standalone: true,
   imports: [
     CommonModule, PageHeaderComponent, MatTabsModule,
-    BrandingPanel, DomainsPanel, SecuritySettingsPanel, EmailSettingsPanel, NotificationSettingsPanel,
+    SecuritySettingsPanel, EmailSettingsPanel, NotificationSettingsPanel,
   ],
   template: `
     <div class="settings-page">
-      <ui-page-header title="Settings" subtitle="Manage your tenant branding, domains and operational settings" />
+      <ui-page-header title="Settings" subtitle="Manage your tenant operational settings" />
 
       <mat-tab-group animationDuration="200ms">
-        <mat-tab label="Branding">
-          <ng-template matTabContent>
-            <app-branding-panel></app-branding-panel>
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Domains">
-          <ng-template matTabContent>
-            <app-domains-panel></app-domains-panel>
-          </ng-template>
-        </mat-tab>
         <mat-tab label="Security">
           <ng-template matTabContent>
             <app-security-settings-panel></app-security-settings-panel>

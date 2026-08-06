@@ -5,6 +5,7 @@ export interface TenantConfig {
   primaryColor: string;
   accentColor: string;
   logoUrl?: string;
+  faviconUrl?: string;
   customTheme?: {
     primary?: string;
     accent?: string;

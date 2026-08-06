@@ -5,6 +5,7 @@ import { AuthStore } from '@org/data-access-auth';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NotificationStore } from '@org/data-access-notification';
+import { TenantService } from '../services/tenant.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,75 +16,100 @@ import { NotificationStore } from '@org/data-access-notification';
     <div class="admin-layout">
       <aside class="sidebar">
         <div class="sidebar-header">
-          <mat-icon class="logo-icon">favorite</mat-icon>
+          @if (tenant.logoUrl) {
+            <img [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" class="logo-img" />
+          } @else {
+            <mat-icon class="logo-icon">favorite</mat-icon>
+          }
           <h2>Matrimony Admin</h2>
         </div>
         <nav class="sidebar-nav">
-          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-            <mat-icon>dashboard</mat-icon>
-            <span>Dashboard</span>
-          </a>
-          @if (can('user.read')) {
-            <a routerLink="/users" routerLinkActive="active" class="nav-item">
-              <mat-icon>manage_accounts</mat-icon>
-              <span>Staff</span>
+          <div class="nav-group">
+            <p class="nav-group-label">Overview</p>
+            <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+              <mat-icon>dashboard</mat-icon>
+              <span>Dashboard</span>
             </a>
-          }
-          <a routerLink="/notifications" routerLinkActive="active" class="nav-item">
-            <mat-icon>notifications</mat-icon>
-            <span>Notifications</span>
-            @if (store.hasUnread()) {
-              <span class="nav-badge">{{ store.unreadCount() }}</span>
+            <a routerLink="/notifications" routerLinkActive="active" class="nav-item">
+              <mat-icon>notifications</mat-icon>
+              <span>Notifications</span>
+              @if (store.hasUnread()) {
+                <span class="nav-badge">{{ store.unreadCount() }}</span>
+              }
+            </a>
+          </div>
+
+          <div class="nav-group">
+            <p class="nav-group-label">Members</p>
+            <a routerLink="/profiles" routerLinkActive="active" class="nav-item">
+              <mat-icon>person_search</mat-icon>
+              <span>Profiles</span>
+            </a>
+            @if (can('user.read')) {
+              <a routerLink="/users" routerLinkActive="active" class="nav-item">
+                <mat-icon>manage_accounts</mat-icon>
+                <span>Staff</span>
+              </a>
             }
-          </a>
-          <a routerLink="/master-data" routerLinkActive="active" class="nav-item">
-            <mat-icon>list_alt</mat-icon>
-            <span>Master Data</span>
-          </a>
-          <a routerLink="/settings" routerLinkActive="active" class="nav-item">
-            <mat-icon>settings</mat-icon>
-            <span>Settings</span>
-          </a>
-          @if (can('role.read')) {
-            <a routerLink="/roles" routerLinkActive="active" class="nav-item">
-              <mat-icon>admin_panel_settings</mat-icon>
-              <span>Roles</span>
-            </a>
+          </div>
+
+          @if (showAdministration()) {
+            <div class="nav-group">
+              <p class="nav-group-label">Administration</p>
+              @if (canManageTenants()) {
+                <a routerLink="/tenants" routerLinkActive="active" class="nav-item">
+                  <mat-icon>business</mat-icon>
+                  <span>Tenants</span>
+                </a>
+              }
+              @if (can('role.read')) {
+                <a routerLink="/roles" routerLinkActive="active" class="nav-item">
+                  <mat-icon>admin_panel_settings</mat-icon>
+                  <span>Roles</span>
+                </a>
+              }
+              @if (can('permission.read')) {
+                <a routerLink="/permissions" routerLinkActive="active" class="nav-item">
+                  <mat-icon>vpn_key</mat-icon>
+                  <span>Permissions</span>
+                </a>
+              }
+              <a routerLink="/master-data" routerLinkActive="active" class="nav-item">
+                <mat-icon>list_alt</mat-icon>
+                <span>Master Data</span>
+              </a>
+            </div>
           }
-          @if (can('permission.read')) {
-            <a routerLink="/permissions" routerLinkActive="active" class="nav-item">
-              <mat-icon>vpn_key</mat-icon>
-              <span>Permissions</span>
+
+          <div class="nav-group">
+            <p class="nav-group-label">Billing</p>
+            <a routerLink="/subscriptions" routerLinkActive="active" class="nav-item">
+              <mat-icon>subscriptions</mat-icon>
+              <span>Subscriptions</span>
             </a>
-          }
-          @if (canManageTenants()) {
-            <a routerLink="/tenants" routerLinkActive="active" class="nav-item">
-              <mat-icon>business</mat-icon>
-              <span>Tenants</span>
+            <a routerLink="/payments" routerLinkActive="active" class="nav-item">
+              <mat-icon>payments</mat-icon>
+              <span>Payments</span>
             </a>
-          }
-          <a routerLink="/profiles" routerLinkActive="active" class="nav-item">
-            <mat-icon>person_search</mat-icon>
-            <span>Profiles</span>
-          </a>
-          @if (isAdmin()) {
-            <a routerLink="/subscription-plans" routerLinkActive="active" class="nav-item">
-              <mat-icon>card_membership</mat-icon>
-              <span>Plan Management</span>
+            @if (isAdmin()) {
+              <a routerLink="/subscription-plans" routerLinkActive="active" class="nav-item">
+                <mat-icon>card_membership</mat-icon>
+                <span>Plan Management</span>
+              </a>
+              <a routerLink="/tenant-features" routerLinkActive="active" class="nav-item">
+                <mat-icon>stars</mat-icon>
+                <span>My Features</span>
+              </a>
+            }
+          </div>
+
+          <div class="nav-group">
+            <p class="nav-group-label">System</p>
+            <a routerLink="/settings" routerLinkActive="active" class="nav-item">
+              <mat-icon>settings</mat-icon>
+              <span>Settings</span>
             </a>
-            <a routerLink="/tenant-features" routerLinkActive="active" class="nav-item">
-              <mat-icon>stars</mat-icon>
-              <span>My Features</span>
-            </a>
-          }
-          <a routerLink="/subscriptions" routerLinkActive="active" class="nav-item">
-            <mat-icon>subscriptions</mat-icon>
-            <span>Subscriptions</span>
-          </a>
-          <a routerLink="/payments" routerLinkActive="active" class="nav-item">
-            <mat-icon>payments</mat-icon>
-            <span>Payments</span>
-          </a>
+          </div>
         </nav>
         <div class="sidebar-footer">
           <div class="user-info">
@@ -136,6 +162,14 @@ import { NotificationStore } from '@org/data-access-notification';
       color: #e91e63;
     }
 
+    .logo-img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: white;
+    }
+
     .sidebar-header h2 {
       margin: 0;
       font-size: 18px;
@@ -145,7 +179,21 @@ import { NotificationStore } from '@org/data-access-notification';
 
     .sidebar-nav {
       flex: 1;
-      padding: 1rem 0;
+      padding: 0.75rem 0 1rem;
+    }
+
+    .nav-group {
+      margin-top: 0.5rem;
+    }
+
+    .nav-group-label {
+      margin: 0;
+      padding: 0.5rem 1.5rem 0.25rem;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6b6b8a;
     }
 
     .nav-item {
@@ -231,7 +279,12 @@ import { NotificationStore } from '@org/data-access-notification';
 })
 export class Layout implements OnInit {
   private readonly authStore = inject(AuthStore);
+  private readonly tenantService = inject(TenantService);
   readonly store = inject(NotificationStore);
+
+  get tenant() {
+    return this.tenantService.tenant;
+  }
 
   private readonly session = this.authStore.session;
 
@@ -244,6 +297,10 @@ export class Layout implements OnInit {
     const all = [s?.role, ...(s?.roles ?? [])];
     return all.includes('PlatformAdmin') || all.includes('SuperAdmin');
   });
+
+  readonly showAdministration = computed(() =>
+    this.can('role.read') || this.can('permission.read') || this.canManageTenants(),
+  );
 
   readonly roleLabel = computed(() => {
     const s = this.session();

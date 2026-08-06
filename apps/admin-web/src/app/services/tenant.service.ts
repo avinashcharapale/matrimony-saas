@@ -1,5 +1,6 @@
 import { Injectable, effect, inject } from '@angular/core';
-import { TenantClient } from '@org/generated';
+import { tap } from 'rxjs';
+import { TenantClient, TenantResolveResponse } from '@org/generated';
 import { AuthStore } from '@org/data-access-auth';
 import { TenantStore } from '@org/data-access-tenant';
 import { TenantConfig, resolveTenant } from './tenant-config';
@@ -19,7 +20,7 @@ export class TenantService {
     return this.currentTenant;
   }
 
-  initialize(): void {
+  initialize() {
     const tenantId = this.authStore.session()?.tenantId ?? 0;
     this.tenantStore.setResolvedTenant(tenantId, null);
 
@@ -28,25 +29,42 @@ export class TenantService {
       this.tenantStore.setResolvedTenant(current, null);
     });
 
-    this.tenantClient
+    return this.tenantClient
       .resolveTenant(window.location.hostname, window.location.pathname, window.location.search)
-      .subscribe({
-        next: (resolved) => {
-          if (resolved) {
-            this.currentTenant = {
-              ...this.currentTenant,
-              id: resolved.tenantId ?? this.currentTenant.id,
-              displayName:
-                resolved.displayName || resolved.name || this.currentTenant.displayName,
-              logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
-              primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
-              accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
-            };
-          }
-        },
-        error: () => {
-          // Use default tenant config
-        },
-      });
+      .pipe(tap((resolved) => this.applyResolvedTenant(resolved)));
+  }
+
+  private applyResolvedTenant(resolved: TenantResolveResponse): void {
+    if (!resolved?.resolved) {
+      return;
+    }
+
+    this.currentTenant = {
+      ...this.currentTenant,
+      id: resolved.tenantId ?? this.currentTenant.id,
+      displayName:
+        resolved.displayName || resolved.name || this.currentTenant.displayName,
+      logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
+      faviconUrl: resolved.faviconUrl ?? this.currentTenant.faviconUrl,
+      primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
+      accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
+    };
+
+    this.setFavicon(this.currentTenant.faviconUrl ?? this.currentTenant.logoUrl);
+  }
+
+  private setFavicon(iconUrl: string | undefined): void {
+    if (!iconUrl) {
+      return;
+    }
+    let link = document.querySelector(
+      "link[rel='icon']",
+    ) as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = iconUrl;
   }
 }

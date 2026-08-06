@@ -1,5 +1,5 @@
 ﻿import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   TenantDto,
@@ -22,11 +22,16 @@ import {
   SaveTenantEmailSettingRequest,
   TenantNotificationSettingDto,
   SaveTenantNotificationSettingRequest,
+  FileUploadResult,
 } from './dtos';
 
 @Injectable({ providedIn: 'root' })
 export class TenantClient {
   private readonly http = inject(HttpClient);
+
+  private tenantHeaders(tenantId?: number): HttpHeaders | undefined {
+    return tenantId ? new HttpHeaders({ 'x-tenant-id': String(tenantId) }) : undefined;
+  }
 
   getById(id: number): Observable<TenantDto> {
     return this.http.get<TenantDto>(`/tenant/Tenants/${id}`);
@@ -119,42 +124,58 @@ export class TenantClient {
 
   // ── Tenant Branding ──────────────────────────────────────────────────────
 
-  getTenantBranding(): Observable<TenantBrandingDto> {
-    return this.http.get<TenantBrandingDto>('/tenant/tenant-branding');
+  getTenantBranding(tenantId?: number): Observable<TenantBrandingDto> {
+    return this.http.get<TenantBrandingDto>('/tenant/tenant-branding', { headers: this.tenantHeaders(tenantId) });
   }
 
-  upsertTenantBranding(body: SaveTenantBrandingRequest): Observable<TenantBrandingDto> {
-    return this.http.put<TenantBrandingDto>('/tenant/tenant-branding', body);
+  upsertTenantBranding(body: SaveTenantBrandingRequest, tenantId?: number): Observable<TenantBrandingDto> {
+    return this.http.put<TenantBrandingDto>('/tenant/tenant-branding', body, { headers: this.tenantHeaders(tenantId) });
+  }
+
+  uploadBrandingLogo(file: File, tenantId?: number): Observable<FileUploadResult> {
+    return this.uploadBrandingFile('logo', file, tenantId);
+  }
+
+  uploadBrandingFavicon(file: File, tenantId?: number): Observable<FileUploadResult> {
+    return this.uploadBrandingFile('favicon', file, tenantId);
+  }
+
+  private uploadBrandingFile(kind: string, file: File, tenantId?: number): Observable<FileUploadResult> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post<FileUploadResult>(`/tenant/tenant-branding/${kind}`, formData, {
+      headers: this.tenantHeaders(tenantId),
+    });
   }
 
   // ── Tenant Domains ───────────────────────────────────────────────────────
 
-  getTenantDomains(): Observable<TenantDomainDto[]> {
-    return this.http.get<TenantDomainDto[]>('/tenant/tenant-domains');
+  getTenantDomains(tenantId?: number): Observable<TenantDomainDto[]> {
+    return this.http.get<TenantDomainDto[]>('/tenant/tenant-domains', { headers: this.tenantHeaders(tenantId) });
   }
 
-  getTenantDomainById(id: number): Observable<TenantDomainDto> {
-    return this.http.get<TenantDomainDto>(`/tenant/tenant-domains/${id}`);
+  getTenantDomainById(id: number, tenantId?: number): Observable<TenantDomainDto> {
+    return this.http.get<TenantDomainDto>(`/tenant/tenant-domains/${id}`, { headers: this.tenantHeaders(tenantId) });
   }
 
-  createTenantDomain(body: CreateTenantDomainRequest): Observable<TenantDomainDto> {
-    return this.http.post<TenantDomainDto>('/tenant/tenant-domains', body);
+  createTenantDomain(body: CreateTenantDomainRequest, tenantId?: number): Observable<TenantDomainDto> {
+    return this.http.post<TenantDomainDto>('/tenant/tenant-domains', body, { headers: this.tenantHeaders(tenantId) });
   }
 
-  updateTenantDomain(id: number, body: UpdateTenantDomainRequest): Observable<TenantDomainDto> {
-    return this.http.put<TenantDomainDto>(`/tenant/tenant-domains/${id}`, body);
+  updateTenantDomain(id: number, body: UpdateTenantDomainRequest, tenantId?: number): Observable<TenantDomainDto> {
+    return this.http.put<TenantDomainDto>(`/tenant/tenant-domains/${id}`, body, { headers: this.tenantHeaders(tenantId) });
   }
 
-  setPrimaryTenantDomain(id: number): Observable<void> {
-    return this.http.post<void>(`/tenant/tenant-domains/${id}/primary`, {});
+  setPrimaryTenantDomain(id: number, tenantId?: number): Observable<void> {
+    return this.http.post<void>(`/tenant/tenant-domains/${id}/primary`, {}, { headers: this.tenantHeaders(tenantId) });
   }
 
-  verifyTenantDomain(id: number): Observable<void> {
-    return this.http.post<void>(`/tenant/tenant-domains/${id}/verify`, {});
+  verifyTenantDomain(id: number, tenantId?: number): Observable<void> {
+    return this.http.post<void>(`/tenant/tenant-domains/${id}/verify`, {}, { headers: this.tenantHeaders(tenantId) });
   }
 
-  deleteTenantDomain(id: number): Observable<void> {
-    return this.http.delete<void>(`/tenant/tenant-domains/${id}`);
+  deleteTenantDomain(id: number, tenantId?: number): Observable<void> {
+    return this.http.delete<void>(`/tenant/tenant-domains/${id}`, { headers: this.tenantHeaders(tenantId) });
   }
 
   // ── Tenant Security Settings ─────────────────────────────────────────────

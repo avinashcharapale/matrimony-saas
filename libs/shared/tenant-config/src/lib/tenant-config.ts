@@ -6,6 +6,7 @@ export interface TenantConfig {
   logoText: string;
   logoEmoji?: string;
   logoUrl?: string;
+  faviconUrl?: string;
   tagline: string;
   heroTitle: string;
   heroSubtitle: string;

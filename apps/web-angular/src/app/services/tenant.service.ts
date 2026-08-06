@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { catchError, of } from 'rxjs';
+import { catchError, of, tap } from 'rxjs';
 import { TenantStore } from '@org/data-access-tenant';
+import { TenantResolveResponse } from '@org/generated';
 import {
   resolveTenant,
   TenantConfig,
@@ -52,11 +53,29 @@ export class TenantService {
         window.location.search,
       )
       .pipe(
+        tap((resolved) => this.applyResolvedTenant(resolved)),
         catchError(() => {
           this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
           return of(void 0);
         }),
       );
+  }
+
+  private applyResolvedTenant(resolved: TenantResolveResponse): void {
+    if (!resolved?.resolved) {
+      return;
+    }
+
+    this.currentTenant = {
+      ...this.currentTenant,
+      displayName:
+        resolved.displayName || resolved.name || this.currentTenant.displayName,
+      logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
+      faviconUrl: resolved.faviconUrl ?? this.currentTenant.faviconUrl,
+      primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
+      accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
+    };
+    this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
   }
 
   setTheme(themeId: string): void {
@@ -101,8 +120,9 @@ export class TenantService {
     root.style.setProperty('--tenant-text', mergedTheme.text);
     document.title = tenant.displayName;
 
-    if (tenant.logoUrl) {
-      this.setFavicon(tenant.logoUrl);
+    const iconUrl = tenant.faviconUrl ?? tenant.logoUrl;
+    if (iconUrl) {
+      this.setFavicon(iconUrl);
     }
   }
 
