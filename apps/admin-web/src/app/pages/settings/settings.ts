@@ -7,6 +7,7 @@ import {
   EmailSettingsPanel,
   NotificationSettingsPanel,
 } from './settings-panels';
+import { FeatureFlagsPanel } from '@org/tenant-settings';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,7 +15,7 @@ import {
   standalone: true,
   imports: [
     CommonModule, PageHeaderComponent, MatTabsModule,
-    SecuritySettingsPanel, EmailSettingsPanel, NotificationSettingsPanel,
+    SecuritySettingsPanel, EmailSettingsPanel, NotificationSettingsPanel, FeatureFlagsPanel,
   ],
   template: `
     <div class="settings-page">
@@ -34,6 +35,11 @@ import {
         <mat-tab label="Notifications">
           <ng-template matTabContent>
             <app-notification-settings-panel></app-notification-settings-panel>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Navigation">
+          <ng-template matTabContent>
+            <app-feature-flags-panel></app-feature-flags-panel>
           </ng-template>
         </mat-tab>
       </mat-tab-group>

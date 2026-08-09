@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { TenantContact } from '@org/tenant-config';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,13 +16,21 @@ export class LandingCtaFooterComponent {
     displayName: string;
     ctaEnroll: string;
     ctaLogin: string;
-    supportPhone: string;
-    supportEmail: string;
-    supportAddress: string;
+    contacts: TenantContact[];
     copyrightText: string;
   };
   @Input() ctaHeading = '';
   @Input() ctaDescription = '';
   @Input() footerDescription = '';
   @Input() footerLinks: { label: string; url: string }[] = [];
+
+  contactClass() {
+    return {
+      'Phone': 'contact-phone',
+      'WhatsApp': 'contact-whatsapp',
+      'Email': 'contact-email',
+      'Social': 'contact-social',
+      'Address': 'contact-address',
+    } as const;
+  }
 }

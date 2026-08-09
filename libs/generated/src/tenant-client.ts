@@ -22,6 +22,11 @@ import {
   SaveTenantEmailSettingRequest,
   TenantNotificationSettingDto,
   SaveTenantNotificationSettingRequest,
+  TenantContactDto,
+  SaveTenantContactRequest,
+  FeatureFlagDto,
+  FeatureFlagDefinitionDto,
+  UpdateTenantFeatureFlagsRequest,
   FileUploadResult,
 } from './dtos';
 
@@ -178,6 +183,36 @@ export class TenantClient {
     return this.http.delete<void>(`/tenant/tenant-domains/${id}`, { headers: this.tenantHeaders(tenantId) });
   }
 
+  // ── Tenant Contacts ──────────────────────────────────────────────────────
+
+  getTenantContacts(tenantId?: number): Observable<TenantContactDto[]> {
+    return this.http.get<TenantContactDto[]>('/tenant/tenant-contacts', { headers: this.tenantHeaders(tenantId) });
+  }
+
+  getTenantContactById(id: number, tenantId?: number): Observable<TenantContactDto> {
+    return this.http.get<TenantContactDto>(`/tenant/tenant-contacts/${id}`, { headers: this.tenantHeaders(tenantId) });
+  }
+
+  createTenantContact(body: SaveTenantContactRequest, tenantId?: number): Observable<TenantContactDto> {
+    return this.http.post<TenantContactDto>('/tenant/tenant-contacts', body, { headers: this.tenantHeaders(tenantId) });
+  }
+
+  updateTenantContact(id: number, body: SaveTenantContactRequest, tenantId?: number): Observable<TenantContactDto> {
+    return this.http.put<TenantContactDto>(`/tenant/tenant-contacts/${id}`, body, { headers: this.tenantHeaders(tenantId) });
+  }
+
+  setPrimaryTenantContact(id: number, tenantId?: number): Observable<void> {
+    return this.http.post<void>(`/tenant/tenant-contacts/${id}/primary`, {}, { headers: this.tenantHeaders(tenantId) });
+  }
+
+  setActiveTenantContact(id: number, isActive: boolean, tenantId?: number): Observable<void> {
+    return this.http.post<void>(`/tenant/tenant-contacts/${id}/active/${isActive}`, {}, { headers: this.tenantHeaders(tenantId) });
+  }
+
+  deleteTenantContact(id: number, tenantId?: number): Observable<void> {
+    return this.http.delete<void>(`/tenant/tenant-contacts/${id}`, { headers: this.tenantHeaders(tenantId) });
+  }
+
   // ── Tenant Security Settings ─────────────────────────────────────────────
 
   getTenantSecuritySettings(): Observable<TenantSecuritySettingDto> {
@@ -206,5 +241,19 @@ export class TenantClient {
 
   upsertTenantNotificationSettings(body: SaveTenantNotificationSettingRequest): Observable<TenantNotificationSettingDto> {
     return this.http.put<TenantNotificationSettingDto>('/tenant/tenant-notification-settings', body);
+  }
+
+  // ── Tenant Feature Flags (end-user UI visibility) ────────────────────────
+
+  getTenantFeatureFlags(tenantId?: number): Observable<FeatureFlagDto[]> {
+    return this.http.get<FeatureFlagDto[]>('/tenant/tenant-feature-flags', { headers: this.tenantHeaders(tenantId) });
+  }
+
+  getTenantFeatureFlagDefinitions(tenantId?: number): Observable<FeatureFlagDefinitionDto[]> {
+    return this.http.get<FeatureFlagDefinitionDto[]>('/tenant/tenant-feature-flags/definitions', { headers: this.tenantHeaders(tenantId) });
+  }
+
+  updateTenantFeatureFlags(body: UpdateTenantFeatureFlagsRequest, tenantId?: number): Observable<FeatureFlagDto[]> {
+    return this.http.put<FeatureFlagDto[]>('/tenant/tenant-feature-flags', body, { headers: this.tenantHeaders(tenantId) });
   }
 }

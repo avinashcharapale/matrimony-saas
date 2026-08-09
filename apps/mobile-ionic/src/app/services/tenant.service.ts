@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { catchError, map, of } from 'rxjs';
 import { TenantStore } from '@org/data-access-tenant';
 import { TenantResolveResponse } from '@org/generated';
-import { resolveTenant, TenantConfig, THEME_PALETTES, ThemePalette } from '@org/tenant-config';
+import { resolveTenant, TenantConfig, TenantContact, THEME_PALETTES, ThemePalette } from '@org/tenant-config';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +34,10 @@ export class TenantService {
     return this.selectedThemeId;
   }
 
+  flagEnabled(code: string): boolean {
+    return this.currentTenant.featureFlags?.[code] ?? true;
+  }
+
   initialize() {
     return this.store
       .resolveTenant(
@@ -62,6 +66,29 @@ export class TenantService {
       faviconUrl: resolved.faviconUrl ?? this.currentTenant.faviconUrl,
       primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
       accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
+      contacts:
+        resolved.contacts && resolved.contacts.length > 0
+          ? resolved.contacts.map((c) => ({
+              type: c.contactType as TenantContact['type'],
+              label: c.label ?? undefined,
+              value: c.value,
+              isPrimary: c.isPrimary,
+            }))
+          : this.currentTenant.contacts,
+      featureFlags:
+        resolved.featureFlags && resolved.featureFlags.length > 0
+          ? resolved.featureFlags.reduce(
+              (acc, f) => {
+                acc[f.featureCode] = f.isEnabled;
+                return acc;
+              },
+              {} as Record<string, boolean>,
+            )
+          : this.currentTenant.featureFlags,
+      domainAliases:
+        resolved.domainAliases && resolved.domainAliases.length > 0
+          ? resolved.domainAliases
+          : this.currentTenant.domainAliases,
     };
     this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
   }

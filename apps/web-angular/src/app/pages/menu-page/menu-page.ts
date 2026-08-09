@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { TenantService } from '../../services/tenant.service';
+import { TenantContact } from '@org/tenant-config';
 
 interface MenuPageData {
   title: string;
@@ -24,5 +25,23 @@ export class MenuPage {
 
   get pageData(): MenuPageData {
     return this.route.snapshot.data as MenuPageData;
+  }
+
+  get contactPhones(): TenantContact[] {
+    return (this.tenant.contacts ?? [])
+      .filter((c) => c.type === 'Phone' || c.type === 'WhatsApp')
+      .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
+  }
+
+  get contactEmails(): TenantContact[] {
+    return (this.tenant.contacts ?? [])
+      .filter((c) => c.type === 'Email')
+      .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
+  }
+
+  get contactAddresses(): TenantContact[] {
+    return (this.tenant.contacts ?? [])
+      .filter((c) => c.type === 'Address')
+      .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
   }
 }

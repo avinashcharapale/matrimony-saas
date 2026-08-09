@@ -409,13 +409,57 @@ export interface TenantResolveResponse {
   query: string | null;
   tenantId: number;
   tenantCode: string;
-  domain: string;
+  domain: string | null;
+  domainAliases?: string[] | null;
   name?: string | null;
   displayName?: string | null;
   logoUrl?: string | null;
   faviconUrl?: string | null;
   primaryColor?: string | null;
   accentColor?: string | null;
+  contacts?: TenantContactDto[] | null;
+  featureFlags?: FeatureFlagDto[] | null;
+}
+
+export interface FeatureFlagDto {
+  featureCode: string;
+  isEnabled: boolean;
+}
+
+export interface FeatureFlagDefinitionDto {
+  featureFlagDefinitionId: number;
+  featureCode: string;
+  displayName: string;
+  description?: string | null;
+  category: string;
+  defaultEnabled: boolean;
+  sortOrder: number;
+}
+
+export interface UpdateTenantFeatureFlagsRequest {
+  flags: FeatureFlagDto[];
+}
+
+export interface TenantContactDto {
+  tenantContactId: number;
+  tenantId: number;
+  contactType: string;
+  label?: string | null;
+  value: string;
+  isPrimary: boolean;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string | null;
+}
+
+export interface SaveTenantContactRequest {
+  contactType: string;
+  label?: string | null;
+  value: string;
+  isPrimary: boolean;
+  isActive: boolean;
+  sortOrder: number;
 }
 
 export interface FileUploadResult {

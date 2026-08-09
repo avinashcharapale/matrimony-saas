@@ -29,6 +29,10 @@ export class SharedSidebarComponent {
   readonly tenant = this.tenantService.tenant;
   readonly isOpen = this.sidebarService.isOpen;
 
+  flagEnabled(code: string): boolean {
+    return this.tenantService.flagEnabled(code);
+  }
+
   closeSidebar(): void {
     this.sidebarService.close();
   }

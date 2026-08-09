@@ -20,12 +20,24 @@
     <div class="toolbar-center">
       @if (isLoggedIn()) {
       <nav class="main-nav auth-nav">
+        @if (flagEnabled('dashboard')) {
         <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.dashboard' | translate }}</a>
+        }
+        @if (flagEnabled('myProfile')) {
         <a routerLink="/my-profile" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.myProfile' | translate }}</a>
+        }
+        @if (flagEnabled('search')) {
         <a routerLink="/profiles" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.search' | translate }}</a>
+        }
+        @if (flagEnabled('interests')) {
         <a routerLink="/interests" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.interests' | translate }}</a>
+        }
+        @if (flagEnabled('shortlists')) {
         <a routerLink="/shortlists" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.shortlists' | translate }}</a>
+        }
+        @if (flagEnabled('messages')) {
         <a routerLink="/messages" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.messages' | translate }}</a>
+        }
       </nav>
       } @else {
       <nav class="main-nav public-nav">
@@ -43,7 +55,7 @@
       @if (isLoggedIn()) {
         <button class="logout-btn" (click)="logout(); closeMobileMenu()">{{ 'nav.logout' | translate }}</button>
       } @else {
-        <p class="toolbar-contact">{{ tenant.supportPhone }} | {{ tenant.supportEmail }}</p>
+        <p class="toolbar-contact">{{ toolbarContact() }}</p>
         <div class="auth-actions">
           <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">{{ 'nav.login' | translate }}</a>
           <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">{{ 'nav.register' | translate }}</a>

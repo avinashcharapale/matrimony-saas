@@ -582,7 +582,12 @@
     "ctaTitle": "Start Your Matrimony Journey",
     "ctaDescription": "Use verified profiles and trusted guidance to find the right life partner.",
     "registerFree": "Register Now - Free",
-    "browseProfiles": "Browse Profiles"
+    "browseProfiles": "Browse Profiles",
+    "contactDetails": "Contact Details",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email",
+    "addressLabel": "Address",
+    "primary": "Primary"
   },
   "landing": {
     "verified": "Verified",

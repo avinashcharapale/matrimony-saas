@@ -582,7 +582,12 @@
     "ctaTitle": "अपनी विवाह यात्रा शुरू करें",
     "ctaDescription": "सही जीवनसाथी खोजने के लिए सत्यापित प्रोफ़ाइल और विश्वसनीय मार्गदर्शन का उपयोग करें।",
     "registerFree": "अभी पंजीकरण करें - निःशुल्क",
-    "browseProfiles": "प्रोफ़ाइल ब्राउज़ करें"
+    "browseProfiles": "प्रोफ़ाइल ब्राउज़ करें",
+    "contactDetails": "संपर्क विवरण",
+    "phoneLabel": "फ़ोन",
+    "emailLabel": "ईमेल",
+    "addressLabel": "पता",
+    "primary": "प्राथमिक"
   },
   "landing": {
     "verified": "सत्यापित",

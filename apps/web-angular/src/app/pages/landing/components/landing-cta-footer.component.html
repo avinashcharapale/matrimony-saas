@@ -24,13 +24,23 @@
 
     <section>
       <h4>{{ 'landing.enquirySupport' | translate }}</h4>
-      <p>{{ tenant.supportPhone }}</p>
-      <p>{{ tenant.supportEmail }}</p>
+      @for (contact of tenant.contacts; track contact.value) {
+        @if (contact.type === 'Phone' || contact.type === 'WhatsApp') {
+          <p class="contact-phone">{{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
+        }
+        @if (contact.type === 'Email') {
+          <p class="contact-email">{{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
+        }
+      }
     </section>
 
     <section>
       <h4>{{ 'landing.address' | translate }}</h4>
-      <p>{{ tenant.supportAddress }}</p>
+      @for (contact of tenant.contacts; track contact.value) {
+        @if (contact.type === 'Address') {
+          <p class="contact-address">{{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
+        }
+      }
     </section>
   </div>
 

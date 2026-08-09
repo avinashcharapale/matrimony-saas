@@ -1,3 +1,10 @@
+export interface TenantContact {
+  type: 'Email' | 'Phone' | 'WhatsApp' | 'Social' | 'Address';
+  label?: string;
+  value: string;
+  isPrimary?: boolean;
+}
+
 export interface TenantConfig {
   id: string;
   displayName: string;
@@ -17,9 +24,8 @@ export interface TenantConfig {
   accentColor: string;
   defaultThemeId?: string;
   customTheme?: Partial<ThemePalette>;
-  supportPhone: string;
-  supportEmail: string;
-  supportAddress: string;
+  contacts: TenantContact[];
+  featureFlags?: Record<string, boolean>;
   copyrightText: string;
   ctaLogin: string;
   ctaEnroll: string;
@@ -101,9 +107,11 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     primaryColor: '#b45309',
     accentColor: '#fbbf24',
     defaultThemeId: 'warm-ivory',
-    supportPhone: '+91 9999999999',
-    supportEmail: 'support@demo.matrimony.local',
-    supportAddress: 'Demo Address',
+    contacts: [
+      { type: 'Phone', label: 'Support', value: '+91 9999999999', isPrimary: true },
+      { type: 'Email', label: 'Support', value: 'support@demo.matrimony.local', isPrimary: true },
+      { type: 'Address', label: 'Office', value: 'Demo Address' },
+    ],
     copyrightText: '© 2026 Matrimony Demo. All rights reserved.',
     ctaLogin: 'Sign In',
     ctaEnroll: 'Register Now',
@@ -159,9 +167,12 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     primaryColor: '#b45309',
     accentColor: '#fbbf24',
     defaultThemeId: 'warm-ivory',
-    supportPhone: '+91 9822214005 / 9921501133',
-    supportEmail: 'contact@anandmaratha.com',
-    supportAddress: '203, 2nd Floor, Saras Plaza, Opp. Shaniwar Wada, Pune - 411030, Maharashtra',
+    contacts: [
+      { type: 'Phone', label: 'Office', value: '+91 9822214005', isPrimary: true },
+      { type: 'Phone', label: 'Alternate', value: '+91 9921501133' },
+      { type: 'Email', label: 'Contact', value: 'contact@anandmaratha.com', isPrimary: true },
+      { type: 'Address', label: 'Office', value: '203, 2nd Floor, Saras Plaza, Opp. Shaniwar Wada, Pune - 411030, Maharashtra' },
+    ],
     copyrightText: '© 2026 Anand Maratha Marriage Bureau. All rights reserved.',
     ctaLogin: 'Profile Login',
     ctaEnroll: 'Enroll Now',
@@ -216,9 +227,11 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     primaryColor: '#0f7079',
     accentColor: '#14b8a6',
     defaultThemeId: 'emerald-sand',
-    supportPhone: '+1 866-375-7387',
-    supportEmail: 'support@24petwatch.com',
-    supportAddress: 'Pethealth Inc., Oakville, ON, Canada',
+    contacts: [
+      { type: 'Phone', label: 'Support', value: '+1 866-375-7387', isPrimary: true },
+      { type: 'Email', label: 'Support', value: 'support@24petwatch.com', isPrimary: true },
+      { type: 'Address', label: 'Head Office', value: 'Pethealth Inc., Oakville, ON, Canada' },
+    ],
     copyrightText: '© 2026 24Petwatch. All rights reserved.',
     ctaLogin: 'Log In',
     ctaEnroll: 'Get Started',

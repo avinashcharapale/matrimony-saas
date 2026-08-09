@@ -1,5 +1,6 @@
 export type {
   TenantConfig,
+  TenantContact,
   TenantLandingContent,
   ThemePalette,
 } from './lib/tenant-config';

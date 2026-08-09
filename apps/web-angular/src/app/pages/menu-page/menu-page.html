@@ -14,6 +14,57 @@
     }
   </section>
 
+  @if (contactPhones.length > 0 || contactEmails.length > 0 || contactAddresses.length > 0) {
+  <section class="menu-contact">
+    <h2>{{ 'menuPage.contactDetails' | translate }}</h2>
+
+    @if (contactPhones.length > 0) {
+    <div class="contact-block">
+      <h3 class="contact-block-title">{{ 'menuPage.phoneLabel' | translate }}</h3>
+      <div class="contact-grid">
+        @for (contact of contactPhones; track contact.value) {
+        <a class="contact-card" [href]="'tel:' + contact.value">
+          <span class="contact-icon">📞</span>
+          <span class="contact-label">{{ contact.label || ('menuPage.phoneLabel' | translate) }}</span>
+          <span class="contact-value">{{ contact.value }}@if (contact.isPrimary) { <span class="primary-tag">{{ 'menuPage.primary' | translate }}</span> }</span>
+        </a>
+        }
+      </div>
+    </div>
+    }
+
+    @if (contactEmails.length > 0) {
+    <div class="contact-block">
+      <h3 class="contact-block-title">{{ 'menuPage.emailLabel' | translate }}</h3>
+      <div class="contact-grid">
+        @for (contact of contactEmails; track contact.value) {
+        <a class="contact-card" [href]="'mailto:' + contact.value">
+          <span class="contact-icon">✉️</span>
+          <span class="contact-label">{{ contact.label || ('menuPage.emailLabel' | translate) }}</span>
+          <span class="contact-value">{{ contact.value }} @if (contact.isPrimary) { <span class="primary-tag">{{ 'menuPage.primary' | translate }}</span> }</span>
+        </a>
+        }
+      </div>
+    </div>
+    }
+
+    @if (contactAddresses.length > 0) {
+    <div class="contact-block">
+      <h3 class="contact-block-title">{{ 'menuPage.addressLabel' | translate }}</h3>
+      <div class="contact-grid">
+        @for (contact of contactAddresses; track contact.value) {
+        <div class="contact-card">
+          <span class="contact-icon">📍</span>
+          <span class="contact-label">{{ contact.label || ('menuPage.addressLabel' | translate) }}</span>
+          <span class="contact-value">{{ contact.value }} @if (contact.isPrimary) { <span class="primary-tag">{{ 'menuPage.primary' | translate }}</span> }</span>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </section>
+  }
+
   <section class="menu-cta">
     <h2>{{ 'menuPage.ctaTitle' | translate }}</h2>
     <p>{{ 'menuPage.ctaDescription' | translate }}</p>

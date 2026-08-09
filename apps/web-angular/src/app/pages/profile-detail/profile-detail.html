@@ -39,6 +39,7 @@
         </div>
       </div>
 
+      @if (flagEnabled('profileConnectButton')) {
       <button class="connect-button" [class.sent]="interestSent() || (existingInterestStatus() === 'Pending')" [class.declined]="existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" [disabled]="isSendingInterest() || existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" (click)="onConnect()">
         @if (isVisitor()) {
           {{ 'profileDetail.registerToConnect' | translate }}
@@ -60,12 +61,13 @@
           &#x2764; {{ 'profileDetail.connect' | translate }}
         }
       </button>
+      }
 
       @if (interestError()) {
       <p class="interest-error">{{ interestError() }}</p>
       }
 
-      @if (!isVisitor()) {
+      @if (!isVisitor() && flagEnabled('profileShortlistButton')) {
       <button class="shortlist-button" [class.active]="isShortlisted()" [disabled]="isTogglingShortlist()" (click)="toggleShortlist()">
         @if (isTogglingShortlist()) {
           {{ 'common.saving' | translate }}

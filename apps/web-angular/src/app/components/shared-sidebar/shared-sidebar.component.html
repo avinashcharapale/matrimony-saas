@@ -29,16 +29,36 @@
   </div>
 
   <nav class="sidebar-nav">
+    @if (flagEnabled('dashboard')) {
     <a routerLink="/home"             routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8962;</span><span>{{ 'nav.home' | translate }}</span></a>
+    }
+    @if (flagEnabled('myProfile')) {
     <a routerLink="/my-profile"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128100;</span><span>{{ 'nav.myProfile' | translate }}</span></a>
+    }
+    @if (flagEnabled('myPhotos')) {
     <a routerLink="/my-photos"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128247;</span><span>{{ 'nav.myPhotos' | translate }}</span></a>
+    }
+    @if (flagEnabled('search')) {
     <a routerLink="/profiles"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8981;</span><span>{{ 'nav.search' | translate }}</span></a>
+    }
+    @if (flagEnabled('interests')) {
     <a routerLink="/interests"        routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9825;</span><span>{{ 'nav.interests' | translate }}</span></a>
+    }
+    @if (flagEnabled('shortlists')) {
     <a routerLink="/shortlists"       routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9733;</span><span>{{ 'nav.shortlists' | translate }}</span></a>
+    }
+    @if (flagEnabled('messages')) {
     <a routerLink="/messages"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9993;</span><span>{{ 'nav.messages' | translate }}</span></a>
+    }
+    @if (flagEnabled('events')) {
     <a routerLink="/events"           routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9783;</span><span>{{ 'nav.events' | translate }}</span></a>
+    }
+    @if (flagEnabled('payments')) {
     <a routerLink="/payments"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#128176;</span><span>{{ 'nav.payments' | translate }}</span></a>
+    }
+    @if (flagEnabled('settings')) {
     <a routerLink="/settings"         routerLinkActive="active" (click)="closeSidebar()"><span class="nav-icon" aria-hidden="true">&#9881;</span><span>{{ 'nav.settings' | translate }}</span></a>
+    }
     <button type="button" class="sidebar-logout" (click)="logout(); closeSidebar()"><span class="nav-icon" aria-hidden="true">&#8618;</span><span>{{ 'nav.logout' | translate }}</span></button>
   </nav>
 

@@ -7,6 +7,7 @@ import { MemberRecord, MemberService } from '../../services/member.service';
 import { AuthStore } from '@org/data-access-auth';
 import { MatchClient } from '@org/generated';
 import { finalize } from 'rxjs/operators';
+import { TenantService } from '../../services/tenant.service';
 
 interface ProfileField {
   label: string;
@@ -34,6 +35,7 @@ export class ProfileDetail implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly http = inject(HttpClient);
   private readonly matchClient = inject(MatchClient);
+  private readonly tenantService = inject(TenantService);
 
   readonly profile = signal<MemberRecord | null>(null);
   readonly currentPhotoIndex = signal(0);
@@ -80,8 +82,10 @@ export class ProfileDetail implements OnInit {
     const family = details?.family;
     const expectations = details?.expectations;
 
-    return [
-      {
+    const sections: ProfileSection[] = [];
+
+    if (this.flagEnabled('profileSectionDetails')) {
+      sections.push({
         title: 'Personal Details',
         fields: [
           this.field('Full Name', p?.name || this.joinNames(personal?.firstName, personal?.middleName, personal?.lastName)),
@@ -95,37 +99,47 @@ export class ProfileDetail implements OnInit {
           this.field('Complexion', personal?.complexion),
           this.field('Diet', personal?.diet),
           this.field('Marital Status', personal?.maritalStatus),
-        ],
-      },
-      {
+        ].filter((f): f is ProfileField => f !== null),
+      });
+    }
+
+    if (this.flagEnabled('profileSectionHoroscope')) {
+      sections.push({
         title: 'Horoscope',
         fields: [
           this.field('Manglik', horoscope?.manglik),
           this.field('Rashi', horoscope?.rashi),
           this.field('Nakshatra', horoscope?.nakshatra),
           this.field('Birth Time', this.timeText(horoscope?.birthHour, horoscope?.birthMinute, horoscope?.birthPeriod)),
-          this.field('Birth District', horoscope?.birthDistrict),
-        ],
-      },
-      {
-        title: 'Education & Occupation',
-        fields: [
-          this.field('Education', professional?.education || p?.bio),
-          this.field('Occupation', professional?.occupationDetails || p?.occupation),
-          this.field('Working City', professional?.workingCityCountry),
-          this.field('Income', professional?.incomeAmount),
-        ],
-      },
-      {
+          this.field('Birth District', horoscope?.birthDistrict, 'profileFieldBirthPlace'),
+        ].filter((f): f is ProfileField => f !== null),
+      });
+    }
+
+    sections.push({
+      title: 'Education & Occupation',
+      fields: [
+        this.field('Education', professional?.education || p?.bio),
+        this.field('Occupation', professional?.occupationDetails || p?.occupation),
+        this.field('Working City', professional?.workingCityCountry),
+        this.field('Income', professional?.incomeAmount),
+      ].filter((f): f is ProfileField => f !== null),
+    });
+
+    if (this.flagEnabled('profileSectionContact')) {
+      sections.push({
         title: 'Address & Contact',
         fields: [
           this.field('Address', contact?.residenceAddress || p?.location),
           this.field('Email', contact?.contactEmail || p?.email),
           this.field('Mobile', contact?.smsMobile),
           this.field('Phone', contact?.phonePrimary),
-        ],
-      },
-      {
+        ].filter((f): f is ProfileField => f !== null),
+      });
+    }
+
+    if (this.flagEnabled('profileSectionFamily')) {
+      sections.push({
         title: 'Family Background',
         fields: [
           this.field('Father', family?.fatherStatus),
@@ -134,9 +148,12 @@ export class ProfileDetail implements OnInit {
           this.field('Sisters', family?.sisters),
           this.field('Native District', family?.nativeDistrict),
           this.field('Native Taluka', family?.nativeTaluka),
-        ],
-      },
-      {
+        ].filter((f): f is ProfileField => f !== null),
+      });
+    }
+
+    if (this.flagEnabled('profileSectionExpectations')) {
+      sections.push({
         title: 'Expectations',
         fields: [
           this.field('Preferred Cities', expectations?.preferredCities),
@@ -144,9 +161,11 @@ export class ProfileDetail implements OnInit {
           this.field('Expected Height', this.heightText(expectations?.expectedHeightFt, expectations?.expectedHeightIn)),
           this.field('Expected Education', expectations?.expectedEducation),
           this.field('Expected Occupation', expectations?.expectedOccupationIncome),
-        ],
-      },
-    ];
+        ].filter((f): f is ProfileField => f !== null),
+      });
+    }
+
+    return sections;
   });
 
   ngOnInit(): void {
@@ -302,9 +321,14 @@ export class ProfileDetail implements OnInit {
     this.router.navigate(['/plans']);
   }
 
-  private field(label: string, value: unknown): ProfileField {
+  private field(label: string, value: unknown, flagCode?: string): ProfileField | null {
+    if (flagCode && !this.flagEnabled(flagCode)) return null;
     const text = `${value ?? ''}`.trim();
     return { label, value: text || '-' };
+  }
+
+  flagEnabled(code: string): boolean {
+    return this.tenantService.flagEnabled(code);
   }
 
   private dateText(day?: string, month?: string, year?: string): string {

@@ -582,7 +582,12 @@
     "ctaTitle": "तुमचा विवाह प्रवास सुरू करा",
     "ctaDescription": "योग्य जीवनसाथी शोधण्यासाठी प्रमाणित प्रोफाइल आणि विश्वासू मार्गदर्शन वापरा.",
     "registerFree": "आता नोंदणी करा - विनामूल्य",
-    "browseProfiles": "प्रोफाइल पहा"
+    "browseProfiles": "प्रोफाइल पहा",
+    "contactDetails": "संपर्क तपशील",
+    "phoneLabel": "फोन",
+    "emailLabel": "ईमेल",
+    "addressLabel": "पत्ता",
+    "primary": "प्राथमिक"
   },
   "landing": {
     "verified": "प्रमाणित",

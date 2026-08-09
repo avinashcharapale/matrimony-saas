@@ -24,9 +24,20 @@ export class Layout {
   private readonly sidebarService = inject(SidebarService);
   readonly tenant = this.tenantService.tenant;
 
+  readonly toolbarContact = computed(() => {
+    const phone = this.tenant.contacts?.find((c) => c.type === 'Phone' || c.type === 'WhatsApp');
+    const email = this.tenant.contacts?.find((c) => c.type === 'Email');
+    const parts = [phone?.value, email?.value].filter(Boolean);
+    return parts.join(' | ');
+  });
+
   readonly isLoggedIn = computed(() => this.authService.isAuthenticated());
 
   readonly sidebarOpen = this.sidebarService.isOpen;
+
+  flagEnabled(code: string): boolean {
+    return this.tenantService.flagEnabled(code);
+  }
 
   toggleMobileMenu(): void {
     this.sidebarService.toggle();

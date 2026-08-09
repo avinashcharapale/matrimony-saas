@@ -197,6 +197,10 @@ export class ProfileDetail implements OnInit {
     return this.translate.instant(key);
   }
 
+  flagEnabled(code: string): boolean {
+    return this.tenantService.flagEnabled(code);
+  }
+
   readonly profile = signal<MemberRecord | null>(null);
   readonly isGalleryOpen = signal(false);
   readonly currentGalleryIndex = signal(0);
@@ -269,12 +273,14 @@ export class ProfileDetail implements OnInit {
             this.field('profile.address', contact?.residenceAddress || this.profile()?.location),
             this.field('profileDetail.primaryMobile', contact?.smsMobile),
             this.field('profile.secondaryMobile', contact?.mobileSecondary),
-          ],
+          ].filter((f): f is ProfileField => f !== null),
         }]
       : [];
 
-    return [
-      {
+    const sections: ProfileSection[] = [];
+
+    if (this.flagEnabled('profileSectionDetails')) {
+      sections.push({
         title: this.t('profileDetail.profileDetails'),
         fields: [
           this.field('profile.dob', this.dateText(personal?.dobDay, personal?.dobMonth, personal?.dobYear)),
@@ -288,18 +294,25 @@ export class ProfileDetail implements OnInit {
           this.field('profileDetail.bloodGroupWeight', `${personal?.bloodGroup || '-'} / ${personal?.weightKg || this.t('profileDetail.na')}`),
           this.field('profileDetail.spectacleLens', `${personal?.spectacles || '-'} / ${personal?.lens || '-'}`),
           this.field('profile.complexion', personal?.complexion),
-          this.field('profileDetail.birthPlace', horoscope?.birthDistrict),
+          this.field('profileDetail.birthPlace', horoscope?.birthDistrict, 'profileFieldBirthPlace'),
           this.field('profile.diet', personal?.diet),
           this.field(
             'profileDetail.horoscopeDetails',
             `${horoscope?.rashi || '-'} / ${horoscope?.nakshatra || '-'} / ${horoscope?.charan || '-'}`,
+            'profileSectionHoroscope',
           ),
-          this.field('profileDetail.gotraDevak', horoscope?.devak),
-          this.field('profileDetail.mangal', horoscope?.manglik),
-        ],
-      },
-      ...contactSection,
-      {
+          this.field('profileDetail.gotraDevak', horoscope?.devak, 'profileSectionHoroscope'),
+          this.field('profileDetail.mangal', horoscope?.manglik, 'profileSectionHoroscope'),
+        ].filter((f): f is ProfileField => f !== null),
+      });
+    }
+
+    if (this.flagEnabled('profileSectionContact')) {
+      sections.push(...contactSection);
+    }
+
+    if (this.flagEnabled('profileSectionFamily')) {
+      sections.push({
         title: this.t('profile.familyBackground'),
         fields: [
           this.field('profile.father', family?.fatherStatus),
@@ -311,9 +324,12 @@ export class ProfileDetail implements OnInit {
           this.field('profileDetail.relatives', family?.relativesSurnames),
           this.field('profileDetail.parentsResidingIn', family?.parentsResidentCity),
           this.field('profile.familyWealth', family?.familyWealth),
-        ],
-      },
-      {
+        ].filter((f): f is ProfileField => f !== null),
+      });
+    }
+
+    if (this.flagEnabled('profileSectionExpectations')) {
+      sections.push({
         title: this.t('profileDetail.expectations'),
         fields: [
           this.field('profileDetail.ageDifferenceUpTo', expectations?.maxAgeDifference),
@@ -328,9 +344,11 @@ export class ProfileDetail implements OnInit {
           this.field('profileDetail.divorce', expectations?.divorcee),
           this.field('profileDetail.mangal', expectations?.expectedManglik),
           this.field('profileDetail.preferredCity', expectations?.preferredCities),
-        ],
-      },
-    ];
+        ].filter((f): f is ProfileField => f !== null),
+      });
+    }
+
+    return sections;
   });
 
   ngOnInit(): void {
@@ -830,7 +848,8 @@ export class ProfileDetail implements OnInit {
     return (record.gender || record.sex || '').trim() || '-';
   }
 
-  private field(label: string, value: unknown): ProfileField {
+  private field(label: string, value: unknown, flagCode?: string): ProfileField | null {
+    if (flagCode && !this.flagEnabled(flagCode)) return null;
     const text = `${value ?? ''}`.trim();
     return { label: this.t(label), value: text || '-' };
   }
