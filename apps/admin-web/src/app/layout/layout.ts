@@ -21,7 +21,10 @@ import { TenantService } from '../services/tenant.service';
           } @else {
             <mat-icon class="logo-icon">favorite</mat-icon>
           }
-          <h2>Matrimony Admin</h2>
+          <div class="sidebar-title">
+            <h2>{{ tenant.displayName }}</h2>
+            <p class="sidebar-subtitle">Matrimony Admin</p>
+          </div>
         </div>
         <nav class="sidebar-nav">
           <div class="nav-group">
@@ -155,6 +158,20 @@ import { TenantService } from '../services/tenant.service';
       gap: 12px;
     }
 
+    .sidebar-header .sidebar-title {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .sidebar-subtitle {
+      margin: 0;
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
     .logo-icon {
       font-size: 28px;
       width: 28px;

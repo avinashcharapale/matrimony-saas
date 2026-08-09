@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthStore } from '@org/data-access-auth';
+import { TenantService } from '../../services/tenant.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -33,8 +34,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     <div class="login-container">
       <div class="login-card">
         <div class="login-header">
-          <mat-icon class="login-logo">favorite</mat-icon>
-          <h1>Matrimony Admin</h1>
+          @if (tenant.logoUrl) {
+            <img [src]="tenant.logoUrl" alt="Logo" class="login-logo" />
+          } @else {
+            <mat-icon class="login-logo">favorite</mat-icon>
+          }
+          <h1>{{ tenant.displayName }}</h1>
+          <h2 class="login-subtitle">Matrimony Admin</h2>
           <p>Sign in to access the admin panel</p>
         </div>
 
@@ -135,11 +141,25 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       color: #e91e63;
     }
 
+    .login-logo[src] {
+      width: 96px;
+      height: auto;
+      max-height: 96px;
+      object-fit: contain;
+    }
+
     .login-header h1 {
       margin: 12px 0 4px;
       font-size: 22px;
       font-weight: 600;
       color: #1a1a1a;
+    }
+
+    .login-subtitle {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #e91e63;
     }
 
     .login-header p {
@@ -197,7 +217,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class Login {
   private readonly fb = inject(FormBuilder);
   private readonly authStore = inject(AuthStore);
+  private readonly tenantService = inject(TenantService);
   private readonly router = inject(Router);
+
+  readonly tenant = this.tenantService.tenant;
 
   readonly hidePassword = signal(true);
   readonly isLoading = signal(false);
