@@ -336,7 +336,10 @@
     "renewNow": "Renew Now",
     "choosePlan": "Choose a Plan",
     "managePlan": "Manage Plan",
-    "noActiveSubscription": "You don't have an active subscription yet."
+    "noActiveSubscription": "You don't have an active subscription yet.",
+    "userExpired": "Your subscription has expired. Please renew to continue.",
+    "tenantExpired": "Your organization's subscription has expired. Please contact your administrator.",
+    "renew": "Subscribe"
   },
   "auth": {
     "signIn": "Sign In",

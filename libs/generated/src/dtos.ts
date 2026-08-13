@@ -846,6 +846,23 @@ export interface UpdateTenantSubscriptionRequest {
   isActive?: boolean;
 }
 
+export interface TenantSubscriptionEventDto {
+  eventId: number;
+  tenantId: number;
+  tenantSubscriptionId: number;
+  eventType: string;
+  oldSubscriptionPlanId?: number;
+  oldPlanName?: string;
+  oldStartDate?: string;
+  oldEndDate?: string;
+  newSubscriptionPlanId?: number;
+  newPlanName?: string;
+  newStartDate?: string;
+  newEndDate?: string;
+  triggeredByUserId?: number;
+  createdAt: string;
+}
+
 // ─── User Subscription Plan DTOs ──────────────────────────────────────────────
 
 export interface UserSubscriptionPlanDto {

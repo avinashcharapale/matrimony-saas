@@ -17,6 +17,7 @@ import {
   TenantDto,
   SubscriptionPlanDto,
   TenantSubscriptionDto,
+  TenantSubscriptionEventDto,
   CreateTenantSubscriptionRequest,
   UpdateTenantSubscriptionRequest,
   PlanFeatureValueDto,
@@ -24,6 +25,7 @@ import {
 } from '@org/generated';
 import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
 import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dialog/assign-plan-dialog.component';
+import { RenewSubscriptionDialogComponent, RenewSubscriptionDialogData } from './renew-subscription-dialog/renew-subscription-dialog.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -88,16 +90,28 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
                   {{ sub.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </div>
+              @if (activeExpired()) {
+                <div class="sub-field">
+                  <span class="sub-label">Validity</span>
+                  <span class="badge expired">Expired</span>
+                </div>
+              }
             </div>
             @if (sub.isActive) {
-              <button mat-flat-button color="warn" [disabled]="cancelling()" (click)="confirmCancel()">
-                @if (cancelling()) { Cancelling... } @else { Cancel Subscription }
-              </button>
+              <div class="sub-actions">
+                <button mat-flat-button color="primary" [disabled]="renewing()" (click)="openRenewDialog()">
+                  @if (renewing()) { Saving... } @else { Renew }
+                </button>
+                <button mat-flat-button color="warn" [disabled]="cancelling()" (click)="confirmCancel()">
+                  @if (cancelling()) { Cancelling... } @else { Cancel Subscription }
+                </button>
+              </div>
             }
           } @else {
             <div class="empty-state">
               <div class="empty-icon">P</div>
               <p>No active subscription</p>
+              <button mat-flat-button color="primary" (click)="openRenewDialog()">Renew</button>
             </div>
           }
         </section>
@@ -114,6 +128,7 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
                     <th class="sortable" (click)="hSort.toggleSort('startDate')">Start Date <mat-icon class="sort-icon">{{ hSort.sortIcon('startDate') }}</mat-icon></th>
                     <th class="sortable" (click)="hSort.toggleSort('endDate')">End Date <mat-icon class="sort-icon">{{ hSort.sortIcon('endDate') }}</mat-icon></th>
                     <th class="sortable" (click)="hSort.toggleSort('isActive')">Status <mat-icon class="sort-icon">{{ hSort.sortIcon('isActive') }}</mat-icon></th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -132,10 +147,15 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
                       <td>
                         <span class="badge inactive">Inactive</span>
                       </td>
+                      <td>
+                        <button mat-stroked-button color="primary" [disabled]="renewing()" (click)="openRenewDialog(sub)">
+                          Renew
+                        </button>
+                      </td>
                     </tr>
                     @if (expandedId() === sub.subscriptionId) {
                       <tr class="features-row">
-                        <td colspan="5">
+                        <td colspan="6">
                           <div class="features-grid">
                             @for (f of getPlanFeatures(sub.subscriptionPlanId); track f.featureCode) {
                               <div class="feature-tag">{{ f.displayName || f.featureCode }}: {{ f.value }}</div>
@@ -158,6 +178,65 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
             </div>
           </section>
         }
+
+        <section class="card history-section">
+          <h2>Subscription Events</h2>
+          @if (events().length === 0) {
+            <div class="empty-state">
+              <p>No subscription events yet.</p>
+            </div>
+          } @else {
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Changed From</th>
+                    <th>Changed To</th>
+                    <th>When</th>
+                    <th>By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (evt of events(); track evt.eventId) {
+                    <tr>
+                      <td>
+                        <span
+                          class="badge"
+                          [class.active]="evt.eventType === 'Assigned' || evt.eventType === 'Renewed'"
+                          [class.inactive]="evt.eventType === 'Cancelled'"
+                          [class.expired]="evt.eventType === 'Expired'"
+                        >{{ evt.eventType }}</span>
+                      </td>
+                      <td>
+                        @if (evt.oldPlanName) {
+                          {{ evt.oldPlanName }}
+                          @if (evt.oldStartDate || evt.oldEndDate) {
+                            <span class="period-note">({{ evt.oldStartDate | date:'mediumDate' }} – {{ evt.oldEndDate | date:'mediumDate' }})</span>
+                          }
+                        } @else {
+                          <span class="muted">—</span>
+                        }
+                      </td>
+                      <td>
+                        @if (evt.newPlanName) {
+                          {{ evt.newPlanName }}
+                          @if (evt.newStartDate || evt.newEndDate) {
+                            <span class="period-note">({{ evt.newStartDate | date:'mediumDate' }} – {{ evt.newEndDate | date:'mediumDate' }})</span>
+                          }
+                        } @else {
+                          <span class="muted">—</span>
+                        }
+                      </td>
+                      <td>{{ evt.createdAt | date:'medium' }}</td>
+                      <td>{{ evt.triggeredByUserId ?? 'System' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
 
         <section class="card available-plans">
           <h2>Available Plans</h2>
@@ -256,6 +335,7 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
     }
     .card h2 { font-size: 1.125rem; color: #2c003e; margin: 0 0 1rem; }
     .current-subscription .sub-details { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+    .sub-actions { display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap; }
     .sub-field { display: flex; flex-direction: column; gap: 0.25rem; }
     .sub-label { font-size: 0.75rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
     .sub-value { font-size: 0.9375rem; color: #333; font-weight: 500; }
@@ -284,6 +364,9 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
     }
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
+    .badge.expired { background: #fff3e0; color: #e65100; }
+    .period-note { color: #888; font-size: 0.8125rem; }
+    .muted { color: #bbb; }
     .history-section .table-wrapper { margin-top: -0.5rem; }
     .features-row td { padding: 0.75rem 1rem !important; background: #fafafa; }
     .features-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -324,9 +407,11 @@ export class TenantPlan implements OnInit {
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly cancelling = signal(false);
+  readonly renewing = signal(false);
   readonly errorMessage = signal('');
   readonly tenant = signal<TenantDto | null>(null);
   readonly subscriptions = signal<TenantSubscriptionDto[]>([]);
+  readonly events = signal<TenantSubscriptionEventDto[]>([]);
   readonly plans = signal<SubscriptionPlanDto[]>([]);
   readonly searchTerm = signal('');
 
@@ -366,6 +451,15 @@ export class TenantPlan implements OnInit {
   readonly activeSubscription = computed(() =>
     this.subscriptions().find((s) => s.isActive) ?? null,
   );
+
+  readonly activeExpired = computed(() => {
+    const sub = this.activeSubscription();
+    if (!sub) return false;
+    const end = new Date(`${sub.endDate}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return end < today;
+  });
 
   readonly pastSubscriptions = computed(() =>
     this.subscriptions().filter((s) => !s.isActive),
@@ -431,6 +525,14 @@ export class TenantPlan implements OnInit {
         this.loading.set(false);
       },
     });
+    this.subscriptionClient.getTenantSubscriptionEvents(tid).subscribe({
+      next: (data) => {
+        this.events.set(data ?? []);
+      },
+      error: () => {
+        this.events.set([]);
+      },
+    });
     this.subscriptionClient.getAllSubscriptionPlansAdmin().subscribe({
       next: (data) => {
         this.plans.set(data ?? []);
@@ -466,6 +568,38 @@ export class TenantPlan implements OnInit {
         error: (err) => {
           this.saving.set(false);
           this.errorMessage.set(err.error?.error ?? 'Failed to assign plan.');
+        },
+      });
+    });
+  }
+
+  openRenewDialog(sub?: TenantSubscriptionDto): void {
+    const source = sub ?? this.activeSubscription();
+    if (!source) return;
+
+    const dialogRef = this.dialog.open(RenewSubscriptionDialogComponent, {
+      width: '480px',
+      data: {
+        tenantId: this.tenantId(),
+        plans: this.plans(),
+        currentPlanId: source.subscriptionPlanId,
+        planName: source.planName,
+        currentEndDate: source.endDate,
+      } satisfies RenewSubscriptionDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result: CreateTenantSubscriptionRequest | undefined) => {
+      if (!result) return;
+
+      this.renewing.set(true);
+      this.subscriptionClient.renewTenantSubscription(result).subscribe({
+        next: () => {
+          this.renewing.set(false);
+          this.loadData();
+        },
+        error: (err) => {
+          this.renewing.set(false);
+          this.errorMessage.set(err.error?.error ?? 'Failed to renew subscription.');
         },
       });
     });

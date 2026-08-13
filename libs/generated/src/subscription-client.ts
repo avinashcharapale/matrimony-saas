@@ -15,6 +15,7 @@ import {
   CheckoutRequestDto,
   CheckoutResponseDto,
   TenantSubscriptionDto,
+  TenantSubscriptionEventDto,
   CreateTenantSubscriptionRequest,
   UpdateTenantSubscriptionRequest,
   UserSubscriptionPlanDto,
@@ -159,6 +160,18 @@ export class SubscriptionClient {
 
   createTenantSubscription(body: CreateTenantSubscriptionRequest): Observable<TenantSubscriptionDto> {
     return this.http.post<TenantSubscriptionDto>('/subscription/TenantSubscriptions', body);
+  }
+
+  renewTenantSubscription(body: CreateTenantSubscriptionRequest): Observable<TenantSubscriptionDto> {
+    return this.http.post<TenantSubscriptionDto>('/subscription/TenantSubscriptions/renew', body);
+  }
+
+  getTenantSubscriptionEvents(tenantId?: number): Observable<TenantSubscriptionEventDto[]> {
+    let params = new HttpParams();
+    if (tenantId !== undefined) {
+      params = params.set('tenantId', tenantId);
+    }
+    return this.http.get<TenantSubscriptionEventDto[]>('/subscription/TenantSubscriptions/events', { params });
   }
 
   updateTenantSubscription(id: number, body: UpdateTenantSubscriptionRequest): Observable<void> {
