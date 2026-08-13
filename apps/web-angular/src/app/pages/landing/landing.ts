@@ -45,7 +45,7 @@ export class Landing implements OnInit {
 
   get autoScrollProfiles(): ProfileItem[] {
     const profiles = this.recentProfiles();
-    return [...profiles, ...profiles];
+    return [...profiles, ...profiles].map((p, i) => ({ ...p, key: `${p.id}-${i}` }));
   }
 
   ngOnInit(): void {
@@ -61,6 +61,8 @@ export class Landing implements OnInit {
     this.profileClient.searchPublicProfiles({ pageNumber: 1, pageSize: 10 }).subscribe({
       next: (response) => {
         const profiles: ProfileItem[] = (response.items ?? []).map((p) => ({
+          id: p.profileId ?? 0,
+          key: `${p.profileId ?? 0}-0`,
           name: p.fullName ?? '',
           age: p.age ?? 0,
           occupation: p.occupationText ?? '',

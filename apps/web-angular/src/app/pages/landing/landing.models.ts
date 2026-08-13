@@ -11,6 +11,8 @@ export interface FeatureItem {
 }
 
 export interface ProfileItem {
+  id: number;
+  key: string;
   name: string;
   age: number;
   occupation: string;

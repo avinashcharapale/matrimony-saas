@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 import { TenantClient, LegalDocumentKind } from '@org/generated';
 import { TenantService } from '../../services/tenant.service';
@@ -32,10 +33,15 @@ export class LegalDocumentPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly tenantClient = inject(TenantClient);
   private readonly tenantService = inject(TenantService);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly tenant = this.tenantService.tenant;
   readonly loading = signal(true);
   readonly documentUrl = signal<string | null>(null);
+  readonly safeDocumentUrl = computed<SafeResourceUrl | null>(() => {
+    const url = this.documentUrl();
+    return url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : null;
+  });
 
   get pageData(): { title: string; description: string } {
     const kind = this.kind();

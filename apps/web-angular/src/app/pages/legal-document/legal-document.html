@@ -10,7 +10,7 @@
   } @else if (documentUrl()) {
     <div class="legal-doc">
       <iframe
-        [src]="documentUrl()!"
+        [src]="safeDocumentUrl()!"
         title="{{ pageData.title }}"
         class="legal-frame"
       ></iframe>

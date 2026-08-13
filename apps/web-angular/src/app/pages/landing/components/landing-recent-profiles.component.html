@@ -8,7 +8,7 @@
   </div>
   <div class="profiles-marquee">
     <div class="profiles-track">
-      @for (profile of profiles; track profile.name) {
+      @for (profile of profiles; track profile.key) {
       <article class="profile-card">
         <div class="profile-head">
           <span class="status">{{ profile.status }}</span>
