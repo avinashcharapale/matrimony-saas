@@ -140,8 +140,9 @@ export class MemberService {
     return source.find((item) => item.id === profileId) ?? null;
   }
 
-  getProfileByIdFromApi(profileId: number): Observable<MemberRecord | null> {
-    return this.http.get<ProfileDetailDto>(`/api/UserProfiles/public/${profileId}`).pipe(
+  getProfileByIdFromApi(profileId: number, authenticated = false): Observable<MemberRecord | null> {
+    const endpoint = authenticated ? `/api/UserProfiles/${profileId}` : `/api/UserProfiles/public/${profileId}`;
+    return this.http.get<ProfileDetailDto>(endpoint).pipe(
       map((dto) => this.mapDtoToMemberRecord(dto)),
       catchError(() => of(null)),
     );
@@ -167,6 +168,13 @@ export class MemberService {
       bio: dto.bio ?? undefined,
       createdAt: dto.lastActiveAt ?? new Date().toISOString(),
       password: '',
+      planVisibility: {
+        canViewEducation: dto.canViewEducation ?? true,
+        canViewOccupation: dto.canViewOccupation ?? true,
+        canViewFamily: dto.canViewFamily ?? true,
+        canViewHoroscope: dto.canViewHoroscope ?? true,
+        canViewPhotos: dto.canViewPhotos ?? true,
+      },
       registrationDetails: {
         ...createEmptyRegisterFormDetails(),
         personal: {

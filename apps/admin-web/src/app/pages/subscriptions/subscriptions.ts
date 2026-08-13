@@ -12,7 +12,7 @@ import { PageHeaderComponent, StatusBadgeComponent } from '@org/shared-ui';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../services/user-subscription-plan.service';
+import { UserSubscriptionPlanService, UserSubscriptionPlanDto, PlanFeatureValueDto } from '../../services/user-subscription-plan.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -78,10 +78,14 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
                 <div class="features-section">
                   <div class="features-title">Plan Features</div>
                   @for (feat of tenantStatus()?.effectiveFeatures; track feat.code) {
-                    <div class="feature-row">
-                      <mat-icon class="feature-icon">check_circle</mat-icon>
+                    <div class="feature-row" [class.feature-disabled]="isBooleanFeature(feat) && !isFeatureEnabled(feat)">
+                      <mat-icon class="feature-icon" [class.feature-on]="!isBooleanFeature(feat) || isFeatureEnabled(feat)" [class.feature-off]="isBooleanFeature(feat) && !isFeatureEnabled(feat)">
+                        {{ isBooleanFeature(feat) ? (isFeatureEnabled(feat) ? 'check_circle' : 'cancel') : 'check_circle' }}
+                      </mat-icon>
                       <span class="feature-label">{{ feat.name || feat.code }}</span>
-                      <span class="feature-value">{{ feat.value }}</span>
+                      @if (!isBooleanFeature(feat)) {
+                        <span class="feature-value">{{ formatFeatureValue(feat) }}</span>
+                      }
                     </div>
                   }
                 </div>
@@ -128,9 +132,17 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
                 @if (plan.features?.length) {
                   <ul class="plan-features">
                     @for (feature of plan.features; track feature.code) {
-                      <li>
-                        <mat-icon>check_circle</mat-icon>
-                        {{ feature.name || feature.code }}: {{ feature.value }}
+                      <li [class.feature-disabled]="isBooleanFeature(feature) && !isFeatureEnabled(feature)">
+                        <mat-icon
+                          [class.feature-on]="!isBooleanFeature(feature) || isFeatureEnabled(feature)"
+                          [class.feature-off]="isBooleanFeature(feature) && !isFeatureEnabled(feature)"
+                        >
+                          {{ isBooleanFeature(feature) ? (isFeatureEnabled(feature) ? 'check_circle' : 'cancel') : 'check_circle' }}
+                        </mat-icon>
+                        <span>{{ feature.name || feature.code }}</span>
+                        @if (!isBooleanFeature(feature)) {
+                          <span class="feature-num">: {{ formatFeatureValue(feature) }}</span>
+                        }
                       </li>
                     }
                   </ul>
@@ -255,6 +267,18 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
       color: #388e3c;
     }
 
+    .feature-icon.feature-off {
+      color: #e53935;
+    }
+
+    .feature-disabled {
+      color: #bdbdbd;
+    }
+
+    .feature-disabled mat-icon {
+      color: #e57373;
+    }
+
     .feature-label {
       flex: 1;
     }
@@ -262,6 +286,10 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
     .feature-value {
       font-weight: 500;
       color: #1a1a1a;
+    }
+
+    .feature-num {
+      font-weight: 500;
     }
 
     .section-title {
@@ -378,6 +406,14 @@ import { UserSubscriptionPlanService, UserSubscriptionPlanDto } from '../../serv
       color: #388e3c;
     }
 
+    .plan-features li.feature-disabled {
+      color: #bdbdbd;
+    }
+
+    .plan-features li.feature-disabled mat-icon {
+      color: #e57373;
+    }
+
     .plan-footer {
       padding-top: 12px;
       border-top: 1px solid #f0f0f0;
@@ -435,6 +471,18 @@ export class Subscriptions {
     if (s.isActive) return 'Active';
     if (s.isExpired) return 'Expired';
     return 'Inactive';
+  }
+
+  isBooleanFeature(feature: { dataType?: string }): boolean {
+    return (feature.dataType ?? '').toLowerCase() === 'bool';
+  }
+
+  isFeatureEnabled(feature: { value?: string }): boolean {
+    return ['true', '1', 'yes'].includes((feature.value ?? '').toLowerCase());
+  }
+
+  formatFeatureValue(feature: PlanFeatureValueDto): string {
+    return feature.value ?? '-';
   }
 
   formatDate(dateStr?: string | null): string {

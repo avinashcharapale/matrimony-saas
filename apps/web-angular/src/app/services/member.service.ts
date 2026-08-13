@@ -89,6 +89,11 @@ interface ProfileDetail extends ProfileSearchResult {
   expectations?: Record<string, unknown>;
   verification?: Record<string, unknown>;
   photos?: Array<Record<string, unknown>>;
+  canViewEducation?: boolean;
+  canViewOccupation?: boolean;
+  canViewFamily?: boolean;
+  canViewHoroscope?: boolean;
+  canViewPhotos?: boolean;
 }
 
 const MEMBERS_KEY_PREFIX = 'matrimony_members';
@@ -812,6 +817,11 @@ export class MemberService {
       family,
       expectations,
       photos,
+      canViewEducation: profile.canViewEducation ?? true,
+      canViewOccupation: profile.canViewOccupation ?? true,
+      canViewFamily: profile.canViewFamily ?? true,
+      canViewHoroscope: profile.canViewHoroscope ?? true,
+      canViewPhotos: profile.canViewPhotos ?? true,
     };
   }
 

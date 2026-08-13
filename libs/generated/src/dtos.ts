@@ -329,6 +329,11 @@ export interface ProfileDetailDto {
   contact?: ContactDetailsDto;
   phoneNumbers?: PhoneNumberDto[];
   isContactUnlocked?: boolean;
+  canViewEducation?: boolean;
+  canViewOccupation?: boolean;
+  canViewFamily?: boolean;
+  canViewHoroscope?: boolean;
+  canViewPhotos?: boolean;
   interests?: string[];
   preferredCities?: string[];
   expectedCasteIds?: number[];
@@ -781,6 +786,29 @@ export interface UpdateSubscriptionFeatureRequest {
   isActive?: boolean;
 }
 
+export interface SubscriptionFeatureCategoryDto {
+  categoryCode?: string;
+  categoryName?: string;
+  description?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+export interface CreateSubscriptionFeatureCategoryRequest {
+  categoryCode?: string;
+  categoryName?: string;
+  description?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateSubscriptionFeatureCategoryRequest {
+  categoryName?: string;
+  description?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
 export interface SubscriptionStatusDto {
   isActive?: boolean;
   isExpired?: boolean;
@@ -798,6 +826,7 @@ export interface TenantSubscriptionDto {
   tenantId: number;
   subscriptionPlanId: number;
   planName?: string;
+  durationMonths?: number;
   startDate: string;
   endDate: string;
   isActive: boolean;

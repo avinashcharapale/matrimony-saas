@@ -156,6 +156,11 @@ interface MappedProfileDetail {
   createdAt?: string;
   email?: string;
   isContactUnlocked?: boolean;
+  canViewEducation?: boolean;
+  canViewOccupation?: boolean;
+  canViewFamily?: boolean;
+  canViewHoroscope?: boolean;
+  canViewPhotos?: boolean;
   personal?: DbPersonalSection;
   horoscope?: DbHoroscopeSection;
   professional?: DbProfessionalSection;
@@ -207,6 +212,11 @@ export class ProfileDetail implements OnInit {
   readonly isLoading = signal(true);
   readonly error = signal<string | null>(null);
   readonly isContactUnlocked = signal(false);
+  readonly canViewEducation = signal(true);
+  readonly canViewOccupation = signal(true);
+  readonly canViewFamily = signal(true);
+  readonly canViewHoroscope = signal(true);
+  readonly canViewPhotos = signal(true);
   readonly showUpgradePrompt = signal(false);
   readonly isSendingInterest = signal(false);
   readonly interestSent = signal(false);
@@ -224,6 +234,12 @@ export class ProfileDetail implements OnInit {
   readonly isPaidUser = computed(() => this.subscriptionStore.isActive());
   readonly isFreeUser = computed(() => this.authService.isAuthenticated() && !this.subscriptionStore.isActive());
   readonly isVisitor = computed(() => !this.authService.isAuthenticated());
+
+  readonly planUpgradePrompt = computed(() =>
+    this.subscriptionStore.isActive() && (
+      !this.canViewEducation() || !this.canViewOccupation() ||
+      !this.canViewFamily() || !this.canViewHoroscope() || !this.canViewPhotos()
+    ));
 
   private static readonly MONTH_MAP: Record<string, number> = {
     Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6,
@@ -289,20 +305,22 @@ export class ProfileDetail implements OnInit {
           this.field('profile.religion', personal?.religion),
           this.field('profile.caste', personal?.caste),
           this.field('profile.subCaste', personal?.subCast),
-          this.field('profile.education', professional?.education || this.profile()?.bio),
-          this.field('profile.occupation', professional?.occupationDetails || this.profile()?.occupation),
+          ...(this.canViewEducation() ? [this.field('profile.education', professional?.education || this.profile()?.bio)] : []),
+          ...(this.canViewOccupation() ? [this.field('profile.occupation', professional?.occupationDetails || this.profile()?.occupation)] : []),
           this.field('profileDetail.bloodGroupWeight', `${personal?.bloodGroup || '-'} / ${personal?.weightKg || this.t('profileDetail.na')}`),
           this.field('profileDetail.spectacleLens', `${personal?.spectacles || '-'} / ${personal?.lens || '-'}`),
           this.field('profile.complexion', personal?.complexion),
           this.field('profileDetail.birthPlace', horoscope?.birthDistrict, 'profileFieldBirthPlace'),
           this.field('profile.diet', personal?.diet),
-          this.field(
-            'profileDetail.horoscopeDetails',
-            `${horoscope?.rashi || '-'} / ${horoscope?.nakshatra || '-'} / ${horoscope?.charan || '-'}`,
-            'profileSectionHoroscope',
-          ),
-          this.field('profileDetail.gotraDevak', horoscope?.devak, 'profileSectionHoroscope'),
-          this.field('profileDetail.mangal', horoscope?.manglik, 'profileSectionHoroscope'),
+          ...(this.canViewHoroscope() ? [
+            this.field(
+              'profileDetail.horoscopeDetails',
+              `${horoscope?.rashi || '-'} / ${horoscope?.nakshatra || '-'} / ${horoscope?.charan || '-'}`,
+              'profileSectionHoroscope',
+            ),
+            this.field('profileDetail.gotraDevak', horoscope?.devak, 'profileSectionHoroscope'),
+            this.field('profileDetail.mangal', horoscope?.manglik, 'profileSectionHoroscope'),
+          ] : []),
         ].filter((f): f is ProfileField => f !== null),
       });
     }
@@ -311,7 +329,7 @@ export class ProfileDetail implements OnInit {
       sections.push(...contactSection);
     }
 
-    if (this.flagEnabled('profileSectionFamily')) {
+    if (this.flagEnabled('profileSectionFamily') && this.canViewFamily()) {
       sections.push({
         title: this.t('profile.familyBackground'),
         fields: [
@@ -408,6 +426,11 @@ export class ProfileDetail implements OnInit {
       next: (profileDetail: MappedProfileDetail) => {
         const registrationDetails = this.mapRegistrationDetails(profileDetail);
         this.isContactUnlocked.set(profileDetail.isContactUnlocked === true);
+        this.canViewEducation.set(profileDetail.canViewEducation !== false);
+        this.canViewOccupation.set(profileDetail.canViewOccupation !== false);
+        this.canViewFamily.set(profileDetail.canViewFamily !== false);
+        this.canViewHoroscope.set(profileDetail.canViewHoroscope !== false);
+        this.canViewPhotos.set(profileDetail.canViewPhotos !== false);
         this.profile.set({
           id: `${profileDetail.profileId ?? ''}`,
           profileCode: profileDetail.profileCode ?? String(profileDetail.profileId ?? ''),

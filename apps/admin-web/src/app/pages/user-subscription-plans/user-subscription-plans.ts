@@ -342,8 +342,12 @@ interface PlanFeatureRow {
                 [value]="addFeatureSelection()"
                 (selectionChange)="onAddFeature($event.value)"
               >
-                @for (f of availableFeatures(); track f.code) {
-                  <mat-option [value]="f">{{ f.name || f.code }}</mat-option>
+                @for (group of catalogGroups(); track group.category) {
+                  <mat-optgroup [label]="group.category">
+                    @for (f of group.items; track f.code) {
+                      <mat-option [value]="f">{{ f.name || f.code }}</mat-option>
+                    }
+                  </mat-optgroup>
                 }
               </mat-select>
             </mat-form-field>
@@ -450,6 +454,17 @@ export class PlanFormDialogComponent implements OnInit {
   readonly availableFeatures = computed(() => {
     const used = new Set(this.features().map(f => f.code));
     return this.catalog().filter(f => !used.has(f.code ?? ''));
+  });
+
+  readonly catalogGroups = computed(() => {
+    const groups = new Map<string, SubscriptionFeatureDto[]>();
+    for (const f of this.availableFeatures()) {
+      const category = f.category || 'General';
+      const list = groups.get(category) ?? [];
+      list.push(f);
+      groups.set(category, list);
+    }
+    return [...groups.entries()].map(([category, items]) => ({ category, items }));
   });
 
   ngOnInit(): void {

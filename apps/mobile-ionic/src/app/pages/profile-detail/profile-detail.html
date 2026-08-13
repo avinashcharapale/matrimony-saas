@@ -60,6 +60,11 @@
       </div>
 
       <!-- Sections -->
+      @if (anyGatedContent()) {
+      <div class="detail-section gate-banner" (click)="showUpgradePrompt.set(true)">
+        <p class="gate-message">Some details are hidden on this plan. Upgrade to view them all.</p>
+      </div>
+      }
       @for (section of sections(); track section.title) {
       @if (section.title === 'Address & Contact' && isVisitor()) {
       <div class="detail-section contact-gated">

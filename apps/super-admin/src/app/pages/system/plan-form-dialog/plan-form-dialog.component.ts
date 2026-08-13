@@ -229,10 +229,17 @@ export class PlanFormDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscriptionClient.getAllTenantFeatureDefinitions().subscribe(defs => {
-      this.tenantFeatureDefs.set(defs ?? []);
+      const seen = new Set<string>();
+      const uniqueDefs = (defs ?? []).filter(d => {
+        if (!d.featureCode) return false;
+        if (seen.has(d.featureCode)) return false;
+        seen.add(d.featureCode);
+        return true;
+      });
+      this.tenantFeatureDefs.set(uniqueDefs);
       const array = this.tenantFeaturesArray;
       array.clear();
-      for (const def of defs ?? []) {
+      for (const def of uniqueDefs) {
         array.push(this.createFeatureControl(def));
       }
     });

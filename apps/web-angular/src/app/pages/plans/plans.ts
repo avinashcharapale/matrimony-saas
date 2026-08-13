@@ -127,4 +127,15 @@ export class PlansPage implements OnInit {
         return value ? `${name}: ${value}` : name;
     }
   }
+
+  groupFeatures(features?: PlanFeatureValueDto[]): { category: string; items: PlanFeatureValueDto[] }[] {
+    const groups = new Map<string, PlanFeatureValueDto[]>();
+    for (const feature of features ?? []) {
+      const category = feature.category || 'General';
+      const list = groups.get(category) ?? [];
+      list.push(feature);
+      groups.set(category, list);
+    }
+    return [...groups.entries()].map(([category, items]) => ({ category, items }));
+  }
 }

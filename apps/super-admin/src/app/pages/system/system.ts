@@ -250,6 +250,7 @@ export class System implements OnInit {
         displayOrder: result.displayOrder,
         isPopular: result.isPopular ?? false,
         isActive: result.isActive ?? true,
+        tenantFeatures: result.tenantFeatures,
       };
 
       this.subscriptionClient.createSubscriptionPlan(dto).subscribe({
@@ -274,6 +275,7 @@ export class System implements OnInit {
         displayOrder: result.displayOrder,
         isPopular: result.isPopular ?? false,
         isActive: result.isActive ?? true,
+        tenantFeatures: result.tenantFeatures,
       };
 
       this.subscriptionClient.updateSubscriptionPlan(plan.id!, dto).subscribe({

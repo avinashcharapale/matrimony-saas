@@ -576,3 +576,39 @@
 .upgrade-cancel:hover {
   color: var(--theme-text);
 }
+
+.plan-upgrade-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1.25rem;
+  background: var(--tenant-accent, #fff7e0);
+  border: 1px solid #f0d27a;
+  border-radius: 10px;
+  color: var(--theme-text, #333);
+  font-size: 0.875rem;
+}
+
+.plan-upgrade-title {
+  font-weight: 700;
+  color: #7a5a00;
+}
+
+.plan-upgrade-text {
+  flex: 1;
+  min-width: 200px;
+  color: #6b5a00;
+}
+
+.plan-upgrade-link {
+  font-weight: 600;
+  color: var(--tenant-primary, #1976d2);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.plan-upgrade-link:hover {
+  text-decoration: underline;
+}

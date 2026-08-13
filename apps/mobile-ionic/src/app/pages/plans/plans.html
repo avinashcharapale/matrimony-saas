@@ -58,13 +58,18 @@
 
       @if (plan.features && plan.features.length > 0) {
       <div class="plan-features">
-        @for (feature of plan.features; track feature.code) {
-        @if (formatFeatureValue(feature)) {
-        <div class="feature-item">
-          <ion-icon name="checkmark-circle" class="feature-check"></ion-icon>
-          <span>{{ formatFeatureValue(feature) }}</span>
+        @for (group of groupFeatures(plan.features); track group.category) {
+        <div class="feature-group">
+          <div class="feature-group-title">{{ group.category }}</div>
+          @for (feature of group.items; track feature.code) {
+          @if (formatFeatureValue(feature)) {
+          <div class="feature-item">
+            <ion-icon name="checkmark-circle" class="feature-check"></ion-icon>
+            <span>{{ formatFeatureValue(feature) }}</span>
+          </div>
+          }
+          }
         </div>
-        }
         }
       </div>
       }

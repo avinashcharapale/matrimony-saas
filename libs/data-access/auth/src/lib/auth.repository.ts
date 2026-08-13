@@ -43,8 +43,8 @@ export class AuthRepository {
     return this.identity.register(request);
   }
 
-  refreshToken(refreshToken: string): Observable<AuthLoginResponse> {
-    return this.identity.refresh({ refreshToken });
+  refreshToken(accessToken: string, refreshToken: string): Observable<AuthLoginResponse> {
+    return this.identity.refresh({ accessToken, refreshToken });
   }
 
   logout(refreshToken: string): Observable<void> {

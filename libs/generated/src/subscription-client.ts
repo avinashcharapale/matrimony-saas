@@ -9,6 +9,9 @@ import {
   UpdateSubscriptionPlanRequest,
   CreateSubscriptionFeatureRequest,
   UpdateSubscriptionFeatureRequest,
+  SubscriptionFeatureCategoryDto,
+  CreateSubscriptionFeatureCategoryRequest,
+  UpdateSubscriptionFeatureCategoryRequest,
   CheckoutRequestDto,
   CheckoutResponseDto,
   TenantSubscriptionDto,
@@ -82,6 +85,24 @@ export class SubscriptionClient {
 
   deleteSubscriptionFeature(id: number): Observable<void> {
     return this.http.delete<void>(`/subscription/SubscriptionFeatures/${id}`);
+  }
+
+  // ─── Feature Categories ─────────────────────────────────────────────────
+
+  getAllSubscriptionFeatureCategories(): Observable<SubscriptionFeatureCategoryDto[]> {
+    return this.http.get<SubscriptionFeatureCategoryDto[]>('/subscription/SubscriptionFeatureCategories');
+  }
+
+  createSubscriptionFeatureCategory(body: CreateSubscriptionFeatureCategoryRequest): Observable<SubscriptionFeatureCategoryDto> {
+    return this.http.post<SubscriptionFeatureCategoryDto>('/subscription/SubscriptionFeatureCategories', body);
+  }
+
+  updateSubscriptionFeatureCategory(categoryCode: string, body: UpdateSubscriptionFeatureCategoryRequest): Observable<SubscriptionFeatureCategoryDto> {
+    return this.http.put<SubscriptionFeatureCategoryDto>(`/subscription/SubscriptionFeatureCategories/${categoryCode}`, body);
+  }
+
+  setSubscriptionFeatureCategoryActive(categoryCode: string, isActive: boolean): Observable<void> {
+    return this.http.post<void>(`/subscription/SubscriptionFeatureCategories/${categoryCode}/active/${isActive}`, {});
   }
 
   // ─── Tenant-Own Features (per-tenant) ────────────────────────────────────

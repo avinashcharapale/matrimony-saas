@@ -79,6 +79,10 @@ import { AssignPlanDialogComponent, PlanFormDialogData } from './assign-plan-dia
                 <span class="sub-value">{{ sub.endDate | date:'mediumDate' }}</span>
               </div>
               <div class="sub-field">
+                <span class="sub-label">Duration</span>
+                <span class="sub-value">{{ sub.durationMonths ? sub.durationMonths + ' months' : '—' }}</span>
+              </div>
+              <div class="sub-field">
                 <span class="sub-label">Status</span>
                 <span class="badge" [class.active]="sub.isActive" [class.inactive]="!sub.isActive">
                   {{ sub.isActive ? 'Active' : 'Inactive' }}

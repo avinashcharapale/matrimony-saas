@@ -1,14 +1,14 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { SubscriptionClient, SubscriptionFeatureDto, CreateSubscriptionFeatureRequest } from '@org/generated';
+import { SubscriptionClient, SubscriptionFeatureDto, SubscriptionFeatureCategoryDto, CreateSubscriptionFeatureRequest } from '@org/generated';
 import { createSort, createPagination } from '@org/shared-ui';
 
 @Component({
@@ -127,6 +127,7 @@ export class Features implements OnInit {
 
   readonly loading = signal(true);
   readonly features = signal<SubscriptionFeatureDto[]>([]);
+  readonly categories = signal<SubscriptionFeatureCategoryDto[]>([]);
   readonly errorMessage = signal('');
 
   readonly sort = createSort();
@@ -155,6 +156,7 @@ export class Features implements OnInit {
 
   ngOnInit(): void {
     this.loadFeatures();
+    this.loadCategories();
   }
 
   loadFeatures(): void {
@@ -168,8 +170,19 @@ export class Features implements OnInit {
     });
   }
 
+  loadCategories(): void {
+    this.subscriptionClient.getAllSubscriptionFeatureCategories().subscribe({
+      next: (data) => this.categories.set(data ?? []),
+      error: () => this.categories.set([]),
+    });
+  }
+
   openAddDialog(): void {
-    const dialogRef = this.dialog.open(FeatureFormDialogComponent, { width: '480px', disableClose: true });
+    const dialogRef = this.dialog.open(FeatureFormDialogComponent, {
+      width: '480px',
+      disableClose: true,
+      data: { categories: this.categories() },
+    });
 
     dialogRef.afterClosed().subscribe((result: CreateSubscriptionFeatureRequest | undefined) => {
       if (!result) return;
@@ -219,7 +232,13 @@ export class Features implements OnInit {
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Category</mat-label>
-            <input matInput formControlName="category" placeholder="e.g. Capabilities" />
+            <mat-select formControlName="category">
+              @for (cat of categories(); track cat.categoryCode) {
+                <mat-option [value]="cat.categoryCode">
+                  {{ cat.categoryName !== cat.categoryCode ? cat.categoryName + ' (' + cat.categoryCode + ')' : cat.categoryName }}
+                </mat-option>
+              }
+            </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="half-width">
@@ -259,6 +278,8 @@ export class Features implements OnInit {
 export class FeatureFormDialogComponent {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<FeatureFormDialogComponent>);
+
+  readonly categories = signal<SubscriptionFeatureCategoryDto[]>(inject<{ categories: SubscriptionFeatureCategoryDto[] }>(MAT_DIALOG_DATA).categories ?? []);
 
   readonly form = this.fb.nonNullable.group({
     code: ['', [Validators.required]],

@@ -88,6 +88,13 @@
     </aside>
 
     <main class="profile-content">
+      @if (planUpgradePrompt()) {
+      <div class="plan-upgrade-banner">
+        <span class="plan-upgrade-title">&#128274; {{ 'profileDetail.planUpgradeTitle' | translate }}</span>
+        <span class="plan-upgrade-text">{{ 'profileDetail.planUpgradeText' | translate }}</span>
+        <a routerLink="/plans" class="plan-upgrade-link">{{ 'profileDetail.planUpgradeCta' | translate }}</a>
+      </div>
+      }
       @for (section of sections(); track section.title) {
       <div class="detail-section">
         <h2 class="section-title">{{ section.title }}</h2>

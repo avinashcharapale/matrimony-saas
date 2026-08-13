@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { PageHeaderComponent, StatusBadgeComponent } from '@org/shared-ui';
@@ -11,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
-import { SubscriptionClient, SubscriptionFeatureDto, CreateSubscriptionFeatureRequest, UpdateSubscriptionFeatureRequest } from '@org/generated';
+import { SubscriptionClient, SubscriptionFeatureDto, SubscriptionFeatureCategoryDto, CreateSubscriptionFeatureRequest, UpdateSubscriptionFeatureRequest } from '@org/generated';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +26,7 @@ import { SubscriptionClient, SubscriptionFeatureDto, CreateSubscriptionFeatureRe
     <div class="features-page">
       <ui-page-header
         title="My Features"
-        subtitle="Define your own features for user subscription plans, alongside the shared catalog"
+        subtitle="Define features for your user subscription plans"
       />
 
       <div class="header-actions">
@@ -56,7 +56,6 @@ import { SubscriptionClient, SubscriptionFeatureDto, CreateSubscriptionFeatureRe
                 <th>Category</th>
                 <th>Data Type</th>
                 <th>Default</th>
-                <th>Type</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -70,24 +69,15 @@ import { SubscriptionClient, SubscriptionFeatureDto, CreateSubscriptionFeatureRe
                   <td class="cell-center">{{ feature.dataType }}</td>
                   <td class="cell-center">{{ feature.defaultValue ?? '—' }}</td>
                   <td class="cell-center">
-                    <span class="scope-badge" [class.own]="isOwn(feature)">
-                      {{ isOwn(feature) ? 'Mine' : 'Global' }}
-                    </span>
-                  </td>
-                  <td class="cell-center">
                     <ui-status-badge [status]="feature.isActive ? 'Active' : 'Inactive'"></ui-status-badge>
                   </td>
                   <td class="cell-actions">
-                    @if (isOwn(feature)) {
-                      <button mat-icon-button color="primary" title="Edit" (click)="openEditDialog(feature)">
-                        <mat-icon>edit</mat-icon>
-                      </button>
-                      <button mat-icon-button color="warn" title="Delete" (click)="confirmDelete(feature)">
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    } @else {
-                      <span class="cell-muted">—</span>
-                    }
+                    <button mat-icon-button color="primary" title="Edit" (click)="openEditDialog(feature)">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" title="Delete" (click)="confirmDelete(feature)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
                   </td>
                 </tr>
               }
@@ -124,12 +114,6 @@ import { SubscriptionClient, SubscriptionFeatureDto, CreateSubscriptionFeatureRe
     .cell-bold { font-weight: 500; }
     .cell-center { text-align: center; }
     .cell-actions { text-align: right; white-space: nowrap; }
-    .cell-muted { color: #bdbdbd; }
-    .scope-badge {
-      display: inline-block; padding: 0.15rem 0.6rem; border-radius: 10px;
-      font-size: 0.75rem; font-weight: 600; background: #eceff1; color: #607d8b;
-    }
-    .scope-badge.own { background: #e8f5e9; color: #2e7d32; }
   `],
 })
 export class TenantFeatures implements OnInit {
@@ -138,13 +122,18 @@ export class TenantFeatures implements OnInit {
 
   readonly loading = signal(true);
   readonly features = signal<SubscriptionFeatureDto[]>([]);
+  readonly categories = signal<SubscriptionFeatureCategoryDto[]>([]);
 
   ngOnInit(): void {
     this.loadFeatures();
+    this.loadCategories();
   }
 
-  isOwn(feature: SubscriptionFeatureDto): boolean {
-    return feature.tenantId != null;
+  loadCategories(): void {
+    this.subscriptionClient.getAllSubscriptionFeatureCategories().subscribe({
+      next: (data) => this.categories.set(data ?? []),
+      error: () => this.categories.set([]),
+    });
   }
 
   loadFeatures(): void {
@@ -159,7 +148,7 @@ export class TenantFeatures implements OnInit {
     const ref = this.dialog.open(FeatureFormDialogComponent, {
       width: '520px',
       disableClose: true,
-      data: { mode: 'create' },
+      data: { mode: 'create', categories: this.categories() },
     });
     ref.afterClosed().subscribe((result: CreateSubscriptionFeatureRequest | undefined) => {
       if (!result) return;
@@ -171,7 +160,7 @@ export class TenantFeatures implements OnInit {
     const ref = this.dialog.open(FeatureFormDialogComponent, {
       width: '520px',
       disableClose: true,
-      data: { mode: 'edit', feature },
+      data: { mode: 'edit', feature, categories: this.categories() },
     });
     ref.afterClosed().subscribe((result: UpdateSubscriptionFeatureRequest | undefined) => {
       if (!result || feature.id == null) return;
@@ -231,7 +220,13 @@ export class TenantFeatures implements OnInit {
         <div class="form-row">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Category</mat-label>
-            <input matInput formControlName="category" placeholder="e.g. Capabilities" />
+            <mat-select formControlName="category">
+              @for (cat of categories(); track cat.categoryCode) {
+                <mat-option [value]="cat.categoryCode">
+                  {{ cat.categoryName !== cat.categoryCode ? cat.categoryName + ' (' + cat.categoryCode + ')' : cat.categoryName }}
+                </mat-option>
+              }
+            </mat-select>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="half-width">
@@ -273,7 +268,9 @@ export class TenantFeatures implements OnInit {
 export class FeatureFormDialogComponent {
   private readonly fb = inject(FormBuilder);
   private readonly dialogRef = inject(MatDialogRef<FeatureFormDialogComponent>);
-  readonly data = inject<{ mode: 'create' | 'edit'; feature?: SubscriptionFeatureDto }>(MAT_DIALOG_DATA);
+  readonly data = inject<{ mode: 'create' | 'edit'; feature?: SubscriptionFeatureDto; categories?: SubscriptionFeatureCategoryDto[] }>(MAT_DIALOG_DATA);
+
+  readonly categories = signal<SubscriptionFeatureCategoryDto[]>(this.data.categories ?? []);
 
   readonly form = this.fb.nonNullable.group({
     code: [this.data.feature?.code ?? '', this.data.mode === 'create' ? [Validators.required] : []],

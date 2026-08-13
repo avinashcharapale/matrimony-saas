@@ -247,7 +247,7 @@ export const AuthStore = signalStore(
       const rt = store.storedRefreshToken();
       if (!rt) return of(false);
 
-      return repository.refreshToken(rt).pipe(
+      return repository.refreshToken(store.accessToken() ?? '', rt).pipe(
         map((response) => {
           const previous: AuthSession | null =
             store.userId() != null

@@ -1,3 +1,11 @@
+export interface ProfilePlanVisibility {
+  canViewEducation?: boolean;
+  canViewOccupation?: boolean;
+  canViewFamily?: boolean;
+  canViewHoroscope?: boolean;
+  canViewPhotos?: boolean;
+}
+
 export interface MemberRecord {
   id: string;
   name: string;
@@ -15,6 +23,7 @@ export interface MemberRecord {
   thumbnailUrl?: string;
   genderId?: number;
   registrationDetails?: RegisterFormDetails;
+  planVisibility?: ProfilePlanVisibility;
   createdAt: string;
   createdAtDate?: string;
   dobText?: string;

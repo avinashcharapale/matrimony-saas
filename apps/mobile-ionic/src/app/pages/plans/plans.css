@@ -121,6 +121,19 @@
   margin-bottom: 1rem;
 }
 
+.feature-group {
+  margin-bottom: 0.75rem;
+}
+
+.feature-group-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #999;
+  margin-bottom: 0.25rem;
+}
+
 .feature-item {
   display: flex;
   align-items: center;

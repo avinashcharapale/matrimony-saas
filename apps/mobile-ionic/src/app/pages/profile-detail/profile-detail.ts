@@ -51,6 +51,14 @@ export class ProfileDetail implements OnInit {
   readonly isFreeUser = computed(() => this.authStore.isAuthenticated());
   readonly isPaidUser = computed(() => false);
 
+  private readonly visibilityMask = '•• ••••••';
+  readonly anyGatedContent = computed(() => {
+    const pv = this.profile()?.planVisibility;
+    return !pv
+      ? false
+      : !pv.canViewEducation || !pv.canViewOccupation || !pv.canViewHoroscope || !pv.canViewFamily;
+  });
+
   private myProfileId = 0;
 
   readonly galleryPhotos = computed(() => {
@@ -84,6 +92,12 @@ export class ProfileDetail implements OnInit {
 
     const sections: ProfileSection[] = [];
 
+    const pv = p?.planVisibility;
+    const canViewEducation = pv?.canViewEducation ?? true;
+    const canViewOccupation = pv?.canViewOccupation ?? true;
+    const canViewHoroscope = pv?.canViewHoroscope ?? true;
+    const canViewFamily = pv?.canViewFamily ?? true;
+
     if (this.flagEnabled('profileSectionDetails')) {
       sections.push({
         title: 'Personal Details',
@@ -104,25 +118,28 @@ export class ProfileDetail implements OnInit {
     }
 
     if (this.flagEnabled('profileSectionHoroscope')) {
+      const mask = !canViewHoroscope;
       sections.push({
         title: 'Horoscope',
         fields: [
-          this.field('Manglik', horoscope?.manglik),
-          this.field('Rashi', horoscope?.rashi),
-          this.field('Nakshatra', horoscope?.nakshatra),
-          this.field('Birth Time', this.timeText(horoscope?.birthHour, horoscope?.birthMinute, horoscope?.birthPeriod)),
-          this.field('Birth District', horoscope?.birthDistrict, 'profileFieldBirthPlace'),
+          this.field('Manglik', mask ? this.visibilityMask : horoscope?.manglik),
+          this.field('Rashi', mask ? this.visibilityMask : horoscope?.rashi),
+          this.field('Nakshatra', mask ? this.visibilityMask : horoscope?.nakshatra),
+          this.field('Birth Time', mask ? this.visibilityMask : this.timeText(horoscope?.birthHour, horoscope?.birthMinute, horoscope?.birthPeriod)),
+          this.field('Birth District', mask ? this.visibilityMask : horoscope?.birthDistrict, 'profileFieldBirthPlace'),
         ].filter((f): f is ProfileField => f !== null),
       });
     }
 
+    const eduMask = !canViewEducation;
+    const occMask = !canViewOccupation;
     sections.push({
       title: 'Education & Occupation',
       fields: [
-        this.field('Education', professional?.education || p?.bio),
-        this.field('Occupation', professional?.occupationDetails || p?.occupation),
-        this.field('Working City', professional?.workingCityCountry),
-        this.field('Income', professional?.incomeAmount),
+        this.field('Education', eduMask ? this.visibilityMask : professional?.education || p?.bio),
+        this.field('Occupation', occMask ? this.visibilityMask : professional?.occupationDetails || p?.occupation),
+        this.field('Working City', occMask ? this.visibilityMask : professional?.workingCityCountry),
+        this.field('Income', occMask ? this.visibilityMask : professional?.incomeAmount),
       ].filter((f): f is ProfileField => f !== null),
     });
 
@@ -139,15 +156,16 @@ export class ProfileDetail implements OnInit {
     }
 
     if (this.flagEnabled('profileSectionFamily')) {
+      const mask = !canViewFamily;
       sections.push({
         title: 'Family Background',
         fields: [
-          this.field('Father', family?.fatherStatus),
-          this.field('Mother', family?.motherStatus),
-          this.field('Brothers', family?.brothers),
-          this.field('Sisters', family?.sisters),
-          this.field('Native District', family?.nativeDistrict),
-          this.field('Native Taluka', family?.nativeTaluka),
+          this.field('Father', mask ? this.visibilityMask : family?.fatherStatus),
+          this.field('Mother', mask ? this.visibilityMask : family?.motherStatus),
+          this.field('Brothers', mask ? this.visibilityMask : family?.brothers),
+          this.field('Sisters', mask ? this.visibilityMask : family?.sisters),
+          this.field('Native District', mask ? this.visibilityMask : family?.nativeDistrict),
+          this.field('Native Taluka', mask ? this.visibilityMask : family?.nativeTaluka),
         ].filter((f): f is ProfileField => f !== null),
       });
     }
@@ -174,7 +192,7 @@ export class ProfileDetail implements OnInit {
       this.isLoading.set(true);
       const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
       if (!isNaN(numericId)) {
-        this.memberService.getProfileByIdFromApi(numericId).pipe(
+        this.memberService.getProfileByIdFromApi(numericId, this.authStore.isAuthenticated()).pipe(
           finalize(() => this.isLoading.set(false)),
         ).subscribe({
           next: (record) => {
