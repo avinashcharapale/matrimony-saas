@@ -1494,6 +1494,19 @@ export interface SaveTenantBrandingRequest {
   customCss?: string;
 }
 
+// ── Tenant Extensions: Legal Documents ───────────────────────────────────────
+
+export type LegalDocumentKind = 'privacy' | 'terms' | 'refund';
+
+export interface TenantLegalDocumentsDto {
+  tenantId?: number;
+  privacyPolicyUrl?: string;
+  termsConditionsUrl?: string;
+  refundPolicyUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 // ── Tenant Extensions: Domains ──────────────────────────────────────────────
 
 export interface TenantDomainDto {

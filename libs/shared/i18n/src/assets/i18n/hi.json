@@ -592,6 +592,12 @@
     "addressLabel": "पता",
     "primary": "प्राथमिक"
   },
+  "legalDocument": {
+    "loading": "दस्तावेज़ लोड हो रहा है...",
+    "openInNewTab": "नई टैब में खोलें",
+    "notAvailable": "यह दस्तावेज़ अभी तक अपलोड नहीं किया गया है।",
+    "backHome": "होम पर वापस जाएं"
+  },
   "landing": {
     "verified": "सत्यापित",
     "new": "नया",

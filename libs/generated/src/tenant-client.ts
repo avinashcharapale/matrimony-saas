@@ -13,6 +13,8 @@ import {
   UpdateTenantMasterDataRequest,
   TenantBrandingDto,
   SaveTenantBrandingRequest,
+  TenantLegalDocumentsDto,
+  LegalDocumentKind,
   TenantDomainDto,
   CreateTenantDomainRequest,
   UpdateTenantDomainRequest,
@@ -151,6 +153,25 @@ export class TenantClient {
     return this.http.post<FileUploadResult>(`/tenant/tenant-branding/${kind}`, formData, {
       headers: this.tenantHeaders(tenantId),
     });
+  }
+
+  // ── Tenant Legal Documents ───────────────────────────────────────────────
+
+  getTenantLegalDocuments(tenantId?: number): Observable<TenantLegalDocumentsDto> {
+    return this.http.get<TenantLegalDocumentsDto>('/tenant/tenant-legal-documents', { headers: this.tenantHeaders(tenantId) });
+  }
+
+  uploadLegalDocument(kind: LegalDocumentKind, file: File, tenantId?: number): Observable<TenantLegalDocumentsDto> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    return this.http.post<TenantLegalDocumentsDto>(`/tenant/tenant-legal-documents/${kind}`, formData, {
+      headers: this.tenantHeaders(tenantId),
+    });
+  }
+
+  getPublicTenantLegalDocuments(tenantId?: number): Observable<TenantLegalDocumentsDto> {
+    const params = tenantId ? { tenantId: String(tenantId) } : undefined;
+    return this.http.get<TenantLegalDocumentsDto>('/tenant/tenant-legal-documents/public', { params });
   }
 
   // ── Tenant Domains ───────────────────────────────────────────────────────

@@ -592,6 +592,12 @@
     "addressLabel": "पत्ता",
     "primary": "प्राथमिक"
   },
+  "legalDocument": {
+    "loading": "दस्तऐवज लोड होत आहे...",
+    "openInNewTab": "नवीन टॅबमध्ये उघडा",
+    "notAvailable": "हा दस्तऐवज अद्याप अपलोड केलेला नाही.",
+    "backHome": "मुख्यपृष्ठावर परत जा"
+  },
   "landing": {
     "verified": "प्रमाणित",
     "new": "नवीन",

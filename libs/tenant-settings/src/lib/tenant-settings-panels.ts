@@ -18,6 +18,8 @@ import {
   TenantContactDto,
   SaveTenantBrandingRequest,
   SaveTenantContactRequest,
+  TenantLegalDocumentsDto,
+  LegalDocumentKind,
   FeatureFlagDto,
   FeatureFlagDefinitionDto,
 } from '@org/generated';
@@ -76,6 +78,19 @@ export const panelStyles = `
   .contact-value-field { margin-bottom: 8px; }
   .contact-edit-panel { margin-top: 1rem; border-top: 1px solid #ececec; padding-top: 1rem; }
   .contact-sort-badge { font-size: 12px; color: #757575; }
+  .legal-list { display: flex; flex-direction: column; gap: 12px; }
+  .legal-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    border: 1px solid #ececec; border-radius: 10px; padding: 0.75rem 1rem; flex-wrap: wrap;
+  }
+  .legal-info { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .legal-icon {
+    width: 40px; height: 40px; border-radius: 10px; background: #f5f5f5;
+    display: flex; align-items: center; justify-content: center; color: #757575; flex-shrink: 0;
+  }
+  .legal-title { font-weight: 600; font-size: 14px; color: #222; }
+  .legal-meta { font-size: 12px; color: #757575; }
+  .legal-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -293,6 +308,119 @@ export class BrandingPanel implements OnInit {
       error: () => {
         this.saving.set(false);
         this.notifications.error('Failed to save branding');
+      },
+    });
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Legal Documents
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-legal-documents-panel',
+  standalone: true,
+  imports: [
+    CommonModule, ReactiveFormsModule,
+    MatIconModule, MatButtonModule, MatProgressSpinnerModule,
+    MatCardModule, MatDividerModule,
+  ],
+  template: `
+    <div class="panel-card">
+      <div class="panel-header">
+        <h3>Legal Documents</h3>
+        <p class="panel-subtitle">Upload the privacy policy, terms and refund policy shown to your members</p>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-inline">
+          <mat-spinner diameter="32"></mat-spinner>
+        </div>
+      } @else {
+        <div class="legal-list">
+          @for (item of kinds; track item.kind) {
+            <div class="legal-row">
+              <div class="legal-info">
+                <div class="legal-icon"><mat-icon>description</mat-icon></div>
+                <div>
+                  <div class="legal-title">{{ item.label }}</div>
+                  <div class="legal-meta">{{ item.description }}</div>
+                  @if (urlFor(item.kind)) {
+                    <a class="legal-meta" [href]="urlFor(item.kind)!" target="_blank" rel="noopener">
+                      View current document
+                    </a>
+                  } @else {
+                    <div class="legal-meta">No document uploaded yet</div>
+                  }
+                </div>
+              </div>
+              <div class="legal-actions">
+                <button mat-stroked-button type="button" [disabled]="uploading() === item.kind" (click)="fileInput.click()">
+                  <mat-icon>upload</mat-icon>
+                  {{ uploading() === item.kind ? 'Uploading…' : 'Upload PDF' }}
+                </button>
+                <input #fileInput type="file" accept="application/pdf" hidden (change)="onFileSelected($event, item.kind)" />
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  `,
+  styles: [panelStyles],
+})
+export class LegalDocumentsPanel implements OnInit {
+  private readonly tenantClient = inject(TenantClient);
+  private readonly notifications = inject(NotificationService);
+
+  @Input() tenantId?: number;
+
+  readonly loading = signal(true);
+  readonly uploading = signal<LegalDocumentKind | null>(null);
+  readonly documents = signal<TenantLegalDocumentsDto | null>(null);
+
+  readonly kinds: { kind: LegalDocumentKind; label: string; description: string }[] = [
+    { kind: 'privacy', label: 'Privacy Policy', description: 'How member data is collected and used.' },
+    { kind: 'terms', label: 'Terms & Conditions', description: 'Rules and obligations for using the platform.' },
+    { kind: 'refund', label: 'Refund Policy', description: 'Membership and payment refund terms.' },
+  ];
+
+  ngOnInit(): void {
+    this.tenantClient.getTenantLegalDocuments(this.tenantId).subscribe({
+      next: (data) => {
+        this.documents.set(data);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
+
+  urlFor(kind: LegalDocumentKind): string | null {
+    const d = this.documents();
+    if (!d) return null;
+    if (kind === 'privacy') return d.privacyPolicyUrl ?? null;
+    if (kind === 'terms') return d.termsConditionsUrl ?? null;
+    return d.refundPolicyUrl ?? null;
+  }
+
+  onFileSelected(event: Event, kind: LegalDocumentKind): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.uploading.set(kind);
+    this.tenantClient.uploadLegalDocument(kind, file, this.tenantId).subscribe({
+      next: (data) => {
+        this.uploading.set(null);
+        this.documents.set(data);
+        this.notifications.success('Document uploaded.');
+        input.value = '';
+      },
+      error: () => {
+        this.uploading.set(null);
+        this.notifications.error('Document upload failed');
+        input.value = '';
       },
     });
   }

@@ -143,6 +143,24 @@ export const appRoutes: Route[] = [
           ],
         },
       },
+      {
+        path: 'privacy',
+        loadComponent: () =>
+          import('./pages/legal-document/legal-document').then((m) => m.LegalDocumentPage),
+        data: { kind: 'privacy' },
+      },
+      {
+        path: 'terms',
+        loadComponent: () =>
+          import('./pages/legal-document/legal-document').then((m) => m.LegalDocumentPage),
+        data: { kind: 'terms' },
+      },
+      {
+        path: 'refund',
+        loadComponent: () =>
+          import('./pages/legal-document/legal-document').then((m) => m.LegalDocumentPage),
+        data: { kind: 'refund' },
+      },
       { path: '**', redirectTo: '' },
     ],
   },

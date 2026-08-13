@@ -1,0 +1,29 @@
+<section class="legal-shell">
+  <article class="legal-hero">
+    <p class="eyebrow">{{ tenant.displayName }}</p>
+    <h1>{{ pageData.title }}</h1>
+    <p>{{ pageData.description }}</p>
+  </article>
+
+  @if (loading()) {
+    <div class="legal-loading">{{ 'legalDocument.loading' | translate }}</div>
+  } @else if (documentUrl()) {
+    <div class="legal-doc">
+      <iframe
+        [src]="documentUrl()!"
+        title="{{ pageData.title }}"
+        class="legal-frame"
+      ></iframe>
+      <div class="legal-footer">
+        <a [href]="documentUrl()!" target="_blank" rel="noopener" class="btn btn-primary">
+          {{ 'legalDocument.openInNewTab' | translate }}
+        </a>
+      </div>
+    </div>
+  } @else {
+    <div class="legal-empty">
+      <p>{{ 'legalDocument.notAvailable' | translate }}</p>
+      <a routerLink="/" class="btn btn-muted">{{ 'legalDocument.backHome' | translate }}</a>
+    </div>
+  }
+</section>

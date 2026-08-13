@@ -592,6 +592,12 @@
     "addressLabel": "Address",
     "primary": "Primary"
   },
+  "legalDocument": {
+    "loading": "Loading document...",
+    "openInNewTab": "Open in New Tab",
+    "notAvailable": "This document has not been uploaded yet.",
+    "backHome": "Back to Home"
+  },
   "landing": {
     "verified": "Verified",
     "new": "New",

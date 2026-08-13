@@ -5,13 +5,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TenantClient, TenantDto } from '@org/generated';
-import { BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel } from '@org/tenant-settings';
+import { BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDocumentsPanel } from '@org/tenant-settings';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tenant-settings',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatTabsModule, BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatTabsModule, BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDocumentsPanel],
   template: `
     <div class="page">
       <div class="page-header">
@@ -51,6 +51,11 @@ import { BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel } from '@
         <mat-tab label="Navigation">
           <ng-template matTabContent>
             <app-feature-flags-panel [tenantId]="tenantId()" />
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Legal Documents">
+          <ng-template matTabContent>
+            <app-legal-documents-panel [tenantId]="tenantId()" />
           </ng-template>
         </mat-tab>
       </mat-tab-group>
