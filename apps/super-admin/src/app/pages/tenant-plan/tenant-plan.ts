@@ -90,12 +90,6 @@ import { RenewSubscriptionDialogComponent, RenewSubscriptionDialogData } from '.
                   {{ sub.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </div>
-              @if (activeExpired()) {
-                <div class="sub-field">
-                  <span class="sub-label">Validity</span>
-                  <span class="badge expired">Expired</span>
-                </div>
-              }
             </div>
             @if (sub.isActive) {
               <div class="sub-actions">
@@ -115,6 +109,30 @@ import { RenewSubscriptionDialogComponent, RenewSubscriptionDialogData } from '.
             </div>
           }
         </section>
+
+        @if (upcomingSubscription(); as upcoming) {
+          <section class="card upcoming-section">
+            <h2>Upcoming Subscription</h2>
+            <div class="sub-details">
+              <div class="sub-field">
+                <span class="sub-label">Plan</span>
+                <span class="sub-value">{{ upcoming.planName }}</span>
+              </div>
+              <div class="sub-field">
+                <span class="sub-label">Start Date</span>
+                <span class="sub-value">{{ upcoming.startDate | date:'mediumDate' }}</span>
+              </div>
+              <div class="sub-field">
+                <span class="sub-label">End Date</span>
+                <span class="sub-value">{{ upcoming.endDate | date:'mediumDate' }}</span>
+              </div>
+              <div class="sub-field">
+                <span class="sub-label">Status</span>
+                <span class="badge upcoming">Upcoming</span>
+              </div>
+            </div>
+          </section>
+        }
 
         @if (pastSubscriptions().length > 0) {
           <section class="card history-section">
@@ -145,7 +163,9 @@ import { RenewSubscriptionDialogComponent, RenewSubscriptionDialogData } from '.
                       <td>{{ sub.startDate | date:'mediumDate' }}</td>
                       <td>{{ sub.endDate | date:'mediumDate' }}</td>
                       <td>
-                        <span class="badge inactive">Inactive</span>
+                        <span class="badge" [class.expired]="sub.isActive" [class.inactive]="!sub.isActive">
+                          {{ sub.isActive ? 'Expired' : 'Cancelled' }}
+                        </span>
                       </td>
                       <td>
                         <button mat-stroked-button color="primary" [disabled]="renewing()" (click)="openRenewDialog(sub)">
@@ -204,6 +224,7 @@ import { RenewSubscriptionDialogComponent, RenewSubscriptionDialogData } from '.
                         <span
                           class="badge"
                           [class.active]="evt.eventType === 'Assigned' || evt.eventType === 'Renewed'"
+                          [class.planchanged]="evt.eventType === 'PlanChanged'"
                           [class.inactive]="evt.eventType === 'Cancelled'"
                           [class.expired]="evt.eventType === 'Expired'"
                         >{{ evt.eventType }}</span>
@@ -229,7 +250,7 @@ import { RenewSubscriptionDialogComponent, RenewSubscriptionDialogData } from '.
                         }
                       </td>
                       <td>{{ evt.createdAt | date:'medium' }}</td>
-                      <td>{{ evt.triggeredByUserId ?? 'System' }}</td>
+                      <td>{{ evt.triggeredByUserName ?? (evt.triggeredByUserId != null ? 'User #' + evt.triggeredByUserId : 'System') }}</td>
                     </tr>
                   }
                 </tbody>
@@ -365,6 +386,9 @@ import { RenewSubscriptionDialogComponent, RenewSubscriptionDialogData } from '.
     .badge.active { background: #e8f5e9; color: #2e7d32; }
     .badge.inactive { background: #fbe9e7; color: #c62828; }
     .badge.expired { background: #fff3e0; color: #e65100; }
+    .badge.upcoming { background: #ede7f6; color: #4527a0; }
+    .badge.planchanged { background: #e3f2fd; color: #1565c0; }
+    .upcoming-section .sub-details { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
     .period-note { color: #888; font-size: 0.8125rem; }
     .muted { color: #bbb; }
     .history-section .table-wrapper { margin-top: -0.5rem; }
@@ -449,20 +473,49 @@ export class TenantPlan implements OnInit {
   readonly pagination = createPagination(this.sorted);
 
   readonly activeSubscription = computed(() =>
-    this.subscriptions().find((s) => s.isActive) ?? null,
+    this.subscriptions().find((s) => this.isInForce(s)) ?? null,
   );
 
-  readonly activeExpired = computed(() => {
-    const sub = this.activeSubscription();
-    if (!sub) return false;
-    const end = new Date(`${sub.endDate}T00:00:00`);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return end < today;
+  readonly upcomingSubscription = computed(() => {
+    const upcoming = this.subscriptions()
+      .filter((s) => s.isActive && this.toDate(s.startDate) > this.today)
+      .sort((a, b) => a.startDate.localeCompare(b.startDate));
+    return upcoming[0] ?? null;
   });
 
+  readonly latestEndDate = computed(() => {
+    const ends = this.subscriptions()
+      .map((s) => s.endDate)
+      .filter((d): d is string => !!d);
+    if (ends.length === 0) return null;
+    ends.sort();
+    return ends[ends.length - 1];
+  });
+
+  private readonly today = (() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  })();
+
+  private readonly toDate = (value?: string): Date => {
+    const d = value ? new Date(`${value}T00:00:00`) : new Date(NaN);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
+  private readonly isInForce = (s: TenantSubscriptionDto): boolean => {
+    if (!s.isActive) return false;
+    const start = this.toDate(s.startDate);
+    const end = this.toDate(s.endDate);
+    return start <= this.today && end >= this.today;
+  };
+
+  private readonly isUpcoming = (s: TenantSubscriptionDto): boolean =>
+    s.isActive && this.toDate(s.startDate) > this.today;
+
   readonly pastSubscriptions = computed(() =>
-    this.subscriptions().filter((s) => !s.isActive),
+    this.subscriptions().filter((s) => !this.isInForce(s) && !this.isUpcoming(s)),
   );
 
   readonly hSort = createSort();
@@ -574,17 +627,16 @@ export class TenantPlan implements OnInit {
   }
 
   openRenewDialog(sub?: TenantSubscriptionDto): void {
-    const source = sub ?? this.activeSubscription();
-    if (!source) return;
+    const source = sub ?? this.activeSubscription() ?? this.upcomingSubscription() ?? undefined;
 
     const dialogRef = this.dialog.open(RenewSubscriptionDialogComponent, {
       width: '480px',
       data: {
         tenantId: this.tenantId(),
         plans: this.plans(),
-        currentPlanId: source.subscriptionPlanId,
-        planName: source.planName,
-        currentEndDate: source.endDate,
+        currentPlanId: source?.subscriptionPlanId,
+        planName: source?.planName,
+        latestEndDate: this.latestEndDate(),
       } satisfies RenewSubscriptionDialogData,
     });
 

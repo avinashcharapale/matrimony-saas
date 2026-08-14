@@ -63,6 +63,9 @@ export class RegisterMasterDataService {
   }
 
   getCastes(religionId: number): Observable<RegisterLookupOption[]> {
+    if (!religionId || religionId <= 0) {
+      return of([]);
+    }
     return this.getOptions(`castes?religionId=${religionId}`, () => this.masterData.getCastes(religionId));
   }
 

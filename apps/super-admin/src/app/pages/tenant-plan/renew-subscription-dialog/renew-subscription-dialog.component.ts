@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
 import { SubscriptionPlanDto, CreateTenantSubscriptionRequest } from '@org/generated';
 
 export interface RenewSubscriptionDialogData {
@@ -15,7 +16,7 @@ export interface RenewSubscriptionDialogData {
   plans: SubscriptionPlanDto[];
   currentPlanId?: number;
   planName?: string | null;
-  currentEndDate?: string | null;
+  latestEndDate?: string | null;
 }
 
 @Component({
@@ -32,13 +33,14 @@ export interface RenewSubscriptionDialogData {
     MatInputModule,
     MatDatepickerModule,
     MatButtonModule,
+    MatRadioModule,
   ],
   template: `
     <h2 mat-dialog-title>Renew Subscription</h2>
     <mat-dialog-content>
       <p class="sub-note">
-        Choose a new plan (or keep the current one) and the period for the tenant.
-        The previous period stays in the history.
+        Renewal continues after the current period with no gap. Choose "change plan" to switch to a
+        different plan starting today (remaining days of the current plan are forfeited).
       </p>
       <form [formGroup]="form">
         <mat-form-field appearance="outline" class="full-width">
@@ -55,14 +57,16 @@ export interface RenewSubscriptionDialogData {
           }
         </mat-form-field>
 
+        <mat-radio-group formControlName="startMode" class="mode-group">
+          <mat-radio-button value="sequential">Renewal — starts when the current period ends</mat-radio-button>
+          <mat-radio-button value="immediate">Change plan — starts now</mat-radio-button>
+        </mat-radio-group>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Start Date</mat-label>
           <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
           <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
           <mat-datepicker #startPicker></mat-datepicker>
-          @if (form.get('startDate')?.hasError('required') && form.get('startDate')?.touched) {
-            <mat-error>Required</mat-error>
-          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -84,6 +88,7 @@ export interface RenewSubscriptionDialogData {
   styles: [`
     .full-width { width: 100%; margin-bottom: 4px; }
     .sub-note { margin: 0 0 1rem; color: #666; font-size: 0.875rem; }
+    .mode-group { display: flex; flex-direction: column; gap: 0.375rem; margin: 0.25rem 0 0.75rem; }
     mat-dialog-content { min-width: 400px; }
   `],
 })
@@ -97,6 +102,7 @@ export class RenewSubscriptionDialogComponent {
   readonly form = this.fb.nonNullable.group(
     {
       subscriptionPlanId: [this.defaults.planId, Validators.required],
+      startMode: ['sequential' as 'sequential' | 'immediate'],
       startDate: [this.defaults.startDate, Validators.required],
       endDate: [this.defaults.endDate, Validators.required],
     },
@@ -108,31 +114,47 @@ export class RenewSubscriptionDialogComponent {
   );
 
   constructor() {
+    this.form.get('startDate')?.disable();
     this.form.get('subscriptionPlanId')?.valueChanges.subscribe(() => this.autoFillEndDate());
-    this.form.get('startDate')?.valueChanges.subscribe(() => this.autoFillEndDate());
+    this.form.get('startMode')?.valueChanges.subscribe(() => this.recomputeDates());
   }
 
   private computeDefaults(): { planId: number; startDate: Date; endDate: Date } {
     const planId = this.data.currentPlanId ?? 0;
+    const start = this.sequentialStart();
+    const plan = this.data.plans.find((p) => p.id === planId);
+    const end = plan?.durationMonths ? this.addMonths(start, plan.durationMonths) : start;
+    return { planId, startDate: start, endDate: end };
+  }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  private today(): Date {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
 
-    let start = today;
-    if (this.data.currentEndDate) {
-      const [y, m, d] = this.data.currentEndDate.split('-').map(Number);
+  private sequentialStart(): Date {
+    const today = this.today();
+    if (this.data.latestEndDate) {
+      const [y, m, d] = this.data.latestEndDate.split('-').map(Number);
       if (!Number.isNaN(y) && !Number.isNaN(m) && !Number.isNaN(d)) {
         const dayAfter = new Date(y, m - 1, d + 1);
-        if (dayAfter > start) start = dayAfter;
+        dayAfter.setHours(0, 0, 0, 0);
+        if (dayAfter > today) return dayAfter;
       }
     }
+    return today;
+  }
 
-    const plan = this.data.plans.find((p) => p.id === planId);
-    const end = plan?.durationMonths
-      ? new Date(start.getFullYear(), start.getMonth() + plan.durationMonths, start.getDate())
-      : start;
+  private addMonths(date: Date, months: number): Date {
+    return new Date(date.getFullYear(), date.getMonth() + months, date.getDate());
+  }
 
-    return { planId, startDate: start, endDate: end };
+  private recomputeDates(): void {
+    const mode = this.form.get('startMode')?.value;
+    const start = mode === 'immediate' ? this.today() : this.sequentialStart();
+    this.form.patchValue({ startDate: start });
+    this.autoFillEndDate();
   }
 
   private autoFillEndDate(): void {
@@ -140,7 +162,7 @@ export class RenewSubscriptionDialogComponent {
     const plan = this.data.plans.find((p) => p.id === val.subscriptionPlanId);
     if (!plan?.durationMonths || !val.startDate) return;
     const start = val.startDate as Date;
-    const end = new Date(start.getFullYear(), start.getMonth() + plan.durationMonths, start.getDate());
+    const end = this.addMonths(start, plan.durationMonths);
     this.form.patchValue({ endDate: end }, { emitEvent: false });
   }
 
@@ -158,6 +180,7 @@ export class RenewSubscriptionDialogComponent {
       subscriptionPlanId: val.subscriptionPlanId,
       startDate: val.startDate ? fmt(val.startDate as Date) : '',
       endDate: val.endDate ? fmt(val.endDate as Date) : '',
+      startImmediately: val.startMode === 'immediate',
     };
     this.dialogRef.close(result);
   }

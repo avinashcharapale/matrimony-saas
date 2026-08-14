@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LocaleService } from '@org/i18n';
 import { ProfileClient, ProfileListItemDto } from '@org/generated';
 import { RegisterMasterDataService, RegisterLookupOption, RegisterStateOption, RegisterDistrictOption } from '../../services/register-master-data.service';
+import { RegisterDraftService } from '../../services/register-draft.service';
 import { AuthService } from '../../services/auth.service';
 import { resolvePhotoUrl } from '../../utils/default-avatar';
 
@@ -19,6 +20,7 @@ import { resolvePhotoUrl } from '../../utils/default-avatar';
 export class PublicSearch implements OnInit {
 private readonly profileClient = inject(ProfileClient);
 private readonly masterData = inject(RegisterMasterDataService);
+private readonly registerDraftService = inject(RegisterDraftService);
 private readonly router = inject(Router);
 private readonly authService = inject(AuthService);
 private readonly translate = inject(TranslateService);
@@ -333,10 +335,12 @@ private readonly localeService = inject(LocaleService);
 
   onCardCtaClick(profile: ProfileListItemDto, event: Event): void {
     event.stopPropagation();
+    this.registerDraftService.clearAll();
     this.router.navigate(['/register']);
   }
 
   onBottomCta(): void {
+    this.registerDraftService.clearAll();
     this.router.navigate(['/register']);
   }
 }

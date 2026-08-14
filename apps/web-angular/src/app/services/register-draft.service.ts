@@ -157,4 +157,16 @@ export class RegisterDraftService {
     }
     keysToRemove.forEach((k) => localStorage.removeItem(k));
   }
+
+  clearAll(): void {
+    const prefix = `${RegisterDraftService.DRAFT_STORAGE_PREFIX}_`;
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix)) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
+  }
 }

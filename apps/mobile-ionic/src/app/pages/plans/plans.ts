@@ -57,7 +57,7 @@ export class Plans implements OnInit {
     this.error.set(null);
 
     this.http.post<CheckoutResult>('/subscription/Payments/checkout', {
-      planId: Number(plan.id),
+      subscriptionPlanId: Number(plan.id),
     }).pipe(
       finalize(() => this.isProcessing.set(false)),
     ).subscribe({

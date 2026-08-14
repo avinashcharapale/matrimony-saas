@@ -5,6 +5,7 @@ import {
   SubscriptionPlanDto,
   SubscriptionFeatureDto,
   SubscriptionStatusDto,
+  UserSubscriptionHistoryItemDto,
   CreateSubscriptionPlanRequest,
   UpdateSubscriptionPlanRequest,
   CreateSubscriptionFeatureRequest,
@@ -142,6 +143,10 @@ export class SubscriptionClient {
 
   getUserSubscriptionStatus(userId: number): Observable<SubscriptionStatusDto> {
     return this.http.get<SubscriptionStatusDto>(`/subscription/subscription/user-status/${userId}`);
+  }
+
+  getUserSubscriptionHistory(userId: number): Observable<UserSubscriptionHistoryItemDto[]> {
+    return this.http.get<UserSubscriptionHistoryItemDto[]>(`/subscription/subscription/user-subscriptions/${userId}`);
   }
 
   // ─── Tenant Subscription Assignment ──────────────────────────────────────

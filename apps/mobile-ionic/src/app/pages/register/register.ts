@@ -42,6 +42,9 @@ export class Register {
     this.isError.set(false);
     this.isLoading.set(true);
 
+    localStorage.clear();
+    sessionStorage.clear();
+
     const fullName = [
       this.details.personal.firstName,
       this.details.personal.middleName,

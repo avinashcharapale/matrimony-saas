@@ -47,6 +47,13 @@ export class PlansPage implements OnInit {
   readonly isLoggedIn = computed(() => this.authService.isAuthenticated());
   readonly plans = this.subscriptionStore.plans;
   readonly loading = this.subscriptionStore.loading;
+  readonly hasActiveFreePlan = computed(() => {
+    const status = this.subscriptionStore.status();
+    const currentPlanName = status?.planName;
+    if (!this.isLoggedIn() || !status?.isActive || !currentPlanName) return false;
+    const freePlan = this.plans().find((plan) => (plan.price ?? 0) <= 0);
+    return !!freePlan && freePlan.name === currentPlanName;
+  });
 
   constructor() {
     this.translate.onLangChange.subscribe(() => this.langTick.update(v => v + 1));
@@ -58,10 +65,19 @@ export class PlansPage implements OnInit {
 
   ngOnInit(): void {
     this.subscriptionStore.loadPlans().subscribe();
+    const userId = this.authService.getSession()?.userId;
+    if (userId) {
+      this.subscriptionStore.loadSubscriptionStatus(userId).subscribe();
+    }
+  }
+
+  isActiveFreePlan(plan: UserSubscriptionPlanDto): boolean {
+    return this.hasActiveFreePlan() && (plan.price ?? 0) <= 0;
   }
 
   selectPlan(plan: UserSubscriptionPlanDto): void {
     if (this.isProcessing() || this.checkoutResult()) return;
+    if (this.isActiveFreePlan(plan)) return;
 
     if (!this.isLoggedIn()) {
       this.router.navigate(['/register']);
@@ -75,7 +91,7 @@ export class PlansPage implements OnInit {
     const tenantId = Number(this.tenantService.tenantHeaderId);
 
     this.http.post<CheckoutResult>('/subscription/Payments/checkout', {
-      planId: Number(plan.id),
+      subscriptionPlanId: Number(plan.id),
     }, {
       headers: tenantId ? { 'X-Tenant-Id': String(tenantId) } : {},
     }).pipe(

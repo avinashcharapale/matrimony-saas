@@ -405,6 +405,8 @@ export interface TenantDto {
   createdAt?: string;
   updatedAt?: string;
   userCount?: number;
+  adminEmail?: string;
+  adminPassword?: string;
 }
 
 export interface TenantResolveResponse {
@@ -819,6 +821,24 @@ export interface SubscriptionStatusDto {
   effectiveFeatures?: PlanFeatureValueDto[];
 }
 
+export interface UserSubscriptionHistoryItemDto {
+  userSubscriptionId: number;
+  planCode?: string;
+  planName?: string;
+  price?: number;
+  durationMonths?: number;
+  currency?: string;
+  startDate?: string;
+  endDate?: string;
+  isActive?: boolean;
+  userSubscriptionStatus?: string;
+  isTrial?: boolean;
+  trialEndDate?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+  createdAt?: string;
+}
+
 // ─── Tenant Subscription DTOs ──────────────────────────────────────────────────
 
 export interface TenantSubscriptionDto {
@@ -839,6 +859,7 @@ export interface CreateTenantSubscriptionRequest {
   subscriptionPlanId: number;
   startDate: string;
   endDate: string;
+  startImmediately?: boolean;
 }
 
 export interface UpdateTenantSubscriptionRequest {
@@ -860,6 +881,7 @@ export interface TenantSubscriptionEventDto {
   newStartDate?: string;
   newEndDate?: string;
   triggeredByUserId?: number;
+  triggeredByUserName?: string;
   createdAt: string;
 }
 

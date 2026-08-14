@@ -437,8 +437,7 @@
     "captchaPlaceholder": "Enter verification code",
     "captchaHint": "* Please enter verification code then click submit.",
     "photoHint": "* Kindly bring cropping lines on photo at proper position and then click on submit.",
-    "photoFirst": "1) Upload your first profile picture (Close-up preferred)",
-    "photoSecond": "2) Upload your second profile picture, If interested",
+    "photoFirst": "Upload your profile picture (Close-up preferred)",
     "photoNote": "You can also submit your photos after getting registration number through photo edit option.",
     "months": {
       "jan": "Jan",
@@ -565,6 +564,7 @@
     "mostPopular": "Most Popular",
     "processing": "Processing...",
     "selectPlan": "Select Plan",
+    "currentPlan": "Current Plan",
     "registerToSubscribe": "Register to Subscribe",
     "noPlans": "No plans available at the moment.",
     "free": "Free",

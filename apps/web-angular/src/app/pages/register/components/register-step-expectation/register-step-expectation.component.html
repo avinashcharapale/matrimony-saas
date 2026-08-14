@@ -189,11 +189,6 @@
       <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPhoto($event)" />
       @if (photos.get('photo1Name')?.value) { <span>{{ photos.get('photo1Name')?.value }}</span> }
     </div>
-    <div class="photo-upload">
-      <p>{{ 'register.photoSecond' | translate }}</p>
-      <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onPhoto2($event)" />
-      @if (photos.get('photo2Name')?.value) { <span>{{ photos.get('photo2Name')?.value }}</span> }
-    </div>
     <p class="photo-note">{{ 'register.photoNote' | translate }}</p>
   </div>
 </section>

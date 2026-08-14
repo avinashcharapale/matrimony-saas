@@ -1,0 +1,444 @@
+<div class="detail-page">
+  <div class="detail-header">
+    <a routerLink="/profiles" class="back-link">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to Profiles</span>
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">Loading profile...</div>
+  } @else if (profile(); as p) {
+    <div class="profile-hero">
+      <div class="hero-photo">
+        @if (primaryPhoto(); as photo) {
+          <img [src]="photo" [alt]="p.fullName" />
+        } @else {
+          <div class="hero-initials">{{ initials() }}</div>
+        }
+      </div>
+
+      <div class="hero-info">
+        <div class="hero-name-row">
+          <h1 class="hero-name">{{ p.fullName }}</h1>
+          @if (p.profileCode) {
+            <span class="hero-code">{{ p.profileCode }}</span>
+          }
+        </div>
+
+        <div class="hero-chips">
+          @for (chip of aboutChips(); track chip.label) {
+            <span class="hero-chip">
+              <mat-icon>{{ chip.icon }}</mat-icon>
+              {{ chip.label }}: <strong>{{ chip.value }}</strong>
+            </span>
+          }
+        </div>
+
+        <div class="hero-badges">
+          <span class="status-badge" [class.verified]="p.isVerified" [class.pending]="!p.isVerified">
+            {{ p.isVerified ? 'Verified' : 'Pending' }}
+          </span>
+          <span class="status-badge" [class.active]="p.isActive" [class.inactive]="!p.isActive">
+            {{ p.isActive ? 'Active' : 'Inactive' }}
+          </span>
+          <span class="status-badge" [class.verified]="hasSuccessfulPayment()" [class.pending]="!hasSuccessfulPayment()">
+            {{ hasSuccessfulPayment() ? 'Paid' : 'Unpaid' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <button mat-stroked-button (click)="goToEdit()">
+          <mat-icon>edit</mat-icon>
+          Edit Profile
+        </button>
+        <button mat-stroked-button [color]="p.isActive ? 'warn' : 'primary'" [disabled]="busy()" (click)="toggleActive()">
+          <mat-icon>{{ p.isActive ? 'pause' : 'play_arrow' }}</mat-icon>
+          {{ p.isActive ? 'Deactivate' : 'Activate' }}
+        </button>
+        <button mat-stroked-button [color]="p.isVerified ? 'warn' : 'primary'" [disabled]="busy()" (click)="toggleVerified()">
+          <mat-icon>{{ p.isVerified ? 'verified_user' : 'gpp_maybe' }}</mat-icon>
+          {{ p.isVerified ? 'Unverify' : 'Verify' }}
+        </button>
+      </div>
+    </div>
+
+    <mat-tab-group class="profile-tabs" animationDuration="200ms" [selectedIndex]="selectedTab()" (selectedIndexChange)="selectedTab.set($event)">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">grid_view</mat-icon>
+          Overview
+        </ng-template>
+        <ng-template matTabContent>
+          <div class="tab-content overview-grid">
+            <div class="section-card overview-about">
+              <div class="section-card-header">
+                <mat-icon class="section-card-icon">person</mat-icon>
+                <span>About</span>
+              </div>
+              <div class="section-card-body">
+                @if (p.bio) {
+                  <p class="about-bio">{{ p.bio }}</p>
+                }
+                <div class="about-grid">
+                  @for (item of aboutRows(); track item.label) {
+                    <div class="about-item">
+                      <mat-icon class="about-icon">{{ item.icon }}</mat-icon>
+                      <div class="about-text">
+                        <span class="about-label">{{ item.label }}</span>
+                        <span class="about-value">{{ item.value }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="overview-side">
+              <div class="section-card">
+                <div class="section-card-header">
+                  <mat-icon class="section-card-icon">manage_accounts</mat-icon>
+                  <span>Profile Status</span>
+                </div>
+                <div class="section-card-body">
+                  <div class="sc-row">
+                    <span class="sc-label">Verified</span>
+                    <span class="sc-value">
+                      <span class="status-badge" [class.verified]="p.isVerified" [class.pending]="!p.isVerified">
+                        {{ p.isVerified ? 'Verified' : 'Pending' }}
+                      </span>
+                    </span>
+                  </div>
+                  <div class="sc-row">
+                    <span class="sc-label">Active</span>
+                    <span class="sc-value">
+                      <span class="status-badge" [class.active]="p.isActive" [class.inactive]="!p.isActive">
+                        {{ p.isActive ? 'Active' : 'Inactive' }}
+                      </span>
+                    </span>
+                  </div>
+                  <div class="sc-row">
+                    <span class="sc-label">Payment</span>
+                    <span class="sc-value">
+                      <span class="status-badge" [class.verified]="hasSuccessfulPayment()" [class.pending]="!hasSuccessfulPayment()">
+                        {{ hasSuccessfulPayment() ? 'Paid' : 'Unpaid' }}
+                      </span>
+                    </span>
+                  </div>
+                  <div class="sc-row">
+                    <span class="sc-label">Last Active</span>
+                    <span class="sc-value">{{ formatDate(p.lastActiveAt) }}</span>
+                  </div>
+                  <div class="sc-row">
+                    <span class="sc-label">Completion</span>
+                    <span class="sc-value">{{ (p.profileCompletionPercent ?? 0) }}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-card">
+                <div class="section-card-header">
+                  <mat-icon class="section-card-icon">card_membership</mat-icon>
+                  <span>Current Subscription</span>
+                </div>
+                @if (userSubscription(); as sub) {
+                  <div class="section-card-body">
+                    <div class="sc-row">
+                      <span class="sc-label">Plan</span>
+                      <span class="sc-value">{{ sub.planName ?? 'No Plan' }}</span>
+                    </div>
+                    <div class="sc-row">
+                      <span class="sc-label">Status</span>
+                      <span class="sc-value">
+                        <ui-status-badge [status]="getUserSubStatusText()"></ui-status-badge>
+                      </span>
+                    </div>
+                    <div class="sc-row">
+                      <span class="sc-label">Trial</span>
+                      <span class="sc-value">{{ sub.isTrial ? 'Yes' : 'No' }}</span>
+                    </div>
+                    <div class="sc-row">
+                      <span class="sc-label">Start Date</span>
+                      <span class="sc-value">{{ formatDate(sub.startDate) }}</span>
+                    </div>
+                    <div class="sc-row">
+                      <span class="sc-label">Expiry Date</span>
+                      <span class="sc-value">{{ formatDate(sub.expiresAt) }}</span>
+                    </div>
+                    @if (topFeatures().length) {
+                      <div class="sc-divider"></div>
+                      <div class="sc-features-title">Top Features</div>
+                      <div class="sc-features">
+                        @for (feat of topFeatures(); track feat.code) {
+                          <div class="sc-feature-row">
+                            <mat-icon class="sc-feature-icon" [class.disabled]="!featureEnabled(feat)">{{ featureIcon(feat) }}</mat-icon>
+                            <span class="sc-feature-name">{{ feat.name || feat.code }}</span>
+                            @if (featureValueText(feat); as value) {
+                              <span class="sc-feature-value">{{ value }}</span>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <button class="view-all-features" (click)="goToTab(2)">View all features</button>
+                    }
+                  </div>
+                } @else {
+                  <div class="section-card-body sc-empty">
+                    <mat-icon>info_outline</mat-icon>
+                    <span>No active subscription</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">person</mat-icon>
+          Profile Details
+        </ng-template>
+        <ng-template matTabContent>
+          <div class="tab-content">
+            @for (section of profileSections(); track section.title; let i = $index) {
+              <div class="section-card" [class.collapsed]="!isSectionOpen(i)">
+                <div class="section-card-header clickable" (click)="toggleSection(i)">
+                  <span>{{ section.title }}</span>
+                  <mat-icon class="collapse-icon">{{ isSectionOpen(i) ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </div>
+                @if (isSectionOpen(i)) {
+                  <div class="section-card-body details-grid">
+                    @for (field of section.fields; track field.label) {
+                      <div class="sc-row">
+                        <span class="sc-label">{{ field.label }}</span>
+                        <span class="sc-value">{{ field.value }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">card_membership</mat-icon>
+          Subscription
+        </ng-template>
+        <ng-template matTabContent>
+          <div class="tab-content">
+            <div class="section-card">
+              <div class="section-card-header">
+                <mat-icon class="section-card-icon">card_membership</mat-icon>
+                <span>Current Plan</span>
+              </div>
+              <div class="section-card-body">
+                @if (userSubscription(); as sub) {
+                  <div class="plan-summary">
+                    <span class="plan-name">{{ sub.planName ?? 'No Plan' }}</span>
+                    <ui-status-badge [status]="getUserSubStatusText()"></ui-status-badge>
+                  </div>
+                  <div class="sc-row">
+                    <span class="sc-label">Trial</span>
+                    <span class="sc-value">{{ sub.isTrial ? 'Yes' : 'No' }}</span>
+                  </div>
+                  <div class="sc-row">
+                    <span class="sc-label">Start Date</span>
+                    <span class="sc-value">{{ formatDate(sub.startDate) }}</span>
+                  </div>
+                  <div class="sc-row">
+                    <span class="sc-label">Expiry Date</span>
+                    <span class="sc-value">{{ formatDate(sub.expiresAt) }}</span>
+                  </div>
+                  @if (sub.effectiveFeatures?.length) {
+                    <div class="sc-divider"></div>
+                    <div class="sc-features-title">Features</div>
+                    <div class="sc-features">
+                      @for (feat of sub.effectiveFeatures; track feat.code) {
+                        <div class="sc-feature-row">
+                          <mat-icon class="sc-feature-icon" [class.disabled]="!featureEnabled(feat)">{{ featureIcon(feat) }}</mat-icon>
+                          <span class="sc-feature-name">{{ feat.name || feat.code }}</span>
+                          @if (featureValueText(feat); as value) {
+                            <span class="sc-feature-value">{{ value }}</span>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                } @else {
+                  <div class="sc-empty">
+                    <mat-icon>info_outline</mat-icon>
+                    <span>No active subscription</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-card-header">
+                <mat-icon class="section-card-icon">history</mat-icon>
+                <span>Subscription History</span>
+              </div>
+              <div class="section-card-body">
+                @if (historyLoading()) {
+                  <div class="sc-empty">Loading history...</div>
+                } @else if (subscriptionHistory().length === 0) {
+                  <div class="sc-empty">
+                    <mat-icon>info_outline</mat-icon>
+                    <span>No subscription history</span>
+                  </div>
+                } @else {
+                  <div class="pmt-table">
+                    <div class="pmt-table-row pmt-table-head sub-history-head">
+                      <span>Plan</span>
+                      <span>Status</span>
+                      <span>Start</span>
+                      <span>End</span>
+                      <span>Amount</span>
+                    </div>
+                    @for (item of subscriptionHistory(); track item.userSubscriptionId) {
+                      <div class="pmt-table-row sub-history-row">
+                        <span>
+                          <span class="sub-plan-name">{{ item.planName ?? 'No Plan' }}</span>
+                          <span class="sub-plan-code">{{ item.planCode }}</span>
+                        </span>
+                        <span><ui-status-badge [status]="historyStatusText(item)"></ui-status-badge></span>
+                        <span>{{ formatDate(item.startDate) }}</span>
+                        <span>{{ formatDate(item.endDate) }}</span>
+                        <span>{{ formatCurrency(item.price) }}</span>
+                      </div>
+                      @if (item.cancellationReason) {
+                        <div class="sub-cancel-reason">Cancelled: {{ item.cancellationReason }}</div>
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-card-header">
+                <mat-icon class="section-card-icon">payments</mat-icon>
+                <span>Payment History</span>
+              </div>
+              <div class="section-card-body">
+                @if (paymentsLoading()) {
+                  <div class="sc-empty">Loading payments...</div>
+                } @else if (userPayments().length === 0) {
+                  <div class="sc-empty">
+                    <mat-icon>info_outline</mat-icon>
+                    <span>No payment transactions</span>
+                  </div>
+                } @else {
+                  <div class="pmt-table">
+                    <div class="pmt-table-row pmt-table-head">
+                      <span>Date</span>
+                      <span>Description</span>
+                      <span>Amount</span>
+                      <span>Status</span>
+                    </div>
+                    @for (tx of userPayments(); track tx.paymentTransactionId) {
+                      <div class="pmt-table-row">
+                        <span>{{ formatDate(tx.createdAt) }}</span>
+                        <span>{{ tx.description || tx.gatewayOrderId || 'Payment' }}</span>
+                        <span>{{ formatCurrency(tx.amount) }}</span>
+                        <span><ui-status-badge [status]="statusText(tx.status)"></ui-status-badge></span>
+                      </div>
+                    }
+                  </div>
+                }
+                @if (userInvoices().length > 0) {
+                  <div class="pmt-divider"></div>
+                  <div class="sc-features-title">Invoices</div>
+                  <div class="pmt-table">
+                    <div class="pmt-table-row pmt-table-head">
+                      <span>Invoice</span>
+                      <span>Date</span>
+                      <span>Status</span>
+                      <span>Amount</span>
+                    </div>
+                    @for (inv of userInvoices(); track inv.invoiceId) {
+                      <div class="pmt-table-row">
+                        <span>{{ inv.invoiceNumber }}</span>
+                        <span>{{ formatDate(inv.invoiceDate) }}</span>
+                        <span><ui-status-badge [status]="statusText(inv.status)"></ui-status-badge></span>
+                        <span>{{ formatCurrency(inv.totalAmount) }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">photo_library</mat-icon>
+          Photos
+        </ng-template>
+        <ng-template matTabContent>
+          <div class="tab-content">
+            <div class="section-card">
+              <div class="section-card-header">
+                <mat-icon class="section-card-icon">photo_library</mat-icon>
+                <span>Photos ({{ (p.photos ?? []).length }})</span>
+                <button class="add-photo-btn" (click)="fileInput.click()">
+                  <mat-icon>add_a_photo</mat-icon>
+                  Add photo
+                </button>
+                <input #fileInput type="file" accept="image/*" class="hidden-file" (change)="onPhotoSelected($event)" />
+              </div>
+              <div class="section-card-body">
+                @if (p.photos?.length) {
+                  <div class="photo-grid">
+                    @for (photo of p.photos; track photo.photoId; let i = $index) {
+                      <div class="photo-thumb photo-thumb-admin" (click)="openGallery(i)">
+                        <img [src]="photo.fileUrl" [alt]="photo.fileName" />
+                        <button class="photo-delete" title="Delete photo" (click)="$event.stopPropagation(); confirmDeletePhoto(photo.photoId!)">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="no-photos">No photos</div>
+                }
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  } @else {
+    <div class="empty-state">Profile not found</div>
+  }
+
+  @if (isGalleryOpen()) {
+    <div class="gallery-overlay" (click)="closeGallery()">
+      <div class="gallery-modal" (click)="$event.stopPropagation()">
+        <button class="gallery-close" (click)="closeGallery()">&times;</button>
+        <div class="gallery-container">
+          <button class="gallery-nav prev" (click)="prevPhoto()" [disabled]="galleryPhotos().length <= 1">&#8249;</button>
+          <div class="gallery-image-wrapper">
+            <img [src]="galleryPhotos()[currentGalleryIndex()]" alt="Photo" class="gallery-image" />
+          </div>
+          <button class="gallery-nav next" (click)="nextPhoto()" [disabled]="galleryPhotos().length <= 1">&#8250;</button>
+        </div>
+        <div class="gallery-indicators">
+          <span class="gallery-counter">{{ currentGalleryIndex() + 1 }} / {{ galleryPhotos().length }}</span>
+          <div class="gallery-dots">
+            @for (photo of galleryPhotos(); track $index; let i = $index) {
+              <button class="dot" [class.active]="i === currentGalleryIndex()" (click)="goToPhoto(i)"></button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

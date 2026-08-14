@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { TenantDto } from '@org/generated';
 
@@ -31,6 +32,7 @@ export interface TenantFormDialogData {
     MatIconModule,
     MatSlideToggleModule,
     MatDatepickerModule,
+    MatDividerModule,
   ],
   template: `
     <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Add Tenant' : 'Edit Tenant' }}</h2>
@@ -90,6 +92,53 @@ export interface TenantFormDialogData {
             {{ isActiveValue() ? 'Active' : 'Inactive' }}
           </mat-slide-toggle>
         </div>
+
+        @if (data.mode === 'create') {
+          <mat-divider class="section-divider"></mat-divider>
+          <h3 class="section-title">Tenant Admin</h3>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Admin Email</mat-label>
+            <input matInput formControlName="adminEmail" type="email" placeholder="admin@example.com" />
+            <mat-icon matPrefix>mail</mat-icon>
+            @if (form.get('adminEmail')?.hasError('required') && form.get('adminEmail')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+            @if (form.get('adminEmail')?.hasError('email') && form.get('adminEmail')?.touched) {
+              <mat-error>Enter a valid email</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Admin Password</mat-label>
+            <input matInput formControlName="adminPassword" type="password" placeholder="At least 8 characters" />
+            <mat-icon matPrefix>lock</mat-icon>
+            @if (form.get('adminPassword')?.hasError('required') && form.get('adminPassword')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+            @if (form.get('adminPassword')?.hasError('minlength') && form.get('adminPassword')?.touched) {
+              <mat-error>At least 8 characters</mat-error>
+            }
+          </mat-form-field>
+        } @else {
+          <mat-divider class="section-divider"></mat-divider>
+          <h3 class="section-title">Tenant Admin</h3>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Admin Email</mat-label>
+            <input matInput [value]="data.tenant?.adminEmail ?? '—'" disabled />
+            <mat-icon matPrefix>mail</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>New Password (optional)</mat-label>
+            <input matInput formControlName="adminPassword" type="password" placeholder="Leave blank to keep current" />
+            <mat-icon matPrefix>lock</mat-icon>
+            @if (form.get('adminPassword')?.hasError('minlength') && form.get('adminPassword')?.touched) {
+              <mat-error>At least 8 characters</mat-error>
+            }
+          </mat-form-field>
+        }
       </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
@@ -112,6 +161,15 @@ export interface TenantFormDialogData {
     .toggle-row {
       margin: 12px 0;
     }
+    .section-divider {
+      margin: 8px 0 12px;
+    }
+    .section-title {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary, rgba(0, 0, 0, 0.6));
+    }
     mat-dialog-content {
       min-width: 400px;
     }
@@ -131,6 +189,14 @@ export class TenantFormDialogComponent {
     domain: [this.data.tenant?.domain ?? '', Validators.required],
     trialEndDate: [this.data.tenant?.trialEndDate ? new Date(this.data.tenant.trialEndDate) : null],
     isActive: [this.data.tenant?.isActive ?? true],
+    adminEmail: [
+      '',
+      this.data.mode === 'create' ? [Validators.required, Validators.email] : [],
+    ],
+    adminPassword: [
+      '',
+      this.data.mode === 'create' ? [Validators.required, Validators.minLength(8)] : [],
+    ],
   });
 
   private formatDateOnly(d: Date): string {
@@ -149,6 +215,14 @@ export class TenantFormDialogComponent {
       trialEndDate: val.trialEndDate ? this.formatDateOnly(val.trialEndDate) : undefined,
       isActive: this.isActiveValue(),
     };
+
+    if (this.data.mode === 'create') {
+      dto.adminEmail = val.adminEmail;
+      dto.adminPassword = val.adminPassword;
+    } else if (val.adminPassword?.trim()) {
+      dto.adminPassword = val.adminPassword;
+    }
+
     this.dialogRef.close(dto);
   }
 }

@@ -180,6 +180,12 @@
   cursor: not-allowed;
 }
 
+.plan-select-btn.current {
+  background: var(--theme-muted);
+  border-color: var(--theme-border);
+  color: var(--theme-muted-foreground);
+}
+
 .plan-select-btn.register {
   display: block;
   width: 100%;

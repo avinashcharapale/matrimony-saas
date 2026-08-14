@@ -18,7 +18,6 @@ import {
 export class RegisterStepExpectationComponent implements OnInit, OnDestroy {
   @Input({ required: true }) form!: FormGroup;
   @Output() photoSelected = new EventEmitter<Event>();
-  @Output() photo2Selected = new EventEmitter<Event>();
   @Output() refreshCaptcha = new EventEmitter<void>();
 
   private readonly masterData = inject(RegisterMasterDataService);
@@ -173,7 +172,6 @@ export class RegisterStepExpectationComponent implements OnInit, OnDestroy {
   }
 
   onPhoto(event: Event): void { this.photoSelected.emit(event); }
-  onPhoto2(event: Event): void { this.photo2Selected.emit(event); }
   onRefreshCaptcha(): void { this.refreshCaptcha.emit(); }
 
   appendComma(ctrl: FormControl): void {

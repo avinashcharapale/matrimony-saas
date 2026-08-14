@@ -188,7 +188,6 @@ export class Register implements OnInit, OnDestroy {
     }),
     photos: new FormGroup({
       photo1Name: new FormControl(''),
-      photo2Name: new FormControl(''),
     }),
   });
 
@@ -365,21 +364,6 @@ export class Register implements OnInit, OnDestroy {
     this.selectedPhotos = file ? [file] : [];
   }
 
-  onPhoto2Selected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file && !/\.(jpg|jpeg|png|webp)$/i.test(file.name)) {
-      this.isError.set(true);
-      this.message.set(this.t('register.errors.invalidPhoto'));
-      input.value = '';
-      return;
-    }
-    this.profileForm.get('photos')!.get('photo2Name')!.setValue(file?.name ?? '');
-    if (file) {
-      this.selectedPhotos.push(file);
-    }
-  }
-
   private registerAsync(name: string, email: string, password: string, bio: string, age?: number): void {
     const dto = this.buildCreateProfileDto(age);
     this.persistAllSteps();
@@ -432,9 +416,7 @@ export class Register implements OnInit, OnDestroy {
 
     const profilePhotos: Array<{ photoSlot: number; fileName: string; isPrimary: boolean }> = [];
     const p1 = f.photos?.photo1Name;
-    const p2 = f.photos?.photo2Name;
     if (p1) profilePhotos.push({ photoSlot: 1, fileName: p1, isPrimary: true });
-    if (p2) profilePhotos.push({ photoSlot: 2, fileName: p2, isPrimary: false });
 
     const preferredCities = f.preferredCities
       ? f.preferredCities.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
@@ -777,7 +759,7 @@ export class Register implements OnInit, OnDestroy {
         if (v['relativesSurnames'] != null) this.profileForm.get('relativesSurnames')?.patchValue(v['relativesSurnames'] as string, { emitEvent: false });
         if (v['account']) this.profileForm.get('account')?.patchValue(v['account'] as { password: string | null; confirmPassword: string | null }, { emitEvent: false });
         if (v['verification']) this.profileForm.get('verification')?.patchValue(v['verification'] as { code: string | null; input: string | null; imageDataUrl: string | null }, { emitEvent: false });
-        if (v['photos']) this.profileForm.get('photos')?.patchValue(v['photos'] as { photo1Name: string | null; photo2Name: string | null }, { emitEvent: false });
+        if (v['photos']) this.profileForm.get('photos')?.patchValue(v['photos'] as { photo1Name: string | null }, { emitEvent: false });
       }
     }
 

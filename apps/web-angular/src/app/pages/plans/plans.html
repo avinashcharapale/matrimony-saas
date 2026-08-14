@@ -54,6 +54,11 @@
         </div>
 
         @if (isLoggedIn()) {
+        @if (isActiveFreePlan(plan)) {
+        <button class="plan-select-btn current" disabled>
+          {{ 'plans.currentPlan' | translate }}
+        </button>
+        } @else {
         <button
           class="plan-select-btn"
           [class.primary]="plan.isPopular"
@@ -65,6 +70,7 @@
           {{ 'plans.selectPlan' | translate }}
           }
         </button>
+        }
         } @else {
         <a routerLink="/register" class="plan-select-btn register" [class.primary]="plan.isPopular">
           {{ 'plans.registerToSubscribe' | translate }}

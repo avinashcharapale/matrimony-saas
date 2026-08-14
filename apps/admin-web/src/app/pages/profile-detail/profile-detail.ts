@@ -1,13 +1,14 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ProfileClient, ProfileDetailDto, SubscriptionClient, SubscriptionStatusDto, PaymentTransactionHistoryDto, InvoiceDto } from '@org/generated';
+import { ProfileClient, ProfileDetailDto, SubscriptionClient, SubscriptionStatusDto, UserSubscriptionHistoryItemDto, PlanFeatureValueDto, PaymentTransactionHistoryDto, InvoiceDto } from '@org/generated';
 import { BillingRepository } from '@org/data-access-billing';
 import { NotificationService } from '@org/core';
 import { ConfirmDialogComponent, ConfirmDialogData, StatusBadgeComponent } from '@org/shared-ui';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
 
@@ -21,380 +22,19 @@ interface ProfileSection {
   fields: ProfileField[];
 }
 
+interface InfoRow {
+  icon: string;
+  label: string;
+  value: string;
+}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatDialogModule, StatusBadgeComponent],
-  template: `
-    <div class="detail-page">
-      <div class="detail-header">
-        <a routerLink="/profiles" class="back-link">
-          <mat-icon>arrow_back</mat-icon>
-          <span>Back to Profiles</span>
-        </a>
-        <h1>{{ profile()?.fullName ?? 'Profile' }}</h1>
-        @if (profile(); as p) {
-          <div class="header-actions">
-            <button mat-stroked-button (click)="goToEdit()">
-              <mat-icon>edit</mat-icon>
-              Edit Profile
-            </button>
-            <button mat-stroked-button [color]="p.isActive ? 'warn' : 'primary'" [disabled]="busy()" (click)="toggleActive()">
-              <mat-icon>{{ p.isActive ? 'pause' : 'play_arrow' }}</mat-icon>
-              {{ p.isActive ? 'Deactivate' : 'Activate' }}
-            </button>
-            <button mat-stroked-button [color]="p.isVerified ? 'warn' : 'primary'" [disabled]="busy()" (click)="toggleVerified()">
-              <mat-icon>{{ p.isVerified ? 'verified_user' : 'gpp_maybe' }}</mat-icon>
-              {{ p.isVerified ? 'Unverify' : 'Verify' }}
-            </button>
-          </div>
-        }
-      </div>
-
-      @if (loading()) {
-        <div class="loading-state">Loading profile...</div>
-      } @else if (profile(); as p) {
-        <div class="detail-body">
-          <aside class="detail-sidebar">
-            <div class="section-card">
-              <div class="section-card-header">
-                <mat-icon class="section-card-icon">manage_accounts</mat-icon>
-                <span>Profile Status</span>
-              </div>
-              <div class="section-card-body">
-                <div class="sc-row">
-                  <span class="sc-label">Verified</span>
-                  <span class="sc-value">
-                    <span class="status-badge" [class.verified]="profile()?.isVerified" [class.pending]="!profile()?.isVerified">
-                      {{ profile()?.isVerified ? 'Verified' : 'Pending' }}
-                    </span>
-                  </span>
-                </div>
-                <div class="sc-row">
-                  <span class="sc-label">Active</span>
-                  <span class="sc-value">
-                    <span class="status-badge" [class.active]="profile()?.isActive" [class.inactive]="!profile()?.isActive">
-                      {{ profile()?.isActive ? 'Active' : 'Inactive' }}
-                    </span>
-                  </span>
-                </div>
-                <div class="sc-row">
-                  <span class="sc-label">Payment</span>
-                  <span class="sc-value">
-                    <span class="status-badge" [class.verified]="hasSuccessfulPayment()" [class.pending]="!hasSuccessfulPayment()">
-                      {{ hasSuccessfulPayment() ? 'Paid' : 'Unpaid' }}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="photos-card">
-              <div class="photos-header">
-                <h3>Photos ({{ (p.photos ?? []).length }})</h3>
-                <div class="photos-actions">
-                  @if (p.photos?.length) {
-                    <button class="view-all-btn" (click)="openGallery(0)">View all</button>
-                  }
-                  <button class="view-all-btn" (click)="fileInput.click()">Add photo</button>
-                  <input #fileInput type="file" accept="image/*" class="hidden-file" (change)="onPhotoSelected($event)" />
-                </div>
-              </div>
-              @if (p.photos?.length) {
-                <div class="photo-grid">
-                  @for (photo of p.photos; track photo.photoId; let i = $index) {
-                    <div class="photo-thumb photo-thumb-admin" (click)="openGallery(i)">
-                      <img [src]="photo.fileUrl" [alt]="photo.fileName" />
-                      <button class="photo-delete" title="Delete photo" (click)="$event.stopPropagation(); confirmDeletePhoto(photo.photoId!)">
-                        <mat-icon>close</mat-icon>
-                      </button>
-                    </div>
-                  }
-                </div>
-              } @else {
-                <div class="no-photos">No photos</div>
-              }
-            </div>
-
-            <div class="section-card">
-              <div class="section-card-header">
-                <mat-icon class="section-card-icon">card_membership</mat-icon>
-                <span>Subscription Plan</span>
-              </div>
-              @if (userSubscription(); as sub) {
-                <div class="section-card-body">
-                  <div class="sc-row">
-                    <span class="sc-label">Plan</span>
-                    <span class="sc-value">{{ sub.planName ?? 'No Plan' }}</span>
-                  </div>
-                  <div class="sc-row">
-                    <span class="sc-label">Status</span>
-                    <span class="sc-value">
-                      <ui-status-badge [status]="getUserSubStatusText()"></ui-status-badge>
-                    </span>
-                  </div>
-                  <div class="sc-row">
-                    <span class="sc-label">Trial</span>
-                    <span class="sc-value">{{ sub.isTrial ? 'Yes' : 'No' }}</span>
-                  </div>
-                  <div class="sc-row">
-                    <span class="sc-label">Start Date</span>
-                    <span class="sc-value">{{ formatDate(sub.startDate) }}</span>
-                  </div>
-                  <div class="sc-row">
-                    <span class="sc-label">Expiry Date</span>
-                    <span class="sc-value">{{ formatDate(sub.expiresAt) }}</span>
-                  </div>
-                  @if (sub.effectiveFeatures?.length) {
-                    <div class="sc-divider"></div>
-                    <div class="sc-features">
-                      <div class="sc-features-title">Features</div>
-                      @for (feat of sub.effectiveFeatures; track feat.code) {
-                        <div class="sc-feature-row">
-                          <mat-icon class="sc-feature-icon">check_circle</mat-icon>
-                          <span>{{ feat.name || feat.code }}</span>
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
-              } @else {
-                <div class="section-card-body sc-empty">
-                  <mat-icon>info_outline</mat-icon>
-                  <span>No active subscription</span>
-                </div>
-              }
-            </div>
-          </aside>
-
-          <main class="detail-main">
-            @for (section of profileSections(); track section.title; let i = $index) {
-              <div class="section-card" [class.collapsed]="!isSectionOpen(i)">
-                <div class="section-card-header clickable" (click)="toggleSection(i)">
-                  <span>{{ section.title }}</span>
-                  <mat-icon class="collapse-icon">{{ isSectionOpen(i) ? 'expand_less' : 'expand_more' }}</mat-icon>
-                </div>
-                @if (isSectionOpen(i)) {
-                  <div class="section-card-body">
-                    @for (field of section.fields; track field.label) {
-                      <div class="sc-row">
-                        <span class="sc-label">{{ field.label }}</span>
-                        <span class="sc-value">{{ field.value }}</span>
-                      </div>
-                    }
-                  </div>
-                }
-              </div>
-            }
-
-            <div class="section-card">
-              <div class="section-card-header">
-                <mat-icon class="section-card-icon">payments</mat-icon>
-                <span>Payment History</span>
-              </div>
-              <div class="section-card-body">
-                @if (paymentsLoading()) {
-                  <div class="sc-empty">Loading payments...</div>
-                } @else if (userPayments().length === 0) {
-                  <div class="sc-empty">
-                    <mat-icon>info_outline</mat-icon>
-                    <span>No payment transactions</span>
-                  </div>
-                } @else {
-                  <div class="pmt-table">
-                    <div class="pmt-table-row pmt-table-head">
-                      <span>Date</span>
-                      <span>Description</span>
-                      <span>Amount</span>
-                      <span>Status</span>
-                    </div>
-                    @for (tx of userPayments(); track tx.paymentTransactionId) {
-                      <div class="pmt-table-row">
-                        <span>{{ formatDate(tx.createdAt) }}</span>
-                        <span>{{ tx.description || tx.gatewayOrderId || 'Payment' }}</span>
-                        <span>{{ formatCurrency(tx.amount) }}</span>
-                        <span><ui-status-badge [status]="statusText(tx.status)"></ui-status-badge></span>
-                      </div>
-                    }
-                  </div>
-                }
-                @if (userInvoices().length > 0) {
-                  <div class="pmt-divider"></div>
-                  <div class="sc-features-title">Invoices</div>
-                  <div class="pmt-table">
-                    <div class="pmt-table-row pmt-table-head">
-                      <span>Invoice</span>
-                      <span>Date</span>
-                      <span>Status</span>
-                      <span>Amount</span>
-                    </div>
-                    @for (inv of userInvoices(); track inv.invoiceId) {
-                      <div class="pmt-table-row">
-                        <span>{{ inv.invoiceNumber }}</span>
-                        <span>{{ formatDate(inv.invoiceDate) }}</span>
-                        <span><ui-status-badge [status]="statusText(inv.status)"></ui-status-badge></span>
-                        <span>{{ formatCurrency(inv.totalAmount) }}</span>
-                      </div>
-                    }
-                  </div>
-                }
-              </div>
-            </div>
-          </main>
-        </div>
-      } @else {
-        <div class="empty-state">Profile not found</div>
-      }
-
-      @if (isGalleryOpen()) {
-        <div class="gallery-overlay" (click)="closeGallery()">
-          <div class="gallery-modal" (click)="$event.stopPropagation()">
-            <button class="gallery-close" (click)="closeGallery()">&times;</button>
-            <div class="gallery-container">
-              <button class="gallery-nav prev" (click)="prevPhoto()" [disabled]="galleryPhotos().length <= 1">&#8249;</button>
-              <div class="gallery-image-wrapper">
-                <img [src]="galleryPhotos()[currentGalleryIndex()]" alt="Photo" class="gallery-image" />
-              </div>
-              <button class="gallery-nav next" (click)="nextPhoto()" [disabled]="galleryPhotos().length <= 1">&#8250;</button>
-            </div>
-            <div class="gallery-indicators">
-              <span class="gallery-counter">{{ currentGalleryIndex() + 1 }} / {{ galleryPhotos().length }}</span>
-              <div class="gallery-dots">
-                @for (photo of galleryPhotos(); track $index; let i = $index) {
-                  <button class="dot" [class.active]="i === currentGalleryIndex()" (click)="goToPhoto(i)"></button>
-                }
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  `,
-  styles: [`
-    .detail-page { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
-    .detail-header { margin-bottom: 1.5rem; }
-    .detail-header h1 { font-size: 1.5rem; color: #2c003e; margin: 0.5rem 0 0; }
-    .header-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .header-actions button { font-size: 12px; }
-    .header-actions mat-icon { font-size: 16px; width: 16px; height: 16px; margin-right: 4px; }
-    .back-link { display: inline-flex; align-items: center; gap: 4px; color: #7b1fa2; text-decoration: none; font-size: 0.875rem; font-weight: 500; }
-    .back-link:hover { text-decoration: underline; }
-    .loading-state, .empty-state { padding: 3rem; text-align: center; color: #888; }
-
-    .detail-body { display: flex; gap: 1.5rem; align-items: flex-start; }
-    .detail-sidebar { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 1rem; position: sticky; top: 1rem; }
-    .detail-main { flex: 1; min-width: 0; }
-
-    .photos-card {
-      background: #fafafa; border: 1px solid #e8e0f0; border-radius: 8px; padding: 14px;
-    }
-    .photos-card h3 { margin: 0 0 10px; font-size: 13px; font-weight: 600; color: #5c3d7a; text-transform: uppercase; letter-spacing: 0.5px; }
-    .photos-actions { display: flex; align-items: center; gap: 8px; }
-    .hidden-file { display: none; }
-    .photo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-    .photo-thumb { aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #f0ecf3; position: relative; }
-    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .photo-thumb-admin { cursor: pointer; }
-    .photo-delete {
-      position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%;
-      background: rgba(0,0,0,0.55); border: none; color: #fff; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; padding: 0;
-    }
-    .photo-delete:hover { background: #c62828; }
-    .photo-delete mat-icon { font-size: 14px; width: 14px; height: 14px; line-height: 14px; }
-    .no-photos { text-align: center; color: #bbb; font-size: 13px; padding: 2rem 0; }
-
-    .status-badge {
-      display: inline-block; padding: 2px 10px; border-radius: 9999px;
-      font-size: 0.75rem; font-weight: 600;
-    }
-    .status-badge.verified, .status-badge.active { background: #e8f5e9; color: #2e7d32; }
-    .status-badge.pending { background: #fff3e0; color: #e65100; }
-    .status-badge.inactive { background: #f5f5f5; color: #757575; }
-
-    .section-card {
-      background: #fafafa; border: 1px solid #e8e0f0; border-radius: 8px;
-      margin-bottom: 12px; overflow: hidden;
-    }
-    .section-card-header {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 14px; font-size: 12px; font-weight: 600; color: #5c3d7a;
-      text-transform: uppercase; letter-spacing: 0.5px;
-      background: #f5f0fa; border-bottom: 1px solid #e8e0f0;
-    }
-    .section-card-header.clickable { cursor: pointer; }
-    .section-card-header.clickable:hover { background: #ede6f5; }
-    .section-card-icon { font-size: 18px; width: 18px; height: 18px; color: #7b1fa2; }
-    .collapse-icon { margin-left: auto; font-size: 18px; width: 18px; height: 18px; color: #999; }
-    .section-card-body { padding: 8px 14px 12px; }
-    .section-card.collapsed .section-card-body { display: none; }
-    .sc-row {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      padding: 5px 0; border-bottom: 1px solid #f0ecf3;
-    }
-    .sc-row:last-child { border-bottom: none; }
-    .sc-label { font-size: 12px; color: #888; white-space: nowrap; }
-    .sc-value { font-size: 12px; font-weight: 500; color: #222; text-align: right; padding-left: 12px; }
-    .sc-divider { height: 1px; background: #e8e0f0; margin: 6px 0; }
-    .sc-features { display: flex; flex-direction: column; gap: 3px; }
-    .sc-features-title { font-size: 11px; font-weight: 600; color: #7b1fa2; margin-bottom: 2px; }
-    .sc-feature-row { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #555; }
-    .sc-feature-icon { font-size: 14px; width: 14px; height: 14px; color: #388e3c; }
-    .sc-empty { display: flex; align-items: center; gap: 6px; color: #999; font-size: 12px; }
-    .pmt-table { display: flex; flex-direction: column; margin-top: 6px; }
-    .pmt-table-row { display: grid; grid-template-columns: 1fr 2fr 1fr 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid #f0ecf3; font-size: 12px; color: #333; align-items: center; }
-    .pmt-table-row:last-child { border-bottom: none; }
-    .pmt-table-head { color: #7b1fa2; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; font-size: 10px; }
-    .pmt-divider { height: 1px; background: #e8e0f0; margin: 8px 0; }
-
-    .photos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .photos-header h3 { margin: 0; font-size: 13px; font-weight: 600; color: #5c3d7a; text-transform: uppercase; letter-spacing: 0.5px; }
-    .view-all-btn { background: none; border: none; color: #7b1fa2; font-size: 11px; font-weight: 600; cursor: pointer; padding: 0; }
-    .view-all-btn:hover { text-decoration: underline; }
-    .photo-thumb { aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: #f0ecf3; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
-    .photo-thumb:hover { transform: scale(1.03); box-shadow: 0 2px 8px rgba(123,31,162,0.2); }
-
-    .gallery-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex;
-      align-items: center; justify-content: center; z-index: 1000;
-      animation: fadeIn 0.2s ease;
-    }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .gallery-modal {
-      position: relative; width: 90%; max-width: 800px; max-height: 90vh;
-      display: flex; flex-direction: column; background: #1f1f1f;
-      border-radius: 8px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    }
-    .gallery-close {
-      position: absolute; top: 0.75rem; right: 0.75rem; background: rgba(255,255,255,0.2);
-      border: none; color: #fff; font-size: 1.5rem; width: 36px; height: 36px;
-      border-radius: 50%; cursor: pointer; display: flex; align-items: center;
-      justify-content: center; z-index: 10; line-height: 1;
-    }
-    .gallery-close:hover { background: rgba(255,255,255,0.3); }
-    .gallery-container { display: flex; align-items: center; gap: 0.5rem; padding: 2rem 0.5rem; min-height: 350px; }
-    .gallery-image-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; max-height: 70vh; }
-    .gallery-image { max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 4px; }
-    .gallery-nav {
-      background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 2rem;
-      width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex;
-      align-items: center; justify-content: center; flex-shrink: 0; line-height: 1;
-    }
-    .gallery-nav:hover:not(:disabled) { background: rgba(255,255,255,0.3); }
-    .gallery-nav:disabled { opacity: 0.3; cursor: not-allowed; }
-    .gallery-indicators { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.3); }
-    .gallery-counter { color: #999; font-size: 0.85rem; }
-    .gallery-dots { display: flex; gap: 0.4rem; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); border: none; cursor: pointer; padding: 0; }
-    .dot.active { background: #7b1fa2; }
-    .dot:hover:not(.active) { background: rgba(255,255,255,0.5); }
-
-    @media (max-width: 768px) {
-      .detail-body { flex-direction: column; }
-      .detail-sidebar { width: 100%; position: static; }
-    }
-  `],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatDialogModule, MatTabsModule, StatusBadgeComponent],
+  templateUrl: './profile-detail.html',
+  styleUrl: './profile-detail.css',
 })
 export class ProfileDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -407,8 +47,11 @@ export class ProfileDetail implements OnInit {
 
   readonly loading = signal(true);
   readonly busy = signal(false);
+  readonly selectedTab = signal(0);
   readonly profile = signal<ProfileDetailDto | null>(null);
   readonly userSubscription = signal<SubscriptionStatusDto | null>(null);
+  readonly subscriptionHistory = signal<UserSubscriptionHistoryItemDto[]>([]);
+  readonly historyLoading = signal(false);
   readonly userPayments = signal<PaymentTransactionHistoryDto[]>([]);
   readonly userInvoices = signal<InvoiceDto[]>([]);
   readonly paymentsLoading = signal(false);
@@ -419,6 +62,58 @@ export class ProfileDetail implements OnInit {
   readonly hasSuccessfulPayment = computed(() =>
     this.userPayments().some((p) => (p.status ?? '').toLowerCase() === 'success'),
   );
+
+  readonly primaryPhoto = computed(() => {
+    const photos = this.profile()?.photos ?? [];
+    const primary = photos.find((ph) => ph.isPrimary);
+    return (primary?.fileUrl ?? photos[0]?.fileUrl ?? null) as string | null;
+  });
+
+  readonly initials = computed(() => {
+    const name = this.profile()?.fullName?.trim() ?? '';
+    if (!name) return '?';
+    const parts = name.split(/\s+/);
+    const first = parts[0]?.[0] ?? '';
+    const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : '';
+    return (first + last).toUpperCase();
+  });
+
+  readonly aboutChips = computed(() => {
+    const p = this.profile();
+    if (!p) return [];
+    const personal = p.personalDetails;
+    const chips: InfoRow[] = [];
+    if (p.age) chips.push({ icon: 'cake', label: 'Age', value: `${p.age}` });
+    if (personal?.genderName) chips.push({ icon: 'wc', label: 'Gender', value: personal.genderName });
+    if (personal?.religionName) chips.push({ icon: 'church', label: 'Religion', value: personal.religionName });
+    if (personal?.casteName) chips.push({ icon: 'people', label: 'Caste', value: personal.casteName });
+    if (personal?.maritalStatusName) chips.push({ icon: 'favorite', label: 'Marital Status', value: personal.maritalStatusName });
+    if (p.locationText) chips.push({ icon: 'place', label: 'Location', value: p.locationText });
+    return chips;
+  });
+
+  readonly aboutRows = computed(() => {
+    const p = this.profile();
+    if (!p) return [];
+    const personal = p.personalDetails;
+    return [
+      { icon: 'cake', label: 'Age', value: this.valueText(p.age) },
+      { icon: 'wc', label: 'Gender', value: this.valueText(personal?.genderName) },
+      { icon: 'event', label: 'Date of Birth', value: this.dobText(personal) },
+      { icon: 'church', label: 'Religion', value: this.valueText(personal?.religionName) },
+      { icon: 'people', label: 'Caste', value: this.valueText(personal?.casteName) },
+      { icon: 'group', label: 'Sub Caste', value: this.valueText(personal?.subCasteName) },
+      { icon: 'favorite', label: 'Marital Status', value: this.valueText(personal?.maritalStatusName) },
+      { icon: 'height', label: 'Height', value: this.heightText(personal?.heightFt, personal?.heightIn) },
+      { icon: 'monitor_weight', label: 'Weight', value: personal?.weightKg ? `${personal.weightKg} kg` : '-' },
+      { icon: 'bloodtype', label: 'Blood Group', value: this.valueText(personal?.bloodGroupName) },
+      { icon: 'restaurant', label: 'Diet', value: this.valueText(personal?.dietName) },
+      { icon: 'work', label: 'Occupation', value: this.valueText(p.occupationText) },
+      { icon: 'place', label: 'Location', value: this.valueText(p.locationText) },
+    ];
+  });
+
+  readonly topFeatures = computed(() => (this.userSubscription()?.effectiveFeatures ?? []).slice(0, 5));
 
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
@@ -559,6 +254,7 @@ export class ProfileDetail implements OnInit {
             next: (sub) => this.userSubscription.set(sub),
             error: () => this.userSubscription.set(null),
           });
+          this.loadSubscriptionHistory(detail.userId);
           this.loadPayments(detail.userId);
         }
       },
@@ -580,6 +276,10 @@ export class ProfileDetail implements OnInit {
 
   isSectionOpen(index: number): boolean {
     return this.openSections().has(index);
+  }
+
+  goToTab(index: number): void {
+    this.selectedTab.set(index);
   }
 
   openGallery(index: number): void {
@@ -743,6 +443,24 @@ export class ProfileDetail implements OnInit {
     return 'Inactive';
   }
 
+  featureEnabled(feat: PlanFeatureValueDto): boolean {
+    const value = (feat.value ?? '').trim().toLowerCase();
+    return value !== 'false';
+  }
+
+  featureIcon(feat: PlanFeatureValueDto): string {
+    const value = (feat.value ?? '').trim().toLowerCase();
+    return value === 'false' ? 'block' : 'check_circle';
+  }
+
+  featureValueText(feat: PlanFeatureValueDto): string {
+    const value = (feat.value ?? '').trim();
+    if (!value) return '';
+    const lower = value.toLowerCase();
+    if (lower === 'true' || lower === 'false') return '';
+    return value;
+  }
+
   private loadPayments(userId: number): void {
     this.paymentsLoading.set(true);
     this.billing.getUserPaymentTransactions(userId).subscribe({
@@ -756,6 +474,28 @@ export class ProfileDetail implements OnInit {
       next: (invoices) => this.userInvoices.set(invoices ?? []),
       error: () => this.userInvoices.set([]),
     });
+  }
+
+  private loadSubscriptionHistory(userId: number): void {
+    this.historyLoading.set(true);
+    this.subscriptionClient.getUserSubscriptionHistory(userId).subscribe({
+      next: (history) => {
+        this.subscriptionHistory.set(history ?? []);
+        this.historyLoading.set(false);
+      },
+      error: () => this.historyLoading.set(false),
+    });
+  }
+
+  historyStatusText(item: UserSubscriptionHistoryItemDto): string {
+    const status = (item.userSubscriptionStatus ?? '').toLowerCase();
+    if (status === 'active') {
+      if (item.isTrial) return 'trial';
+      return item.isActive ? 'active' : 'expired';
+    }
+    if (status === 'cancelled') return 'cancelled';
+    if (status === 'expired') return 'expired';
+    return status || 'unknown';
   }
 
   statusText(status?: string): string {
@@ -778,6 +518,11 @@ export class ProfileDetail implements OnInit {
   private field(label: string, value: unknown): ProfileField {
     const text = `${value ?? ''}`.trim();
     return { label, value: text || '-' };
+  }
+
+  private valueText(value: unknown): string {
+    const text = `${value ?? ''}`.trim();
+    return text || '-';
   }
 
   private boolText(value: boolean | undefined | null): string {
