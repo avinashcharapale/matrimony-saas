@@ -1,14 +1,17 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ProfileClient, ProfileDetailDto, SubscriptionClient, SubscriptionStatusDto, UserSubscriptionHistoryItemDto, PlanFeatureValueDto, PaymentTransactionHistoryDto, InvoiceDto } from '@org/generated';
+import { ProfileClient, ProfileDetailDto, SubscriptionClient, SubscriptionStatusDto, UserSubscriptionHistoryItemDto, PlanFeatureValueDto, PaymentTransactionHistoryDto, InvoiceDto, UserSubscriptionPlanDto } from '@org/generated';
 import { BillingRepository } from '@org/data-access-billing';
+import { SubscriptionRepository } from '@org/data-access-subscription';
 import { NotificationService } from '@org/core';
 import { ConfirmDialogComponent, ConfirmDialogData, StatusBadgeComponent } from '@org/shared-ui';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
 
@@ -32,7 +35,7 @@ interface InfoRow {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-profile-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatDialogModule, MatTabsModule, StatusBadgeComponent],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatDialogModule, MatTabsModule, MatProgressSpinnerModule, FormsModule, StatusBadgeComponent],
   templateUrl: './profile-detail.html',
   styleUrl: './profile-detail.css',
 })
@@ -41,6 +44,7 @@ export class ProfileDetail implements OnInit {
   private readonly router = inject(Router);
   private readonly profileClient = inject(ProfileClient);
   private readonly subscriptionClient = inject(SubscriptionClient);
+  private readonly subscriptionRepo = inject(SubscriptionRepository);
   private readonly billing = inject(BillingRepository);
   private readonly dialog = inject(MatDialog);
   private readonly notifications = inject(NotificationService);
@@ -58,6 +62,13 @@ export class ProfileDetail implements OnInit {
   readonly openSections = signal<Set<number>>(new Set([0, 1]));
   readonly isGalleryOpen = signal(false);
   readonly currentGalleryIndex = signal(0);
+
+  readonly showCashForm = signal(false);
+  readonly plans = signal<UserSubscriptionPlanDto[]>([]);
+  readonly cashPlanId = signal<number | null>(null);
+  readonly cashSubmitting = signal(false);
+  readonly cashError = signal<string | null>(null);
+  readonly cashResult = signal<{ status?: string; planName?: string; amount?: number; endDate?: string } | null>(null);
 
   readonly hasSuccessfulPayment = computed(() =>
     this.userPayments().some((p) => (p.status ?? '').toLowerCase() === 'success'),
@@ -239,6 +250,10 @@ export class ProfileDetail implements OnInit {
   });
 
   ngOnInit(): void {
+    this.subscriptionRepo.getAllPlans().subscribe({
+      next: (plans) => this.plans.set(plans ?? []),
+      error: () => this.plans.set([]),
+    });
     this.route.paramMap.pipe(
       switchMap((params) => {
         const id = Number(params.get('id'));
@@ -378,6 +393,60 @@ export class ProfileDetail implements OnInit {
     });
   }
 
+  toggleCashForm(): void {
+    this.showCashForm.update((v) => !v);
+    this.cashError.set(null);
+    this.cashResult.set(null);
+  }
+
+  submitCashPayment(): void {
+    const p = this.profile();
+    const userId = p?.userId;
+    const planId = this.cashPlanId();
+    if (!userId) {
+      this.cashError.set('This profile has no linked user.');
+      return;
+    }
+    if (!planId) {
+      this.cashError.set('Select a plan to activate.');
+      return;
+    }
+
+    this.cashError.set(null);
+    this.cashResult.set(null);
+    this.cashSubmitting.set(true);
+
+    this.billing.recordCashPayment({ userId, subscriptionPlanId: planId }).subscribe({
+      next: (result) => {
+        this.cashSubmitting.set(false);
+        this.cashResult.set(result);
+        this.reloadProfileData(userId);
+      },
+      error: (err: unknown) => {
+        this.cashSubmitting.set(false);
+        this.cashError.set(this.errorMessage(err, 'Failed to record cash payment.'));
+      },
+    });
+  }
+
+  private reloadProfileData(userId: number): void {
+    this.subscriptionClient.getUserSubscriptionStatus(userId).subscribe({
+      next: (sub) => this.userSubscription.set(sub),
+      error: () => this.userSubscription.set(null),
+    });
+    this.loadSubscriptionHistory(userId);
+    this.loadPayments(userId);
+  }
+
+  errorMessage(err: unknown, fallback: string): string {
+    if (err && typeof err === 'object') {
+      const candidate = err as { error?: { message?: unknown }; message?: unknown };
+      if (typeof candidate.error?.message === 'string') return candidate.error.message;
+      if (typeof candidate.message === 'string') return candidate.message;
+    }
+    return fallback;
+  }
+
   onPhotoSelected(event: Event): void {
     const p = this.profile();
     if (!p?.profileId) return;
@@ -474,6 +543,10 @@ export class ProfileDetail implements OnInit {
       next: (invoices) => this.userInvoices.set(invoices ?? []),
       error: () => this.userInvoices.set([]),
     });
+  }
+
+  downloadInvoicePdf(inv: InvoiceDto): void {
+    this.billing.downloadInvoicePdf(inv.invoiceId!, `${inv.invoiceNumber}.pdf`).subscribe();
   }
 
   private loadSubscriptionHistory(userId: number): void {

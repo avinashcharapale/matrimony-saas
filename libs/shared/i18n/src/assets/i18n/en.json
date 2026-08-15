@@ -549,7 +549,10 @@
     "at": "At",
     "refunds": "Refunds",
     "noRefunds": "No refunds recorded.",
-    "reason": "Reason"
+    "reason": "Reason",
+    "pdf": "PDF",
+    "downloadInvoice": "Download invoice PDF",
+    "downloadReceipt": "Download receipt PDF"
   },
   "plans": {
     "title": "Choose Your Plan",
@@ -560,6 +563,9 @@
     "validFrom": "Valid from",
     "to": "to",
     "amountPaid": "Amount paid:",
+    "paymentFailed": "Payment failed. Please try again.",
+    "weWillConfirm": "We will confirm your activation shortly.",
+    "confirmingPayment": "Payment received! Activating your plan...",
     "browseProfiles": "Browse Profiles",
     "mostPopular": "Most Popular",
     "processing": "Processing...",
@@ -573,8 +579,32 @@
     "oneMonth": "1 Month",
     "months": "{{count}} Months",
     "errors": {
-      "checkout": "Payment failed. Please try again."
-    }
+      "checkout": "Payment failed. Please try again.",
+      "report": "Unable to report the payment. Please try again."
+    },
+    "choosePaymentMethod": "Choose a payment method",
+    "choosePaymentMethodHint": "You can pay online or transfer directly to our account.",
+    "payOnline": "Pay online (Card / UPI / Net Banking)",
+    "payOffline": "Pay offline (UPI QR / Bank Transfer)",
+    "cancel": "Cancel",
+    "chooseOfflineMethod": "Choose an offline payment method",
+    "chooseOfflineMethodHint": "Complete the payment manually and confirm once done.",
+    "methodUpi": "UPI (QR code)",
+    "methodBank": "Bank Transfer",
+    "offlinePaymentTitle": "Complete your payment",
+    "amountToPay": "Amount to pay:",
+    "upiDetails": "UPI Payment Details",
+    "upiQr": "UPI QR Code",
+    "upiId": "UPI ID",
+    "bankDetails": "Bank Account Details",
+    "accountHolder": "Account Holder",
+    "bankName": "Bank",
+    "accountNumber": "Account Number",
+    "offlineReported": "Payment reported",
+    "offlineAwaitingApproval": "Your payment is being reviewed by the administrator. Your subscription will activate once it is confirmed.",
+    "reportPayment": "I have completed the payment",
+    "reportPaymentHint": "An administrator will confirm your payment shortly.",
+    "backToPlans": "Back to plans"
   },
   "photoGallery": {
     "eyebrow": "Visual Profiles",

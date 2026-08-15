@@ -1217,17 +1217,113 @@ export interface PaymentTransactionDto {
 }
 
 export interface CheckoutRequestDto {
-  planId?: number;
+  subscriptionPlanId?: number;
+  paymentMethod?: string;
+}
+
+export interface RecordCashPaymentRequestDto {
+  userId?: number;
+  subscriptionPlanId?: number;
+}
+
+export interface OfflinePaymentInfoDto {
+  qrUrl?: string;
+  upiId?: string;
+  accountHolderName?: string;
+  bankName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
 }
 
 export interface CheckoutResponseDto {
   success?: boolean;
   subscriptionId?: number;
   paymentId?: string;
+  orderId?: string;
+  paymentIntentId?: string;
   planName?: string;
   startDate?: string;
   endDate?: string;
   amount?: number;
+  currencyCode?: string;
+  status?: string;
+  paymentMethod?: string;
+  razorpayKeyId?: string;
+  razorpayEnvironment?: string;
+  transactionId?: number;
+  offlinePayment?: OfflinePaymentInfoDto;
+}
+
+export interface PaymentSettingsDto {
+  paymentMode?: string;
+  upiQrUrl?: string;
+  upiId?: string;
+  bankAccountHolderName?: string;
+  bankName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
+  isActive?: boolean;
+  isOfflineEnabled?: boolean;
+}
+
+export interface SaveTenantPaymentSettingsRequest {
+  paymentMode?: string;
+  upiQrUrl?: string;
+  upiId?: string;
+  bankAccountHolderName?: string;
+  bankName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
+  isActive?: boolean;
+}
+
+export interface GetGatewayConfigurationDto {
+  gatewayConfigurationId?: number;
+  paymentGatewayId?: number;
+  gatewayCode?: string;
+  gatewayName?: string;
+  environment?: string;
+  apiKeyMasked?: string;
+  hasApiSecret?: boolean;
+  hasWebhookSecret?: boolean;
+  isActive?: boolean;
+  priority?: number;
+}
+
+export interface SaveGatewayConfigurationRequest {
+  gatewayConfigurationId?: number;
+  paymentGatewayId?: number;
+  environment?: string;
+  apiKey?: string;
+  apiSecret?: string;
+  webhookSecret?: string;
+  isActive?: boolean;
+}
+
+export interface OfflinePendingPaymentDto {
+  transactionId?: number;
+  userId?: number;
+  userName?: string;
+  userSubscriptionId?: number;
+  amount?: number;
+  currencyCode?: string;
+  paymentMethod?: string;
+  description?: string;
+  reported?: boolean;
+  createdAt?: string;
+}
+
+export interface PaymentStatusDto {
+  paymentTransactionId?: number;
+  status?: string;
+  gatewayOrderId?: string;
+  gatewayPaymentId?: string;
+  amount?: number;
+  currencyCode?: string;
+  succeededAt?: string;
+  failedAt?: string;
+  failureReason?: string;
+  userSubscriptionId?: number;
 }
 
 export interface PaymentAttemptDto {

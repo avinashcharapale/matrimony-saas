@@ -549,7 +549,10 @@
     "at": "वेळी",
     "refunds": "परतावा",
     "noRefunds": "कोणताही परतावा नोंदलेला नाही.",
-    "reason": "कारण"
+    "reason": "कारण",
+    "pdf": "PDF",
+    "downloadInvoice": "चालान डाउनलोड करा",
+    "downloadReceipt": "पावती डाउनलोड करा"
   },
   "plans": {
     "title": "तुमची योजना निवडा",
@@ -560,6 +563,9 @@
     "validFrom": "पासून वैध",
     "to": "ते",
     "amountPaid": "भरलेली रक्कम:",
+    "paymentFailed": "पेमेंट अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+    "weWillConfirm": "आम्ही लवकरच तुमच्या सक्रियतेची पुष्टी करू.",
+    "confirmingPayment": "पेमेंट मिळाले! तुमची योजना सक्रिय होत आहे...",
     "browseProfiles": "प्रोफाइल पहा",
     "mostPopular": "सर्वाधिक लोकप्रिय",
     "processing": "प्रक्रिया होत आहे...",
@@ -573,8 +579,32 @@
     "oneMonth": "1 महिना",
     "months": "{{count}} महिने",
     "errors": {
-      "checkout": "पेमेंट अयशस्वी. कृपया पुन्हा प्रयत्न करा."
-    }
+      "checkout": "पेमेंट अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      "report": "पेमेंटची तक्रार करण्यात अक्षम. कृपया पुन्हा प्रयत्न करा."
+    },
+    "choosePaymentMethod": "पेमेंटची पद्धत निवडा",
+    "choosePaymentMethodHint": "तुम्ही ऑनलाइन पैसे देऊ शकता किंवा थेट आमच्या खात्यात रक्कम हस्तांतरित करू शकता.",
+    "payOnline": "ऑनलाइन पैसे द्या (कार्ड / UPI / नेट बँकिंग)",
+    "payOffline": "ऑफलाइन पैसे द्या (UPI QR / बँक हस्तांतरण)",
+    "cancel": "रद्द करा",
+    "chooseOfflineMethod": "ऑफलाइन पेमेंटची पद्धत निवडा",
+    "chooseOfflineMethodHint": "स्वतः पेमेंट पूर्ण करा आणि पूर्ण झाल्यावर पुष्टी करा.",
+    "methodUpi": "UPI (QR कोड)",
+    "methodBank": "बँक हस्तांतरण",
+    "offlinePaymentTitle": "तुमचे पेमेंट पूर्ण करा",
+    "amountToPay": "द्यावयाची रक्कम:",
+    "upiDetails": "UPI पेमेंट तपशील",
+    "upiQr": "UPI QR कोड",
+    "upiId": "UPI ID",
+    "bankDetails": "बँक खाते तपशील",
+    "accountHolder": "खातेधारक",
+    "bankName": "बँक",
+    "accountNumber": "खाते क्रमांक",
+    "offlineReported": "पेमेंटची तक्रार दाखल केली",
+    "offlineAwaitingApproval": "तुमच्या पेमेंटचे पुनरावलोकन सुरू आहे. पुष्टी झाल्यावर तुमची सदस्यता सक्रिय होईल.",
+    "reportPayment": "मी पेमेंट पूर्ण केले आहे",
+    "reportPaymentHint": "प्रशासक लवकरच तुमच्या पेमेंटची पुष्टी करेल.",
+    "backToPlans": "योजनांवर परत जा"
   },
   "photoGallery": {
     "eyebrow": "व्हिज्युअल प्रोफाइल",

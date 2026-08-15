@@ -214,6 +214,22 @@
   margin: 0 auto;
 }
 
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--theme-border);
+  border-top-color: var(--tenant-primary);
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .success-icon {
   width: 60px;
   height: 60px;
@@ -225,6 +241,10 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 1rem;
+}
+
+.success-icon.failed {
+  background: var(--theme-danger);
 }
 
 .checkout-success h2 {
@@ -283,6 +303,121 @@
   margin: 0;
   color: var(--theme-danger);
   font-size: 0.9rem;
+}
+
+.checkout-success.pending {
+  border-color: var(--theme-border-strong);
+}
+
+.checkout-success.chooser {
+  border-color: var(--theme-border-strong);
+}
+
+.chooser-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.chooser-btn {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid var(--tenant-primary);
+  border-radius: 8px;
+  background: var(--tenant-primary);
+  color: var(--on-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.chooser-btn:hover {
+  background: var(--tenant-accent);
+  border-color: var(--tenant-accent);
+}
+
+.chooser-btn.offline {
+  background: var(--theme-surface-raised);
+  color: var(--tenant-primary);
+}
+
+.chooser-btn.offline:hover {
+  background: var(--tenant-primary);
+  color: var(--on-primary);
+}
+
+.link-button {
+  display: inline-block;
+  background: none;
+  border: none;
+  color: var(--theme-text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.5rem;
+}
+
+.link-button:hover {
+  color: var(--tenant-primary);
+}
+
+/* Offline payment details */
+.offline-details .success-detail,
+.offline-details .success-amount {
+  margin-bottom: 1rem;
+}
+
+.offline-block {
+  background: var(--theme-muted);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0 auto 1.25rem;
+  text-align: left;
+  max-width: 360px;
+}
+
+.offline-block-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--theme-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.qr-image {
+  display: block;
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin: 0 auto 0.75rem;
+  background: #fff;
+  padding: 0.25rem;
+}
+
+.offline-line {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  color: var(--theme-text);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.offline-label {
+  color: var(--theme-text-muted);
+  flex-shrink: 0;
+}
+
+.offline-value {
+  font-weight: 600;
+  word-break: break-all;
+  text-align: right;
 }
 
 .no-plans {

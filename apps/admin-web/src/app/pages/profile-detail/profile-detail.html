@@ -61,8 +61,62 @@
           <mat-icon>{{ p.isVerified ? 'verified_user' : 'gpp_maybe' }}</mat-icon>
           {{ p.isVerified ? 'Unverify' : 'Verify' }}
         </button>
+        <button mat-flat-button color="primary" [disabled]="busy()" (click)="toggleCashForm()">
+          <mat-icon>payments</mat-icon>
+          {{ showCashForm() ? 'Cancel' : 'Record cash payment' }}
+        </button>
       </div>
     </div>
+
+    @if (showCashForm()) {
+      <div class="cash-form">
+        <h3>Record cash / manual payment</h3>
+        <p class="hint">Activates a plan for {{ p.fullName }} (User ID {{ p.userId }}) immediately and issues an invoice and receipt.</p>
+        <div class="cash-form-row">
+          <label>
+            Plan
+            <select [(ngModel)]="cashPlanId">
+              <option [ngValue]="null" disabled>Select a plan</option>
+              @for (plan of plans(); track plan.id) {
+                <option [ngValue]="plan.id">{{ plan.name }} — {{ plan.currency }} {{ formatCurrency(plan.price) }} / {{ plan.durationMonths }} mo</option>
+              }
+            </select>
+          </label>
+          <button
+            mat-flat-button
+            color="primary"
+            class="confirm-btn"
+            [disabled]="cashSubmitting()"
+            (click)="submitCashPayment()"
+          >
+            @if (cashSubmitting()) {
+              <mat-spinner diameter="18"></mat-spinner>
+            }
+            Confirm payment
+          </button>
+        </div>
+
+        @if (cashError()) {
+          <div class="cash-message error">{{ cashError() }}</div>
+        }
+        @if (cashResult(); as r) {
+          <div class="cash-message success">
+            <mat-icon>check_circle</mat-icon>
+            <div>
+              <strong>{{ r.status === 'success' ? 'Payment recorded' : 'Payment failed' }}</strong>
+              @if (r.status === 'success') {
+                <p>
+                  {{ r.planName }} activated for {{ p.fullName }} — {{ formatCurrency(r.amount) }} payable until {{ r.endDate }}.
+                  An invoice and receipt were issued; see the Subscription tab.
+                </p>
+              } @else {
+                <p>No activation happened. Review the data and try again.</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
 
     <mat-tab-group class="profile-tabs" animationDuration="200ms" [selectedIndex]="selectedTab()" (selectedIndexChange)="selectedTab.set($event)">
       <mat-tab>
@@ -360,6 +414,7 @@
                       <span>Date</span>
                       <span>Status</span>
                       <span>Amount</span>
+                      <span>PDF</span>
                     </div>
                     @for (inv of userInvoices(); track inv.invoiceId) {
                       <div class="pmt-table-row">
@@ -367,6 +422,11 @@
                         <span>{{ formatDate(inv.invoiceDate) }}</span>
                         <span><ui-status-badge [status]="statusText(inv.status)"></ui-status-badge></span>
                         <span>{{ formatCurrency(inv.totalAmount) }}</span>
+                        <span>
+                          <button mat-stroked-button class="pdf-btn" (click)="downloadInvoicePdf(inv)" title="Download {{ inv.invoiceNumber }}.pdf">
+                            <mat-icon>picture_as_pdf</mat-icon>
+                          </button>
+                        </span>
                       </div>
                     }
                   </div>

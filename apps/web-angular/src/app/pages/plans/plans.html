@@ -10,7 +10,8 @@
     </div>
 
     @if (isLoggedIn() && checkoutResult()) {
-    <div class="checkout-success">
+    <div class="checkout-success" [class.pending]="activationState() === 'confirming'">
+      @if (activationState() === 'activated') {
       <div class="success-icon">&#x2713;</div>
       <h2>{{ 'plans.paymentSuccess' | translate }}</h2>
       <p class="success-detail">
@@ -22,6 +23,103 @@
       </p>
       <p class="success-amount">{{ 'plans.amountPaid' | translate }} {{ formatPrice(checkoutResult()!.amount) }}</p>
       <button class="cta-button" (click)="goToProfiles()">{{ 'plans.browseProfiles' | translate }}</button>
+      } @else if (activationState() === 'failed') {
+      <div class="success-icon failed">&#x2717;</div>
+      <h2>{{ 'plans.paymentFailed' | translate }}</h2>
+      <p class="success-detail">{{ 'plans.weWillConfirm' | translate }}</p>
+      } @else {
+      <div class="spinner"></div>
+      <h2>{{ 'plans.confirmingPayment' | translate }}</h2>
+      <p class="success-detail">
+        <strong>{{ checkoutResult()!.planName }}</strong>
+      </p>
+      <p class="success-amount">{{ 'plans.amountPaid' | translate }} {{ formatPrice(checkoutResult()!.amount) }}</p>
+      @if (activationState() === 'timeout') {
+      <p class="success-dates">{{ 'plans.weWillConfirm' | translate }}</p>
+      }
+      }
+    </div>
+    } @else if (isLoggedIn() && showMethodChooser()) {
+    <div class="checkout-success chooser">
+      <h2>{{ 'plans.choosePaymentMethod' | translate }}</h2>
+      <p class="success-detail">{{ 'plans.choosePaymentMethodHint' | translate }}</p>
+      <div class="chooser-buttons">
+        <button class="chooser-btn" (click)="chooseOnline()">{{ 'plans.payOnline' | translate }}</button>
+        <button class="chooser-btn offline" (click)="chooseOffline()">{{ 'plans.payOffline' | translate }}</button>
+      </div>
+      <button class="link-button" (click)="cancelChooser()">{{ 'plans.cancel' | translate }}</button>
+    </div>
+    } @else if (isLoggedIn() && showOfflineChooser()) {
+    <div class="checkout-success chooser">
+      <h2>{{ 'plans.chooseOfflineMethod' | translate }}</h2>
+      <p class="success-detail">{{ 'plans.chooseOfflineMethodHint' | translate }}</p>
+      <div class="chooser-buttons">
+        @if (paymentSettings()?.upiId || paymentSettings()?.upiQrUrl) {
+        <button class="chooser-btn" (click)="selectOfflineMethod('upi')">{{ 'plans.methodUpi' | translate }}</button>
+        }
+        @if (paymentSettings()?.accountNumber && paymentSettings()?.ifscCode) {
+        <button class="chooser-btn offline" (click)="selectOfflineMethod('bank_transfer')">
+          {{ 'plans.methodBank' | translate }}
+        </button>
+        }
+      </div>
+      <button class="link-button" (click)="cancelChooser()">{{ 'plans.cancel' | translate }}</button>
+    </div>
+    } @else if (isLoggedIn() && offlinePending()) {
+    <div class="checkout-success pending offline-details">
+      <h2>{{ 'plans.offlinePaymentTitle' | translate }}</h2>
+      <p class="success-detail">
+        <strong>{{ offlinePending()!.planName }}</strong>
+      </p>
+      <p class="success-amount">{{ 'plans.amountToPay' | translate }} {{ formatPrice(offlinePending()!.amount) }}</p>
+
+      @if (selectedOfflineMethod() === 'upi' || offlinePending()!.paymentMethod === 'upi') {
+      <div class="offline-block">
+        <div class="offline-block-title">{{ 'plans.upiDetails' | translate }}</div>
+        @if (offlinePending()!.offlinePayment?.qrUrl) {
+        <img class="qr-image" [src]="offlinePending()!.offlinePayment!.qrUrl!" [alt]="'plans.upiQr' | translate" />
+        }
+        @if (offlinePending()!.offlinePayment?.upiId) {
+        <p class="offline-line">
+          <span class="offline-label">{{ 'plans.upiId' | translate }}:</span>
+          <span class="offline-value">{{ offlinePending()!.offlinePayment!.upiId }}</span>
+        </p>
+        }
+      </div>
+      }
+
+      @if (selectedOfflineMethod() === 'bank_transfer' || offlinePending()!.paymentMethod === 'bank_transfer') {
+      <div class="offline-block">
+        <div class="offline-block-title">{{ 'plans.bankDetails' | translate }}</div>
+        <p class="offline-line">
+          <span class="offline-label">{{ 'plans.accountHolder' | translate }}:</span>
+          <span class="offline-value">{{ offlinePending()!.offlinePayment?.accountHolderName }}</span>
+        </p>
+        <p class="offline-line">
+          <span class="offline-label">{{ 'plans.bankName' | translate }}:</span>
+          <span class="offline-value">{{ offlinePending()!.offlinePayment?.bankName }}</span>
+        </p>
+        <p class="offline-line">
+          <span class="offline-label">{{ 'plans.accountNumber' | translate }}:</span>
+          <span class="offline-value">{{ offlinePending()!.offlinePayment?.accountNumber }}</span>
+        </p>
+        <p class="offline-line">
+          <span class="offline-label">IFSC:</span>
+          <span class="offline-value">{{ offlinePending()!.offlinePayment?.ifscCode }}</span>
+        </p>
+      </div>
+      }
+
+      @if (offlineReported()) {
+      <p class="success-dates">{{ 'plans.offlineReported' | translate }}</p>
+      <p class="success-detail">{{ 'plans.offlineAwaitingApproval' | translate }}</p>
+      } @else {
+      <button class="cta-button" [disabled]="isProcessing()" (click)="reportOfflineDone()">
+        {{ 'plans.reportPayment' | translate }}
+      </button>
+      <p class="success-dates">{{ 'plans.reportPaymentHint' | translate }}</p>
+      }
+      <button class="link-button" (click)="backToPlans()">{{ 'plans.backToPlans' | translate }}</button>
     </div>
     } @else {
     <div class="plans-grid">

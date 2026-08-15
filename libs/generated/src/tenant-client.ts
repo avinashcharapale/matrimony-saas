@@ -236,32 +236,32 @@ export class TenantClient {
 
   // ── Tenant Security Settings ─────────────────────────────────────────────
 
-  getTenantSecuritySettings(): Observable<TenantSecuritySettingDto> {
-    return this.http.get<TenantSecuritySettingDto>('/tenant/tenant-security-settings');
+  getTenantSecuritySettings(tenantId?: number): Observable<TenantSecuritySettingDto> {
+    return this.http.get<TenantSecuritySettingDto>('/tenant/tenant-security-settings', { headers: this.tenantHeaders(tenantId) });
   }
 
-  upsertTenantSecuritySettings(body: SaveTenantSecuritySettingRequest): Observable<TenantSecuritySettingDto> {
-    return this.http.put<TenantSecuritySettingDto>('/tenant/tenant-security-settings', body);
+  upsertTenantSecuritySettings(body: SaveTenantSecuritySettingRequest, tenantId?: number): Observable<TenantSecuritySettingDto> {
+    return this.http.put<TenantSecuritySettingDto>('/tenant/tenant-security-settings', body, { headers: this.tenantHeaders(tenantId) });
   }
 
   // ── Tenant Email Settings ────────────────────────────────────────────────
 
-  getTenantEmailSettings(): Observable<TenantEmailSettingDto> {
-    return this.http.get<TenantEmailSettingDto>('/tenant/tenant-email-settings');
+  getTenantEmailSettings(tenantId?: number): Observable<TenantEmailSettingDto> {
+    return this.http.get<TenantEmailSettingDto>('/tenant/tenant-email-settings', { headers: this.tenantHeaders(tenantId) });
   }
 
-  upsertTenantEmailSettings(body: SaveTenantEmailSettingRequest): Observable<TenantEmailSettingDto> {
-    return this.http.put<TenantEmailSettingDto>('/tenant/tenant-email-settings', body);
+  upsertTenantEmailSettings(body: SaveTenantEmailSettingRequest, tenantId?: number): Observable<TenantEmailSettingDto> {
+    return this.http.put<TenantEmailSettingDto>('/tenant/tenant-email-settings', body, { headers: this.tenantHeaders(tenantId) });
   }
 
   // ── Tenant Notification Settings ─────────────────────────────────────────
 
-  getTenantNotificationSettings(): Observable<TenantNotificationSettingDto> {
-    return this.http.get<TenantNotificationSettingDto>('/tenant/tenant-notification-settings');
+  getTenantNotificationSettings(tenantId?: number): Observable<TenantNotificationSettingDto> {
+    return this.http.get<TenantNotificationSettingDto>('/tenant/tenant-notification-settings', { headers: this.tenantHeaders(tenantId) });
   }
 
-  upsertTenantNotificationSettings(body: SaveTenantNotificationSettingRequest): Observable<TenantNotificationSettingDto> {
-    return this.http.put<TenantNotificationSettingDto>('/tenant/tenant-notification-settings', body);
+  upsertTenantNotificationSettings(body: SaveTenantNotificationSettingRequest, tenantId?: number): Observable<TenantNotificationSettingDto> {
+    return this.http.put<TenantNotificationSettingDto>('/tenant/tenant-notification-settings', body, { headers: this.tenantHeaders(tenantId) });
   }
 
   // ── Tenant Feature Flags (end-user UI visibility) ────────────────────────

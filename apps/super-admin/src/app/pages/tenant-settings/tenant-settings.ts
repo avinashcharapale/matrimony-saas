@@ -5,13 +5,28 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TenantClient, TenantDto } from '@org/generated';
-import { BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDocumentsPanel } from '@org/tenant-settings';
+import {
+  BrandingPanel,
+  DomainsPanel,
+  ContactsPanel,
+  FeatureFlagsPanel,
+  LegalDocumentsPanel,
+  SecuritySettingsPanel,
+  EmailSettingsPanel,
+  NotificationSettingsPanel,
+  PaymentSettingsPanel,
+  GatewayKeysPanel,
+} from '@org/tenant-settings';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tenant-settings',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatTabsModule, BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDocumentsPanel],
+  imports: [
+    CommonModule, RouterModule, MatButtonModule, MatIconModule, MatTabsModule,
+    BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDocumentsPanel,
+    SecuritySettingsPanel, EmailSettingsPanel, NotificationSettingsPanel, PaymentSettingsPanel, GatewayKeysPanel,
+  ],
   template: `
     <div class="page">
       <div class="page-header">
@@ -48,6 +63,28 @@ import { BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDoc
             <app-contacts-panel [tenantId]="tenantId()" />
           </ng-template>
         </mat-tab>
+        <mat-tab label="Security">
+          <ng-template matTabContent>
+            <app-security-settings-panel [tenantId]="tenantId()" />
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Email">
+          <ng-template matTabContent>
+            <app-email-settings-panel [tenantId]="tenantId()" />
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Notifications">
+          <ng-template matTabContent>
+            <app-notification-settings-panel [tenantId]="tenantId()" />
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Payments">
+          <ng-template matTabContent>
+            <app-payment-settings-panel [tenantId]="tenantId()" />
+            <div class="panel-spacer"></div>
+            <app-gateway-keys-panel [tenantId]="tenantId()" />
+          </ng-template>
+        </mat-tab>
         <mat-tab label="Navigation">
           <ng-template matTabContent>
             <app-feature-flags-panel [tenantId]="tenantId()" />
@@ -70,6 +107,7 @@ import { BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDoc
     .breadcrumb a { color: #7b1fa2; text-decoration: none; }
     .breadcrumb a:hover { text-decoration: underline; }
     .breadcrumb .sep { margin: 0 0.375rem; }
+    .panel-spacer { height: 1.5rem; }
     ::ng-deep .mat-mdc-tab-body-wrapper { padding-top: 1.5rem; }
   `],
 })

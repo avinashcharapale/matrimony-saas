@@ -73,6 +73,46 @@
 .hero-actions button { font-size: 12px; }
 .hero-actions mat-icon { font-size: 16px; width: 16px; height: 16px; margin-right: 4px; }
 
+/* ─── Cash payment form ────────────────────────────────────────────────── */
+.cash-form {
+  background: #ffffff;
+  border: 1px solid #d8c8ec;
+  border-left: 4px solid #7b1fa2;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 4px rgba(91, 60, 122, 0.1);
+}
+.cash-form h3 { margin: 0 0 4px; font-size: 1rem; color: #2c003e; }
+.cash-form .hint { margin: 0 0 12px; font-size: 12px; color: #777; }
+.cash-form-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.cash-form-row label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: #5c3d7a; }
+.cash-form-row select {
+  min-width: 280px;
+  padding: 8px 10px;
+  border: 1px solid #d8c8ec;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #222;
+  background: #fff;
+}
+.cash-form-row select:focus { outline: none; border-color: #7b1fa2; }
+.cash-form .confirm-btn { height: 40px; }
+.cash-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.cash-message mat-icon { font-size: 20px; width: 20px; height: 20px; margin-top: 1px; }
+.cash-message p { margin: 2px 0 0; }
+.cash-message.success { background: #e8f5e9; color: #2e7d32; }
+.cash-message.error { background: #fdecea; color: #c62828; }
+
 /* ─── Tabs ─────────────────────────────────────────────────────────────── */
 .profile-tabs { margin-top: 0.25rem; }
 ::ng-deep .profile-tabs .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label { color: #7b1fa2; font-weight: 600; }
@@ -174,7 +214,7 @@
 .pmt-table { display: flex; flex-direction: column; margin-top: 6px; }
 .pmt-table-row {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr 1fr 1fr auto;
   gap: 8px;
   padding: 5px 0;
   border-bottom: 1px solid #f0ecf3;
@@ -182,6 +222,16 @@
   color: #333;
   align-items: center;
 }
+.pmt-table-row .pdf-btn {
+  min-width: 0;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pmt-table-row .pdf-btn mat-icon { font-size: 16px; width: 16px; height: 16px; }
 .pmt-table-row:last-child { border-bottom: none; }
 .pmt-table-head { color: #7b1fa2; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; font-size: 10px; }
 .pmt-divider { height: 1px; background: #e8e0f0; margin: 8px 0; }

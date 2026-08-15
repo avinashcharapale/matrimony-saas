@@ -2,12 +2,14 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageHeaderComponent } from '@org/shared-ui';
 import { MatTabsModule } from '@angular/material/tabs';
+import { FeatureFlagsPanel, LegalDocumentsPanel } from '@org/tenant-settings';
 import {
   SecuritySettingsPanel,
   EmailSettingsPanel,
   NotificationSettingsPanel,
-} from './settings-panels';
-import { FeatureFlagsPanel, LegalDocumentsPanel } from '@org/tenant-settings';
+  PaymentSettingsPanel,
+  GatewayKeysPanel,
+} from '@org/tenant-settings';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,6 +18,7 @@ import { FeatureFlagsPanel, LegalDocumentsPanel } from '@org/tenant-settings';
   imports: [
     CommonModule, PageHeaderComponent, MatTabsModule,
     SecuritySettingsPanel, EmailSettingsPanel, NotificationSettingsPanel, FeatureFlagsPanel, LegalDocumentsPanel,
+    PaymentSettingsPanel, GatewayKeysPanel,
   ],
   template: `
     <div class="settings-page">
@@ -37,6 +40,13 @@ import { FeatureFlagsPanel, LegalDocumentsPanel } from '@org/tenant-settings';
             <app-notification-settings-panel></app-notification-settings-panel>
           </ng-template>
         </mat-tab>
+        <mat-tab label="Payments">
+          <ng-template matTabContent>
+            <app-payment-settings-panel></app-payment-settings-panel>
+            <div class="panel-spacer"></div>
+            <app-gateway-keys-panel></app-gateway-keys-panel>
+          </ng-template>
+        </mat-tab>
         <mat-tab label="Navigation">
           <ng-template matTabContent>
             <app-feature-flags-panel></app-feature-flags-panel>
@@ -53,6 +63,7 @@ import { FeatureFlagsPanel, LegalDocumentsPanel } from '@org/tenant-settings';
   styles: [`
     .settings-page { position: relative; }
     ::ng-deep .mat-mdc-tab-body-wrapper { padding-top: 1.5rem; }
+    .panel-spacer { height: 1.5rem; }
   `],
 })
 export class Settings {}

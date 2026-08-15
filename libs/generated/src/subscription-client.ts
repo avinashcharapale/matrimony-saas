@@ -15,6 +15,8 @@ import {
   UpdateSubscriptionFeatureCategoryRequest,
   CheckoutRequestDto,
   CheckoutResponseDto,
+  RecordCashPaymentRequestDto,
+  PaymentStatusDto,
   TenantSubscriptionDto,
   TenantSubscriptionEventDto,
   CreateTenantSubscriptionRequest,
@@ -218,5 +220,13 @@ export class SubscriptionClient {
 
   checkout(body: CheckoutRequestDto): Observable<CheckoutResponseDto> {
     return this.http.post<CheckoutResponseDto>('/subscription/Payments/checkout', body);
+  }
+
+  recordCashPayment(body: RecordCashPaymentRequestDto): Observable<CheckoutResponseDto> {
+    return this.http.post<CheckoutResponseDto>('/subscription/Payments/cash', body);
+  }
+
+  getPaymentStatus(gatewayOrderId: string): Observable<PaymentStatusDto> {
+    return this.http.get<PaymentStatusDto>(`/subscription/Payments/status/${encodeURIComponent(gatewayOrderId)}`);
   }
 }

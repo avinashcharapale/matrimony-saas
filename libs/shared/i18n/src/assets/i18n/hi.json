@@ -549,7 +549,10 @@
     "at": "पर",
     "refunds": "रिफंड",
     "noRefunds": "कोई रिफंड दर्ज नहीं।",
-    "reason": "कारण"
+    "reason": "कारण",
+    "pdf": "PDF",
+    "downloadInvoice": "इनवॉइस डाउनलोड करें",
+    "downloadReceipt": "रसीद डाउनलोड करें"
   },
   "plans": {
     "title": "अपना प्लान चुनें",
@@ -560,6 +563,9 @@
     "validFrom": "से वैध",
     "to": "से",
     "amountPaid": "भुगतान की गई राशि:",
+    "paymentFailed": "भुगतान विफल। कृपया पुनः प्रयास करें।",
+    "weWillConfirm": "हम जल्द ही आपकी सक्रियता की पुष्टि करेंगे।",
+    "confirmingPayment": "भुगतान प्राप्त हुआ! आपकी योजना सक्रिय हो रही है...",
     "browseProfiles": "प्रोफ़ाइल ब्राउज़ करें",
     "mostPopular": "सबसे लोकप्रिय",
     "processing": "प्रक्रिया चल रही है...",
@@ -573,8 +579,32 @@
     "oneMonth": "1 महीना",
     "months": "{{count}} महीने",
     "errors": {
-      "checkout": "भुगतान विफल। कृपया पुनः प्रयास करें।"
-    }
+      "checkout": "भुगतान विफल। कृपया पुनः प्रयास करें।",
+      "report": "भुगतान की सूचना देने में असमर्थ। कृपया पुनः प्रयास करें।"
+    },
+    "choosePaymentMethod": "भुगतान का तरीका चुनें",
+    "choosePaymentMethodHint": "आप ऑनलाइन भुगतान कर सकते हैं या सीधे हमारे खाते में राशि स्थानांतरित कर सकते हैं।",
+    "payOnline": "ऑनलाइन भुगतान करें (कार्ड / UPI / नेट बैंकिंग)",
+    "payOffline": "ऑफ़लाइन भुगतान करें (UPI QR / बैंक स्थानांतरण)",
+    "cancel": "रद्द करें",
+    "chooseOfflineMethod": "ऑफ़लाइन भुगतान का तरीका चुनें",
+    "chooseOfflineMethodHint": "मैन्युअल रूप से भुगतान पूरा करें और हो जाने पर पुष्टि करें।",
+    "methodUpi": "UPI (QR कोड)",
+    "methodBank": "बैंक स्थानांतरण",
+    "offlinePaymentTitle": "अपना भुगतान पूरा करें",
+    "amountToPay": "भुगतान की जाने वाली राशि:",
+    "upiDetails": "UPI भुगतान विवरण",
+    "upiQr": "UPI QR कोड",
+    "upiId": "UPI ID",
+    "bankDetails": "बैंक खाता विवरण",
+    "accountHolder": "खाता धारक",
+    "bankName": "बैंक",
+    "accountNumber": "खाता संख्या",
+    "offlineReported": "भुगतान की सूचना दी गई",
+    "offlineAwaitingApproval": "आपके भुगतान की समीक्षा की जा रही है। पुष्टि होने पर आपकी सदस्यता सक्रिय हो जाएगी।",
+    "reportPayment": "मैंने भुगतान पूरा कर लिया है",
+    "reportPaymentHint": "एक व्यवस्थापक शीघ्र ही आपके भुगतान की पुष्टि करेगा।",
+    "backToPlans": "योजनाओं पर वापस जाएँ"
   },
   "photoGallery": {
     "eyebrow": "विज़ुअल प्रोफ़ाइल",

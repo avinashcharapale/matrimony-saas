@@ -5,11 +5,14 @@ import { LocaleService } from '@org/i18n';
 import { MemberService } from '../../services/member.service';
 import { AuthService } from '../../services/auth.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
-import { BillingStore } from '@org/data-access-billing';
+import { BillingStore, BillingRepository } from '@org/data-access-billing';
+import { InvoiceDto, ReceiptDto } from '@org/generated';
 import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 
 type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
+
+const PAID_TRANSACTION_STATUSES = new Set(['success', 'completed', 'succeeded', 'captured', 'paid']);
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -104,6 +107,7 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
                       <th>{{ 'payments.date' | translate }}</th>
                       <th>{{ 'payments.status' | translate }}</th>
                       <th>{{ 'payments.amount' | translate }}</th>
+                      <th>PDF</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -113,6 +117,11 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
                         <td>{{ formatDate(inv.invoiceDate) }}</td>
                         <td><span class="badge" [class]="statusClass(inv.status)">{{ inv.status }}</span></td>
                         <td>{{ formatCurrency(inv.totalAmount) }}</td>
+                        <td>
+                          <button class="pdf-btn" (click)="downloadInvoicePdf(inv)" [attr.title]="'Download ' + inv.invoiceNumber + '.pdf'">
+                            {{ 'payments.pdf' | translate }}
+                          </button>
+                        </td>
                       </tr>
                     }
                   </tbody>
@@ -202,8 +211,22 @@ type PaymentsTab = 'transactions' | 'invoices' | 'methods' | 'wallet';
             <dd>{{ selectedDetail()?.transaction?.gatewayPaymentId || '—' }}</dd>
             <dt>{{ 'payments.invoice' | translate }}</dt>
             <dd>{{ selectedDetail()?.transaction?.invoiceNumber || '—' }}</dd>
+            @if (selectedDetail()?.invoice; as inv) {
+              <dd class="pdf-row">
+                <button class="pdf-btn" (click)="downloadInvoicePdf(inv)" [attr.title]="'Download ' + inv.invoiceNumber + '.pdf'">
+                  {{ 'payments.downloadInvoice' | translate }}
+                </button>
+              </dd>
+            }
             <dt>{{ 'payments.receipt' | translate }}</dt>
             <dd>{{ selectedDetail()?.transaction?.receiptNumber || '—' }}</dd>
+            @if (selectedDetail()?.receipt; as rc) {
+              <dd class="pdf-row">
+                <button class="pdf-btn" (click)="downloadReceiptPdf(rc)" [attr.title]="'Download ' + rc.receiptNumber + '.pdf'">
+                  {{ 'payments.downloadReceipt' | translate }}
+                </button>
+              </dd>
+            }
           </dl>
 
           <h3>{{ 'payments.attempts' | translate }}</h3>
@@ -264,6 +287,7 @@ export class Payments implements OnInit {
   private readonly subscriptionStore = inject(SubscriptionStore);
   private readonly localeService = inject(LocaleService);
   readonly billingStore = inject(BillingStore);
+  private readonly billingRepository = inject(BillingRepository);
 
   readonly loading = this.billingStore.loading;
   readonly error = this.billingStore.error;
@@ -278,7 +302,9 @@ export class Payments implements OnInit {
   readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
 
   readonly totalSpent = computed(() =>
-    this.transactions().reduce((sum, tx) => sum + (tx.amount ?? 0), 0),
+    this.transactions()
+      .filter((tx) => PAID_TRANSACTION_STATUSES.has((tx.status ?? '').toLowerCase()))
+      .reduce((sum, tx) => sum + (tx.amount ?? 0) - (tx.refundedAmount ?? 0), 0),
   );
   readonly walletBalance = computed(() => {
     const w = this.wallet();
@@ -330,6 +356,14 @@ export class Payments implements OnInit {
 
   closeDetail(): void {
     this.billingStore.clearSelectedPaymentDetail();
+  }
+
+  downloadInvoicePdf(inv: InvoiceDto): void {
+    this.billingRepository.downloadInvoicePdf(inv.invoiceId!, `${inv.invoiceNumber}.pdf`).subscribe();
+  }
+
+  downloadReceiptPdf(rc: ReceiptDto): void {
+    this.billingRepository.downloadReceiptPdf(rc.receiptId!, `${rc.receiptNumber}.pdf`).subscribe();
   }
 
   onOverlayClick(event: MouseEvent): void {
