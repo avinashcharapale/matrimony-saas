@@ -113,7 +113,7 @@ export class Layout implements OnInit, AfterViewInit {
     s['--theme-surface-raised']  = '#fff';
     s['--theme-surface-soft']    = bgd;
     s['--theme-surface-subtle']  = bgd;
-    s['--theme-accent-soft']     = sf;
+    s['--theme-accent-soft']     = `color-mix(in srgb, ${sf} 50%, #fff)`;
     s['--theme-border']          = pl;
     s['--theme-border-strong']   = sec;
     s['--theme-text']            = t;
@@ -177,7 +177,7 @@ export class Layout implements OnInit, AfterViewInit {
       ['--theme-surface-overlay', 'rgba(0,0,0,.45)'],
       ['--theme-page-background', bg], ['--theme-surface', card], ['--theme-surface-raised', '#fff'],
       ['--theme-surface-soft', bgd], ['--theme-surface-subtle', bgd],
-      ['--theme-accent-soft', sf], ['--theme-border', pl], ['--theme-border-strong', sec],
+      ['--theme-accent-soft', `color-mix(in srgb, ${sf} 50%, #fff)`], ['--theme-border', pl], ['--theme-border-strong', sec],
       ['--theme-text', t], ['--theme-text-muted', ts], ['--theme-text-subtle', ts],
       ['--theme-focus', p], ['--theme-radius-sm', '12px'], ['--theme-radius-md', r],
       ['--theme-shadow-md', sh], ['--font-heading', h], ['--font-body', b],
