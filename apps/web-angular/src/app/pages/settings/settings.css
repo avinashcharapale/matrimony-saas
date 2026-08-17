@@ -84,8 +84,8 @@ h2 {
 
 .theme-option:hover,
 .theme-option.selected {
-  border-color: var(--tenant-primary);
-  box-shadow: 0 0 0 3px var(--theme-focus);
+  border-color: var(--tp-s);
+  box-shadow: 0 0 0 1px var(--theme-focus);
 }
 
 .theme-option:hover {
@@ -140,7 +140,7 @@ select {
 select:focus {
   outline: none;
   border-color: var(--tenant-primary);
-  box-shadow: 0 0 0 3px var(--theme-focus);
+  box-shadow: 0 0 0 1px var(--theme-focus);
 }
 
 .checkbox-label {
@@ -158,8 +158,7 @@ select:focus {
 .save-settings-button {
   width: fit-content;
   border: none;
-  border-radius: var(--theme-radius-md);
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
   font-weight: 700;
   padding: 0.6rem 0.95rem;

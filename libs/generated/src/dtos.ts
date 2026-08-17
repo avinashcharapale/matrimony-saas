@@ -422,8 +422,11 @@ export interface TenantResolveResponse {
   displayName?: string | null;
   logoUrl?: string | null;
   faviconUrl?: string | null;
+  heroImageUrl?: string | null;
+  bannerImageUrl?: string | null;
   primaryColor?: string | null;
   accentColor?: string | null;
+  themeTemplateId?: string | null;
   contacts?: TenantContactDto[] | null;
   featureFlags?: FeatureFlagDto[] | null;
 }
@@ -1593,10 +1596,13 @@ export interface TenantBrandingDto {
   tenantId?: number;
   logoUrl?: string;
   faviconUrl?: string;
+  heroImageUrl?: string;
+  bannerImageUrl?: string;
   primaryColor?: string;
   secondaryColor?: string;
   accentColor?: string;
   fontFamily?: string;
+  themeTemplateId?: string;
   customCss?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -1605,10 +1611,13 @@ export interface TenantBrandingDto {
 export interface SaveTenantBrandingRequest {
   logoUrl?: string;
   faviconUrl?: string;
+  heroImageUrl?: string;
+  bannerImageUrl?: string;
   primaryColor?: string;
   secondaryColor?: string;
   accentColor?: string;
   fontFamily?: string;
+  themeTemplateId?: string;
   customCss?: string;
 }
 

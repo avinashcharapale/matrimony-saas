@@ -1,0 +1,7 @@
+{
+    "builder.serverUrl": "locahost:4200",
+    "builder.command": "",
+    "builder.runDevServer": false,
+    "builder.autoDetectDevServer": true,
+    "builder.launchType": "editor"
+}

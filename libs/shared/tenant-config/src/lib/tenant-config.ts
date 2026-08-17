@@ -19,10 +19,13 @@ export interface TenantConfig {
   heroSubtitle: string;
   heroDescription: string;
   heroImage: string;
+  heroImageUrl?: string;
+  bannerImageUrl?: string;
   authBannerImage?: string;
   primaryColor: string;
   accentColor: string;
   defaultThemeId?: string;
+  themeTemplateId?: string;
   customTheme?: Partial<ThemePalette>;
   contacts: TenantContact[];
   featureFlags?: Record<string, boolean>;
@@ -107,6 +110,7 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     primaryColor: '#b45309',
     accentColor: '#fbbf24',
     defaultThemeId: 'warm-ivory',
+    themeTemplateId: 'paithani-royal',
     contacts: [
       { type: 'Phone', label: 'Support', value: '+91 9999999999', isPrimary: true },
       { type: 'Email', label: 'Support', value: 'support@demo.matrimony.local', isPrimary: true },
@@ -167,6 +171,7 @@ export const TENANT_CONFIGS: TenantConfig[] = [
     primaryColor: '#b45309',
     accentColor: '#fbbf24',
     defaultThemeId: 'warm-ivory',
+    themeTemplateId: 'sundarjodi-castes',
     contacts: [
       { type: 'Phone', label: 'Office', value: '+91 9822214005', isPrimary: true },
       { type: 'Phone', label: 'Alternate', value: '+91 9921501133' },

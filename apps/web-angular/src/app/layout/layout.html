@@ -1,119 +1,27 @@
-<app-loader></app-loader>
-<header class="app-header" [class.authenticated]="isLoggedIn()">
-  <div class="app-toolbar">
-    <div class="brand-block">
-      <a routerLink="/" class="brand-link">
-        <div class="brand-icon">
-          @if (tenant.logoUrl) {
-          <img [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" class="brand-icon-img" />
-          } @else {
-          <span>{{ tenant.logoEmoji || '🌼' }}</span>
-          }
-        </div>
-        <div>
-          <p class="brand-title">{{ tenant.displayName }}</p>
-          <p class="brand-subtitle">{{ tenant.tagline }}</p>
-        </div>
-      </a>
-    </div>
+<div class="tpl-root">
+  <app-loader></app-loader>
+  @if (!isLanding()) {
+  <div class="nav-spacer"></div>
+  <app-tpl-nav
+    [brandLetter]="brandLetter()"
+    [brandName]="brandName()"
+    [logoUrl]="tenant.logoUrl"
+    [navDark]="templateNavDark()"
+    [ctaLogin]="tenant.ctaLogin"
+    [ctaEnroll]="tenant.ctaEnroll"
+    [btnClass]="templateBtnClass()"
+    [tplId]="templateId()"
+    [isLoggedIn]="isLoggedIn()"
+    [style]="navStyle()"
+    (logout)="logout()"
+  ></app-tpl-nav>
+  }
 
-    <div class="toolbar-center">
-      @if (isLoggedIn()) {
-      <nav class="main-nav auth-nav">
-        @if (flagEnabled('dashboard')) {
-        <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.dashboard' | translate }}</a>
-        }
-        @if (flagEnabled('myProfile')) {
-        <a routerLink="/my-profile" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.myProfile' | translate }}</a>
-        }
-        @if (flagEnabled('search')) {
-        <a routerLink="/profiles" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.search' | translate }}</a>
-        }
-        @if (flagEnabled('interests')) {
-        <a routerLink="/interests" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.interests' | translate }}</a>
-        }
-        @if (flagEnabled('shortlists')) {
-        <a routerLink="/shortlists" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.shortlists' | translate }}</a>
-        }
-        @if (flagEnabled('messages')) {
-        <a routerLink="/messages" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.messages' | translate }}</a>
-        }
-      </nav>
-      } @else {
-      <nav class="main-nav public-nav">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.home' | translate }}</a>
-        <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'common.search' | translate }}</a>
-        <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.howItWorks' | translate }}</a>
-        <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.plans' | translate }}</a>
-        <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.contact' | translate }}</a>
-      </nav>
-      }
-    </div>
+  @if (isLoggedIn()) {
+    <div class="sidebar-backdrop" [class.visible]="sidebarOpen()" (click)="closeMobileMenu()"></div>
+  }
 
-    <div class="toolbar-right">
-      <app-language-selector></app-language-selector>
-      @if (isLoggedIn()) {
-        <button class="logout-btn" (click)="logout(); closeMobileMenu()">{{ 'nav.logout' | translate }}</button>
-      } @else {
-        <p class="toolbar-contact">{{ toolbarContact() }}</p>
-        <div class="auth-actions">
-          <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">{{ 'nav.login' | translate }}</a>
-          <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">{{ 'nav.register' | translate }}</a>
-        </div>
-      }
-    </div>
-
-    <button
-      type="button"
-      class="menu-toggle"
-      [attr.aria-expanded]="sidebarOpen()"
-      [attr.aria-label]="'common.toggleMenu' | translate"
-      (click)="toggleMobileMenu()"
-    >
-      <span class="hamburger-icon" [class.open]="sidebarOpen()">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-    </button>
-  </div>
-</header>
-
-@if (isLoggedIn()) {
-  <div class="sidebar-backdrop" [class.visible]="sidebarOpen()" (click)="closeMobileMenu()"></div>
-} @else {
-  <div class="sidebar-backdrop" [class.visible]="sidebarOpen()" (click)="closeMobileMenu()"></div>
-  <div class="public-mobile-drawer" [class.open]="sidebarOpen()">
-    <div class="drawer-brand">
-      <a routerLink="/" class="brand-link" (click)="closeMobileMenu()">
-        <div class="brand-icon">
-          @if (tenant.logoUrl) {
-          <img [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" class="brand-icon-img" />
-          } @else {
-          <span>{{ tenant.logoEmoji || '🌼' }}</span>
-          }
-        </div>
-        <div>
-          <p class="brand-title">{{ tenant.displayName }}</p>
-          <p class="brand-subtitle">{{ tenant.tagline }}</p>
-        </div>
-      </a>
-    </div>
-    <nav class="public-drawer-nav">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.home' | translate }}</a>
-      <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'common.search' | translate }}</a>
-      <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.howItWorks' | translate }}</a>
-      <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.plans' | translate }}</a>
-      <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.contact' | translate }}</a>
-    </nav>
-    <div class="public-drawer-actions">
-      <app-language-selector></app-language-selector>
-      <a routerLink="/login" class="login-link" (click)="closeMobileMenu()">{{ 'nav.login' | translate }}</a>
-      <a routerLink="/register" class="register-btn" (click)="closeMobileMenu()">{{ 'nav.register' | translate }}</a>
-    </div>
-  </div>
-}
-
-<main class="app-content">
-  <router-outlet></router-outlet>
-</main>
+  <main class="app-content" [class.landing]="isLanding()">
+    <router-outlet></router-outlet>
+  </main>
+</div>

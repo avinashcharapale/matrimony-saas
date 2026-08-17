@@ -30,7 +30,19 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
   const router = inject(Router);
 
   const token = authStore.accessToken() ?? localStorage.getItem(ACCESS_TOKEN_KEY);
-  const outgoing = token ? addBearerToken(req, token) : req;
+
+  if (!token) {
+    return next(req).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          return throwError(() => error);
+        }
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  const outgoing = addBearerToken(req, token);
 
   return next(outgoing).pipe(
     catchError((error: HttpErrorResponse) => {

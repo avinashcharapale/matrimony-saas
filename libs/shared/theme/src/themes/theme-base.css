@@ -1,16 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Fraunces:opsz,wght@9..144,500..700&display=swap');
 
 :root {
-  --tenant-primary: #a85436;
-  --tenant-accent: #ca8a66;
-  --tenant-bg-start: #fff2e8;
-  --tenant-bg-mid: #f6f1ed;
-  --tenant-bg-end: #f4f0ec;
-  --tenant-text: #242638;
+  --tenant-primary: #5d172f;
+  --tenant-accent: #b68a43;
+  --tenant-bg-start: #fbf7f0;
+  --tenant-bg-mid: #f4ecdf;
+  --tenant-bg-end: #efe3d4;
+  --tenant-text: #2c1720;
 
   --color-white: #ffffff;
   --color-black: #000000;
-  --on-primary: #fff8f3;
+  --on-primary: #fffaf2;
   --text-strong: var(--tenant-text);
   --text-muted: color-mix(in srgb, var(--tenant-text) 68%, var(--color-white) 32%);
   --text-subtle: color-mix(in srgb, var(--tenant-text) 56%, var(--color-white) 44%);
@@ -47,11 +47,12 @@
   --theme-info: #1565c0;
   --theme-info-background: #dbeafe;
   --theme-info-border: #93c5fd;
-  --theme-radius-sm: 0.375rem;
-  --theme-radius-md: 0.6rem;
-  --theme-radius-lg: 1rem;
-  --theme-shadow-sm: 0 4px 12px color-mix(in srgb, var(--tenant-text) 6%, transparent);
-  --theme-shadow-md: 0 16px 30px color-mix(in srgb, var(--tenant-text) 12%, transparent);
+  --theme-radius-sm: 0.5rem;
+  --theme-radius-md: 0.875rem;
+  --theme-radius-lg: 1.375rem;
+  --theme-shadow-sm: 0 8px 24px color-mix(in srgb, var(--tenant-text) 8%, transparent);
+  --theme-shadow-md: 0 24px 56px color-mix(in srgb, var(--tenant-text) 14%, transparent);
+  --theme-shadow-lg: 0 12px 40px color-mix(in srgb, var(--tenant-text) 18%, transparent);
 
   --mat-sys-primary: var(--tenant-primary);
   --mat-sys-on-primary: var(--on-primary);
@@ -74,8 +75,8 @@ html,
 body {
   min-height: 100%;
   margin: 0;
-  font-family: 'Manrope', 'Segoe UI', sans-serif;
-  background: radial-gradient(circle at top right, var(--tenant-bg-start) 0%, var(--tenant-bg-mid) 45%, var(--tenant-bg-end) 100%);
+  font-family: var(--font-body, 'Manrope', 'Segoe UI', sans-serif);
+  background: radial-gradient(circle at 100% 0, color-mix(in srgb, var(--tenant-accent) 11%, var(--tenant-bg-start)) 0%, transparent 30%), linear-gradient(135deg, var(--tenant-bg-start) 0%, var(--tenant-bg-mid) 52%, var(--tenant-bg-end) 100%);
   color: var(--tenant-text);
 }
 
@@ -83,7 +84,12 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: var(--font-heading, 'Cormorant Garamond', Georgia, serif);
+}
+
+*:focus-visible {
+  outline: 1px solid var(--theme-focus);
+  outline-offset: 1px;
 }
 
 .app-snackbar .mdc-snackbar__surface {

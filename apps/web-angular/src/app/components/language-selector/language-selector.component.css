@@ -38,7 +38,7 @@
 .language-selector select:focus {
   outline: none;
   border-color: var(--tenant-primary);
-  box-shadow: 0 0 0 3px var(--theme-focus);
+  box-shadow: 0 0 0 1px var(--theme-focus);
 }
 
 .language-selector select option {

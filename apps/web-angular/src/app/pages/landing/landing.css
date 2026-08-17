@@ -6,7 +6,7 @@
   display: grid;
   gap: 1.35rem;
   color: var(--theme-text);
-  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  font-family: var(--font-body, 'Manrope', 'Segoe UI', sans-serif);
   overflow-x: hidden;
 }
 
@@ -14,7 +14,7 @@
   position: relative;
   isolation: isolate;
   background-image:
-    linear-gradient(180deg, color-mix(in srgb, var(--tenant-bg-start) 86%, transparent), color-mix(in srgb, var(--tenant-bg-end) 94%, transparent)),
+    linear-gradient(180deg, color-mix(in srgb, var(--tenant-bg-start) 96%, transparent), color-mix(in srgb, var(--tenant-bg-end) 98%, transparent)),
     url('https://images.pexels.com/photos/34012376/pexels-photo-34012376.jpeg?auto=compress&cs=tinysrgb&w=1800');
   background-size: cover;
   background-position: center top;
@@ -42,7 +42,7 @@ app-landing-sections {
   align-items: center;
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  background: var(--accent-soft, color-mix(in srgb, var(--tenant-primary) 10%, #ffffff));
+  background: var(--accent-soft, color-mix(in srgb, var(--tenant-primary) 10%, var(--color-white)));
   color: var(--tenant-accent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -79,7 +79,6 @@ app-landing-sections {
   align-items: center;
   justify-content: center;
   padding: 0.78rem 1.1rem;
-  border-radius: 0.7rem;
   text-decoration: none;
   font-weight: 700;
   border: 1px solid transparent;
@@ -87,7 +86,6 @@ app-landing-sections {
 }
 
 .btn-primary {
-  background: var(--tenant-primary);
   color: var(--on-primary);
 }
 
@@ -109,7 +107,7 @@ app-landing-sections {
 }
 
 .btn-outline {
-  border-color: rgba(255, 255, 255, 0.55);
+  border-color: color-mix(in srgb, var(--on-primary) 55%, transparent);
   color: var(--on-primary);
 }
 
@@ -140,7 +138,7 @@ app-landing-sections {
 .hero-panel-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(30, 18, 12, 0.04) 20%, rgba(30, 18, 12, 0.78) 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tenant-text) 4%, transparent) 20%, color-mix(in srgb, var(--tenant-text) 78%, transparent) 100%);
 }
 
 .hero-panel-content {
@@ -150,11 +148,11 @@ app-landing-sections {
   gap: 0.35rem;
   max-width: 280px;
   padding: 1.25rem;
-  color: #fffaf4;
+  color: var(--on-primary);
 }
 
 .hero-panel-kicker {
-  color: #f7d2ad;
+  color: var(--tenant-accent);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -162,7 +160,7 @@ app-landing-sections {
 }
 
 .hero-panel-content strong {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: var(--font-heading, 'Fraunces', Georgia, serif);
   font-size: 1.3rem;
   line-height: 1.15;
 }
@@ -196,7 +194,7 @@ app-landing-sections {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
-  background: #9f5135;
+  background: var(--tenant-primary);
   border-radius: 1rem;
   overflow: hidden;
 }
@@ -204,14 +202,14 @@ app-landing-sections {
 .stat-tile {
   padding: 1rem 0.8rem;
   text-align: center;
-  color: #fff7f3;
-  background: #af5a3b;
+  color: var(--on-primary);
+  background: var(--tenant-primary);
 }
 
-.stat-tile.stat-pink { background: #c2547a; }
-.stat-tile.stat-blue { background: #4a7fb5; }
-.stat-tile.stat-gold { background: #b89234; }
-.stat-tile.stat-purple { background: #7e5eb5; }
+.stat-tile.stat-pink { background: color-mix(in srgb, var(--tenant-primary) 80%, #c2547a); }
+.stat-tile.stat-blue { background: color-mix(in srgb, var(--tenant-primary) 60%, #4a7fb5); }
+.stat-tile.stat-gold { background: var(--tenant-accent); }
+.stat-tile.stat-purple { background: color-mix(in srgb, var(--tenant-primary) 70%, #7e5eb5); }
 
 .stat-value {
   font-size: 1.65rem;
@@ -221,7 +219,7 @@ app-landing-sections {
 .stat-label {
   margin-top: 0.15rem;
   font-size: 0.84rem;
-  color: rgba(255, 250, 245, 0.92);
+  color: var(--on-primary);
 }
 
 .section-block {
@@ -439,7 +437,7 @@ app-landing-sections {
 }
 
 .cta-banner {
-  background: linear-gradient(90deg, var(--tenant-primary) 0%, var(--tenant-accent) 100%);
+  background: linear-gradient(90deg, var(--tp-s) 0%, var(--tenant-accent) 100%);
   border-radius: 1rem;
   padding: 1.3rem;
   color: var(--on-primary);
@@ -455,7 +453,7 @@ app-landing-sections {
 
 .cta-banner p {
   margin: 0.45rem 0 0;
-  color: rgba(255, 250, 245, 0.9);
+  color: color-mix(in srgb, var(--on-primary) 90%, transparent);
 }
 
 .cta-actions {

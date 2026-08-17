@@ -17,6 +17,36 @@ body { font-family: Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-
   font-weight: 600;
 }
 
+.tpl-root svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  vertical-align: -2px;
+}
+.tpl-root .hero-trust svg,
+.tpl-root .story-stars svg,
+.tpl-root .foot-contact svg,
+.tpl-root .banner-chips svg,
+.tpl-root .storebtn svg,
+.tpl-root .icon-tile svg {
+  vertical-align: middle;
+}
+.tpl-root .foot-brand svg,
+.tpl-root .foot-blurb svg,
+.tpl-root .tpl-footer h4 svg {
+  width: 14px;
+  height: 14px;
+}
+.tpl-root .viewall svg {
+  width: 16px;
+  height: 16px;
+}
+.tpl-root .prof-badge svg {
+  width: 13px;
+  height: 13px;
+  vertical-align: -2px;
+}
+
 .app-snackbar-success .mdc-snackbar__surface {
   background-color: #2e7d32;
 }

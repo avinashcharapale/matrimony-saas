@@ -27,3 +27,23 @@ body {
   --mdc-outlined-text-field-label-text-color: var(--theme-text-muted);
   --mdc-outlined-text-field-input-text-color: var(--theme-text);
 }
+
+/* ── Shared Button Border-Radius ── */
+/* Group A — Primary/CTA: 2px */
+.btn, .btn-primary, .btn-secondary, .btn-search, .btn-apply, .btn-connect,
+.btn-outline, .btn-small, .btn-light, .btn-muted,
+.connect-button, .shortlist-button, .cta-button, .cta-btn,
+.save-settings-button, .form-card button, .composer button,
+.event-card button, .renew-card button, .plan-select-btn,
+.chooser-btn, .edit-profile-btn, .upgrade-cta,
+.accept, .decline, .withdraw, .photo-add-btn, .empty-cta,
+.completion-card a, .pdf-btn, .tbtn, .formbtn, .storebtn, .fab, .sticky-cta {
+  border-radius: 2px;
+}
+
+/* Group B — Tab/pill/filter: 8px */
+.tabs button, .pagination button, .pager-mini button, .btn-clear,
+.filter-toggle, .sidebar-toggle-btn, .chat-list button, .step-item,
+.link-button, .theme-option, .tbtn.btn-pill-solid, .tbtn.btn-pill-ghost {
+  border-radius: 8px;
+}

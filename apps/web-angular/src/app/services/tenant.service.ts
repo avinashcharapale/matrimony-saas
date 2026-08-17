@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { catchError, of, tap } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { BehaviorSubject, catchError, firstValueFrom, of, tap } from 'rxjs';
 import { TenantStore } from '@org/data-access-tenant';
 import { TenantResolveResponse } from '@org/generated';
 import {
@@ -9,6 +9,12 @@ import {
   THEME_PALETTES,
   ThemePalette,
 } from '@org/tenant-config';
+import {
+  APPROVED_TEMPLATES,
+  LandingTemplate,
+  TemplateOverrides,
+  resolveTemplateStyleVars,
+} from '@org/landing-templates';
 
 function resolveTenantHost(): string {
   return globalThis.location?.hostname ?? '';
@@ -22,6 +28,11 @@ export class TenantService {
   private currentTenant: TenantConfig;
   private selectedThemeId = 'warm-ivory';
 
+  /** Bumped whenever currentTenant is replaced so Angular signals can track it. */
+  readonly tenantVersion = signal(0);
+  /** Observable variant so non-signal subscribers (Layout ngOnInit) can subscribe. */
+  readonly tenantVersion$ = new BehaviorSubject<void>(undefined);
+
   constructor() {
     this.currentTenant = resolveTenant(
       resolveTenantHost(),
@@ -32,6 +43,36 @@ export class TenantService {
 
   get tenant(): TenantConfig {
     return this.currentTenant;
+  }
+
+  /** Approved landing template chosen for this tenant (DB ThemeTemplateId). */
+  get template(): LandingTemplate {
+    const id = this.currentTenant.themeTemplateId;
+    const found = id ? APPROVED_TEMPLATES.find((t) => t.id === id) : undefined;
+    return found ?? APPROVED_TEMPLATES[0];
+  }
+
+  /** Tenant branding overrides that beat template defaults.
+   *  When a landing template is selected its palette fully wins, so the
+   *  visitor pages match the approved design exactly. */
+  get templateOverrides(): TemplateOverrides {
+    const legacyColors = this.currentTenant.themeTemplateId
+      ? {}
+      : {
+          primary:
+            this.currentTenant.primaryColor ??
+            this.currentTenant.customTheme?.primary,
+          secondary:
+            this.currentTenant.accentColor ??
+            this.currentTenant.customTheme?.accent,
+          background: this.currentTenant.customTheme?.bgStart,
+          text: this.currentTenant.customTheme?.text,
+        };
+    return {
+      ...legacyColors,
+      heroImage: this.currentTenant.heroImageUrl,
+      bannerImage: this.currentTenant.bannerImageUrl,
+    };
   }
 
   get themes(): ThemePalette[] {
@@ -50,20 +91,22 @@ export class TenantService {
     return this.currentTenant.featureFlags?.[code] ?? true;
   }
 
-  initialize() {
-    return this.store
-      .resolveTenant(
-        resolveTenantHost(),
-        window.location.pathname,
-        window.location.search,
-      )
-      .pipe(
-        tap((resolved) => this.applyResolvedTenant(resolved)),
-        catchError(() => {
-          this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
-          return of(void 0);
-        }),
-      );
+  initialize(): Promise<void> {
+    return firstValueFrom(
+      this.store
+        .resolveTenant(
+          resolveTenantHost(),
+          window.location.pathname,
+          window.location.search,
+        )
+        .pipe(
+          tap((resolved) => this.applyResolvedTenant(resolved)),
+          catchError(() => {
+            this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
+            return of(void 0);
+          }),
+        ),
+    ) as Promise<void>;
   }
 
   private applyResolvedTenant(resolved: TenantResolveResponse): void {
@@ -77,8 +120,11 @@ export class TenantService {
         resolved.displayName || resolved.name || this.currentTenant.displayName,
       logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
       faviconUrl: resolved.faviconUrl ?? this.currentTenant.faviconUrl,
+      heroImageUrl: resolved.heroImageUrl ?? this.currentTenant.heroImageUrl,
+      bannerImageUrl: resolved.bannerImageUrl ?? this.currentTenant.bannerImageUrl,
       primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
       accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
+      themeTemplateId: resolved.themeTemplateId ?? this.currentTenant.themeTemplateId,
       contacts:
         resolved.contacts && resolved.contacts.length > 0
           ? resolved.contacts.map((c) => ({
@@ -104,6 +150,8 @@ export class TenantService {
           : this.currentTenant.domainAliases,
     };
     this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
+    this.tenantVersion.update(v => v + 1);
+    this.tenantVersion$.next();
   }
 
   setTheme(themeId: string): void {
@@ -122,7 +170,7 @@ export class TenantService {
     const theme = this.findTheme(resolvedThemeId) ?? THEME_PALETTES[0];
     this.selectedThemeId = theme.id;
 
-    const mergedTheme: ThemePalette = {
+    let mergedTheme: ThemePalette = {
       ...theme,
       primary: tenant.customTheme?.primary ?? theme.primary,
       accent: tenant.customTheme?.accent ?? theme.accent,
@@ -133,6 +181,14 @@ export class TenantService {
     };
 
     const root = document.documentElement;
+    const templateTheme = this.templateTheme(tenant);
+    if (templateTheme) {
+      mergedTheme = { ...mergedTheme, ...templateTheme.palette };
+      root.style.setProperty('--on-primary', templateTheme.onPrimary);
+    } else {
+      root.style.setProperty('--on-primary', '#fff8f3');
+    }
+
     root.setAttribute('data-theme', theme.id);
     root.style.setProperty(
       '--tenant-primary',
@@ -152,6 +208,41 @@ export class TenantService {
     if (iconUrl) {
       this.setFavicon(iconUrl);
     }
+  }
+
+  /** When a landing template is selected, expose its palette as the app theme so
+   *  every page (login, register, plans, search, contact, ...) matches the design. */
+  private templateTheme(tenant: TenantConfig): { palette: ThemePalette; onPrimary: string } | null {
+    const id = tenant.themeTemplateId;
+    const tpl = id ? APPROVED_TEMPLATES.find((t) => t.id === id) : undefined;
+    if (!tpl) {
+      return null;
+    }
+    const overrides: TemplateOverrides = tenant.themeTemplateId
+      ? {
+          heroImage: tenant.heroImageUrl,
+          bannerImage: tenant.bannerImageUrl,
+        }
+      : {
+          primary: tenant.primaryColor ?? tenant.customTheme?.primary,
+          secondary: tenant.accentColor ?? tenant.customTheme?.accent,
+          background: tenant.customTheme?.bgStart,
+          text: tenant.customTheme?.text,
+        };
+    const v = resolveTemplateStyleVars(tpl, overrides).vars;
+    return {
+      palette: {
+        id: tpl.id,
+        name: tpl.name,
+        primary: v['tp-p'],
+        accent: v['tp-s'],
+        bgStart: v['tp-bg'],
+        bgMid: v['tp-bgd'],
+        bgEnd: v['tp-bgd'],
+        text: v['tp-t'],
+      },
+      onPrimary: v['tp-od'],
+    };
   }
 
   private resolveInitialThemeId(): string {

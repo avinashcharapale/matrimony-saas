@@ -1,0 +1,1962 @@
+[
+  {
+    "id": "paithani-royal",
+    "name": "Paithani Royal",
+    "category": "Traditional",
+    "hero": "frame",
+    "fonts": [
+      "Fraunces",
+      "Manrope"
+    ],
+    "colors": {
+      "p": "#8e1f4f",
+      "dp": "#5c1233",
+      "ink": "#3f0c22",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f7e7c3",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf6ec",
+      "bgd": "#f3e7d2",
+      "card": "#fffefb",
+      "t": "#3f0c22",
+      "ts": "#7c5670",
+      "d1": "#5c1233",
+      "d2": "#3f0c22"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "butti"
+  },
+  {
+    "id": "marigold-traditional",
+    "name": "Marigold Traditional",
+    "category": "Traditional",
+    "hero": "rangoli",
+    "fonts": [
+      "Cinzel",
+      "Inter"
+    ],
+    "colors": {
+      "p": "#7f1d1d",
+      "dp": "#4a0e0e",
+      "ink": "#2a0505",
+      "s": "#f59e0b",
+      "sf": "#fbbf24",
+      "sd": "#d97706",
+      "pl": "#fde68a",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fff8ec",
+      "bgd": "#f5edd0",
+      "card": "#fffefb",
+      "t": "#3b0c0c",
+      "ts": "#7a4a4a",
+      "d1": "#4a0e0e",
+      "d2": "#2a0505"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "butti2"
+  },
+  {
+    "id": "mangalsutra-gold",
+    "name": "Mangalsutra Gold",
+    "category": "Traditional",
+    "hero": "mandala",
+    "fonts": [
+      "Playfair Display",
+      "Lato"
+    ],
+    "colors": {
+      "p": "#5c3a0f",
+      "dp": "#3a2200",
+      "ink": "#1a0e00",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0e4d4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#faf5eb",
+      "bgd": "#efe6d6",
+      "card": "#fffefb",
+      "t": "#3a2200",
+      "ts": "#6a5a3a",
+      "d1": "#3a2200",
+      "d2": "#1a0e00"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "mango"
+  },
+  {
+    "id": "kundali-divine",
+    "name": "Kundali Divine",
+    "category": "Traditional",
+    "hero": "mandala",
+    "fonts": [
+      "DM Serif Display",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#2d1b69",
+      "dp": "#1a0d4a",
+      "ink": "#0e0630",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#e8dccf",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f8f5f0",
+      "bgd": "#eee9e2",
+      "card": "#fffefb",
+      "t": "#1a0d4a",
+      "ts": "#4a3a6a",
+      "d1": "#1a0d4a",
+      "d2": "#0e0630"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "zari"
+  },
+  {
+    "id": "saptapadi-sacred",
+    "name": "Saptapadi Sacred",
+    "category": "Traditional",
+    "hero": "arch",
+    "fonts": [
+      "Cormorant Garamond",
+      "Rubik"
+    ],
+    "colors": {
+      "p": "#8b1a1a",
+      "dp": "#5c0808",
+      "ink": "#3a0000",
+      "s": "#e8a640",
+      "sf": "#f5c56a",
+      "sd": "#c48a28",
+      "pl": "#f5e4c8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fff9f0",
+      "bgd": "#f5edd8",
+      "card": "#fffefb",
+      "t": "#3a0808",
+      "ts": "#7a4a4a",
+      "d1": "#5c0808",
+      "d2": "#3a0000"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "wave"
+  },
+  {
+    "id": "haldi-blessed",
+    "name": "Haldi Blessed",
+    "category": "Traditional",
+    "hero": "rangoli",
+    "fonts": [
+      "Marcellus",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#6b4e0a",
+      "dp": "#4a3200",
+      "ink": "#2a1a00",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5ecc8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fef9e7",
+      "bgd": "#f5edd0",
+      "card": "#fffefb",
+      "t": "#3a2800",
+      "ts": "#6a5a3a",
+      "d1": "#4a3200",
+      "d2": "#2a1a00"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "vine"
+  },
+  {
+    "id": "mehendi-green",
+    "name": "Mehendi Green",
+    "category": "Traditional",
+    "hero": "frame",
+    "fonts": [
+      "Libre Baskerville",
+      "Montserrat"
+    ],
+    "colors": {
+      "p": "#1a5e2a",
+      "dp": "#0e3a16",
+      "ink": "#062008",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#e8dccf",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f2f8f0",
+      "bgd": "#e6efe4",
+      "card": "#fffefb",
+      "t": "#0e3a16",
+      "ts": "#3a6a42",
+      "d1": "#0e3a16",
+      "d2": "#062008"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "pearl"
+  },
+  {
+    "id": "sagai-rosegold",
+    "name": "Sagai Rosegold",
+    "category": "Traditional",
+    "hero": "frame",
+    "fonts": [
+      "Fraunces",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#8e2f4f",
+      "dp": "#5c1030",
+      "ink": "#3a0618",
+      "s": "#c8856c",
+      "sf": "#e0a890",
+      "sd": "#a86b52",
+      "pl": "#f5e0d8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf2ee",
+      "bgd": "#f3e5de",
+      "card": "#fffefb",
+      "t": "#3a0618",
+      "ts": "#7a4a5a",
+      "d1": "#5c1030",
+      "d2": "#3a0618"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "coin"
+  },
+  {
+    "id": "lavani-vibrant",
+    "name": "Lavani Vibrant",
+    "category": "Regional",
+    "hero": "collage",
+    "fonts": [
+      "Playfair Display",
+      "Manrope"
+    ],
+    "colors": {
+      "p": "#a02858",
+      "dp": "#6e0e38",
+      "ink": "#4a0420",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5dcc8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf6ec",
+      "bgd": "#f3e7d2",
+      "card": "#fffefb",
+      "t": "#4a0420",
+      "ts": "#7a4a5a",
+      "d1": "#6e0e38",
+      "d2": "#4a0420"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "toran"
+  },
+  {
+    "id": "paithani-silk",
+    "name": "Paithani Silk",
+    "category": "Regional",
+    "hero": "split",
+    "fonts": [
+      "Cinzel",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#6b1d3e",
+      "dp": "#400e22",
+      "ink": "#220610",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0e0d6",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f8f0f4",
+      "bgd": "#ede4e8",
+      "card": "#fffefb",
+      "t": "#220610",
+      "ts": "#6a3a5a",
+      "d1": "#400e22",
+      "d2": "#220610"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "kite"
+  },
+  {
+    "id": "kolhapuri-earth",
+    "name": "Kolhapuri Earth",
+    "category": "Regional",
+    "hero": "masonry",
+    "fonts": [
+      "DM Serif Display",
+      "Inter"
+    ],
+    "colors": {
+      "p": "#5c3a1e",
+      "dp": "#3a220e",
+      "ink": "#1e1004",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0e4d4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#faf5eb",
+      "bgd": "#efe6d6",
+      "card": "#fffefb",
+      "t": "#3a220e",
+      "ts": "#6a5a3a",
+      "d1": "#3a220e",
+      "d2": "#1e1004"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "stripe"
+  },
+  {
+    "id": "nashik-grapes",
+    "name": "Nashik Grapes",
+    "category": "Regional",
+    "hero": "circular",
+    "fonts": [
+      "Cormorant Garamond",
+      "Lato"
+    ],
+    "colors": {
+      "p": "#4a1a5c",
+      "dp": "#2e0a3a",
+      "ink": "#160420",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#ede0f0",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f8f2fa",
+      "bgd": "#ede4f0",
+      "card": "#fffefb",
+      "t": "#2e0a3a",
+      "ts": "#5a3a6a",
+      "d1": "#2e0a3a",
+      "d2": "#160420"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "dot"
+  },
+  {
+    "id": "konkan-coastal",
+    "name": "Konkan Coastal",
+    "category": "Regional",
+    "hero": "fullbleed",
+    "fonts": [
+      "Marcellus",
+      "Rubik"
+    ],
+    "colors": {
+      "p": "#1a4d5e",
+      "dp": "#0e2e3a",
+      "ink": "#061a22",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#dce8e4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f2f8f6",
+      "bgd": "#e4eeec",
+      "card": "#fffefb",
+      "t": "#0e2e3a",
+      "ts": "#3a6a7a",
+      "d1": "#0e2e3a",
+      "d2": "#061a22"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "mandala"
+  },
+  {
+    "id": "vidarbha-orange",
+    "name": "Vidarbha Orange",
+    "category": "Regional",
+    "hero": "hscroll",
+    "fonts": [
+      "Libre Baskerville",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#7a3010",
+      "dp": "#501e06",
+      "ink": "#2e0e00",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5e4c8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#faf5eb",
+      "bgd": "#efe6d6",
+      "card": "#fffefb",
+      "t": "#501e06",
+      "ts": "#7a5a3a",
+      "d1": "#501e06",
+      "d2": "#2e0e00"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "chevron"
+  },
+  {
+    "id": "pune-peshwai",
+    "name": "Pune Peshwai",
+    "category": "Regional",
+    "hero": "asymmetric",
+    "fonts": [
+      "Fraunces",
+      "Montserrat"
+    ],
+    "colors": {
+      "p": "#5c1233",
+      "dp": "#3a061e",
+      "ink": "#200310",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0dde4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf6ec",
+      "bgd": "#f3e7d2",
+      "card": "#fffefb",
+      "t": "#3a061e",
+      "ts": "#6a3a5a",
+      "d1": "#3a061e",
+      "d2": "#200310"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "chain"
+  },
+  {
+    "id": "warkari-saffron",
+    "name": "Warkari Saffron",
+    "category": "Regional",
+    "hero": "floating",
+    "fonts": [
+      "Playfair Display",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#8b4510",
+      "dp": "#5c2a06",
+      "ink": "#3a1800",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5e4c8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fef9e7",
+      "bgd": "#f5edd0",
+      "card": "#fffefb",
+      "t": "#3a1800",
+      "ts": "#6a5a3a",
+      "d1": "#5c2a06",
+      "d2": "#3a1800"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "floral"
+  },
+  {
+    "id": "rajwada-palace",
+    "name": "Rajwada Palace",
+    "category": "Royal",
+    "hero": "royal",
+    "fonts": [
+      "Cinzel",
+      "Manrope"
+    ],
+    "colors": {
+      "p": "#3d1a6e",
+      "dp": "#240a4e",
+      "ink": "#12042e",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#e8daf4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf6ec",
+      "bgd": "#f3e7d2",
+      "card": "#fffefb",
+      "t": "#12042e",
+      "ts": "#5a3a8a",
+      "d1": "#240a4e",
+      "d2": "#12042e"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "tessellation"
+  },
+  {
+    "id": "shaniwar-wada",
+    "name": "Shaniwar Wada",
+    "category": "Royal",
+    "hero": "royal",
+    "fonts": [
+      "DM Serif Display",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#5c1233",
+      "dp": "#3a061e",
+      "ink": "#200310",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0dde4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#faf5eb",
+      "bgd": "#efe6d6",
+      "card": "#fffefb",
+      "t": "#3a061e",
+      "ts": "#6a3a5a",
+      "d1": "#3a061e",
+      "d2": "#200310"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "plate"
+  },
+  {
+    "id": "fort-terracotta",
+    "name": "Fort Terracotta",
+    "category": "Royal",
+    "hero": "frame",
+    "fonts": [
+      "Cormorant Garamond",
+      "Inter"
+    ],
+    "colors": {
+      "p": "#6b3a1f",
+      "dp": "#44220e",
+      "ink": "#281204",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0e4d4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#faf5eb",
+      "bgd": "#efe6d6",
+      "card": "#fffefb",
+      "t": "#44220e",
+      "ts": "#7a5a3a",
+      "d1": "#44220e",
+      "d2": "#281204"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "crosshatch"
+  },
+  {
+    "id": "maharaja-court",
+    "name": "Maharaja Court",
+    "category": "Royal",
+    "hero": "royal",
+    "fonts": [
+      "Marcellus",
+      "Lato"
+    ],
+    "colors": {
+      "p": "#1a2340",
+      "dp": "#0e1528",
+      "ink": "#060a14",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#d8dce8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f8f5f0",
+      "bgd": "#eee9e2",
+      "card": "#fffefb",
+      "t": "#0e1528",
+      "ts": "#3a4a6a",
+      "d1": "#0e1528",
+      "d2": "#060a14"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "sariborder"
+  },
+  {
+    "id": "gadget-blue",
+    "name": "Gadget Blue",
+    "category": "Royal",
+    "hero": "split",
+    "fonts": [
+      "Libre Baskerville",
+      "Rubik"
+    ],
+    "colors": {
+      "p": "#1a3050",
+      "dp": "#0e1c34",
+      "ink": "#060e1c",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#d8dce8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f2f5f8",
+      "bgd": "#e4e9ee",
+      "card": "#fffefb",
+      "t": "#0e1c34",
+      "ts": "#3a4a6a",
+      "d1": "#0e1c34",
+      "d2": "#060e1c"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "temple"
+  },
+  {
+    "id": "pearl-ivory",
+    "name": "Pearl Ivory",
+    "category": "Royal",
+    "hero": "royal",
+    "fonts": [
+      "Fraunces",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#5c4a1e",
+      "dp": "#3a300e",
+      "ink": "#201a04",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0e8d8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf8f0",
+      "bgd": "#f3ead8",
+      "card": "#fffefb",
+      "t": "#3a300e",
+      "ts": "#6a5a3a",
+      "d1": "#3a300e",
+      "d2": "#201a04"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "butti"
+  },
+  {
+    "id": "velvet-wine",
+    "name": "Velvet Wine",
+    "category": "Royal",
+    "hero": "floating",
+    "fonts": [
+      "Playfair Display",
+      "Montserrat"
+    ],
+    "colors": {
+      "p": "#6b1a30",
+      "dp": "#440a1a",
+      "ink": "#28040c",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f0d8dc",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf2ee",
+      "bgd": "#f3e5de",
+      "card": "#fffefb",
+      "t": "#28040c",
+      "ts": "#6a3a4a",
+      "d1": "#440a1a",
+      "d2": "#28040c"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "butti2"
+  },
+  {
+    "id": "zari-embroidered",
+    "name": "Zari Embroidered",
+    "category": "Royal",
+    "hero": "collage",
+    "fonts": [
+      "Cinzel",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#1a4d35",
+      "dp": "#0e2e1e",
+      "ink": "#061a0e",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#d8ece2",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f2f8f4",
+      "bgd": "#e6efe9",
+      "card": "#fffefb",
+      "t": "#0e2e1e",
+      "ts": "#3a6a4a",
+      "d1": "#0e2e1e",
+      "d2": "#061a0e"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "mango"
+  },
+  {
+    "id": "diwali-sparkle",
+    "name": "Diwali Sparkle",
+    "category": "Festive",
+    "hero": "parallax",
+    "fonts": [
+      "DM Serif Display",
+      "Manrope"
+    ],
+    "colors": {
+      "p": "#7f1d1d",
+      "dp": "#4a0e0e",
+      "ink": "#2a0505",
+      "s": "#f5c542",
+      "sf": "#ffe07a",
+      "sd": "#d4a643",
+      "pl": "#fde68a",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fff8ec",
+      "bgd": "#f5edd0",
+      "card": "#fffefb",
+      "t": "#3b0c0c",
+      "ts": "#7a4a4a",
+      "d1": "#4a0e0e",
+      "d2": "#2a0505"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "zari"
+  },
+  {
+    "id": "ganesh-chaturthi",
+    "name": "Ganesh Chaturthi",
+    "category": "Festive",
+    "hero": "floating",
+    "fonts": [
+      "Cormorant Garamond",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#b03020",
+      "dp": "#7a1808",
+      "ink": "#4a0a02",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5e4c8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fff5f0",
+      "bgd": "#f8e8e0",
+      "card": "#fffefb",
+      "t": "#4a0a02",
+      "ts": "#7a4a3a",
+      "d1": "#7a1808",
+      "d2": "#4a0a02"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "wave"
+  },
+  {
+    "id": "rangoli-festival",
+    "name": "Rangoli Festival",
+    "category": "Festive",
+    "hero": "rangoli",
+    "fonts": [
+      "Marcellus",
+      "Inter"
+    ],
+    "colors": {
+      "p": "#8b1a1a",
+      "dp": "#5c0808",
+      "ink": "#3a0000",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5e0d0",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fff5f0",
+      "bgd": "#f8e8e0",
+      "card": "#fffefb",
+      "t": "#3a0000",
+      "ts": "#7a4a4a",
+      "d1": "#5c0808",
+      "d2": "#3a0000"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "vine"
+  },
+  {
+    "id": "ganpati-green",
+    "name": "Ganpati Green",
+    "category": "Festive",
+    "hero": "floating",
+    "fonts": [
+      "Libre Baskerville",
+      "Lato"
+    ],
+    "colors": {
+      "p": "#1a5e2a",
+      "dp": "#0e3a16",
+      "ink": "#062008",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#e0f0dc",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f2f8f0",
+      "bgd": "#e6efe4",
+      "card": "#fffefb",
+      "t": "#0e3a16",
+      "ts": "#3a6a42",
+      "d1": "#0e3a16",
+      "d2": "#062008"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "pearl"
+  },
+  {
+    "id": "navratri-garba",
+    "name": "Navratri Garba",
+    "category": "Festive",
+    "hero": "collage",
+    "fonts": [
+      "Fraunces",
+      "Rubik"
+    ],
+    "colors": {
+      "p": "#5c1233",
+      "dp": "#3a061e",
+      "ink": "#200310",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f0d8e4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf6ec",
+      "bgd": "#f3e7d2",
+      "card": "#fffefb",
+      "t": "#200310",
+      "ts": "#6a3a5a",
+      "d1": "#3a061e",
+      "d2": "#200310"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "coin"
+  },
+  {
+    "id": "holi-colors",
+    "name": "Holi Colors",
+    "category": "Festive",
+    "hero": "gradient-anim",
+    "fonts": [
+      "Playfair Display",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#c4264c",
+      "dp": "#8a0e2e",
+      "ink": "#500418",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5d8dc",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf6f8",
+      "bgd": "#f3e8ec",
+      "card": "#fffefb",
+      "t": "#500418",
+      "ts": "#8a4a5a",
+      "d1": "#8a0e2e",
+      "d2": "#500418"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "toran"
+  },
+  {
+    "id": "makar-sankranti",
+    "name": "Makar Sankranti",
+    "category": "Festive",
+    "hero": "masonry",
+    "fonts": [
+      "Cinzel",
+      "Montserrat"
+    ],
+    "colors": {
+      "p": "#7a3010",
+      "dp": "#501e06",
+      "ink": "#2e0e00",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5e4c8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#faf5eb",
+      "bgd": "#efe6d6",
+      "card": "#fffefb",
+      "t": "#2e0e00",
+      "ts": "#6a5a3a",
+      "d1": "#501e06",
+      "d2": "#2e0e00"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "kite"
+  },
+  {
+    "id": "gudi-padwa",
+    "name": "Gudi Padwa",
+    "category": "Festive",
+    "hero": "floating",
+    "fonts": [
+      "DM Serif Display",
+      "Manrope"
+    ],
+    "colors": {
+      "p": "#8b1a1a",
+      "dp": "#5c0808",
+      "ink": "#3a0000",
+      "s": "#f59e0b",
+      "sf": "#fbbf24",
+      "sd": "#d97706",
+      "pl": "#fde68a",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fff8ec",
+      "bgd": "#f5edd0",
+      "card": "#fffefb",
+      "t": "#3a0000",
+      "ts": "#7a4a4a",
+      "d1": "#5c0808",
+      "d2": "#3a0000"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "stripe"
+  },
+  {
+    "id": "modern-minimal",
+    "name": "Modern Minimal",
+    "category": "Modern",
+    "hero": "minimal",
+    "fonts": [
+      "Cormorant Garamond",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#2d2d2d",
+      "dp": "#1a1a1a",
+      "ink": "#0a0a0a",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#e8e4e0",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#ffffff",
+      "bgd": "#f5f5f5",
+      "card": "#ffffff",
+      "t": "#1a1a1a",
+      "ts": "#6a6a6a",
+      "d1": "#1a1a1a",
+      "d2": "#0a0a0a"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "dot"
+  },
+  {
+    "id": "blush-rose",
+    "name": "Blush Rose",
+    "category": "Modern",
+    "hero": "frame",
+    "fonts": [
+      "Marcellus",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#8e3050",
+      "dp": "#5c1030",
+      "ink": "#3a0618",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0dde4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf6f8",
+      "bgd": "#f3e8ec",
+      "card": "#fffefb",
+      "t": "#3a0618",
+      "ts": "#7a4a5a",
+      "d1": "#5c1030",
+      "d2": "#3a0618"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "mandala"
+  },
+  {
+    "id": "sage-green",
+    "name": "Sage Green",
+    "category": "Modern",
+    "hero": "fullbleed",
+    "fonts": [
+      "Libre Baskerville",
+      "Inter"
+    ],
+    "colors": {
+      "p": "#2d5e3a",
+      "dp": "#1a3a22",
+      "ink": "#0e200e",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#dce8dc",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f2f8f4",
+      "bgd": "#e6efe9",
+      "card": "#fffefb",
+      "t": "#1a3a22",
+      "ts": "#4a6a4a",
+      "d1": "#1a3a22",
+      "d2": "#0e200e"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "chevron"
+  },
+  {
+    "id": "dusty-blue",
+    "name": "Dusty Blue",
+    "category": "Modern",
+    "hero": "split",
+    "fonts": [
+      "Fraunces",
+      "Lato"
+    ],
+    "colors": {
+      "p": "#2d4060",
+      "dp": "#1a2840",
+      "ink": "#0e1628",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#d8dce8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f4f6f8",
+      "bgd": "#e8eaee",
+      "card": "#fffefb",
+      "t": "#1a2840",
+      "ts": "#4a5a7a",
+      "d1": "#1a2840",
+      "d2": "#0e1628"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "chain"
+  },
+  {
+    "id": "charcoal-elegant",
+    "name": "Charcoal Elegant",
+    "category": "Modern",
+    "hero": "minimal",
+    "fonts": [
+      "Playfair Display",
+      "Rubik"
+    ],
+    "colors": {
+      "p": "#2d2d2d",
+      "dp": "#1a1a1a",
+      "ink": "#0a0a0a",
+      "s": "#b98a2e",
+      "sf": "#d4a643",
+      "sd": "#8a6620",
+      "pl": "#e8e4e0",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fafafa",
+      "bgd": "#f0f0f0",
+      "card": "#ffffff",
+      "t": "#1a1a1a",
+      "ts": "#6a6a6a",
+      "d1": "#1a1a1a",
+      "d2": "#0a0a0a"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "floral"
+  },
+  {
+    "id": "cream-nouveau",
+    "name": "Cream Nouveau",
+    "category": "Modern",
+    "hero": "form",
+    "fonts": [
+      "Cinzel",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#6b3a1f",
+      "dp": "#44220e",
+      "ink": "#281204",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0e4d4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf8f0",
+      "bgd": "#f3ead8",
+      "card": "#fffefb",
+      "t": "#281204",
+      "ts": "#6a5a3a",
+      "d1": "#44220e",
+      "d2": "#281204"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "tessellation"
+  },
+  {
+    "id": "monochrome-chic",
+    "name": "Monochrome Chic",
+    "category": "Modern",
+    "hero": "hscroll",
+    "fonts": [
+      "DM Serif Display",
+      "Montserrat"
+    ],
+    "colors": {
+      "p": "#1a1a1a",
+      "dp": "#0a0a0a",
+      "ink": "#000000",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#e0dcd8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#ffffff",
+      "bgd": "#f0f0f0",
+      "card": "#ffffff",
+      "t": "#0a0a0a",
+      "ts": "#6a6a6a",
+      "d1": "#0a0a0a",
+      "d2": "#000000"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "plate"
+  },
+  {
+    "id": "pastel-peach",
+    "name": "Pastel Peach",
+    "category": "Modern",
+    "hero": "minimal",
+    "fonts": [
+      "Cormorant Garamond",
+      "Manrope"
+    ],
+    "colors": {
+      "p": "#a04830",
+      "dp": "#6e2a16",
+      "ink": "#401608",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f5e0d4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf5f2",
+      "bgd": "#f3e8e2",
+      "card": "#fffefb",
+      "t": "#401608",
+      "ts": "#7a5a3a",
+      "d1": "#6e2a16",
+      "d2": "#401608"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "crosshatch"
+  },
+  {
+    "id": "luxury-platinum",
+    "name": "Luxury Platinum",
+    "category": "Premium",
+    "hero": "royal",
+    "fonts": [
+      "Marcellus",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#1a1a1a",
+      "dp": "#0a0a0a",
+      "ink": "#000000",
+      "s": "#b98a2e",
+      "sf": "#d4a643",
+      "sd": "#8a6620",
+      "pl": "#e8e4e0",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fafafa",
+      "bgd": "#f0f0f0",
+      "card": "#ffffff",
+      "t": "#0a0a0a",
+      "ts": "#6a6a6a",
+      "d1": "#0a0a0a",
+      "d2": "#000000"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "sariborder"
+  },
+  {
+    "id": "ocean-romance",
+    "name": "Ocean Romance",
+    "category": "Premium",
+    "hero": "parallax",
+    "fonts": [
+      "Libre Baskerville",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#1a3050",
+      "dp": "#0e1c34",
+      "ink": "#060e1c",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#d8dce8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f2f5f8",
+      "bgd": "#e4e9ee",
+      "card": "#fffefb",
+      "t": "#0e1c34",
+      "ts": "#3a4a6a",
+      "d1": "#0e1c34",
+      "d2": "#060e1c"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "temple"
+  },
+  {
+    "id": "sunrise-gold",
+    "name": "Sunrise Gold",
+    "category": "Premium",
+    "hero": "frame",
+    "fonts": [
+      "Fraunces",
+      "Inter"
+    ],
+    "colors": {
+      "p": "#6b3a0f",
+      "dp": "#442206",
+      "ink": "#281200",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5e4c8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fef9e7",
+      "bgd": "#f5edd0",
+      "card": "#fffefb",
+      "t": "#281200",
+      "ts": "#6a5a3a",
+      "d1": "#442206",
+      "d2": "#281200"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "butti"
+  },
+  {
+    "id": "nri-global",
+    "name": "NRI Global",
+    "category": "Premium",
+    "hero": "parallax",
+    "fonts": [
+      "Playfair Display",
+      "Lato"
+    ],
+    "colors": {
+      "p": "#1a2340",
+      "dp": "#0e1528",
+      "ink": "#060a14",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#d8dce8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f4f6f8",
+      "bgd": "#e8eaee",
+      "card": "#fffefb",
+      "t": "#060a14",
+      "ts": "#3a4a6a",
+      "d1": "#0e1528",
+      "d2": "#060a14"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "butti2"
+  },
+  {
+    "id": "shaadi-modern",
+    "name": "Shaadi Modern",
+    "category": "Platform",
+    "hero": "form",
+    "fonts": [
+      "Cinzel",
+      "Rubik"
+    ],
+    "colors": {
+      "p": "#1a2340",
+      "dp": "#0e1528",
+      "ink": "#060a14",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#d8dce8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#ffffff",
+      "bgd": "#f5f5f5",
+      "card": "#ffffff",
+      "t": "#060a14",
+      "ts": "#4a5a7a",
+      "d1": "#0e1528",
+      "d2": "#060a14"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "mango"
+  },
+  {
+    "id": "bharat-trust",
+    "name": "Bharat Trust",
+    "category": "Platform",
+    "hero": "split",
+    "fonts": [
+      "DM Serif Display",
+      "Poppins"
+    ],
+    "colors": {
+      "p": "#7a3010",
+      "dp": "#501e06",
+      "ink": "#2e0e00",
+      "s": "#d4a643",
+      "sf": "#ecc97f",
+      "sd": "#b98a2e",
+      "pl": "#f5e4c8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#faf5eb",
+      "bgd": "#efe6d6",
+      "card": "#fffefb",
+      "t": "#2e0e00",
+      "ts": "#6a5a3a",
+      "d1": "#501e06",
+      "d2": "#2e0e00"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "zari"
+  },
+  {
+    "id": "anuroop-service",
+    "name": "Anuroop Service",
+    "category": "Platform",
+    "hero": "minimal",
+    "fonts": [
+      "Cormorant Garamond",
+      "Montserrat"
+    ],
+    "colors": {
+      "p": "#5c1233",
+      "dp": "#3a061e",
+      "ink": "#200310",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#f0dde4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#fdf6ec",
+      "bgd": "#f3e7d2",
+      "card": "#fffefb",
+      "t": "#200310",
+      "ts": "#6a3a5a",
+      "d1": "#3a061e",
+      "d2": "#200310"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "wave"
+  },
+  {
+    "id": "lagna-profiles",
+    "name": "Lagna Profiles",
+    "category": "Platform",
+    "hero": "fullbleed",
+    "fonts": [
+      "Marcellus",
+      "Manrope"
+    ],
+    "colors": {
+      "p": "#1a2340",
+      "dp": "#0e1528",
+      "ink": "#060a14",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#d8dce8",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f4f6f8",
+      "bgd": "#e8eaee",
+      "card": "#fffefb",
+      "t": "#060a14",
+      "ts": "#3a4a6a",
+      "d1": "#0e1528",
+      "d2": "#060a14"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "vine"
+  },
+  {
+    "id": "sundarjodi-castes",
+    "name": "Sundarjodi Castes",
+    "category": "Platform",
+    "hero": "collage",
+    "fonts": [
+      "Libre Baskerville",
+      "Nunito"
+    ],
+    "colors": {
+      "p": "#3d1a6e",
+      "dp": "#240a4e",
+      "ink": "#12042e",
+      "s": "#c4956a",
+      "sf": "#dbb08a",
+      "sd": "#a87d4f",
+      "pl": "#e8daf4",
+      "od": "#ffffff",
+      "ods": "rgba(255,255,255,.82)",
+      "bg": "#f8f5f2",
+      "bgd": "#ede8e4",
+      "card": "#fffefb",
+      "t": "#12042e",
+      "ts": "#5a3a8a",
+      "d1": "#240a4e",
+      "d2": "#12042e"
+    },
+    "order": [
+      "banner",
+      "stats",
+      "features",
+      "how",
+      "profiles",
+      "success",
+      "testimonials",
+      "counters",
+      "cta"
+    ],
+    "motif": "pearl"
+  }
+]

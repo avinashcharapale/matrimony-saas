@@ -147,6 +147,14 @@ export class TenantClient {
     return this.uploadBrandingFile('favicon', file, tenantId);
   }
 
+  uploadBrandingHero(file: File, tenantId?: number): Observable<FileUploadResult> {
+    return this.uploadBrandingFile('hero', file, tenantId);
+  }
+
+  uploadBrandingBanner(file: File, tenantId?: number): Observable<FileUploadResult> {
+    return this.uploadBrandingFile('banner', file, tenantId);
+  }
+
   private uploadBrandingFile(kind: string, file: File, tenantId?: number): Observable<FileUploadResult> {
     const formData = new FormData();
     formData.append('file', file, file.name);

@@ -16,7 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ConfirmDialogComponent, ConfirmDialogData, PaginatorComponent, createSort, createPagination } from '@org/shared-ui';
-import { TenantFormDialogComponent } from './tenant-form-dialog/tenant-form-dialog.component';
+import { TenantFormDialogComponent, TenantFormDialogResult } from './tenant-form-dialog/tenant-form-dialog.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -256,15 +256,15 @@ export class Tenants implements OnInit {
 
   openAddDialog(): void {
     const dialogRef = this.dialog.open(TenantFormDialogComponent, {
-      width: '500px',
+      width: '760px',
       data: { mode: 'create' as const },
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe((result: TenantDto | undefined) => {
+    dialogRef.afterClosed().subscribe((result: TenantFormDialogResult | undefined) => {
       if (result) {
         this.loading.set(true);
-        this.tenantClient.create(result).subscribe({
+        this.tenantClient.create(result.dto).subscribe({
           next: () => this.loadTenants(),
           error: () => this.loading.set(false),
         });
@@ -274,15 +274,15 @@ export class Tenants implements OnInit {
 
   openEditDialog(tenant: TenantDto): void {
     const dialogRef = this.dialog.open(TenantFormDialogComponent, {
-      width: '500px',
+      width: '760px',
       data: { mode: 'edit' as const, tenant },
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe((result: TenantDto | undefined) => {
+    dialogRef.afterClosed().subscribe((result: TenantFormDialogResult | undefined) => {
       if (result && tenant.tenantId != null) {
         this.loading.set(true);
-        this.tenantClient.update(tenant.tenantId, result as any).subscribe({
+        this.tenantClient.update(tenant.tenantId, result.dto as any).subscribe({
           next: () => this.loadTenants(),
           error: () => this.loading.set(false),
         });

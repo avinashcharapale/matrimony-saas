@@ -1,8 +1,38 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: radial-gradient(circle at top right, var(--tenant-bg-start) 0%, var(--tenant-bg-mid) 45%, var(--tenant-bg-end) 100%);
-  color: var(--text-strong);
+}
+
+.tpl-root {
+  min-height: 100vh;
+  font-family: var(--font-body, var(--tp-b, 'Manrope', sans-serif));
+  color: var(--tp-t, var(--text-strong));
+  background: var(--tp-bg, var(--tenant-bg-start));
+  --tenant-primary: var(--tp-p, #8e1f4f);
+  --tenant-accent: var(--tp-s, #d4a643);
+  --text-strong: var(--tp-t, #4a2438);
+  --text-muted: var(--tp-ts, #7c5670);
+  --surface-card: var(--tp-card, #fffefb);
+  --border-soft: var(--tp-pl, #f7e7c3);
+  --accent-strong: var(--tp-s, #d4a643);
+  --on-primary: var(--tp-od, #fff);
+}
+
+.tpl-root h1, .tpl-root h2, .tpl-root h3, .tpl-root h4, .tpl-root h5, .tpl-root h6 {
+  font-family: var(--font-heading, var(--tp-h, 'Fraunces', serif));
+  color: var(--tp-t, #4a2438);
+}
+
+.tpl-root .app-content {
+  background: transparent;
+}
+
+.nav-spacer {
+  height: 76px;
+}
+
+@media (max-width: 960px) {
+  .nav-spacer { height: 66px; }
 }
 
 .app-header {
@@ -97,7 +127,7 @@
   display: none;
   border: 1px solid var(--border-strong);
   border-radius: 0.6rem;
-  background: var(--surface-soft);
+  background: var(--theme-surface-soft);
   color: var(--accent-strong);
   font-weight: 700;
   padding: 0.5rem;
@@ -189,25 +219,25 @@
 .register-btn {
   text-decoration: none;
   white-space: nowrap;
-  border-radius: 0.72rem;
+  border-radius: 2px;
   padding: 0.6rem 1.1rem;
   font-size: 0.84rem;
   font-weight: 700;
   color: var(--on-primary);
-  background: linear-gradient(90deg, var(--tenant-primary) 0%, var(--tenant-accent) 100%);
-  border: 1px solid color-mix(in srgb, var(--tenant-primary) 70%, var(--color-white));
+  background: linear-gradient(90deg, var(--tp-s) 0%, var(--tenant-accent) 100%);
+  border: 1px solid color-mix(in srgb, var(--tp-s) 70%, var(--color-white));
   transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 .register-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--tenant-primary) 30%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--tp-s) 30%, transparent);
 }
 
 .logout-btn {
-  border: 1px solid var(--border-strong);
-  border-radius: 0.6rem;
-  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 2px;
+  background: var(--theme-surface-soft);
   color: var(--accent-strong);
   font-weight: 700;
   padding: 0.45rem 0.75rem;
@@ -218,8 +248,8 @@
 }
 
 .logout-btn:hover {
-  background: color-mix(in srgb, var(--tenant-primary) 12%, var(--color-white));
-  color: var(--tenant-primary);
+  background: color-mix(in srgb, var(--tp-s) 12%, #fff);
+  color: var(--tp-s);
 }
 
 .app-content {
@@ -228,12 +258,19 @@
   padding: 1.25rem 1rem 2.5rem;
 }
 
+.app-content.landing {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
 /* ── Sidebar Backdrop (universal, all pages) ─── */
 .sidebar-backdrop {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.32);
+  background: var(--theme-surface-overlay);
   z-index: 199;
   opacity: 0;
   pointer-events: none;
@@ -376,7 +413,7 @@
     padding: 0.6rem;
     border: 1px solid var(--border-strong);
     border-radius: 0.6rem;
-    background: var(--surface-soft);
+    background: var(--theme-surface-soft);
   }
 
   .public-drawer-actions .register-btn {
@@ -413,4 +450,15 @@
   .brand-subtitle {
     display: none;
   }
+}
+
+.app-header.authenticated{margin:16px 20px 0;border-radius:var(--theme-radius-lg);background:color-mix(in srgb,var(--theme-surface-overlay) 88%,transparent);backdrop-filter:blur(18px);}
+.app-toolbar{padding:1.05rem 1.5rem;}
+.brand-title{font-family:var(--font-heading, 'Cormorant Garamond',Georgia,serif);font-size:1.45rem;letter-spacing:-.02em;}
+.main-nav{gap:1.35rem;}
+.main-nav a{font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;}
+.main-nav a:hover,.main-nav a.active{border-color:var(--tenant-accent);}
+.logout-btn{border-radius:2px;padding:.55rem 1rem;}
+@media (max-width: 900px){
+  .app-header.authenticated{margin:0;border-radius:0;}
 }

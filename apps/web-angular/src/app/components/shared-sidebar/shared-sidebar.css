@@ -1,7 +1,7 @@
 /* ── Shared Sidebar ─────────────────────────────────────────────────────────── */
 
 .dashboard-sidebar {
-  background: var(--theme-surface-overlay);
+  background: var(--theme-surface-raised);
   border: 1px solid var(--theme-border);
   border-radius: 18px;
   padding: 1rem;
@@ -17,7 +17,7 @@
   display: none;
   border: 1px solid var(--theme-border);
   border-radius: 8px;
-  background: var(--theme-surface-overlay);
+  background: var(--theme-surface-raised);
   color: var(--theme-text);
   font-size: 1rem;
   line-height: 1;
@@ -31,8 +31,8 @@
 }
 
 .sidebar-close-btn:hover {
-  background: var(--theme-accent-soft);
-  color: var(--tenant-primary);
+  background: color-mix(in srgb, var(--tp-s) 12%, var(--tp-card, #fffefb));
+  color: var(--tp-s);
 }
 
 /* ── Brand ─── */
@@ -130,8 +130,8 @@
 
 .sidebar-nav a:hover,
 .sidebar-nav a.active {
-  color: var(--tenant-primary);
-  background: var(--theme-accent-soft);
+  color: var(--tp-s);
+  background: color-mix(in srgb, var(--tp-s) 12%, var(--tp-card, #fffefb));
   transform: translateX(2px);
 }
 
@@ -175,8 +175,8 @@
 }
 
 .sidebar-nav .sidebar-logout:hover {
-  color: var(--tenant-primary);
-  background: var(--theme-accent-soft);
+  color: var(--tp-s);
+  background: color-mix(in srgb, var(--tp-s) 12%, var(--tp-card, #fffefb));
   transform: translateX(2px);
 }
 
@@ -356,7 +356,7 @@
 }
 
 .sub-cta--alert {
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
 }
 
@@ -368,14 +368,14 @@
 
 .sub-cta--soft {
   background: var(--theme-accent-soft);
-  color: var(--tenant-primary);
+  color: var(--tp-s);
   border: 1px solid var(--theme-border-strong);
 }
 
 .sub-cta--soft:hover {
   transform: translateY(-1px);
-  background: color-mix(in srgb, var(--tenant-primary) 12%, #ffffff);
-  border-color: var(--tenant-primary);
+  background: color-mix(in srgb, var(--tp-s) 12%, var(--color-white));
+  border-color: var(--tp-s);
 }
 
 .sub-empty-text {

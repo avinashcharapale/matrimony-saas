@@ -9,20 +9,23 @@
   margin: 0 auto;
 }
 
-.plans-header {
-  text-align: center;
-  margin-bottom: 2.5rem;
+.page-header {
+  background: var(--theme-surface-raised);
+  border: 1px solid var(--theme-border);
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.plans-header h1 {
-  margin: 0 0 0.5rem;
-  font-size: 1.8rem;
-  color: var(--theme-text);
-  font-weight: 700;
-}
-
-.plans-header p {
+.page-header h1 {
   margin: 0;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  color: var(--theme-text);
+  font-weight: 800;
+}
+
+.page-header p {
+  margin: 0.45rem 0 0;
   font-size: 1rem;
   color: var(--theme-text-muted);
 }
@@ -49,7 +52,7 @@
 }
 
 .plan-card.popular {
-  border-color: var(--tenant-primary);
+  border-color: var(--tp-s);
   box-shadow: 0 4px 20px var(--theme-focus);
 }
 
@@ -63,7 +66,7 @@
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
   font-size: 0.75rem;
   font-weight: 700;
@@ -151,10 +154,10 @@
   display: block;
   width: 100%;
   padding: 0.8rem;
-  border: 2px solid var(--tenant-primary);
+  border: 2px solid var(--tp-s);
   border-radius: 8px;
   background: var(--theme-surface-raised);
-  color: var(--tenant-primary);
+  color: var(--tp-s);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -162,12 +165,12 @@
 }
 
 .plan-select-btn:hover:not(:disabled) {
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
 }
 
 .plan-select-btn.primary {
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
 }
 
@@ -195,7 +198,7 @@
 }
 
 .plan-select-btn.register.primary {
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
 }
 
@@ -274,10 +277,9 @@
 
 .cta-button {
   display: inline-block;
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
   border: none;
-  border-radius: 8px;
   padding: 0.8rem 2rem;
   font-size: 1rem;
   font-weight: 600;
@@ -324,9 +326,8 @@
   display: block;
   width: 100%;
   padding: 0.8rem;
-  border: 2px solid var(--tenant-primary);
-  border-radius: 8px;
-  background: var(--tenant-primary);
+  border: 2px solid var(--tp-s);
+  background: var(--tp-s);
   color: var(--on-primary);
   font-size: 0.95rem;
   font-weight: 600;
@@ -341,11 +342,11 @@
 
 .chooser-btn.offline {
   background: var(--theme-surface-raised);
-  color: var(--tenant-primary);
+  color: var(--tp-s);
 }
 
 .chooser-btn.offline:hover {
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
 }
 
@@ -361,7 +362,7 @@
 }
 
 .link-button:hover {
-  color: var(--tenant-primary);
+  color: var(--tp-s);
 }
 
 /* Offline payment details */
@@ -396,7 +397,7 @@
   object-fit: contain;
   border-radius: 8px;
   margin: 0 auto 0.75rem;
-  background: #fff;
+  background: var(--color-white);
   padding: 0.25rem;
 }
 
@@ -437,3 +438,20 @@
     margin: 0 auto;
   }
 }
+
+.plans-container{max-width:1180px;}
+.page-header{margin-bottom:1.5rem;}
+.page-header h1{font-family:var(--font-heading, 'Cormorant Garamond',Georgia,serif);font-size:clamp(1.8rem,3vw,2.4rem);font-weight:700;letter-spacing:-.03em;}
+.plans-grid{gap:1.75rem;align-items:stretch;}
+.plan-card{display:flex;min-height:520px;flex-direction:column;border:1px solid var(--theme-border);border-radius:var(--theme-radius-lg);padding:2rem;background:var(--theme-surface-raised);box-shadow:0 14px 34px color-mix(in srgb,var(--tenant-text) 7%,transparent);transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease;}
+.plan-card:hover{transform:translateY(-8px);box-shadow:var(--theme-shadow-md);}
+.plan-card.popular{background:linear-gradient(160deg,var(--tp-s) 0%,color-mix(in srgb,var(--tp-s) 60%,#000) 100%);border-color:var(--tenant-accent);box-shadow:0 24px 52px color-mix(in srgb,var(--tp-s) 28%,transparent);}
+.plan-card.popular .plan-name,.plan-card.popular .plan-duration,.plan-card.popular .plan-description,.plan-card.popular .feature-group-title,.plan-card.popular .feature-item{color:var(--on-primary);}
+.plan-card.popular .feature-item{border-bottom-color:color-mix(in srgb,var(--on-primary) 18%,transparent);}
+.popular-badge{background:var(--tenant-accent);color:var(--tenant-text);border-radius:999px;padding:.35rem 1.1rem;}
+.plan-name{font-family:var(--font-heading, 'Cormorant Garamond',Georgia,serif);font-size:2rem;font-weight:600;}
+.plan-price{font-family:var(--font-heading, 'Cormorant Garamond',Georgia,serif);font-size:3rem;font-weight:600;color:var(--tp-s);}
+.plan-card.popular .plan-price{color:var(--tenant-accent);}
+.plan-features{flex:1;}
+.plan-select-btn{padding:.9rem 1rem;}
+.plan-card.popular .plan-select-btn.primary{background:var(--tenant-accent);border-color:var(--tenant-accent);color:var(--tenant-text);}

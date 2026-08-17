@@ -128,8 +128,8 @@
   height: 2.2rem;
   border-radius: 50%;
   border: none;
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
+  background: var(--theme-surface-overlay);
+   color: var(--on-primary);
   font-size: 1rem;
   display: grid;
   place-items: center;
@@ -139,7 +139,7 @@
 }
 
 .change-photo-btn:hover {
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--theme-surface-overlay);
 }
 
 .change-photo-btn:disabled {
@@ -219,17 +219,17 @@
 }
 
 .thumb-edit {
-  background: rgba(255, 255, 255, 0.85);
+  background: color-mix(in srgb, var(--color-white) 85%, transparent);
   color: var(--theme-text);
 }
 
 .thumb-edit:hover:not(:disabled) {
-  background: #fff;
+  background: var(--theme-surface-raised);
   transform: scale(1.1);
 }
 
 .thumb-delete {
-  background: rgba(255, 255, 255, 0.85);
+  background: color-mix(in srgb, var(--color-white) 85%, transparent);
   color: var(--theme-danger);
 }
 
@@ -248,7 +248,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   background: color-mix(in srgb, var(--tenant-primary) 90%, transparent);
-  color: #fff;
+   color: var(--on-primary);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -322,8 +322,8 @@
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
+  border: 2px solid color-mix(in srgb, var(--color-white) 30%, transparent);
+  border-top-color: var(--on-primary);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -355,7 +355,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--theme-surface-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -375,19 +375,19 @@
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  background: #1f1f1f;
+  background: var(--theme-surface-raised);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--theme-shadow-lg);
 }
 
 .gallery-close {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--color-white) 20%, transparent);
   border: none;
-  color: #fff;
+   color: var(--on-primary);
   font-size: 1.5rem;
   width: 40px;
   height: 40px;
@@ -401,7 +401,7 @@
 }
 
 .gallery-close:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, var(--color-white) 30%, transparent);
 }
 
 .gallery-container {
@@ -430,9 +430,9 @@
 }
 
 .gallery-nav {
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--color-white) 20%, transparent);
   border: none;
-  color: #fff;
+   color: var(--on-primary);
   font-size: 2rem;
   width: 50px;
   height: 50px;
@@ -446,7 +446,7 @@
 }
 
 .gallery-nav:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, var(--color-white) 30%, transparent);
 }
 
 .gallery-nav:disabled {
@@ -460,11 +460,11 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.3);
+  background: color-mix(in srgb, var(--color-black) 30%, transparent);
 }
 
 .gallery-counter {
-  color: #999;
+  color: var(--theme-text-muted);
   font-size: 0.9rem;
   margin: 0;
 }
@@ -479,7 +479,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, var(--color-white) 30%, transparent);
   border: none;
   cursor: pointer;
   transition: background 0.2s;
@@ -491,14 +491,12 @@
 }
 
 .dot:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--color-white) 50%, transparent);
 }
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 0.375rem;
-  background: var(--tenant-primary);
   color: var(--on-primary);
   font-size: 0.95rem;
   font-weight: 600;
@@ -508,7 +506,6 @@
 }
 
 .btn-primary:hover {
-  background: var(--tenant-accent);
 }
 
 /* Responsive */

@@ -17,6 +17,7 @@ import {
   PaymentSettingsPanel,
   GatewayKeysPanel,
 } from '@org/tenant-settings';
+import { LandingTemplatePanel } from './landing-template-panel.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,6 +27,7 @@ import {
     CommonModule, RouterModule, MatButtonModule, MatIconModule, MatTabsModule,
     BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDocumentsPanel,
     SecuritySettingsPanel, EmailSettingsPanel, NotificationSettingsPanel, PaymentSettingsPanel, GatewayKeysPanel,
+    LandingTemplatePanel,
   ],
   template: `
     <div class="page">
@@ -51,6 +53,11 @@ import {
         <mat-tab label="Branding">
           <ng-template matTabContent>
             <app-branding-panel [tenantId]="tenantId()" />
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Landing Template">
+          <ng-template matTabContent>
+            <app-landing-template-panel [tenantId]="tenantId()" />
           </ng-template>
         </mat-tab>
         <mat-tab label="Domains">
@@ -99,7 +106,7 @@ import {
     </div>
   `,
   styles: [`
-    .page { max-width: 900px; }
+    .page { max-width: 1180px; }
     .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
     .page-header h1 { font-size: 1.5rem; color: #2c003e; margin-bottom: 0.25rem; }
     .subtitle { color: #666; font-size: 0.875rem; }

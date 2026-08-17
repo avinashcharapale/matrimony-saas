@@ -22,11 +22,17 @@
             "glob": "**/*.json",
             "input": "libs/shared/i18n/src/assets/i18n",
             "output": "/assets/i18n"
+          },
+          {
+            "glob": "**/*.html",
+            "input": "libs/shared/landing-templates/designs",
+            "output": "/assets/designs"
           }
         ],
         "styles": [
           "apps/web-angular/src/styles.css",
-          "libs/shared/theme/src/themes/theme-base.css"
+          "libs/shared/theme/src/themes/theme-base.css",
+          "libs/shared/landing-templates/src/themes/theme-templates.css"
         ]
       },
       "configurations": {

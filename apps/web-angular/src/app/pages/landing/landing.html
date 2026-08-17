@@ -1,5 +1,7 @@
 <section class="landing-shell">
   <app-landing-sections
+    [tpl]="template"
+    [overrides]="templateOverrides"
     [tenant]="tenant"
     [stats]="stats()"
     [whyChoose]="whyChoose()"

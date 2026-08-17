@@ -6,10 +6,10 @@
   --text-main: var(--theme-text);
   --text-soft: var(--theme-text-muted);
   --text-muted: var(--theme-text-subtle);
-  --accent: var(--tenant-primary);
-  --accent-dark: var(--tenant-accent);
-  --accent-soft: color-mix(in srgb, var(--tenant-primary) 8%, #ffffff);
-  --accent-border: color-mix(in srgb, var(--tenant-primary) 25%, #ffffff);
+  --accent: var(--tp-s);
+  --accent-dark: var(--tp-sd);
+  --accent-soft: color-mix(in srgb, var(--tp-s) 8%, var(--color-white));
+  --accent-border: color-mix(in srgb, var(--tp-s) 25%, var(--color-white));
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -23,7 +23,7 @@
 h1 { margin: 0.35rem 0 0; color: var(--theme-text); }
 .chat-layout { display: grid; grid-template-columns: 260px 1fr; gap: 1rem; }
 .chat-list { display: grid; gap: 0.5rem; }
-.chat-list button { text-align: left; border: 1px solid var(--theme-border); border-radius: 0.7rem; background: var(--bg-soft); padding: 0.65rem; cursor: pointer; display: grid; gap: 0.2rem; }
+.chat-list button { text-align: left; border: 1px solid var(--theme-border); background: var(--bg-soft); padding: 0.65rem; cursor: pointer; display: grid; gap: 0.2rem; }
 .chat-list button.active { border-color: var(--tenant-primary); background: var(--accent-soft); }
 .chat-list strong { color: var(--text-main); }
 .chat-list span { color: var(--text-soft); font-size: 0.84rem; }
@@ -35,7 +35,7 @@ h1 { margin: 0.35rem 0 0; color: var(--theme-text); }
 .bubble small { color: var(--text-muted); font-size: 0.72rem; }
 .composer { margin-top: 0.8rem; display: flex; gap: 0.6rem; }
 .composer input { flex: 1; border: 1px solid var(--theme-border-strong); border-radius: 0.6rem; padding: 0.6rem; background: var(--card); color: var(--text-main); }
-.composer button { border: none; border-radius: 0.6rem; background: var(--tenant-primary); color: var(--on-primary); padding: 0.6rem 0.9rem; font-weight: 700; }
+.composer button { border: none; background: var(--tp-s); color: var(--on-primary); padding: 0.6rem 0.9rem; font-weight: 700; }
 .empty-hint { color: var(--text-soft); font-size: 0.85rem; text-align: center; padding: 1rem; }
 .empty-chat { display: grid; place-items: center; height: 100%; color: var(--text-soft); }
 @media (max-width: 900px) { .search-shell { grid-template-columns: 1fr; } }

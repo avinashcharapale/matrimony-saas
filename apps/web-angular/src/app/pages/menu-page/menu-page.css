@@ -14,15 +14,6 @@
   padding: 1.1rem;
 }
 
-.eyebrow {
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.72rem;
-  color: var(--tenant-primary);
-  font-weight: 700;
-}
-
 .menu-hero h1 {
   margin: 0.5rem 0 0;
   font-size: clamp(1.8rem, 4vw, 2.6rem);
@@ -76,7 +67,7 @@
   margin-left: 0.4rem;
   padding: 1px 8px;
   border-radius: 9999px;
-  background: var(--accent-soft, color-mix(in srgb, var(--tenant-primary) 15%, #ffffff));
+  background: var(--accent-soft, color-mix(in srgb, var(--tenant-primary) 15%, var(--color-white)));
   color: var(--tenant-primary);
   font-size: 0.68rem;
   font-weight: 700;
@@ -140,7 +131,7 @@
   place-items: center;
   color: var(--tenant-primary);
   font-weight: 800;
-  background: var(--accent-soft, color-mix(in srgb, var(--tenant-primary) 15%, #ffffff));
+  background: var(--accent-soft, color-mix(in srgb, var(--tenant-primary) 15%, var(--color-white)));
 }
 
 .highlight-card p {
@@ -170,7 +161,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.65rem;
   text-decoration: none;
   font-weight: 700;
   padding: 0.72rem 1rem;
@@ -178,7 +168,6 @@
 }
 
 .btn-primary {
-  background: var(--tenant-primary);
   color: var(--on-primary);
 }
 

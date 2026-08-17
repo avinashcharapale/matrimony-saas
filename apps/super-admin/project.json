@@ -17,10 +17,16 @@
           {
             "glob": "**/*",
             "input": "apps/super-admin/public"
+          },
+          {
+            "glob": "**/*.html",
+            "input": "libs/shared/landing-templates/designs",
+            "output": "/assets/designs"
           }
         ],
         "styles": [
-          "apps/super-admin/src/styles.css"
+          "apps/super-admin/src/styles.css",
+          "libs/shared/landing-templates/src/themes/theme-templates.css"
         ]
       },
       "configurations": {

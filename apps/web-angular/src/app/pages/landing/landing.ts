@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TenantService } from '../../services/tenant.service';
 import { ProfileClient } from '@org/generated';
+import { LandingTemplate, TemplateOverrides } from '@org/landing-templates';
 import { FeatureItem, ProfileItem, StatItem, TrustCardItem } from './landing.models';
 import { LandingSectionsComponent } from './components/landing-sections.component';
 
@@ -13,7 +14,10 @@ import { LandingSectionsComponent } from './components/landing-sections.componen
   templateUrl: './landing.html',
 })
 export class Landing implements OnInit {
-  readonly tenant = inject(TenantService).tenant;
+  private readonly tenantService = inject(TenantService);
+  readonly tenant = this.tenantService.tenant;
+  readonly template: LandingTemplate = this.tenantService.template;
+  readonly templateOverrides: TemplateOverrides = this.tenantService.templateOverrides;
   private readonly profileClient = inject(ProfileClient);
   private readonly translate = inject(TranslateService);
 
@@ -73,13 +77,18 @@ export class Landing implements OnInit {
         }));
         this.recentProfilesRaw.set(profiles);
       },
-      error: () => {},
+      error: () => undefined,
     });
   }
 
   private loadStats(): void {
     this.profileClient.getProfileStats().subscribe({
       next: (s) => {
+        const counts = [s.brideCount, s.groomCount, s.unmarriedCount, s.divorcedCount];
+        const hasData = counts.some((c) => typeof c === 'number' && c > 0);
+        if (!hasData) {
+          return;
+        }
         this.statsRaw.set([
           { value: String(s.brideCount ?? 0), label: 'landing.statBrides', icon: '💍', accent: 'stat-pink' },
           { value: String(s.groomCount ?? 0), label: 'landing.statGrooms', icon: '🤵', accent: 'stat-blue' },
@@ -87,7 +96,7 @@ export class Landing implements OnInit {
           { value: String(s.divorcedCount ?? 0), label: 'landing.statDivorced', icon: '💜', accent: 'stat-purple' },
         ]);
       },
-      error: () => {},
+      error: () => undefined,
     });
   }
 }

@@ -1,28 +1,806 @@
-<app-landing-hero
-  [tenantDisplayName]="tenant.displayName"
-  [heroTitle]="tenant.heroTitle"
-  [heroSubtitle]="tenant.heroSubtitle"
-  [heroDescription]="tenant.heroDescription"
-  [heroImage]="tenant.heroImage"
-  [ctaEnroll]="tenant.ctaEnroll"
-  [eyebrow]="tenant.landingContent?.eyebrow ?? ''"
-  [badges]="tenant.landingContent?.heroBadges ?? []">
-</app-landing-hero>
-<app-landing-stats [stats]="stats"></app-landing-stats>
-<app-landing-info
-  [tenantDisplayName]="tenant.displayName"
-  [whyChoose]="whyChoose"
-  [howItWorks]="howItWorks">
-</app-landing-info>
-<app-landing-recent-profiles [profiles]="autoScrollProfiles"></app-landing-recent-profiles>
-<app-landing-trust
-  [tenantDisplayName]="tenant.displayName"
-  [trustCards]="trustCards">
-</app-landing-trust>
-<app-landing-cta-footer
-  [tenant]="tenant"
-  [ctaHeading]="tenant.landingContent?.ctaHeading ?? ''"
-  [ctaDescription]="tenant.landingContent?.ctaDescription ?? ''"
-  [footerDescription]="tenant.landingContent?.footerDescription ?? ''"
-  [footerLinks]="tenant.landingContent?.footerLinks ?? []">
-</app-landing-cta-footer>
+<div class="tpl-root tpl-wrap" [attr.data-tpl]="tpl.id" [style]="hostStyle">
+  @if (showSkeleton) {
+    <div class="tpl-skeleton-wrap">
+      <div class="skeleton skeleton-title skeleton-title-primary"></div>
+      <div class="skeleton skeleton-text skeleton-text-wide"></div>
+      <div class="skeleton skeleton-text skeleton-text-medium"></div>
+      <div class="skeleton-card-grid">
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+      </div>
+    </div>
+  } @else {
+  @for (section of sections; track section) {
+    @switch (section) {
+      @case ('nav') {
+        <div class="tpl-nav-container">
+          <div class="tpl-nav" [class.dark]="navDark" [style]="navDark ? 'background:var(--tp-ink);color:var(--tp-od);--td-nav-link-color:var(--tp-s);--td-nav-brand-color:var(--tp-od)' : ''">
+          <div class="nav-brand" routerLink="/">
+            @if (tenant.logoUrl) {
+            <img [src]="tenant.logoUrl" [alt]="brandName + ' logo'" class="nav-logo-img" />
+            } @else {
+            <span class="nav-logo">{{ brandLetter }}</span>
+            }
+            <span>{{ brandName }}</span>
+          </div>
+            <div class="nav-links">
+              <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ 'nav.home' | translate }}</a>
+              <a routerLink="/search" routerLinkActive="active">{{ 'common.search' | translate }}</a>
+              <a routerLink="/rules" routerLinkActive="active">{{ 'nav.howItWorks' | translate }}</a>
+              <a routerLink="/plans" routerLinkActive="active">{{ 'nav.plans' | translate }}</a>
+              <a routerLink="/contact" routerLinkActive="active">{{ 'nav.contact' | translate }}</a>
+            </div>
+            <div class="nav-right">
+              <app-language-selector></app-language-selector>
+              <a class="nav-login" routerLink="/login" [style]="navDark ? 'color:var(--tp-od)' : 'color:var(--tp-p)'">{{ tenant.ctaLogin }}</a>
+              <a class="tbtn btn-{{ tpl.btn }} btn-sm" routerLink="/register">{{ tenant.ctaEnroll }}</a>
+            </div>
+            <button class="nav-hamburger" [class.open]="mobileMenuOpen()" (click)="toggleMobileMenu()" aria-label="Menu">
+              <span></span><span></span><span></span>
+            </button>
+          </div>
+          @if (mobileMenuOpen()) {
+          <div class="nav-mobile-panel">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">{{ 'nav.home' | translate }}</a>
+            <a routerLink="/search" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'common.search' | translate }}</a>
+            <a routerLink="/rules" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.howItWorks' | translate }}</a>
+            <a routerLink="/plans" routerLinkActive="active" (click)="closeMobileMenu()">{{ 'nav.plans' | translate }}</a>
+            <a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()" class="nav-mobile-last">{{ 'nav.contact' | translate }}</a>
+            <div class="nav-mobile-divider"></div>
+            <a class="nav-login" routerLink="/login" (click)="closeMobileMenu()">{{ tenant.ctaLogin }}</a>
+            <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register" (click)="closeMobileMenu()">{{ tenant.ctaEnroll }}</a>
+          </div>
+          }
+        </div>
+      }
+      @case ('hero') {
+        @switch (tpl.hero) {
+          @case ('frame') {
+            <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
+              <div class="hero-frame {{ heroDark ? '' : 'on-light' }}">
+                <div class="hero-frame-content">
+                  <div class="eyebrow {{ heroDark ? 'on-dark' : '' }}">{{ eyebrowText }}</div>
+                  <div class="hero-spacer"></div>
+                  <h1 [innerHTML]="heroH1Html"></h1>
+                  <p class="hero-sub {{ heroDark ? 'on-dark-soft' : '' }}">{{ heroSub }}</p>
+                  <div class="hero-ctas">
+                    <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                    <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+                  </div>
+                  <div class="hero-trust {{ heroDark ? 'on-dark-soft' : '' }}">
+                    @for (tr of heroTrust; track tr.icon) {
+                      <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                    }
+                  </div>
+                  <div class="hero-grid {{ tpl.gridVar || 'gold-ring' }}">
+                    @for (img of heroImages; track img) {
+                      <img [src]="img" alt="" loading="lazy" />
+                    }
+                  </div>
+                </div>
+              </div>
+            </header>
+          }
+          @case ('royal') {
+            <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
+              <div class="hero-frame {{ heroDark ? '' : 'on-light' }}">
+                <div class="hero-frame-content">
+                  <div class="eyebrow {{ heroDark ? 'on-dark' : '' }}">{{ eyebrowText }}</div>
+                  <div class="hero-spacer"></div>
+                  <h1 [innerHTML]="heroH1Html"></h1>
+                  <p class="hero-sub {{ heroDark ? 'on-dark-soft' : '' }}">{{ heroSub }}</p>
+                  <div class="hero-ctas">
+                    <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                    <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+                  </div>
+                  <div class="hero-trust {{ heroDark ? 'on-dark-soft' : '' }}">
+                    @for (tr of heroTrust; track tr.icon) {
+                      <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                    }
+                  </div>
+                  <div class="hero-grid {{ tpl.gridVar || 'gold-ring' }}">
+                    @for (img of heroImages; track img) {
+                      <img [src]="img" alt="" loading="lazy" />
+                    }
+                  </div>
+                </div>
+              </div>
+            </header>
+          }
+          @case ('rangoli') {
+            <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
+              <div class="hero-orn"><div class="orn orn-rangoli"></div></div>
+              <div class="eyebrow {{ heroDark ? 'on-dark' : '' }}">{{ eyebrowText }}</div>
+              <div class="hero-spacer hero-spacer-compact"></div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub {{ heroDark ? 'on-dark-soft' : '' }}">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-trust {{ heroDark ? 'on-dark-soft' : '' }}">
+                @for (tr of heroTrust; track tr.icon) {
+                  <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                }
+              </div>
+              <div class="hero-grid {{ tpl.gridVar || 'gold-ring' }}">
+                @for (img of heroImages; track img) {
+                  <img [src]="img" alt="" loading="lazy" />
+                }
+              </div>
+            </header>
+          }
+          @case ('mandala') {
+            <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
+              <div class="hero-orn"><div class="orn orn-mandala"></div></div>
+              <div class="eyebrow {{ heroDark ? 'on-dark' : '' }}">{{ eyebrowText }}</div>
+              <div class="hero-spacer hero-spacer-compact"></div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub {{ heroDark ? 'on-dark-soft' : '' }}">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-trust {{ heroDark ? 'on-dark-soft' : '' }}">
+                @for (tr of heroTrust; track tr.icon) {
+                  <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                }
+              </div>
+              <div class="hero-grid {{ tpl.gridVar || 'gold-ring' }}">
+                @for (img of heroImages; track img) {
+                  <img [src]="img" alt="" loading="lazy" />
+                }
+              </div>
+            </header>
+          }
+          @case ('arch') {
+            <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
+              <img class="hero-arch-img" [src]="heroArchImage" alt="" loading="lazy" />
+              <div class="eyebrow {{ heroDark ? 'on-dark' : '' }}">{{ eyebrowText }}</div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub {{ heroDark ? 'on-dark-soft' : '' }}">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-trust {{ heroDark ? 'on-dark-soft' : '' }}">
+                @for (tr of heroTrust; track tr.icon) {
+                  <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                }
+              </div>
+            </header>
+          }
+          @case ('collage') {
+            <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
+              <div class="eyebrow {{ heroDark ? 'on-dark' : '' }}">{{ eyebrowText }}</div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub {{ heroDark ? 'on-dark-soft' : '' }}">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-trust {{ heroDark ? 'on-dark-soft' : '' }}">
+                @for (tr of heroTrust; track tr.icon) {
+                  <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                }
+              </div>
+              <div class="hero-grid {{ tpl.gridVar || 'gold-ring' }}">
+                @for (img of heroImages; track img) {
+                  <img [src]="img" alt="" loading="lazy" />
+                }
+              </div>
+            </header>
+          }
+          @case ('split') {
+            <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
+              <div class="hero-split">
+                <div>
+                  <div class="eyebrow {{ heroDark ? 'on-dark' : '' }}">{{ eyebrowText }}</div>
+                  <h1 [innerHTML]="heroH1Html"></h1>
+                  <p class="hero-sub {{ heroDark ? 'on-dark-soft' : '' }}">{{ heroSub }}</p>
+                  <div class="hero-ctas">
+                    <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                    <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+                  </div>
+                  <div class="hero-trust {{ heroDark ? 'on-dark-soft' : '' }}">
+                    @for (tr of heroTrust; track tr.icon) {
+                      <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                    }
+                  </div>
+                </div>
+                <div class="hero-stack">
+                  @for (img of heroSplitImages; track img) {
+                    <img [src]="img" alt="" loading="lazy" />
+                  }
+                </div>
+              </div>
+            </header>
+          }
+          @case ('fullbleed') {
+            <header class="hero tsec" [style]="'background-image:' + heroFullbleedBg">
+              <div class="tsec-inner hero-fullbleed hero-fullbleed-content">
+                <div class="hero-orn"><div class="orn {{ heroOrnClass || 'orn-rangoli' }} hero-orn-feature"></div></div>
+                <div class="eyebrow on-dark">{{ eyebrowText }}</div>
+                <h1 [innerHTML]="heroH1Html"></h1>
+                <p class="hero-sub on-dark-soft">{{ heroSub }}</p>
+                <div class="hero-ctas">
+                  <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                  <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+                </div>
+                <div class="hero-trust on-dark-soft">
+                  @for (tr of heroTrust; track tr.icon) {
+                    <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                  }
+                </div>
+              </div>
+            </header>
+          }
+          @case ('form') {
+            <header class="hero tsec">
+              <div class="hero-form">
+                <div>
+                  <div class="eyebrow">{{ eyebrowText }}</div>
+                  <h1 [innerHTML]="heroH1Html"></h1>
+                  <p class="hero-sub">{{ heroSub }}</p>
+                  <div class="hero-ctas">
+                    <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                    <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+                  </div>
+                  <div class="hero-trust">
+                    @for (tr of heroTrust; track tr.icon) {
+                      <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                    }
+                  </div>
+                  <div class="divider {{ motifDividerClass }} hero-rule"></div>
+                </div>
+                <div class="searchpanel">
+                  <h4>{{ tpl.formTitle || 'Create Free Matrimony Profile' }}</h4>
+                  <p class="sp-sub">{{ tpl.formSub || 'Join lakhs of happy Marathi families. Free forever.' }}</p>
+                  <div class="sp-field">
+                    <div class="pill-group">
+                      <div class="pill {{ !formForGroom ? 'active' : '' }}">Bride</div>
+                      <div class="pill {{ formForGroom ? 'active' : '' }}">Groom</div>
+                    </div>
+                  </div>
+                  <div class="sp-field">
+                    <label for="tpl-looking">Looking for</label>
+                    <select class="sp-select" id="tpl-looking">
+                      <option>{{ (formForGroom ? 'Bride' : 'Groom') + ' aged 22 - 30' }}</option>
+                      <option>{{ (formForGroom ? 'Bride' : 'Groom') + ' aged 31 - 40' }}</option>
+                    </select>
+                  </div>
+                  <div class="sp-field">
+                    <label for="tpl-caste">Caste / Community</label>
+                    <select class="sp-select" id="tpl-caste">
+                      <option>Any Marathi community</option>
+                      <option>Maratha / 96 Kuli</option>
+                      <option>Deshastha Brahmin</option>
+                      <option>Chandraseniya Kayastha (CKP)</option>
+                    </select>
+                  </div>
+                  <a class="tbtn btn-{{ tpl.btn }} formbtn" routerLink="/register">{{ cta1 }}</a>
+                  <div class="mini-stat">
+                    <div><b>5L+</b><span>Happy Stories</span></div>
+                    <div><b>350L+</b><span>Members</span></div>
+                    <div><b>100%</b><span>Mobile-verified</span></div>
+                  </div>
+                </div>
+              </div>
+            </header>
+          }
+          @case ('parallax') {
+            <header class="hero tsec hero-parallax" [style]="'background-image:' + heroParallaxBg">
+              <div class="tsec-inner hero-parallax-content">
+                <div class="eyebrow on-dark">{{ eyebrowText }}</div>
+                <div class="hero-spacer"></div>
+                <h1 [innerHTML]="heroH1Html"></h1>
+                <p class="hero-sub on-dark-soft">{{ heroSub }}</p>
+                <div class="hero-ctas">
+                  <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                  <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+                </div>
+                <div class="hero-trust on-dark-soft">
+                  @for (tr of heroTrust; track tr.icon) {
+                    <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                  }
+                </div>
+              </div>
+            </header>
+          }
+          @case ('gradient-anim') {
+            <header class="hero tsec hero-gradient-anim hero-gradient-content">
+              <div class="eyebrow on-dark">{{ eyebrowText }}</div>
+              <div class="hero-spacer"></div>
+              <h1 class="hero-title-on-dark" [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub on-dark-soft">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-trust on-dark-soft">
+                @for (tr of heroTrust; track tr.icon) {
+                  <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                }
+              </div>
+            </header>
+          }
+          @case ('masonry') {
+            <header class="hero tsec">
+              <div class="eyebrow">{{ eyebrowText }}</div>
+              <div class="hero-spacer"></div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-trust">
+                @for (tr of heroTrust; track tr.icon) {
+                  <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                }
+              </div>
+              <div class="hero-masonry">
+                @for (img of heroImages; track img) {
+                  <img [src]="img" alt="" loading="lazy" />
+                }
+              </div>
+            </header>
+          }
+          @case ('circular') {
+            <header class="hero tsec">
+              <div class="eyebrow">{{ eyebrowText }}</div>
+              <div class="hero-spacer"></div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-circular">
+                @for (img of heroImages; track img) {
+                  <img [src]="img" alt="" loading="lazy" />
+                }
+              </div>
+            </header>
+          }
+          @case ('hscroll') {
+            <header class="hero tsec">
+              <div class="eyebrow">{{ eyebrowText }}</div>
+              <div class="hero-spacer"></div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-hscroll" style="max-width:1140px;margin:36px auto 0;padding:0 24px">
+                @for (img of heroImages; track img) {
+                  <img [src]="img" alt="" loading="lazy" />
+                }
+              </div>
+            </header>
+          }
+          @case ('asymmetric') {
+            <header class="hero tsec">
+              <div class="hero-asymmetric {{ heroAsymmetricReverse ? 'reverse' : '' }}">
+                <div>
+                  <div class="eyebrow">{{ eyebrowText }}</div>
+                  <h1 [innerHTML]="heroH1Html"></h1>
+                  <p class="hero-sub">{{ heroSub }}</p>
+                  <div class="hero-ctas">
+                    <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                    <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+                  </div>
+                  <div class="hero-trust">
+                    @for (tr of heroTrust; track tr.icon) {
+                      <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                    }
+                  </div>
+                </div>
+                <div>
+                  <img [src]="heroArchImage" alt="" loading="lazy" />
+                </div>
+              </div>
+            </header>
+          }
+          @case ('floating') {
+            <header class="hero tsec hero-floating">
+              <div class="float-el"></div>
+              <div class="float-el"></div>
+              <div class="float-el"></div>
+              <div class="float-el"></div>
+              <div class="eyebrow">{{ eyebrowText }}</div>
+              <div class="hero-spacer"></div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-trust">
+                @for (tr of heroTrust; track tr.icon) {
+                  <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                }
+              </div>
+            </header>
+          }
+          @default {
+            <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
+              <div class="eyebrow {{ heroDark ? 'on-dark' : '' }}">{{ eyebrowText }}</div>
+              <h1 [innerHTML]="heroH1Html"></h1>
+              <p class="hero-sub {{ heroDark ? 'on-dark-soft' : '' }}">{{ heroSub }}</p>
+              <div class="hero-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                <a class="tbtn btn-ghost-dark" routerLink="/register">{{ cta2 }}</a>
+              </div>
+              <div class="hero-trust {{ heroDark ? 'on-dark-soft' : '' }}">
+                @for (tr of heroTrust; track tr.icon) {
+                  <span><app-tpl-icon [name]="tr.icon"></app-tpl-icon>{{ tr.label }}</span>
+                }
+              </div>
+              <div class="divider {{ motifDividerClass }} hero-rule"></div>
+            </header>
+          }
+        }
+      }
+      @case ('banner') {
+        @if (tpl.banner !== false && tpl.hero !== 'fullbleed' && tpl.hero !== 'parallax') {
+          <section class="banner tsec">
+            <img class="banner-bgimg" [src]="bannerImg" alt="" loading="lazy" />
+            <div class="banner-inner">
+              @if (tpl.bannerOrn === 'rangoli') {
+                <div class="banner-orn"><div class="orn orn-rangoli sm"></div></div>
+              } @else {
+                <div class="divider m-butti banner-top"></div>
+              }
+              <div class="eyebrow banner-eyebrow">Create a Free Matrimony Profile</div>
+              <h2>50,000+ Successful Marriages &amp; Counting</h2>
+              <p>Our community celebrates one new wedding every 15 minutes — find your soulmate among lakhs of verified Marathi profiles.</p>
+              <div class="banner-chips">
+                <span><app-tpl-icon name="user-check"></app-tpl-icon>100% Verified</span>
+                <span><app-tpl-icon name="shield-check"></app-tpl-icon>Privacy Protected</span>
+                <span><app-tpl-icon name="heart-handshake"></app-tpl-icon>Family Approved</span>
+              </div>
+              <div class="banner-ctas">
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">Create Free Profile</a>
+                <a class="tbtn btn-ghost" routerLink="/register">Learn More</a>
+              </div>
+              <div class="divider m-butti banner-bottom"></div>
+            </div>
+          </section>
+        }
+      }
+      @case ('stats') {
+        <section class="tsec {{ tpl.hero === 'frame' ? 'altsection' : '' }}">
+          @if (tpl.floatingStats) {
+            <div class="stats-float">
+              <div class="stats-card stats-dividers stats-card-floating">
+                @for (s of statCells; track s.label) {
+                  <div class="stat-cell"><p class="stat-val">{{ s.value }}</p><p class="stat-lab">{{ s.label }}</p></div>
+                }
+              </div>
+            </div>
+          } @else if (tpl.statsDark) {
+            <div class="stats-dark stats-dividers">
+              @for (s of statCells; track s.label) {
+                <div class="stat-cell"><p class="stat-val">{{ s.value }}</p><p class="stat-lab">{{ s.label }}</p></div>
+              }
+            </div>
+          } @else {
+            <div class="stats-card stats-dividers">
+              @for (s of statCells; track s.label) {
+                <div class="stat-cell"><p class="stat-val">{{ s.value }}</p><p class="stat-lab">{{ s.label }}</p></div>
+              }
+            </div>
+          }
+        </section>
+      }
+      @case ('features') {
+        <section class="tsec tpy-24">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow">Why Marathi Families Trust Us</div>
+            <h2 class="sectitle section-title-spaced">Matrimony the Way It Should Be</h2>
+            <div class="divider {{ motifClass }} section-divider"></div>
+            @if (tpl.bannerGarland) { <div class="section-garland"></div> }
+            <div class="feat-grid">
+              @for (f of featureCards; track f.title) {
+                <div class="feat-card bordered-bottom {{ tpl.featStyle || '' }}">
+                  <div class="icon-tile {{ tpl.iconRound ? 'circle' : '' }}"><app-tpl-icon [name]="f.icon"></app-tpl-icon></div>
+                  <h3>{{ f.title }}</h3>
+                  <p>{{ f.text }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+      @case ('how') {
+        <section class="tsec darksec tpy-24 how-section">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow on-dark">How It Works</div>
+            <h2 class="sectitle on-dark section-title-spaced">Three Simple Steps to Your Match</h2>
+            <div class="steps">
+              @for (s of steps; track s.title; let i = $index) {
+                <div>
+                  <div class="step-num {{ tpl.stepSolid ? 'solid' : tpl.stepLight ? 'light' : 'glass' }}">{{ i + 1 }}</div>
+                  <h3 class="on-dark">{{ s.title }}</h3>
+                  <p class="on-dark-soft">{{ s.text }}</p>
+                </div>
+              }
+            </div>
+            <div class="divider {{ motifClass }} steps-divider"></div>
+          </div>
+        </section>
+      }
+      @case ('profiles') {
+        <section class="tsec altsection tpy-24">
+          <div class="tsec-inner">
+            <div class="prof-head">
+              <div>
+                <div class="eyebrow">Freshly Joined Members</div>
+                <h2 class="sectitle" style="margin-top:12px">Recently Added Profiles</h2>
+              </div>
+              <a class="viewall" routerLink="/search">View all profiles <app-tpl-icon name="arrow-right"></app-tpl-icon></a>
+            </div>
+            <div class="prof-grid">
+              @for (p of profileCards; track p.key) {
+                <div class="prof-card festive">
+                  <div class="prof-img-wrap">
+                    <img [src]="p.img" alt="" loading="lazy" />
+                    <span class="prof-badge {{ tpl.badgeWhite ? 'white' : '' }}"><app-tpl-icon name="badge-check"></app-tpl-icon>{{ p.status }}</span>
+                  </div>
+                  <div class="prof-body">
+                    <p class="prof-name">{{ p.name }}</p>
+                    <p class="prof-sub">{{ p.location || p.occupation }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+      @case ('success') {
+        <section class="tsec tpy-24">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow">Success Stories</div>
+            <h2 class="sectitle section-title-spaced">A Thousand Happy Beginnings</h2>
+            <div class="divider {{ motifClass }} section-divider"></div>
+            @if (tpl.bannerGarland) { <div class="section-garland"></div> }
+            <div class="story-grid">
+              @for (s of storyCards; track s.name) {
+                <div class="story-card festive">
+                  <img [src]="s.img" alt="" loading="lazy" />
+                  <div class="story-body">
+                    <div class="story-stars">
+                      <app-tpl-icon name="star"></app-tpl-icon><app-tpl-icon name="star"></app-tpl-icon><app-tpl-icon name="star"></app-tpl-icon><app-tpl-icon name="star"></app-tpl-icon><app-tpl-icon name="star"></app-tpl-icon>
+                    </div>
+                    <h3>{{ s.name }}</h3>
+                    <p class="story-meta">{{ s.meta }}</p>
+                    <p class="story-quote">“{{ s.quote }}”</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+      @case ('cta') {
+        <section class="tsec tpy-24">
+          <div class="tsec-inner">
+            @if (tpl.hero === 'minimal' || tpl.hero === 'split') {
+              <div class="cta-panel cta-border" [class.cta-motif-bordered]="tpl.motif !== 'none'">
+                <div class="divider {{ motifClass }} cta-divider"></div>
+                <h2>{{ ctaTitle }}</h2>
+                <p class="muted">{{ ctaSub }}</p>
+                <div class="cta-ctas">
+                  <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                  <a class="tbtn btn-ghost-dark" routerLink="/register">Talk to an Advisor</a>
+                </div>
+              </div>
+            } @else {
+              <div class="cta-panel darksec" [class.cta-border]="tpl.cat !== 'Modern' && tpl.cat !== 'Premium' && tpl.cat !== 'Platform'" [class.cta-motif-bordered]="tpl.motif !== 'none'">
+                @if (tpl.bannerGarland) { <div class="section-garland" style="margin:0 auto 26px;"></div> }
+                <div class="divider {{ motifClass }} cta-divider"></div>
+                <h2 class="on-dark">{{ ctaTitle }}</h2>
+                <p class="on-dark-soft">{{ ctaSub }}</p>
+                <div class="cta-ctas">
+                  <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
+                  <a class="tbtn btn-ghost" routerLink="/register">Talk to an Advisor</a>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+      @case ('why') {
+        <section class="tsec tpy-24">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow">{{ tpl.whyEyebrow || 'Why Choose Us' }}</div>
+            <h2 class="sectitle section-title-spaced">{{ tpl.whyTitle || 'Trusted by Families, Powered by Technology' }}</h2>
+            <div class="divider {{ motifClass }} section-divider"></div>
+            <div class="why-grid">
+              @for (w of whyItems; track w.title) {
+                <div class="why-card">
+                  <div class="icon-tile circle icon-tile-centered"><app-tpl-icon [name]="w.icon"></app-tpl-icon></div>
+                  <h3>{{ w.title }}</h3>
+                  <p>{{ w.text }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+      @case ('castes') {
+        <section class="tsec altsection tpy-24">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow">{{ tpl.casteEyebrow || 'Communities We Serve' }}</div>
+            <h2 class="sectitle section-title-spaced">{{ tpl.casteTitle || '200+ Marathi Castes & Communities' }}</h2>
+            <div class="caste-wrap">
+              @for (c of castes; track c; let i = $index) {
+                <span class="caste-chip {{ i < 4 ? 'hot' : '' }}">{{ c }}</span>
+              }
+            </div>
+            <p class="muted caste-note">{{ tpl.casteNote || 'From Brahmin to Kshatriya and every community in between — find a match who shares your heritage.' }}</p>
+          </div>
+        </section>
+      }
+      @case ('melava') {
+        <section class="tsec tpy-24">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow">{{ tpl.melavaEyebrow || 'Melava & Events' }}</div>
+            <h2 class="sectitle section-title-spaced">{{ tpl.melavaTitle || 'Meet Families In Person' }}</h2>
+            <div class="event-grid">
+              @for (e of events; track e.title + e.day) {
+                <div class="event-card">
+                  <div class="event-date"><b>{{ e.day }}</b><span>{{ e.month }}</span></div>
+                  <h3>{{ e.title }}</h3>
+                  <p>{{ e.place }}</p>
+                  <span class="event-tag">View details</span>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+      @case ('app') {
+        <section class="tsec tpy-24">
+          <div class="tsec-inner">
+            <div class="appband darksec appband-panel">
+              <div>
+                <div class="eyebrow on-dark">{{ tpl.appEyebrow || 'Download the App' }}</div>
+                <h2 class="sectitle on-dark section-title-spaced">{{ tpl.appTitle || 'Find Your Match in 30 Seconds' }}</h2>
+                <p class="on-dark-soft appband-copy">{{ tpl.appSub || 'Fast, simple and delightful. The most loved Marathi matrimony app — search, chat and connect on the go.' }}</p>
+                <div class="storebtns">
+                  <a class="storebtn" href="#"><app-tpl-icon name="smartphone"></app-tpl-icon> Google Play</a>
+                  <a class="storebtn storebtn-apple" href="#"><app-tpl-icon name="apple"></app-tpl-icon> App Store</a>
+                </div>
+              </div>
+              <div>
+                <div class="ttext-center">
+                  <div class="rating rating-centered"><span class="stars">★★★★★</span><span>4.3 · 10M+ Downloads</span></div>
+                  <div class="app-review-note">Based on customer reviews</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+      @case ('testimonials') {
+        <section class="tsec tpy-24">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow">What Families Say</div>
+            <h2 class="sectitle section-title-spaced">Testimonials from Happy Families</h2>
+            <div class="divider {{ motifClass }} section-divider"></div>
+            <div class="testimonial-grid">
+              @for (s of testimonialItems; track s.name) {
+                <div class="testimonial-item glass-card">
+                  <img class="t-avatar" [src]="s.img" alt="" loading="lazy" />
+                  <blockquote>"{{ s.quote }}"</blockquote>
+                  <div class="t-author">{{ s.name }}</div>
+                  <div class="t-role">{{ s.meta }}</div>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+      @case ('counters') {
+        <section class="tsec darksec tpy-24">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow on-dark">By the Numbers</div>
+            <h2 class="sectitle on-dark section-title-spaced">Our Journey in Numbers</h2>
+            <div class="divider {{ motifClass }} section-divider"></div>
+            <div class="counter-grid">
+              @for (c of counterItems; track c.label) {
+                <div class="counter-item">
+                  <div class="counter-val on-dark">{{ c.value }}</div>
+                  <p class="counter-label on-dark-soft">{{ c.label }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+      @case ('beforeafter') {
+        <section class="tsec altsection tpy-24">
+          <div class="tsec-inner ttext-center">
+            <div class="eyebrow">Before &amp; After</div>
+            <h2 class="sectitle section-title-spaced">Transform Your Story</h2>
+            <div class="divider {{ motifClass }} section-divider"></div>
+            <div class="before-after-wrap before-after-feature">
+              <img class="ba-after" [src]="beforeAfterImages.after" alt="" loading="lazy" />
+              <div class="ba-before before-after-half">
+                <img class="before-after-source" [src]="beforeAfterImages.before" alt="" loading="lazy" />
+              </div>
+              <div class="ba-divider before-after-divider"></div>
+              <div class="ba-handle before-after-handle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4l-6 8 6 8"/><path d="M16 4l6 8-6 8"/></svg>
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+      @case ('footer') {
+        <footer class="tpl-footer darksec">
+          <div class="foot-grid">
+            <div>
+              <div class="foot-brand">@if (tenant.logoUrl) {<img [src]="tenant.logoUrl" [alt]="brandName + ' logo'" class="nav-logo-img" />} @else {<span class="nav-logo footer-logo">{{ brandLetter }}</span>}{{ brandName }}</div>
+              <p class="foot-blurb">{{ footerBlurb }}</p>
+            </div>
+            <div>
+              <h4>Find a Match</h4>
+              <ul>
+                <li><a routerLink="/search">Brides</a></li>
+                <li><a routerLink="/search">Grooms</a></li>
+                <li><a routerLink="/search">NRI Profiles</a></li>
+                <li><a href="#">Horoscope Matching</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>Community</h4>
+              <ul>
+                <li><a href="#">Success Stories</a></li>
+                <li><a href="#">Matrimonial Events</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Help &amp; Support</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>Contact Us</h4>
+              <ul class="foot-contact">
+                @if (contactPhone) {
+                  <li><app-tpl-icon name="phone"></app-tpl-icon>{{ contactPhone }}</li>
+                }
+                @if (contactEmail) {
+                  <li><app-tpl-icon name="mail"></app-tpl-icon>{{ contactEmail }}</li>
+                }
+              </ul>
+            </div>
+          </div>
+          <div class="foot-bottom">
+            <p>{{ tenant.copyrightText }}</p>
+            <p>
+              @for (l of footerLinks; track l.label) {
+                <a [href]="l.url">{{ l.label }}</a>
+              }
+            </p>
+          </div>
+        </footer>
+      }
+    }
+  }
+  @if (showFab) {
+    <button class="fab" routerLink="/register" aria-label="Register Free">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </button>
+  }
+  @if (showStickyBar) {
+    <div class="sticky-bar visible">
+      <span class="sticky-text">{{ stickyBarConfig!.text }}</span>
+      <a class="tbtn btn-{{ tpl.btn }} btn-sm sticky-cta" routerLink="/register">{{ stickyBarConfig!.cta }}</a>
+    </div>
+  }
+  }
+</div>

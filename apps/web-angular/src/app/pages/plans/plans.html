@@ -1,13 +1,13 @@
 <section class="plans-page">
   <div class="plans-container">
-    <div class="plans-header">
+    <header class="page-header">
       <h1>{{ 'plans.title' | translate }}</h1>
       @if (isLoggedIn()) {
       <p>{{ 'plans.subtitleLoggedIn' | translate }}</p>
       } @else {
       <p>{{ 'plans.subtitleGuest' | translate }}</p>
       }
-    </div>
+    </header>
 
     @if (isLoggedIn() && checkoutResult()) {
     <div class="checkout-success" [class.pending]="activationState() === 'confirming'">

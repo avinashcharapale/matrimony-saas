@@ -72,14 +72,15 @@ export class PlansPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscriptionStore.loadPlans().subscribe();
+    this.subscriptionStore.loadPlans().subscribe({ error: () => {} });
     const userId = this.authService.getSession()?.userId;
     if (userId) {
       this.subscriptionStore.loadSubscriptionStatus(userId).subscribe();
+      this.billingRepository.getPaymentSettings().subscribe({
+        next: (settings) => this.paymentSettings.set(settings),
+        error: () => {},
+      });
     }
-    this.billingRepository.getPaymentSettings().subscribe({
-      next: (settings) => this.paymentSettings.set(settings),
-    });
   }
 
   isActiveFreePlan(plan: UserSubscriptionPlanDto): boolean {

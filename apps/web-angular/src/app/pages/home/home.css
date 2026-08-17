@@ -1,7 +1,7 @@
 .dashboard-page {
   background: transparent;
   color: var(--theme-text);
-  font-family: 'Manrope', 'Segoe UI', sans-serif;
+  font-family: var(--font-body, 'Manrope', 'Segoe UI', sans-serif);
 }
 
 .dashboard-shell {
@@ -29,8 +29,7 @@
 .renew-card button {
   width: 100%;
   border: none;
-  border-radius: 8px;
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
   padding: 0.48rem 0.65rem;
   font-weight: 700;
@@ -53,7 +52,7 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  background: var(--theme-surface-overlay);
+  background: var(--theme-surface-raised);
   border: 1px solid var(--theme-border);
   border-radius: 16px;
   padding: 1rem;
@@ -363,7 +362,7 @@
 
 .tag-row span:hover {
   transform: translateY(-1px);
-  background: color-mix(in srgb, var(--tenant-primary) 14%, #ffffff);
+  background: color-mix(in srgb, var(--tenant-primary) 14%, var(--color-white));
 }
 
 .compatibility {
@@ -530,7 +529,7 @@
 .empty-cta:hover {
   transform: translateY(-1px);
   box-shadow: var(--theme-focus);
-  background: color-mix(in srgb, var(--tenant-primary) 12%, #ffffff);
+  background: color-mix(in srgb, var(--tp-s) 12%, var(--color-white));
 }
 
 /* ── Interest Row ───────────────────────────────────────────────────────────── */
@@ -684,7 +683,7 @@
   min-width: 1rem;
   height: 1rem;
   border-radius: 99px;
-  background: var(--tenant-primary);
+  background: var(--tp-s);
   color: var(--on-primary);
   display: inline-grid;
   place-items: center;
@@ -721,7 +720,7 @@
   display: none;
   border: 1px solid var(--theme-border);
   border-radius: 8px;
-  background: var(--theme-surface-overlay);
+  background: var(--theme-surface-raised);
   color: var(--theme-text);
   font-size: 1.15rem;
   line-height: 1;

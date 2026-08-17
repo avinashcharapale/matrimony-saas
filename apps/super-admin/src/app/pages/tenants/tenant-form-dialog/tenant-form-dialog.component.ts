@@ -17,6 +17,10 @@ export interface TenantFormDialogData {
   tenant?: TenantDto;
 }
 
+export interface TenantFormDialogResult {
+  dto: TenantDto;
+}
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tenant-form-dialog',
@@ -165,19 +169,25 @@ export interface TenantFormDialogData {
       margin: 8px 0 12px;
     }
     .section-title {
-      margin: 0 0 8px;
+      margin: 0 0 4px;
       font-size: 14px;
       font-weight: 500;
       color: var(--text-secondary, rgba(0, 0, 0, 0.6));
     }
+    .section-hint {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.5);
+    }
     mat-dialog-content {
-      min-width: 400px;
+      min-width: 720px;
+      max-height: 70vh;
     }
   `],
 })
 export class TenantFormDialogComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly dialogRef = inject(MatDialogRef<TenantFormDialogComponent, TenantDto>);
+  private readonly dialogRef = inject(MatDialogRef<TenantFormDialogComponent, TenantFormDialogResult>);
   readonly data = inject<TenantFormDialogData>(MAT_DIALOG_DATA);
 
   readonly isActiveValue = signal(this.data.tenant?.isActive ?? true);
@@ -198,7 +208,6 @@ export class TenantFormDialogComponent {
       this.data.mode === 'create' ? [Validators.required, Validators.minLength(8)] : [],
     ],
   });
-
   private formatDateOnly(d: Date): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
@@ -223,6 +232,8 @@ export class TenantFormDialogComponent {
       dto.adminPassword = val.adminPassword;
     }
 
-    this.dialogRef.close(dto);
+    this.dialogRef.close({
+      dto,
+    } satisfies TenantFormDialogResult);
   }
 }
