@@ -1,5 +1,5 @@
 export { DataTableComponent } from './lib/data-table.component';
-export type { TableColumn, RowPredicate } from './lib/data-table.component';
+export type { TableColumn } from './lib/data-table.component';
 export { ConfirmDialogComponent } from './lib/confirm-dialog.component';
 export type { ConfirmDialogData } from './lib/confirm-dialog.component';
 export { LoaderComponent } from './lib/loader.component';
@@ -8,4 +8,3 @@ export { StatusBadgeComponent } from './lib/status-badge.component';
 export { EmptyStateComponent } from './lib/empty-state.component';
 export { PaginatorComponent } from './lib/paginator.component';
 export { createSort, createPagination } from './lib/table-utils';
-export type { SortDirection } from './lib/table-utils';

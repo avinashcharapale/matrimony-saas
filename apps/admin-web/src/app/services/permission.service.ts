@@ -29,11 +29,6 @@ export interface UpdatePermissionRequest {
   isActive?: boolean;
 }
 
-export interface AssignPermissionRequest {
-  userId: number;
-  permissionId: number;
-}
-
 @Injectable({ providedIn: 'root' })
 export class PermissionService {
   private readonly http = inject(HttpClient);

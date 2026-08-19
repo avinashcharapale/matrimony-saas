@@ -4,7 +4,13 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MasterDataClient, MasterDataOptionDto } from '@org/generated';
 import { TenantService } from './tenant.service';
-import { Taluka } from './geo.service';
+
+interface Taluka {
+  talukaId: number;
+  districtId: number;
+  name: string;
+  nameMr: string | null;
+}
 
 export interface RegisterLookupOption {
   id: number;

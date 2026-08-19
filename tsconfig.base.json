@@ -19,14 +19,9 @@
       "@org/data-access-tenant": ["libs/data-access/tenant/src/index.ts"],
       "@org/data-access-auth": ["libs/data-access/auth/src/index.ts"],
       "@org/data-access-profile": ["libs/data-access/profile/src/index.ts"],
-      "@org/data-access-masterdata": [
-        "libs/data-access/masterdata/src/index.ts"
-      ],
-      "@org/data-access-chat": ["libs/data-access/chat/src/index.ts"],
       "@org/data-access-subscription": [
         "libs/data-access/subscription/src/index.ts"
       ],
-      "@org/data-access-geo": ["libs/data-access/geo/src/index.ts"],
       "@org/data-access-notification": [
         "libs/data-access/notification/src/index.ts"
       ],

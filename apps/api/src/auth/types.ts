@@ -10,20 +10,3 @@ export interface AuthContext {
   permissions: string[];
   roles: string[];
 }
-
-export interface PermissionRecord {
-  permissionId: number;
-  tenantId: number;
-  permissionCode: string;
-  displayName: string;
-  description?: string;
-  resourceType: string;
-  action: string;
-  isActive: boolean;
-}
-
-export interface PermissionCheckResult {
-  hasPermission: boolean;
-  reason?: string;
-  expiresAt?: Date;
-}

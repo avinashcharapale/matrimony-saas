@@ -77,30 +77,6 @@ export class JwtUtil {
   }
 
   /**
-   * Decode token without verification (use with caution)
-   */
-  static decodeToken<T = any>(token: string): T | null {
-    try {
-      return jwt.decode(token) as T;
-    } catch {
-      return null;
-    }
-  }
-
-  /**
-   * Check if token is expired (without verifying signature)
-   */
-  static isTokenExpired(token: string): boolean {
-    try {
-      const decoded = jwt.decode(token) as any;
-      if (!decoded || !decoded.exp) return true;
-      return decoded.exp * 1000 < Date.now();
-    } catch {
-      return true;
-    }
-  }
-
-  /**
    * Extract token from Bearer header
    */
   static extractTokenFromHeader(authHeader?: string): string | null {

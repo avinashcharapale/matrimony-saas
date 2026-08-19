@@ -17,11 +17,6 @@ export interface PlatformAuthResponse {
   expiresAt: string;
 }
 
-export interface PlatformRefreshRequest {
-  refreshToken: string;
-  accessToken: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class PlatformAuthService {
   private readonly http = inject(HttpClient);

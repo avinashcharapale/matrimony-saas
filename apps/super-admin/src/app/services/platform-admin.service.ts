@@ -71,20 +71,3 @@ export class PlatformAdminService {
     return this.http.delete<void>(`/tenant/PlatformAdmins/${id}`);
   }
 }
-
-export interface PlatformAuthPermission {
-  platformPermissionId: number;
-  permissionCode: string;
-  displayName: string;
-  description?: string;
-  resourceType: string;
-  action: string;
-  isActive?: boolean;
-}
-
-export interface PlatformAuthRole {
-  platformRoleId: number;
-  roleName: string;
-  permissionCount: number;
-  adminCount: number;
-}
