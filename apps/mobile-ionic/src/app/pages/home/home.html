@@ -95,7 +95,7 @@
 
         <div class="footer-block">
           <h4>Enquiry & Support</h4>
-          @for (contact of tenant.contacts; track contact.value) {
+          @for (contact of tenant.contacts ?? []; track contact.value) {
             @if (contact.type === 'Phone' || contact.type === 'WhatsApp') {
               <p>📞 {{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
             }
@@ -107,7 +107,7 @@
 
         <div class="footer-block">
           <h4>Address</h4>
-          @for (contact of tenant.contacts; track contact.value) {
+          @for (contact of tenant.contacts ?? []; track contact.value) {
             @if (contact.type === 'Address') {
               <p>{{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
             }

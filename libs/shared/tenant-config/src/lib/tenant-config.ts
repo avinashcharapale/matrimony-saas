@@ -1,3 +1,5 @@
+import { APPROVED_TEMPLATES, type LandingTemplate } from '@org/landing-templates';
+
 export interface TenantContact {
   type: 'Email' | 'Phone' | 'WhatsApp' | 'Social' | 'Address';
   label?: string;
@@ -33,31 +35,31 @@ export interface TenantFooterSettings {
 
 export interface TenantConfig {
   id: string;
-  displayName: string;
-  defaultLanguage: string;
-  defaultCurrency: string;
-  logoText: string;
+  displayName?: string;
+  defaultLanguage?: string;
+  defaultCurrency?: string;
+  logoText?: string;
   logoEmoji?: string;
   logoUrl?: string;
   faviconUrl?: string;
-  tagline: string;
-  heroTitle: string;
-  heroSubtitle: string;
-  heroDescription: string;
-  heroImage: string;
+  tagline?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroDescription?: string;
+  heroImage?: string;
   heroImageUrl?: string;
   bannerImageUrl?: string;
   authBannerImage?: string;
-  primaryColor: string;
-  accentColor: string;
+  primaryColor?: string;
+  accentColor?: string;
   defaultThemeId?: string;
   themeTemplateId?: string;
   customTheme?: Partial<ThemePalette>;
-  contacts: TenantContact[];
+  contacts?: TenantContact[];
   featureFlags?: Record<string, boolean>;
-  copyrightText: string;
-  ctaLogin: string;
-  ctaEnroll: string;
+  copyrightText?: string;
+  ctaLogin?: string;
+  ctaEnroll?: string;
   domainAliases: string[];
   pathAliases: string[];
   landingContent?: TenantLandingContent;
@@ -191,163 +193,11 @@ export const THEME_PALETTES: ThemePalette[] = [
 export const TENANT_CONFIGS: TenantConfig[] = [
   {
     id: 'demo',
-    displayName: 'Matrimony Demo',
-    defaultLanguage: 'en',
-    defaultCurrency: 'INR',
-    logoText: 'Matrimony',
-    logoEmoji: '💍',
-    tagline: 'Trusted Matrimony Platform',
-    heroTitle: 'Find Your Life Partner',
-    heroSubtitle: 'Trusted by thousands of families',
-    heroDescription: 'Join the trusted matrimonial platform with real profiles, guidance, and simple enrollment.',
-    heroImage: 'https://images.pexels.com/photos/32947298/pexels-photo-32947298.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    authBannerImage: 'https://images.pexels.com/photos/30184678/pexels-photo-30184678.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    primaryColor: '#b45309',
-    accentColor: '#fbbf24',
-    defaultThemeId: 'warm-ivory',
-    themeTemplateId: 'paithani-royal',
-    contacts: [
-      { type: 'Phone', label: 'Support', value: '+91 9999999999', isPrimary: true },
-      { type: 'Email', label: 'Support', value: 'support@demo.matrimony.local', isPrimary: true },
-      { type: 'Address', label: 'Office', value: 'Demo Address' },
-    ],
-    copyrightText: '© 2026 Matrimony Demo. All rights reserved.',
-    ctaLogin: 'Sign In',
-    ctaEnroll: 'Register Now',
-    domainAliases: ['demo.matrimony.local', 'localhost'],
-    pathAliases: ['demo'],
-    landingContent: {
-      eyebrow: 'Trusted Matrimony Platform',
-      heroBadges: [
-        { text: '100% Verified Profiles' },
-        { text: 'Family-Approved Matches' },
-      ],
-      whyItems: [
-        { icon: 'sparkles', title: 'Trusted Platform', text: 'A reliable matrimonial platform with verified profiles and meaningful matchmaking.' },
-        { icon: 'shield-check', title: 'Smart Matching', text: 'AI-powered matching based on preferences, location, and lifestyle.' },
-        { icon: 'badge-check', title: 'Verified Profiles', text: 'Every profile is carefully verified for authenticity and trust.' },
-        { icon: 'heart-handshake', title: 'Affordable Plans', text: 'Quality matchmaking accessible for everyone.' },
-      ],
-      steps: [
-        { title: 'Register & Create Profile', text: 'Sign up and tell us your details including profession, education, and family background.' },
-        { title: 'Enroll & Pay', text: 'Activate your account with an affordable yearly membership.' },
-        { title: 'Search Matches', text: 'Browse verified profiles filtered by age, location, education and occupation.' },
-        { title: 'Connect & Meet', text: 'Exchange contacts and start your journey with confidence.' },
-      ],
-      trustItems: [
-        { icon: 'badge-check', title: '100% Verified Profiles' },
-        { icon: 'shield-check', title: 'Privacy Protected' },
-        { icon: 'heart-handshake', title: 'Family-Focused Matching' },
-      ],
-      ctaHeading: 'Begin Your Journey Today',
-      ctaDescription: 'Join thousands of families who found their perfect match.',
-      footerDescription: 'Trusted matrimony service with real profiles and meaningful matchmaking.',
-      footerColumns: [
-        { heading: 'Legal', links: [
-          { label: 'Privacy Policy', url: '/privacy' },
-          { label: 'Terms & Conditions', url: '/terms' },
-          { label: 'Refund Policy', url: '/refund' },
-        ]},
-      ],
-    },
-  },
-  {
-    id: 'anand-maratha',
-    displayName: 'Anand Maratha',
-    defaultLanguage: 'mr',
-    defaultCurrency: 'INR',
-    logoText: 'Anand Maratha',
-    logoEmoji: '🌼',
-    tagline: 'Maratha Matrimony',
-    heroTitle: 'आनंद मराठा वधूवर केंद्र',
-    heroSubtitle: 'मराठा समाजासाठी महाराष्ट्रातील अग्रणी विवाहसंस्था',
-    heroDescription: 'Join the trusted matrimonial platform for Marathi communities with real profiles, astrology guidance, and simple enrollment.',
-    heroImage: 'https://images.pexels.com/photos/32947298/pexels-photo-32947298.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    authBannerImage: 'https://images.pexels.com/photos/30184678/pexels-photo-30184678.jpeg?auto=compress&cs=tinysrgb&w=1600',
-    primaryColor: '#b45309',
-    accentColor: '#fbbf24',
-    defaultThemeId: 'warm-ivory',
-    themeTemplateId: 'sundarjodi-castes',
-    contacts: [
-      { type: 'Phone', label: 'Office', value: '+91 9822214005', isPrimary: true },
-      { type: 'Phone', label: 'Alternate', value: '+91 9921501133' },
-      { type: 'Email', label: 'Contact', value: 'contact@anandmaratha.com', isPrimary: true },
-      { type: 'Address', label: 'Office', value: '203, 2nd Floor, Saras Plaza, Opp. Shaniwar Wada, Pune - 411030, Maharashtra' },
-    ],
-    copyrightText: '© 2026 Anand Maratha Marriage Bureau. All rights reserved.',
-    ctaLogin: 'Profile Login',
-    ctaEnroll: 'Enroll Now',
-    domainAliases: ['anandmaratha.com', 'www.anandmaratha.com'],
-    pathAliases: ['anand-maratha'],
-    landingContent: {
-      eyebrow: 'Trusted Matrimony Service',
-      heroBadges: [
-        { text: 'Verified Profiles' },
-        { text: 'Family-Approved Matches' },
-      ],
-      whyItems: [
-        { icon: 'sparkles', title: '26+ Years of Experience', text: 'Decades of trusted matrimony service with deep roots in the Maratha community.' },
-        { icon: 'users', title: 'Exclusive for Marathas', text: 'A focused platform for Marathas, including families, brides and grooms.' },
-        { icon: 'badge-check', title: 'Verified Profiles', text: 'Every profile is carefully verified for authenticity and better trust.' },
-        { icon: 'heart-handshake', title: 'Affordable Membership', text: 'A low yearly plan that keeps quality matchmaking accessible for everyone.' },
-      ],
-      steps: [
-        { title: 'Register & Create Profile', text: 'Sign up and tell us your details including profession, education, and family background.' },
-        { title: 'Enroll & Pay', text: 'Activate your account with an affordable yearly membership.' },
-        { title: 'Search Matches', text: 'Browse verified profiles filtered by age, location, education and occupation.' },
-        { title: 'Connect & Meet', text: 'Exchange contacts and start your journey with confidence.' },
-      ],
-      trustItems: [
-        { icon: 'badge-check', title: '100% Verified Profiles' },
-        { icon: 'shield-check', title: 'Privacy Protected' },
-        { icon: 'heart-handshake', title: 'Family-Focused Matching' },
-      ],
-      ctaHeading: 'Begin Your Journey Today',
-      ctaDescription: 'Join thousands of families who found their perfect match.',
-      footerDescription: 'Trusted matrimony service for the Maratha community.',
-      footerColumns: [
-        { heading: 'Legal', links: [
-          { label: 'Privacy Policy', url: '/privacy' },
-          { label: 'Terms & Conditions', url: '/terms' },
-          { label: 'Refund Policy', url: '/refund' },
-        ]},
-      ],
-    },
-  },
-  {
-    id: 'petwatch',
-    displayName: '24Petwatch',
-    defaultLanguage: 'en',
-    defaultCurrency: 'CAD',
-    logoText: '24Petwatch',
-    logoEmoji: '🐾',
-    tagline: 'Pet Care Platform',
-    heroTitle: 'Your Pet\'s Trusted Care Partner',
-    heroSubtitle: 'Protect your pet with fast claims and trusted coverage',
-    heroDescription: 'Bring your pets into a comprehensive care network with easy enrollment and on-demand support.',
-    heroImage: 'https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?auto=format&fit=crop&w=1600&q=80',
-    primaryColor: '#0f7079',
-    accentColor: '#14b8a6',
-    defaultThemeId: 'emerald-sand',
-    contacts: [
-      { type: 'Phone', label: 'Support', value: '+1 866-375-7387', isPrimary: true },
-      { type: 'Email', label: 'Support', value: 'support@24petwatch.com', isPrimary: true },
-      { type: 'Address', label: 'Head Office', value: 'Pethealth Inc., Oakville, ON, Canada' },
-    ],
-    copyrightText: '© 2026 24Petwatch. All rights reserved.',
-    ctaLogin: 'Log In',
-    ctaEnroll: 'Get Started',
-    domainAliases: ['24petwatch.com', 'www.24petwatch.com'],
-    pathAliases: ['petwatch'],
+    domainAliases: ['localhost'],
+    pathAliases: [],
+    themeTemplateId: 'marigold-traditional',
   },
 ];
-
-/** Tenant code returned by the gateway resolve endpoint → local tenant id */
-export const TENANT_CODE_MAP: Record<string, string> = {
-  DEMO_TENANT: 'demo',
-  ANAND_MARATHA: 'anand-maratha',
-  PETWATCH: 'petwatch',
-};
 
 export const DEFAULT_TENANT = TENANT_CONFIGS[0];
 
@@ -378,4 +228,33 @@ export function resolveTenant(
     TENANT_CONFIGS.find((config) => config.id === defaultTenantId) ??
     DEFAULT_TENANT
   );
+}
+
+const DEFAULT_TEMPLATE_ID = 'marigold-traditional';
+
+export function findTemplate(templateId?: string): LandingTemplate {
+  const id = templateId || DEFAULT_TEMPLATE_ID;
+  return APPROVED_TEMPLATES.find((t) => t.id === id) ?? APPROVED_TEMPLATES[0];
+}
+
+export function bootstrapFromTemplate(config: TenantConfig): TenantConfig {
+  const tpl = findTemplate(config.themeTemplateId);
+  return {
+    ...config,
+    displayName: config.displayName || `${tpl.brand} Matrimony`,
+    logoText: config.logoText || tpl.brand,
+    tagline: config.tagline || tpl.eyebrow || tpl.brand,
+    heroTitle: config.heroTitle || tpl.h1?.replace(/<[^>]*>/g, '') || tpl.brand,
+    heroSubtitle: config.heroSubtitle || tpl.sub || '',
+    heroDescription: config.heroDescription || tpl.sub || '',
+    heroImage: config.heroImage || '',
+    primaryColor: config.primaryColor || tpl.c.p,
+    accentColor: config.accentColor || tpl.c.s,
+    defaultLanguage: config.defaultLanguage || 'en',
+    defaultCurrency: config.defaultCurrency || 'INR',
+    ctaLogin: config.ctaLogin || tpl.cta2 || 'Sign In',
+    ctaEnroll: config.ctaEnroll || tpl.cta1 || 'Register Free',
+    copyrightText: config.copyrightText || `© ${new Date().getFullYear()} ${tpl.brand} Matrimony. All rights reserved.`,
+    contacts: config.contacts || [],
+  };
 }

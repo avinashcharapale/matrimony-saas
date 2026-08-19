@@ -39,15 +39,20 @@ export class TenantService {
       return;
     }
 
+    let branding: any = {};
+    if (resolved.brandingJson) {
+      try { branding = JSON.parse(resolved.brandingJson); } catch {}
+    }
+
     this.currentTenant = {
       ...this.currentTenant,
       id: resolved.tenantId ?? this.currentTenant.id,
       displayName:
         resolved.displayName || resolved.name || this.currentTenant.displayName,
-      logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
-      faviconUrl: resolved.faviconUrl ?? this.currentTenant.faviconUrl,
-      primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
-      accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
+      logoUrl: branding.logoUrl ?? this.currentTenant.logoUrl,
+      faviconUrl: branding.faviconUrl ?? this.currentTenant.faviconUrl,
+      primaryColor: branding.primaryColor ?? this.currentTenant.primaryColor,
+      accentColor: branding.accentColor ?? this.currentTenant.accentColor,
     };
 
     this.setFavicon(this.currentTenant.faviconUrl ?? this.currentTenant.logoUrl);

@@ -25,7 +25,7 @@
     @if (footerSettings.showContactInfo) {
       <section>
         <h4>{{ 'landing.enquirySupport' | translate }}</h4>
-        @for (contact of tenant.contacts; track contact.value) {
+        @for (contact of tenant.contacts ?? []; track contact.value) {
           @if (contact.type === 'Phone' || contact.type === 'WhatsApp') {
             <p class="contact-phone">{{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
           }
@@ -37,7 +37,7 @@
 
       <section>
         <h4>{{ 'landing.address' | translate }}</h4>
-        @for (contact of tenant.contacts; track contact.value) {
+        @for (contact of tenant.contacts ?? []; track contact.value) {
           @if (contact.type === 'Address') {
             <p class="contact-address">{{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
           }

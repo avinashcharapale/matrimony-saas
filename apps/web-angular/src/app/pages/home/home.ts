@@ -47,7 +47,7 @@ export class Home implements OnInit {
   readonly subscriptionLoading = computed(() => this.subscriptionStore.loading());
 
   get brandMark(): string {
-    return this.tenant.logoText
+    return (this.tenant.logoText ?? 'M')
       .split(' ')
       .map((word) => word[0])
       .join('')

@@ -4,6 +4,7 @@ import { TenantStore } from '@org/data-access-tenant';
 import { TenantResolveResponse } from '@org/generated';
 import {
   resolveTenant,
+  bootstrapFromTemplate,
   TenantConfig,
   TenantContact,
   THEME_PALETTES,
@@ -34,10 +35,11 @@ export class TenantService {
   readonly tenantVersion$ = new BehaviorSubject<void>(undefined);
 
   constructor() {
-    this.currentTenant = resolveTenant(
+    const routingConfig = resolveTenant(
       resolveTenantHost(),
       window.location.search,
     );
+    this.currentTenant = bootstrapFromTemplate(routingConfig);
     this.applyTheme(this.currentTenant);
   }
 
@@ -125,9 +127,14 @@ export class TenantService {
     }
 
     const logoSettings = branding.logoDisplay || branding.logoSettings || {};
+    const templateChanged = branding.themeTemplateId && branding.themeTemplateId !== this.currentTenant.themeTemplateId;
 
     this.currentTenant = {
       ...this.currentTenant,
+      id: this.currentTenant.id,
+      domainAliases: this.currentTenant.domainAliases,
+      pathAliases: this.currentTenant.pathAliases,
+      themeTemplateId: branding.themeTemplateId ?? this.currentTenant.themeTemplateId,
       displayName:
         resolved.displayName || resolved.name || this.currentTenant.displayName,
       logoUrl: branding.logoUrl ?? this.currentTenant.logoUrl,
@@ -136,7 +143,6 @@ export class TenantService {
       bannerImageUrl: branding.bannerImageUrl ?? this.currentTenant.bannerImageUrl,
       primaryColor: branding.primaryColor ?? this.currentTenant.primaryColor,
       accentColor: branding.accentColor ?? this.currentTenant.accentColor,
-      themeTemplateId: branding.themeTemplateId ?? this.currentTenant.themeTemplateId,
       logoSettings: {
         width: logoSettings.width ?? this.currentTenant.logoSettings?.width,
         height: logoSettings.height ?? this.currentTenant.logoSettings?.height,
@@ -160,7 +166,7 @@ export class TenantService {
         showLegalLinks: branding.showFooterLegalLinks ?? this.currentTenant.footerSettings?.showLegalLinks,
         showContactInfo: branding.showFooterContactInfo ?? this.currentTenant.footerSettings?.showContactInfo,
       },
-      landingContent: this.currentTenant.landingContent || landingContent,
+      landingContent: { ...this.currentTenant.landingContent, ...landingContent },
       contacts:
         resolved.contacts && resolved.contacts.length > 0
           ? resolved.contacts.map((c) => ({
@@ -180,11 +186,12 @@ export class TenantService {
               {} as Record<string, boolean>,
             )
           : this.currentTenant.featureFlags,
-      domainAliases:
-        resolved.domainAliases && resolved.domainAliases.length > 0
-          ? resolved.domainAliases
-          : this.currentTenant.domainAliases,
     };
+
+    if (templateChanged) {
+      this.currentTenant = bootstrapFromTemplate(this.currentTenant);
+    }
+
     this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
     this.tenantVersion.update(v => v + 1);
     this.tenantVersion$.next();
@@ -228,11 +235,11 @@ export class TenantService {
     root.setAttribute('data-theme', theme.id);
     root.style.setProperty(
       '--tenant-primary',
-      mergedTheme.primary || tenant.primaryColor,
+      mergedTheme.primary || (tenant.primaryColor ?? ''),
     );
     root.style.setProperty(
       '--tenant-accent',
-      mergedTheme.accent || tenant.accentColor,
+      mergedTheme.accent || (tenant.accentColor ?? ''),
     );
     root.style.setProperty('--tenant-bg-start', mergedTheme.bgStart);
     root.style.setProperty('--tenant-bg-mid', mergedTheme.bgMid);
@@ -252,7 +259,7 @@ export class TenantService {
       if (ls.shadow) root.style.setProperty('--logo-shadow', ls.shadow);
     }
 
-    document.title = tenant.displayName;
+    document.title = tenant.displayName ?? 'Matrimony';
 
     const iconUrl = tenant.faviconUrl ?? tenant.logoUrl;
     if (iconUrl) {

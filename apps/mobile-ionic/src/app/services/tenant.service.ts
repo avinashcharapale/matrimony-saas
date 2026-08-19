@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { catchError, map, of } from 'rxjs';
 import { TenantStore } from '@org/data-access-tenant';
 import { TenantResolveResponse } from '@org/generated';
-import { resolveTenant, TenantConfig, TenantContact, THEME_PALETTES, ThemePalette } from '@org/tenant-config';
+import { resolveTenant, bootstrapFromTemplate, TenantConfig, TenantContact, THEME_PALETTES, ThemePalette } from '@org/tenant-config';
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +14,11 @@ export class TenantService {
   private readonly store = inject(TenantStore);
 
   constructor() {
-    this.currentTenant = resolveTenant(
+    const routingConfig = resolveTenant(
       window.location.hostname,
       window.location.search,
-      'anand-maratha',
     );
+    this.currentTenant = bootstrapFromTemplate(routingConfig);
     this.applyTheme(this.currentTenant);
   }
 
@@ -68,15 +68,26 @@ export class TenantService {
       try { branding = JSON.parse(resolved.brandingJson); } catch {}
     }
 
+    let landingContent: any = {};
+    if (resolved.landingContentJson) {
+      try { landingContent = JSON.parse(resolved.landingContentJson); } catch {}
+    }
+
     const logoSettings = branding.logoDisplay || branding.logoSettings || {};
+    const templateChanged = branding.themeTemplateId && branding.themeTemplateId !== this.currentTenant.themeTemplateId;
 
     this.currentTenant = {
       ...this.currentTenant,
+      id: this.currentTenant.id,
+      domainAliases: this.currentTenant.domainAliases,
+      pathAliases: this.currentTenant.pathAliases,
+      themeTemplateId: branding.themeTemplateId ?? this.currentTenant.themeTemplateId,
       displayName: resolved.displayName || resolved.name || this.currentTenant.displayName,
       logoUrl: branding.logoUrl ?? this.currentTenant.logoUrl,
       faviconUrl: branding.faviconUrl ?? this.currentTenant.faviconUrl,
       primaryColor: branding.primaryColor ?? this.currentTenant.primaryColor,
       accentColor: branding.accentColor ?? this.currentTenant.accentColor,
+      landingContent: { ...this.currentTenant.landingContent, ...landingContent },
       contacts:
         resolved.contacts && resolved.contacts.length > 0
           ? resolved.contacts.map((c) => ({
@@ -96,10 +107,6 @@ export class TenantService {
               {} as Record<string, boolean>,
             )
           : this.currentTenant.featureFlags,
-      domainAliases:
-        resolved.domainAliases && resolved.domainAliases.length > 0
-          ? resolved.domainAliases
-          : this.currentTenant.domainAliases,
       logoSettings: {
         width: logoSettings.width ?? this.currentTenant.logoSettings?.width,
         height: logoSettings.height ?? this.currentTenant.logoSettings?.height,
@@ -124,6 +131,11 @@ export class TenantService {
         showContactInfo: branding.showFooterContactInfo ?? this.currentTenant.footerSettings?.showContactInfo,
       },
     };
+
+    if (templateChanged) {
+      this.currentTenant = bootstrapFromTemplate(this.currentTenant);
+    }
+
     this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
   }
 
@@ -155,8 +167,8 @@ export class TenantService {
 
     const root = document.documentElement;
     root.setAttribute('data-theme', theme.id);
-    root.style.setProperty('--tenant-primary', mergedTheme.primary || tenant.primaryColor);
-    root.style.setProperty('--tenant-accent', mergedTheme.accent || tenant.accentColor);
+    root.style.setProperty('--tenant-primary', mergedTheme.primary || (tenant.primaryColor ?? ''));
+    root.style.setProperty('--tenant-accent', mergedTheme.accent || (tenant.accentColor ?? ''));
     root.style.setProperty('--tenant-bg-start', mergedTheme.bgStart);
     root.style.setProperty('--tenant-bg-mid', mergedTheme.bgMid);
     root.style.setProperty('--tenant-bg-end', mergedTheme.bgEnd);
@@ -175,10 +187,10 @@ export class TenantService {
       if (ls.shadow) root.style.setProperty('--logo-shadow', ls.shadow);
     }
 
-    root.style.setProperty('--ion-color-primary', mergedTheme.primary || tenant.primaryColor);
-    root.style.setProperty('--ion-color-secondary', mergedTheme.accent || tenant.accentColor);
+    root.style.setProperty('--ion-color-primary', mergedTheme.primary || (tenant.primaryColor ?? ''));
+    root.style.setProperty('--ion-color-secondary', mergedTheme.accent || (tenant.accentColor ?? ''));
     root.style.setProperty('--ion-background-color', mergedTheme.bgEnd);
-    document.title = tenant.displayName;
+    document.title = tenant.displayName ?? 'Matrimony';
 
     const iconUrl = tenant.faviconUrl ?? tenant.logoUrl;
     if (iconUrl) {

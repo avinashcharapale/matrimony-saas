@@ -14,16 +14,16 @@ import { TplIconComponent } from './tpl-icon.component';
 import { LanguageSelectorComponent } from '../../../components/language-selector/language-selector.component';
 
 export interface TplTenantView {
-  displayName: string;
+  displayName?: string;
   logoUrl?: string;
-  heroTitle: string;
-  heroSubtitle: string;
-  heroDescription: string;
-  heroImage: string;
-  ctaEnroll: string;
-  ctaLogin: string;
-  contacts: TenantContact[];
-  copyrightText: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroDescription?: string;
+  heroImage?: string;
+  ctaEnroll?: string;
+  ctaLogin?: string;
+  contacts?: TenantContact[];
+  copyrightText?: string;
   landingContent?: {
     eyebrow?: string;
     heroTitle?: string;
@@ -487,11 +487,11 @@ export class LandingSectionsComponent implements OnInit {
   }
 
   get contactPhone(): string {
-    return this.tenant.contacts.find((c) => c.type === 'Phone')?.value ?? '';
+    return this.tenant.contacts?.find((c) => c.type === 'Phone')?.value ?? '';
   }
 
   get contactEmail(): string {
-    return this.tenant.contacts.find((c) => c.type === 'Email')?.value ?? '';
+    return this.tenant.contacts?.find((c) => c.type === 'Email')?.value ?? '';
   }
 
   get footerSocialMedia(): { facebook?: string; instagram?: string; youtube?: string; twitter?: string; whatsapp?: string } {

@@ -6,4 +6,6 @@ export type {
 export {
   THEME_PALETTES,
   resolveTenant,
+  findTemplate,
+  bootstrapFromTemplate,
 } from './lib/tenant-config';
