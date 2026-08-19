@@ -33,6 +33,23 @@ export interface TenantFooterSettings {
   showContactInfo?: boolean;
 }
 
+export interface TenantSectionsVisible {
+  banner?: boolean;
+  stats?: boolean;
+  features?: boolean;
+  how?: boolean;
+  profiles?: boolean;
+  beforeafter?: boolean;
+  success?: boolean;
+  testimonials?: boolean;
+  cta?: boolean;
+  why?: boolean;
+  castes?: boolean;
+  melava?: boolean;
+  app?: boolean;
+  counters?: boolean;
+}
+
 export interface TenantConfig {
   id: string;
   displayName?: string;
@@ -66,6 +83,7 @@ export interface TenantConfig {
   logoSettings?: TenantLogoSettings;
   socialMedia?: TenantSocialMedia;
   footerSettings?: TenantFooterSettings;
+  sectionsVisible?: TenantSectionsVisible;
 }
 
 export interface TenantLandingContent {

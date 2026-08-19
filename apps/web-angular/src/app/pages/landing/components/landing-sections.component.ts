@@ -233,6 +233,7 @@ export class LandingSectionsComponent implements OnInit {
   @Input() howItWorks: FeatureItem[] = [];
   @Input() autoScrollProfiles: ProfileItem[] = [];
   @Input() trustCards: TrustCardItem[] = [];
+  @Input() sectionsVisible: Record<string, boolean> = {};
 
   readonly stickyBarVisible = signal(false);
   readonly mobileMenuOpen = signal(false);
@@ -277,7 +278,8 @@ export class LandingSectionsComponent implements OnInit {
   }
 
   get sections(): string[] {
-    return ['nav', 'hero', ...this.tpl.order, 'footer'];
+    const vis = this.sectionsVisible;
+    return ['nav', 'hero', ...this.tpl.order.filter(s => vis[s] !== false), 'footer'];
   }
 
   get brandName(): string {

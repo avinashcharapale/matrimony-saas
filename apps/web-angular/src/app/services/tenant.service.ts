@@ -166,6 +166,7 @@ export class TenantService {
         showLegalLinks: branding.showFooterLegalLinks ?? this.currentTenant.footerSettings?.showLegalLinks,
         showContactInfo: branding.showFooterContactInfo ?? this.currentTenant.footerSettings?.showContactInfo,
       },
+      sectionsVisible: branding.sectionsVisible ?? landingContent.sectionVisibility ?? this.currentTenant.sectionsVisible,
       landingContent: { ...this.currentTenant.landingContent, ...landingContent },
       contacts:
         resolved.contacts && resolved.contacts.length > 0

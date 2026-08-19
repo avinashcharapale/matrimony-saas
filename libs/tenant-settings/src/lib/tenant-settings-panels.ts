@@ -104,7 +104,7 @@ export const panelStyles = `
 `;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Branding
+// Branding (collapsible accordion sections)
 // ─────────────────────────────────────────────────────────────────────────────
 
 @Component({
@@ -129,497 +129,541 @@ export const panelStyles = `
         </div>
       } @else {
         <form [formGroup]="form" class="settings-form">
-          <div class="image-field">
-            <div class="image-field__preview">
-              @if (logoPreview()) {
-                <img [src]="logoPreview()" alt="Logo preview" class="image-field__img" (error)="logoPreview.set(null)" />
-              } @else {
-                <div class="image-field__placeholder"><mat-icon>image</mat-icon></div>
-              }
-            </div>
-            <div class="image-field__controls">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Logo URL</mat-label>
-                <input matInput formControlName="logoUrl" placeholder="https://..." />
-                @if (form.controls.logoUrl.invalid && form.controls.logoUrl.touched) {
-                  <mat-error>Enter an absolute http(s) URL</mat-error>
+
+          <!-- ── Logo & Favicon ── -->
+          <div class="accordion-section">
+            <button type="button" class="accordion-header" (click)="toggle('logo')">
+              <mat-icon>{{ openSections().has('logo') ? 'expand_more' : 'chevron_right' }}</mat-icon>
+              <span>Logo & Favicon</span>
+            </button>
+            @if (openSections().has('logo')) {
+              <div class="accordion-body">
+                <div class="image-field">
+                  <div class="image-field__preview">
+                    @if (logoPreview()) {
+                      <img [src]="logoPreview()" alt="Logo preview" class="image-field__img" (error)="logoPreview.set(null)" />
+                    } @else {
+                      <div class="image-field__placeholder"><mat-icon>image</mat-icon></div>
+                    }
+                  </div>
+                  <div class="image-field__controls">
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Logo URL</mat-label>
+                      <input matInput formControlName="logoUrl" placeholder="https://..." />
+                      @if (form.controls.logoUrl.invalid && form.controls.logoUrl.touched) {
+                        <mat-error>Enter an absolute http(s) URL</mat-error>
+                      }
+                    </mat-form-field>
+                    <div class="image-field__actions">
+                      <button mat-stroked-button type="button" [disabled]="uploading() === 'logo'" (click)="logoInput.click()">
+                        <mat-icon>upload</mat-icon>
+                        {{ uploading() === 'logo' ? 'Uploading…' : 'Upload logo' }}
+                      </button>
+                      <input #logoInput type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/x-icon" hidden (change)="onFileSelected($event, 'logo')" />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="image-field">
+                  <div class="image-field__preview">
+                    @if (faviconPreview()) {
+                      <img [src]="faviconPreview()" alt="Favicon preview" class="image-field__img image-field__img--favicon" (error)="faviconPreview.set(null)" />
+                    } @else {
+                      <div class="image-field__placeholder"><mat-icon>image</mat-icon></div>
+                    }
+                  </div>
+                  <div class="image-field__controls">
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Favicon URL</mat-label>
+                      <input matInput formControlName="faviconUrl" placeholder="https://..." />
+                      @if (form.controls.faviconUrl.invalid && form.controls.faviconUrl.touched) {
+                        <mat-error>Enter an absolute http(s) URL</mat-error>
+                      }
+                    </mat-form-field>
+                    <div class="image-field__actions">
+                      <button mat-stroked-button type="button" [disabled]="uploading() === 'favicon'" (click)="faviconInput.click()">
+                        <mat-icon>upload</mat-icon>
+                        {{ uploading() === 'favicon' ? 'Uploading…' : 'Upload favicon' }}
+                      </button>
+                      <input #faviconInput type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/x-icon" hidden (change)="onFileSelected($event, 'favicon')" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- ── Colors & Typography ── -->
+          <div class="accordion-section">
+            <button type="button" class="accordion-header" (click)="toggle('colors')">
+              <mat-icon>{{ openSections().has('colors') ? 'expand_more' : 'chevron_right' }}</mat-icon>
+              <span>Colors & Typography</span>
+            </button>
+            @if (openSections().has('colors')) {
+              <div class="accordion-body">
+                <div class="form-row color-row">
+                  <div class="color-field">
+                    <label>Primary Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="primaryColor" class="color-swatch" />
+                      <input matInput formControlName="primaryColor" placeholder="#1976d2" class="color-text" />
+                      <mat-hint class="default-hint">Template default: set by theme palette</mat-hint>
+                    </div>
+                  </div>
+                  <div class="color-field">
+                    <label>Secondary Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="secondaryColor" class="color-swatch" />
+                      <input matInput formControlName="secondaryColor" placeholder="#e91e63" class="color-text" />
+                      <mat-hint class="default-hint">Template default: set by theme palette</mat-hint>
+                    </div>
+                  </div>
+                  <div class="color-field">
+                    <label>Accent Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="accentColor" class="color-swatch" />
+                      <input matInput formControlName="accentColor" placeholder="#ff9800" class="color-text" />
+                      <mat-hint class="default-hint">Legacy accent — template uses secondary</mat-hint>
+                    </div>
+                  </div>
+                </div>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Font Family</mat-label>
+                  <input matInput formControlName="fontFamily" placeholder="Roboto, sans-serif" />
+                  <mat-hint class="default-hint">Template default: body font (e.g. Manrope)</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Custom CSS</mat-label>
+                  <textarea matInput formControlName="customCss" rows="4" placeholder="Optional custom CSS"></textarea>
+                  <mat-hint class="default-hint">No default — optional override</mat-hint>
+                </mat-form-field>
+              </div>
+            }
+          </div>
+
+          <!-- ── Logo Display ── -->
+          <div class="accordion-section">
+            <button type="button" class="accordion-header" (click)="toggle('logoDisplay')">
+              <mat-icon>{{ openSections().has('logoDisplay') ? 'expand_more' : 'chevron_right' }}</mat-icon>
+              <span>Logo Display</span>
+            </button>
+            @if (openSections().has('logoDisplay')) {
+              <div class="accordion-body">
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Width</mat-label>
+                    <input matInput formControlName="logoWidth" placeholder="48px" />
+                    <mat-hint class="default-hint">48px</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Height</mat-label>
+                    <input matInput formControlName="logoHeight" placeholder="48px" />
+                    <mat-hint class="default-hint">48px</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Object Fit</mat-label>
+                    <select matNativeControl formControlName="logoObjectFit">
+                      <option value="">Default</option>
+                      <option value="contain">Contain</option>
+                      <option value="cover">Cover</option>
+                      <option value="fill">Fill</option>
+                      <option value="none">None</option>
+                    </select>
+                    <mat-hint class="default-hint">contain</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Padding</mat-label>
+                    <input matInput formControlName="logoPadding" placeholder="8px" />
+                    <mat-hint class="default-hint">4px</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Margin</mat-label>
+                    <input matInput formControlName="logoMargin" placeholder="0 8px 0 0" />
+                    <mat-hint class="default-hint">0</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Background</mat-label>
+                    <input matInput formControlName="logoBackground" placeholder="#ffffff" />
+                    <mat-hint class="default-hint">transparent</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Border Radius</mat-label>
+                    <input matInput formControlName="logoBorderRadius" placeholder="12px" />
+                    <mat-hint class="default-hint">8px</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Border</mat-label>
+                    <input matInput formControlName="logoBorder" placeholder="2px solid #eee" />
+                    <mat-hint class="default-hint">1px solid #e0e0e0</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Shadow</mat-label>
+                    <input matInput formControlName="logoShadow" placeholder="0 2px 8px rgba(0,0,0,0.1)" />
+                    <mat-hint class="default-hint">none</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Margins & Colors sub-section -->
+                <h5 class="sub-section-title">Margins & Colors</h5>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Margin Top</mat-label>
+                    <input matInput formControlName="logoMarginTop" placeholder="0" />
+                    <mat-hint class="default-hint">0</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Margin Right</mat-label>
+                    <input matInput formControlName="logoMarginRight" placeholder="0" />
+                    <mat-hint class="default-hint">0</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Margin Bottom</mat-label>
+                    <input matInput formControlName="logoMarginBottom" placeholder="0" />
+                    <mat-hint class="default-hint">0</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Margin Left</mat-label>
+                    <input matInput formControlName="logoMarginLeft" placeholder="0" />
+                    <mat-hint class="default-hint">0</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row color-row">
+                  <div class="color-field">
+                    <label>Background Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="logoBgColor" class="color-swatch" />
+                      <input matInput formControlName="logoBgColor" placeholder="transparent" class="color-text" />
+                      <mat-hint class="default-hint">transparent</mat-hint>
+                    </div>
+                  </div>
+                  <div class="color-field">
+                    <label>Border Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="logoBorderColor" class="color-swatch" />
+                      <input matInput formControlName="logoBorderColor" placeholder="#e0e0e0" class="color-text" />
+                      <mat-hint class="default-hint">#e0e0e0</mat-hint>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Border Width</mat-label>
+                    <input matInput formControlName="logoBorderWidth" placeholder="1px" />
+                    <mat-hint class="default-hint">1px</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Border Style</mat-label>
+                    <select matNativeControl formControlName="logoBorderStyle">
+                      <option value="">Default</option>
+                      <option value="solid">Solid</option>
+                      <option value="dashed">Dashed</option>
+                      <option value="dotted">Dotted</option>
+                      <option value="none">None</option>
+                    </select>
+                    <mat-hint class="default-hint">solid</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row color-row">
+                  <div class="color-field">
+                    <label>Shadow Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="logoShadowColor" class="color-swatch" />
+                      <input matInput formControlName="logoShadowColor" placeholder="rgba(0,0,0,0.1)" class="color-text" />
+                      <mat-hint class="default-hint">none</mat-hint>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Shadow Offset X</mat-label>
+                    <input matInput formControlName="logoShadowOffsetX" placeholder="0" />
+                    <mat-hint class="default-hint">0</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Shadow Offset Y</mat-label>
+                    <input matInput formControlName="logoShadowOffsetY" placeholder="2" />
+                    <mat-hint class="default-hint">2</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Shadow Blur</mat-label>
+                    <input matInput formControlName="logoShadowBlur" placeholder="8" />
+                    <mat-hint class="default-hint">8</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="quarter-width">
+                    <mat-label>Shadow Spread</mat-label>
+                    <input matInput formControlName="logoShadowSpread" placeholder="0" />
+                    <mat-hint class="default-hint">0</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                @if (logoPreview()) {
+                  <div class="logo-live-preview">
+                    <span class="preview-label">Live Preview</span>
+                    <div class="preview-container" [ngStyle]="previewStyles()">
+                      <img [src]="logoPreview()" alt="Logo preview" class="preview-img" (error)="logoPreview.set(null)" />
+                    </div>
+                  </div>
                 }
-              </mat-form-field>
-              <div class="image-field__actions">
-                <button mat-stroked-button type="button" [disabled]="uploading() === 'logo'" (click)="logoInput.click()">
-                  <mat-icon>upload</mat-icon>
-                  {{ uploading() === 'logo' ? 'Uploading…' : 'Upload logo' }}
-                </button>
-                <input #logoInput type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/x-icon" hidden (change)="onFileSelected($event, 'logo')" />
               </div>
-            </div>
+            }
           </div>
 
-          <div class="image-field">
-            <div class="image-field__preview">
-              @if (faviconPreview()) {
-                <img [src]="faviconPreview()" alt="Favicon preview" class="image-field__img image-field__img--favicon" (error)="faviconPreview.set(null)" />
-              } @else {
-                <div class="image-field__placeholder"><mat-icon>image</mat-icon></div>
-              }
-            </div>
-            <div class="image-field__controls">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Favicon URL</mat-label>
-                <input matInput formControlName="faviconUrl" placeholder="https://..." />
-                @if (form.controls.faviconUrl.invalid && form.controls.faviconUrl.touched) {
-                  <mat-error>Enter an absolute http(s) URL</mat-error>
-                }
-              </mat-form-field>
-              <div class="image-field__actions">
-                <button mat-stroked-button type="button" [disabled]="uploading() === 'favicon'" (click)="faviconInput.click()">
-                  <mat-icon>upload</mat-icon>
-                  {{ uploading() === 'favicon' ? 'Uploading…' : 'Upload favicon' }}
-                </button>
-                <input #faviconInput type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/x-icon" hidden (change)="onFileSelected($event, 'favicon')" />
+          <!-- ── Social Media ── -->
+          <div class="accordion-section">
+            <button type="button" class="accordion-header" (click)="toggle('social')">
+              <mat-icon>{{ openSections().has('social') ? 'expand_more' : 'chevron_right' }}</mat-icon>
+              <span>Social Media</span>
+            </button>
+            @if (openSections().has('social')) {
+              <div class="accordion-body">
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Facebook</mat-label>
+                    <input matInput formControlName="facebookUrl" placeholder="https://facebook.com/..." />
+                    <mat-hint class="default-hint">No default — optional</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Instagram</mat-label>
+                    <input matInput formControlName="instagramUrl" placeholder="https://instagram.com/..." />
+                    <mat-hint class="default-hint">No default — optional</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>YouTube</mat-label>
+                    <input matInput formControlName="youTubeUrl" placeholder="https://youtube.com/..." />
+                    <mat-hint class="default-hint">No default — optional</mat-hint>
+                  </mat-form-field>
+                </div>
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Twitter / X</mat-label>
+                    <input matInput formControlName="twitterUrl" placeholder="https://x.com/..." />
+                    <mat-hint class="default-hint">No default — optional</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>WhatsApp</mat-label>
+                    <input matInput formControlName="whatsAppUrl" placeholder="https://wa.me/..." />
+                    <mat-hint class="default-hint">No default — optional</mat-hint>
+                  </mat-form-field>
+                </div>
               </div>
-            </div>
+            }
           </div>
 
-          <div class="form-row color-row">
-            <div class="color-field">
-              <label>Primary Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="primaryColor" class="color-swatch" />
-                <input matInput formControlName="primaryColor" placeholder="#1976d2" class="color-text" />
-                <mat-hint class="default-hint">Template default: set by theme palette</mat-hint>
+          <!-- ── Footer ── -->
+          <div class="accordion-section">
+            <button type="button" class="accordion-header" (click)="toggle('footer')">
+              <mat-icon>{{ openSections().has('footer') ? 'expand_more' : 'chevron_right' }}</mat-icon>
+              <span>Footer</span>
+            </button>
+            @if (openSections().has('footer')) {
+              <div class="accordion-body">
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-label">Show Social Media Icons</div>
+                    <div class="toggle-sublabel">Display social media icons in the footer</div>
+                  </div>
+                  <mat-checkbox formControlName="showFooterSocialMedia"></mat-checkbox>
+                </div>
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-label">Show Legal Links</div>
+                    <div class="toggle-sublabel">Display Privacy Policy, Terms, Refund links in the footer</div>
+                  </div>
+                  <mat-checkbox formControlName="showFooterLegalLinks"></mat-checkbox>
+                </div>
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-label">Show Contact Information</div>
+                    <div class="toggle-sublabel">Display phone, email, address in the footer</div>
+                  </div>
+                  <mat-checkbox formControlName="showFooterContactInfo"></mat-checkbox>
+                </div>
               </div>
-            </div>
-            <div class="color-field">
-              <label>Secondary Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="secondaryColor" class="color-swatch" />
-                <input matInput formControlName="secondaryColor" placeholder="#e91e63" class="color-text" />
-                <mat-hint class="default-hint">Template default: set by theme palette</mat-hint>
+            }
+          </div>
+
+          <!-- ── Header Bar ── -->
+          <div class="accordion-section">
+            <button type="button" class="accordion-header" (click)="toggle('header')">
+              <mat-icon>{{ openSections().has('header') ? 'expand_more' : 'chevron_right' }}</mat-icon>
+              <span>Header Bar</span>
+            </button>
+            @if (openSections().has('header')) {
+              <div class="accordion-body">
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Height</mat-label>
+                    <input matInput formControlName="headerHeight" placeholder="64px" />
+                    <mat-hint class="default-hint">From template</mat-hint>
+                  </mat-form-field>
+                  <div class="color-field" style="flex:1;min-width:140px">
+                    <label>Background</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="headerBg" class="color-swatch" />
+                      <input matInput formControlName="headerBg" placeholder="#ffffff" class="color-text" />
+                      <mat-hint class="default-hint">Template nav color</mat-hint>
+                    </div>
+                  </div>
+                  <div class="color-field" style="flex:1;min-width:140px">
+                    <label>Text Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="headerTextColor" class="color-swatch" />
+                      <input matInput formControlName="headerTextColor" placeholder="#333" class="color-text" />
+                      <mat-hint class="default-hint">Template text color</mat-hint>
+                    </div>
+                  </div>
+                </div>
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-label">Sticky Header</div>
+                    <div class="toggle-sublabel">Header sticks to top on scroll</div>
+                  </div>
+                  <mat-checkbox formControlName="headerSticky"></mat-checkbox>
+                </div>
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-label">Glass Effect</div>
+                    <div class="toggle-sublabel">Frosted glass / blur background effect</div>
+                  </div>
+                  <mat-checkbox formControlName="headerGlass"></mat-checkbox>
+                </div>
               </div>
-            </div>
-            <div class="color-field">
-              <label>Accent Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="accentColor" class="color-swatch" />
-                <input matInput formControlName="accentColor" placeholder="#ff9800" class="color-text" />
-                <mat-hint class="default-hint">Legacy accent — template uses secondary</mat-hint>
+            }
+          </div>
+
+          <!-- ── Brand Display ── -->
+          <div class="accordion-section">
+            <button type="button" class="accordion-header" (click)="toggle('brand')">
+              <mat-icon>{{ openSections().has('brand') ? 'expand_more' : 'chevron_right' }}</mat-icon>
+              <span>Brand Display</span>
+            </button>
+            @if (openSections().has('brand')) {
+              <div class="accordion-body">
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-label">Show Brand in Navigation</div>
+                    <div class="toggle-sublabel">Display brand name/logo in the top nav bar</div>
+                  </div>
+                  <mat-checkbox formControlName="showBrandInNav"></mat-checkbox>
+                </div>
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-label">Show Brand in Footer</div>
+                    <div class="toggle-sublabel">Display brand name/logo in the footer</div>
+                  </div>
+                  <mat-checkbox formControlName="showBrandInFooter"></mat-checkbox>
+                </div>
+                <div class="toggle-row">
+                  <div>
+                    <div class="toggle-label">Show Brand in Hero</div>
+                    <div class="toggle-sublabel">Display brand name/logo in the hero section</div>
+                  </div>
+                  <mat-checkbox formControlName="showBrandInHero"></mat-checkbox>
+                </div>
+
+                <h5 class="sub-section-title">Brand Text</h5>
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Font Family</mat-label>
+                    <input matInput formControlName="brandFontFamily" placeholder="Poppins, sans-serif" />
+                    <mat-hint class="default-hint">Template heading font (e.g. Fraunces)</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Font Size</mat-label>
+                    <input matInput formControlName="brandFontSize" placeholder="18px" />
+                    <mat-hint class="default-hint">18px</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Font Weight</mat-label>
+                    <input matInput formControlName="brandFontWeight" placeholder="700" />
+                    <mat-hint class="default-hint">700</mat-hint>
+                  </mat-form-field>
+                </div>
+                <div class="form-row color-row">
+                  <div class="color-field">
+                    <label>Text Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="brandTextColor" class="color-swatch" />
+                      <input matInput formControlName="brandTextColor" placeholder="#333" class="color-text" />
+                      <mat-hint class="default-hint">#333</mat-hint>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Letter Spacing</mat-label>
+                    <input matInput formControlName="brandLetterSpacing" placeholder="0.5px" />
+                    <mat-hint class="default-hint">0.5px</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Text Transform</mat-label>
+                    <select matNativeControl formControlName="brandTextTransform">
+                      <option value="">None</option>
+                      <option value="uppercase">Uppercase</option>
+                      <option value="lowercase">Lowercase</option>
+                      <option value="capitalize">Capitalize</option>
+                    </select>
+                    <mat-hint class="default-hint">None</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <h5 class="sub-section-title">Brand Badge</h5>
+                <div class="form-row color-row">
+                  <div class="color-field">
+                    <label>Badge Background</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="badgeBg" class="color-swatch" />
+                      <input matInput formControlName="badgeBg" placeholder="#ff9800" class="color-text" />
+                      <mat-hint class="default-hint">#ff9800</mat-hint>
+                    </div>
+                  </div>
+                  <div class="color-field">
+                    <label>Badge Text Color</label>
+                    <div class="color-input-group">
+                      <input type="color" formControlName="badgeTextColor" class="color-swatch" />
+                      <input matInput formControlName="badgeTextColor" placeholder="#fff" class="color-text" />
+                      <mat-hint class="default-hint">#fff</mat-hint>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Badge Size</mat-label>
+                    <input matInput formControlName="badgeSize" placeholder="24px" />
+                    <mat-hint class="default-hint">24px</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Badge Radius</mat-label>
+                    <input matInput formControlName="badgeRadius" placeholder="50%" />
+                    <mat-hint class="default-hint">50%</mat-hint>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="third-width">
+                    <mat-label>Badge Font Size</mat-label>
+                    <input matInput formControlName="badgeFontSize" placeholder="12px" />
+                    <mat-hint class="default-hint">12px</mat-hint>
+                  </mat-form-field>
+                </div>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Badge Font Weight</mat-label>
+                  <input matInput formControlName="badgeFontWeight" placeholder="600" />
+                  <mat-hint class="default-hint">600</mat-hint>
+                </mat-form-field>
               </div>
-            </div>
+            }
           </div>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Font Family</mat-label>
-            <input matInput formControlName="fontFamily" placeholder="Roboto, sans-serif" />
-            <mat-hint class="default-hint">Template default: body font (e.g. Manrope)</mat-hint>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Custom CSS</mat-label>
-            <textarea matInput formControlName="customCss" rows="4" placeholder="Optional custom CSS"></textarea>
-            <mat-hint class="default-hint">No default — optional override</mat-hint>
-          </mat-form-field>
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Logo Display Settings</h4>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Width</mat-label>
-              <input matInput formControlName="logoWidth" placeholder="48px" />
-              <mat-hint class="default-hint">48px</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Height</mat-label>
-              <input matInput formControlName="logoHeight" placeholder="48px" />
-              <mat-hint class="default-hint">48px</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Object Fit</mat-label>
-              <select matNativeControl formControlName="logoObjectFit">
-                <option value="">Default</option>
-                <option value="contain">Contain</option>
-                <option value="cover">Cover</option>
-                <option value="fill">Fill</option>
-                <option value="none">None</option>
-              </select>
-              <mat-hint class="default-hint">contain</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Padding</mat-label>
-              <input matInput formControlName="logoPadding" placeholder="8px" />
-              <mat-hint class="default-hint">4px</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Margin</mat-label>
-              <input matInput formControlName="logoMargin" placeholder="0 8px 0 0" />
-              <mat-hint class="default-hint">0</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Background</mat-label>
-              <input matInput formControlName="logoBackground" placeholder="#ffffff" />
-              <mat-hint class="default-hint">transparent</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Border Radius</mat-label>
-              <input matInput formControlName="logoBorderRadius" placeholder="12px" />
-              <mat-hint class="default-hint">8px</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Border</mat-label>
-              <input matInput formControlName="logoBorder" placeholder="2px solid #eee" />
-              <mat-hint class="default-hint">1px solid #e0e0e0</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Shadow</mat-label>
-              <input matInput formControlName="logoShadow" placeholder="0 2px 8px rgba(0,0,0,0.1)" />
-              <mat-hint class="default-hint">none</mat-hint>
-            </mat-form-field>
-          </div>
-
-          @if (logoPreview()) {
-            <div class="logo-live-preview">
-              <span class="preview-label">Live Preview</span>
-              <div class="preview-container" [ngStyle]="previewStyles()">
-                <img [src]="logoPreview()" alt="Logo preview" class="preview-img" (error)="logoPreview.set(null)" />
-              </div>
-            </div>
-          }
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Social Media URLs</h4>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Facebook</mat-label>
-              <input matInput formControlName="facebookUrl" placeholder="https://facebook.com/..." />
-              <mat-hint class="default-hint">No default — optional</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Instagram</mat-label>
-              <input matInput formControlName="instagramUrl" placeholder="https://instagram.com/..." />
-              <mat-hint class="default-hint">No default — optional</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>YouTube</mat-label>
-              <input matInput formControlName="youTubeUrl" placeholder="https://youtube.com/..." />
-              <mat-hint class="default-hint">No default — optional</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Twitter / X</mat-label>
-              <input matInput formControlName="twitterUrl" placeholder="https://x.com/..." />
-              <mat-hint class="default-hint">No default — optional</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>WhatsApp</mat-label>
-              <input matInput formControlName="whatsAppUrl" placeholder="https://wa.me/..." />
-              <mat-hint class="default-hint">No default — optional</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Footer Settings</h4>
-
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Show Social Media Icons</div>
-              <div class="toggle-sublabel">Display social media icons in the footer</div>
-            </div>
-            <mat-checkbox formControlName="showFooterSocialMedia"></mat-checkbox>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Show Legal Links</div>
-              <div class="toggle-sublabel">Display Privacy Policy, Terms, Refund links in the footer</div>
-            </div>
-            <mat-checkbox formControlName="showFooterLegalLinks"></mat-checkbox>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Show Contact Information</div>
-              <div class="toggle-sublabel">Display phone, email, address in the footer</div>
-            </div>
-            <mat-checkbox formControlName="showFooterContactInfo"></mat-checkbox>
-          </div>
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Logo Display — Margins &amp; Colors</h4>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="quarter-width">
-              <mat-label>Margin Top</mat-label>
-              <input matInput formControlName="logoMarginTop" placeholder="0" />
-              <mat-hint class="default-hint">0</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="quarter-width">
-              <mat-label>Margin Right</mat-label>
-              <input matInput formControlName="logoMarginRight" placeholder="0" />
-              <mat-hint class="default-hint">0</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="quarter-width">
-              <mat-label>Margin Bottom</mat-label>
-              <input matInput formControlName="logoMarginBottom" placeholder="0" />
-              <mat-hint class="default-hint">0</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="quarter-width">
-              <mat-label>Margin Left</mat-label>
-              <input matInput formControlName="logoMarginLeft" placeholder="0" />
-              <mat-hint class="default-hint">0</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row color-row">
-            <div class="color-field">
-              <label>Background Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="logoBgColor" class="color-swatch" />
-                <input matInput formControlName="logoBgColor" placeholder="transparent" class="color-text" />
-                <mat-hint class="default-hint">transparent</mat-hint>
-              </div>
-            </div>
-            <div class="color-field">
-              <label>Border Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="logoBorderColor" class="color-swatch" />
-                <input matInput formControlName="logoBorderColor" placeholder="#e0e0e0" class="color-text" />
-                <mat-hint class="default-hint">#e0e0e0</mat-hint>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Border Width</mat-label>
-              <input matInput formControlName="logoBorderWidth" placeholder="1px" />
-              <mat-hint class="default-hint">1px</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Border Style</mat-label>
-              <select matNativeControl formControlName="logoBorderStyle">
-                <option value="">Default</option>
-                <option value="solid">Solid</option>
-                <option value="dashed">Dashed</option>
-                <option value="dotted">Dotted</option>
-                <option value="none">None</option>
-              </select>
-              <mat-hint class="default-hint">solid</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row color-row">
-            <div class="color-field">
-              <label>Shadow Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="logoShadowColor" class="color-swatch" />
-                <input matInput formControlName="logoShadowColor" placeholder="rgba(0,0,0,0.1)" class="color-text" />
-                <mat-hint class="default-hint">none</mat-hint>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="quarter-width">
-              <mat-label>Shadow Offset X</mat-label>
-              <input matInput formControlName="logoShadowOffsetX" placeholder="0" />
-              <mat-hint class="default-hint">0</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="quarter-width">
-              <mat-label>Shadow Offset Y</mat-label>
-              <input matInput formControlName="logoShadowOffsetY" placeholder="2" />
-              <mat-hint class="default-hint">2</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="quarter-width">
-              <mat-label>Shadow Blur</mat-label>
-              <input matInput formControlName="logoShadowBlur" placeholder="8" />
-              <mat-hint class="default-hint">8</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="quarter-width">
-              <mat-label>Shadow Spread</mat-label>
-              <input matInput formControlName="logoShadowSpread" placeholder="0" />
-              <mat-hint class="default-hint">0</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Brand Display</h4>
-
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Show Brand in Navigation</div>
-              <div class="toggle-sublabel">Display brand name/logo in the top nav bar</div>
-            </div>
-            <mat-checkbox formControlName="showBrandInNav"></mat-checkbox>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Show Brand in Footer</div>
-              <div class="toggle-sublabel">Display brand name/logo in the footer</div>
-            </div>
-            <mat-checkbox formControlName="showBrandInFooter"></mat-checkbox>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Show Brand in Hero</div>
-              <div class="toggle-sublabel">Display brand name/logo in the hero section</div>
-            </div>
-            <mat-checkbox formControlName="showBrandInHero"></mat-checkbox>
-          </div>
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Brand Text</h4>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Font Family</mat-label>
-              <input matInput formControlName="brandFontFamily" placeholder="Poppins, sans-serif" />
-              <mat-hint class="default-hint">Template heading font (e.g. Fraunces)</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Font Size</mat-label>
-              <input matInput formControlName="brandFontSize" placeholder="18px" />
-              <mat-hint class="default-hint">18px</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Font Weight</mat-label>
-              <input matInput formControlName="brandFontWeight" placeholder="700" />
-              <mat-hint class="default-hint">700</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row color-row">
-            <div class="color-field">
-              <label>Text Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="brandTextColor" class="color-swatch" />
-                <input matInput formControlName="brandTextColor" placeholder="#333" class="color-text" />
-                <mat-hint class="default-hint">#333</mat-hint>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Letter Spacing</mat-label>
-              <input matInput formControlName="brandLetterSpacing" placeholder="0.5px" />
-              <mat-hint class="default-hint">0.5px</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Text Transform</mat-label>
-              <select matNativeControl formControlName="brandTextTransform">
-                <option value="">None</option>
-                <option value="uppercase">Uppercase</option>
-                <option value="lowercase">Lowercase</option>
-                <option value="capitalize">Capitalize</option>
-              </select>
-              <mat-hint class="default-hint">None</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Brand Badge</h4>
-
-          <div class="form-row color-row">
-            <div class="color-field">
-              <label>Badge Background</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="badgeBg" class="color-swatch" />
-                <input matInput formControlName="badgeBg" placeholder="#ff9800" class="color-text" />
-                <mat-hint class="default-hint">#ff9800</mat-hint>
-              </div>
-            </div>
-            <div class="color-field">
-              <label>Badge Text Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="badgeTextColor" class="color-swatch" />
-                <input matInput formControlName="badgeTextColor" placeholder="#fff" class="color-text" />
-                <mat-hint class="default-hint">#fff</mat-hint>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Badge Size</mat-label>
-              <input matInput formControlName="badgeSize" placeholder="24px" />
-              <mat-hint class="default-hint">24px</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Badge Radius</mat-label>
-              <input matInput formControlName="badgeRadius" placeholder="50%" />
-              <mat-hint class="default-hint">50%</mat-hint>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Badge Font Size</mat-label>
-              <input matInput formControlName="badgeFontSize" placeholder="12px" />
-              <mat-hint class="default-hint">12px</mat-hint>
-            </mat-form-field>
-          </div>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Badge Font Weight</mat-label>
-            <input matInput formControlName="badgeFontWeight" placeholder="600" />
-            <mat-hint class="default-hint">600</mat-hint>
-          </mat-form-field>
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Header Bar</h4>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="third-width">
-              <mat-label>Height</mat-label>
-              <input matInput formControlName="headerHeight" placeholder="64px" />
-              <mat-hint class="default-hint">From template</mat-hint>
-            </mat-form-field>
-            <div class="color-field" style="flex:1;min-width:140px">
-              <label>Background</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="headerBg" class="color-swatch" />
-                <input matInput formControlName="headerBg" placeholder="#ffffff" class="color-text" />
-                <mat-hint class="default-hint">Template nav color</mat-hint>
-              </div>
-            </div>
-            <div class="color-field" style="flex:1;min-width:140px">
-              <label>Text Color</label>
-              <div class="color-input-group">
-                <input type="color" formControlName="headerTextColor" class="color-swatch" />
-                <input matInput formControlName="headerTextColor" placeholder="#333" class="color-text" />
-                <mat-hint class="default-hint">Template text color</mat-hint>
-              </div>
-            </div>
-          </div>
-
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Sticky Header</div>
-              <div class="toggle-sublabel">Header sticks to top on scroll</div>
-            </div>
-            <mat-checkbox formControlName="headerSticky"></mat-checkbox>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <div class="toggle-label">Glass Effect</div>
-              <div class="toggle-sublabel">Frosted glass / blur background effect</div>
-            </div>
-            <mat-checkbox formControlName="headerGlass"></mat-checkbox>
-          </div>
-
-          <mat-divider></mat-divider>
-          <h4 class="section-title">Theme Template</h4>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Theme Template ID</mat-label>
-            <input matInput formControlName="themeTemplateId" placeholder="paithani-royal" />
-            <mat-hint class="default-hint">First: paithani-royal. When set, template palette wins over colors above</mat-hint>
-          </mat-form-field>
 
           <div class="form-actions">
             <button mat-flat-button color="primary" [disabled]="saving() || form.invalid" (click)="save()">
@@ -632,6 +676,16 @@ export const panelStyles = `
     </div>
   `,
   styles: [panelStyles + `
+    .accordion-section { border-bottom: 1px solid #e8e0f0; }
+    .accordion-header {
+      display: flex; align-items: center; gap: 8px; width: 100%; padding: 14px 0;
+      background: none; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600;
+      color: #4a148c; transition: color 0.15s;
+    }
+    .accordion-header:hover { color: #7b1fa2; }
+    .accordion-header mat-icon { font-size: 20px; width: 20px; height: 20px; }
+    .accordion-body { padding: 0 0 16px 28px; }
+    .sub-section-title { font-size: 0.8rem; color: #888; margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
     .color-row { display: flex; gap: 16px; flex-wrap: wrap; }
     .color-field { flex: 1; min-width: 140px; }
     .color-field label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 500; }
@@ -656,6 +710,13 @@ export class BrandingPanel implements OnInit {
   readonly uploading = signal<'logo' | 'favicon' | null>(null);
   readonly logoPreview = signal<string | null>(null);
   readonly faviconPreview = signal<string | null>(null);
+  readonly openSections = signal(new Set<string>([]));
+
+  toggle(section: string): void {
+    const s = new Set(this.openSections());
+    if (s.has(section)) { s.delete(section); } else { s.add(section); }
+    this.openSections.set(s);
+  }
 
   readonly form = this.fb.nonNullable.group({
     logoUrl: ['', [Validators.pattern(/^https?:\/\/.+/i)]],
@@ -720,8 +781,6 @@ export class BrandingPanel implements OnInit {
     headerTextColor: [''],
     headerSticky: [true],
     headerGlass: [false],
-    // Theme Template
-    themeTemplateId: [''],
   });
 
   readonly previewStyles = computed(() => {
@@ -820,8 +879,6 @@ export class BrandingPanel implements OnInit {
             headerTextColor: branding.headerTextColor ?? '',
             headerSticky: branding.headerSticky ?? true,
             headerGlass: branding.headerGlass ?? false,
-            // Theme Template
-            themeTemplateId: branding.themeTemplateId ?? '',
           });
         }
         this.loading.set(false);
@@ -915,7 +972,6 @@ export class BrandingPanel implements OnInit {
       headerTextColor: raw.headerTextColor || undefined,
       headerSticky: raw.headerSticky ?? true,
       headerGlass: raw.headerGlass ?? false,
-      themeTemplateId: raw.themeTemplateId || undefined,
       facebookUrl: raw.facebookUrl || undefined,
       instagramUrl: raw.instagramUrl || undefined,
       youTubeUrl: raw.youTubeUrl || undefined,

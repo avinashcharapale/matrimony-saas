@@ -18,6 +18,7 @@ export class Landing implements OnInit {
   readonly tenant = this.tenantService.tenant;
   readonly template: LandingTemplate = this.tenantService.template;
   readonly templateOverrides: TemplateOverrides = this.tenantService.templateOverrides;
+  readonly sectionsVisible: Record<string, boolean> = (this.tenantService.tenant.sectionsVisible ?? {}) as Record<string, boolean>;
   private readonly profileClient = inject(ProfileClient);
   private readonly translate = inject(TranslateService);
 

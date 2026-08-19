@@ -228,7 +228,7 @@ const TEMPLATE_CATEGORIES: TemplateCategory[] = [
     .tpl-stage-fs mat-icon { font-size: 17px; width: 17px; height: 17px; }
     .tpl-stage-frame {
       border: 1px solid #e4e4e7; border-radius: 0 0 12px 12px; overflow: auto;
-      max-height: 680px; background: #fff;
+      max-height: 680px; background: #fff; transform: translateZ(0);
     }
     .tpl-preview-canvas { min-width: 1080px; background: #fff; }
     .tpl-preview-canvas .tpl-root { min-height: 100%; }
