@@ -39,9 +39,9 @@ export class Landing implements OnInit {
     }));
   });
 
-  readonly whyChoose = computed<FeatureItem[]>(() => this.tenant.landingContent?.whyChoose ?? []);
-  readonly howItWorks = computed<FeatureItem[]>(() => this.tenant.landingContent?.howItWorks ?? []);
-  readonly trustCards = computed<TrustCardItem[]>(() => this.tenant.landingContent?.trustCards ?? []);
+  readonly whyChoose = computed<FeatureItem[]>(() => (this.tenant.landingContent?.whyItems ?? []).map(i => ({ title: i.title, description: i.text })));
+  readonly howItWorks = computed<FeatureItem[]>(() => (this.tenant.landingContent?.steps ?? []).map(i => ({ title: i.title, description: i.text })));
+  readonly trustCards = computed<TrustCardItem[]>(() => (this.tenant.landingContent?.trustItems ?? []).map(i => ({ value: '', title: i.title, description: '', icon: i.icon })));
 
   constructor() {
     this.translate.onLangChange.subscribe(() => this.langTick.update(v => v + 1));

@@ -420,13 +420,8 @@ export interface TenantResolveResponse {
   domainAliases?: string[] | null;
   name?: string | null;
   displayName?: string | null;
-  logoUrl?: string | null;
-  faviconUrl?: string | null;
-  heroImageUrl?: string | null;
-  bannerImageUrl?: string | null;
-  primaryColor?: string | null;
-  accentColor?: string | null;
-  themeTemplateId?: string | null;
+  brandingJson?: string | null;
+  landingContentJson?: string | null;
   contacts?: TenantContactDto[] | null;
   featureFlags?: FeatureFlagDto[] | null;
 }
@@ -1594,42 +1589,27 @@ export interface TenantMasterDataSearchRequest {
 
 export interface TenantBrandingDto {
   tenantId?: number;
-  logoUrl?: string;
-  faviconUrl?: string;
-  heroImageUrl?: string;
-  bannerImageUrl?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
-  accentColor?: string;
-  fontFamily?: string;
-  themeTemplateId?: string;
-  customCss?: string;
+  brandingJson?: string;
+  landingContentJson?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface SaveTenantBrandingRequest {
-  logoUrl?: string;
-  faviconUrl?: string;
-  heroImageUrl?: string;
-  bannerImageUrl?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
-  accentColor?: string;
-  fontFamily?: string;
-  themeTemplateId?: string;
-  customCss?: string;
+  brandingJson?: string;
+  landingContentJson?: string;
 }
 
 // ── Tenant Extensions: Legal Documents ───────────────────────────────────────
 
-export type LegalDocumentKind = 'privacy' | 'terms' | 'refund';
+export type LegalDocumentKind = 'privacy' | 'terms' | 'refund' | 'rules';
 
 export interface TenantLegalDocumentsDto {
   tenantId?: number;
   privacyPolicyUrl?: string;
   termsConditionsUrl?: string;
   refundPolicyUrl?: string;
+  rulesUrl?: string;
   createdAt?: string;
   updatedAt?: string;
 }

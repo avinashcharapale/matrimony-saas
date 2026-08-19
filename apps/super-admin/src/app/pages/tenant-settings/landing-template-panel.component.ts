@@ -301,7 +301,9 @@ export class LandingTemplatePanel {
     this.loading.set(true);
     this.tenantClient.getTenantBranding(this.tenantIdValue).subscribe({
       next: (branding) => {
-        this.selectedTemplateId.set(branding.themeTemplateId ?? null);
+        let parsed: any = {};
+        try { parsed = branding.brandingJson ? JSON.parse(branding.brandingJson) : {}; } catch {}
+        this.selectedTemplateId.set(parsed.themeTemplateId ?? null);
         this.loading.set(false);
       },
       error: () => {
@@ -316,18 +318,30 @@ export class LandingTemplatePanel {
     this.selectedTemplateId.set(next);
     this.saved.set(false);
     this.saving.set(true);
-    this.tenantClient
-      .upsertTenantBranding({ themeTemplateId: next ?? undefined }, this.tenantIdValue)
-      .subscribe({
-        next: () => {
-          this.saving.set(false);
-          this.saved.set(true);
-          this.notifications.success(next ? 'Landing template updated' : 'Landing template cleared');
-        },
-        error: () => {
-          this.saving.set(false);
-          this.notifications.error('Failed to save landing template');
-        },
-      });
+
+    this.tenantClient.getTenantBranding(this.tenantIdValue).subscribe({
+      next: (branding) => {
+        let parsed: any = {};
+        try { parsed = branding.brandingJson ? JSON.parse(branding.brandingJson) : {}; } catch {}
+        parsed.themeTemplateId = next ?? undefined;
+        this.tenantClient
+          .upsertTenantBranding({ brandingJson: JSON.stringify(parsed) }, this.tenantIdValue)
+          .subscribe({
+            next: () => {
+              this.saving.set(false);
+              this.saved.set(true);
+              this.notifications.success(next ? 'Landing template updated' : 'Landing template cleared');
+            },
+            error: () => {
+              this.saving.set(false);
+              this.notifications.error('Failed to save landing template');
+            },
+          });
+      },
+      error: () => {
+        this.saving.set(false);
+        this.notifications.error('Failed to save landing template');
+      },
+    });
   }
 }

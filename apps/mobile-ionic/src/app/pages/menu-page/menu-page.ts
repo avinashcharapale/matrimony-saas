@@ -1,15 +1,18 @@
-import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TenantService } from '../../services/tenant.service';
+import { TenantClient } from '@org/generated';
 import { TenantContact } from '@org/tenant-config';
 
 interface MenuPageData {
   title: string;
   description: string;
   highlights: string[];
+  showContact?: boolean;
+  showRulesDocument?: boolean;
 }
 
 @Component({
@@ -42,7 +45,23 @@ interface MenuPageData {
             }
           </ul>
 
-          @if (contactPhones.length > 0 || contactEmails.length > 0 || contactAddresses.length > 0) {
+          @if (pageData.showRulesDocument) {
+            @if (rulesLoading()) {
+              <p class="rules-loading">Loading document...</p>
+            } @else if (rulesUrl()) {
+              <div class="rules-doc">
+                <h3>Rules &amp; Guidelines Document</h3>
+                @if (isImage) {
+                  <img [src]="rulesUrl()" alt="Rules & Guidelines" class="rules-image" />
+                } @else {
+                  <embed [src]="rulesUrl()" type="application/pdf" class="rules-pdf" />
+                  <a [href]="rulesUrl()" target="_blank" rel="noopener" class="rules-download">Download PDF</a>
+                }
+              </div>
+            }
+          }
+
+          @if (showContact && (contactPhones.length > 0 || contactEmails.length > 0 || contactAddresses.length > 0)) {
           <div class="contact-block">
             <h3>Contact Details</h3>
             @if (contactPhones.length > 0) {
@@ -182,12 +201,73 @@ interface MenuPageData {
         padding: 0.6rem 0.8rem;
         border-radius: 0.6rem;
       }
+
+      .rules-doc {
+        margin-top: 1rem;
+        display: grid;
+        gap: 0.5rem;
+      }
+
+      .rules-doc h3 {
+        margin: 0;
+      }
+
+      .rules-image {
+        width: 100%;
+        border-radius: 0.5rem;
+      }
+
+      .rules-pdf {
+        width: 100%;
+        height: 400px;
+        border-radius: 0.5rem;
+      }
+
+      .rules-download {
+        color: var(--tenant-primary);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .rules-loading {
+        color: var(--text-muted);
+        margin: 1rem 0;
+      }
     `,
   ],
 })
-export class MenuPage {
+export class MenuPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly tenantClient = inject(TenantClient);
   readonly tenantService = inject(TenantService);
+
+  readonly rulesUrl = signal<string | null>(null);
+  readonly rulesLoading = signal(false);
+
+  get showContact(): boolean {
+    return this.pageData.showContact !== false;
+  }
+
+  get isImage(): boolean {
+    const url = this.rulesUrl();
+    return url ? /\.(jpg|jpeg|png|gif|webp)$/i.test(url) : false;
+  }
+
+  ngOnInit(): void {
+    if (!this.pageData.showRulesDocument) return;
+
+    const tenantId = Number(this.tenantService.tenantHeaderId);
+    if (!tenantId) return;
+
+    this.rulesLoading.set(true);
+    this.tenantClient.getPublicTenantLegalDocuments(tenantId).subscribe({
+      next: (data) => {
+        this.rulesUrl.set(data.rulesUrl ?? null);
+        this.rulesLoading.set(false);
+      },
+      error: () => this.rulesLoading.set(false),
+    });
+  }
 
   onThemeChange(themeId: string): void {
     this.tenantService.setTheme(themeId);

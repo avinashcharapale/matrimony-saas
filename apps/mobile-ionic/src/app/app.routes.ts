@@ -66,6 +66,8 @@ export const appRoutes: Route[] = [
         'Contact details are shared only after account verification.',
         'Respectful communication is required across all interactions.',
       ],
+      showContact: false,
+      showRulesDocument: true,
     },
   },
   {

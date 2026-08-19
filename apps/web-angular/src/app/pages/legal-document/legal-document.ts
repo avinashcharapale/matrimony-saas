@@ -19,6 +19,10 @@ const PAGE_META: Record<LegalDocumentKind, { title: string; description: string 
     title: 'Refund Policy',
     description: 'Terms covering membership fees and refunds.',
   },
+  rules: {
+    title: 'Rules & Guidelines',
+    description: 'Platform rules and guidelines for safe and respectful matchmaking.',
+  },
 };
 
 @Component({
@@ -64,7 +68,9 @@ export class LegalDocumentPage implements OnInit {
             ? data.privacyPolicyUrl
             : kind === 'terms'
               ? data.termsConditionsUrl
-              : data.refundPolicyUrl;
+              : kind === 'refund'
+                ? data.refundPolicyUrl
+                : data.rulesUrl;
         this.documentUrl.set(url ?? null);
         this.loading.set(false);
       },
@@ -74,7 +80,7 @@ export class LegalDocumentPage implements OnInit {
 
   private kind(): LegalDocumentKind | null {
     const raw = this.route.snapshot.data['kind'];
-    if (raw === 'privacy' || raw === 'terms' || raw === 'refund') {
+    if (raw === 'privacy' || raw === 'terms' || raw === 'refund' || raw === 'rules') {
       return raw;
     }
     return null;

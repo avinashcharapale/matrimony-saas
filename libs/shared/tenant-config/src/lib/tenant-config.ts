@@ -5,6 +5,32 @@ export interface TenantContact {
   isPrimary?: boolean;
 }
 
+export interface TenantLogoSettings {
+  width?: string;
+  height?: string;
+  objectFit?: string;
+  padding?: string;
+  margin?: string;
+  background?: string;
+  borderRadius?: string;
+  border?: string;
+  shadow?: string;
+}
+
+export interface TenantSocialMedia {
+  facebook?: string;
+  instagram?: string;
+  youtube?: string;
+  twitter?: string;
+  whatsapp?: string;
+}
+
+export interface TenantFooterSettings {
+  showSocialMedia?: boolean;
+  showLegalLinks?: boolean;
+  showContactInfo?: boolean;
+}
+
 export interface TenantConfig {
   id: string;
   displayName: string;
@@ -35,18 +61,87 @@ export interface TenantConfig {
   domainAliases: string[];
   pathAliases: string[];
   landingContent?: TenantLandingContent;
+  logoSettings?: TenantLogoSettings;
+  socialMedia?: TenantSocialMedia;
+  footerSettings?: TenantFooterSettings;
 }
 
 export interface TenantLandingContent {
   eyebrow?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroDescription?: string;
   heroBadges?: { text: string }[];
-  whyChoose?: { title: string; description: string }[];
-  howItWorks?: { title: string; description: string }[];
-  trustCards?: { value: string; title: string; description: string; icon: string }[];
+  heroImageUrl?: string;
+  heroImageUrl2?: string;
+  bannerOverrideImageUrl?: string;
+  pageBackgroundImageUrl?: string;
+  ctaLogin?: string;
+  ctaEnroll?: string;
   ctaHeading?: string;
   ctaDescription?: string;
+  stickyBarText?: string;
+  appStoreUrl?: string;
+  playStoreUrl?: string;
+  stats?: { value: string; label: string }[];
+  features?: { icon: string; title: string; text: string }[];
+  steps?: { title: string; text: string }[];
+  stories?: { name: string; meta: string; quote: string; image: number }[];
+  whyItems?: { icon: string; title: string; text: string }[];
+  trustItems?: { icon: string; title: string }[];
+  communities?: string[];
+  events?: { day: string; month: string; title: string; place: string }[];
+  // ── Section headings ──
+  bannerEyebrow?: string;
+  bannerHeading?: string;
+  bannerDescription?: string;
+  bannerChips?: { icon: string; label: string }[];
+  bannerCta1?: string;
+  bannerCta2?: string;
+  featuresEyebrow?: string;
+  featuresTitle?: string;
+  howEyebrow?: string;
+  howTitle?: string;
+  profilesEyebrow?: string;
+  profilesTitle?: string;
+  profilesViewAll?: string;
+  storiesEyebrow?: string;
+  storiesTitle?: string;
+  ctaAdvisorLabel?: string;
+  whyEyebrow?: string;
+  whyTitle?: string;
+  casteEyebrow?: string;
+  casteTitle?: string;
+  casteNote?: string;
+  melavaEyebrow?: string;
+  melavaTitle?: string;
+  melavaViewLabel?: string;
+  appEyebrow?: string;
+  appTitle?: string;
+  appDescription?: string;
+  appRating?: string;
+  appReviewNote?: string;
+  testimonialsEyebrow?: string;
+  testimonialsTitle?: string;
+  countersEyebrow?: string;
+  countersTitle?: string;
+  beforeAfterEyebrow?: string;
+  beforeAfterTitle?: string;
+  formTitle?: string;
+  formSubtitle?: string;
+  formBrideLabel?: string;
+  formGroomLabel?: string;
+  formLookingForLabel?: string;
+  formCasteLabel?: string;
+  formCommunities?: string[];
+  formMiniStats?: { value: string; label: string }[];
+  stickyBarCta?: string;
   footerDescription?: string;
-  footerLinks?: { label: string; url: string }[];
+  footerColumns?: { heading: string; links: { label: string; url: string }[] }[];
+  navLinks?: { label: string; href: string }[];
+  sectionOrder?: string[];
+  sectionVisibility?: Record<string, boolean>;
+  copyrightText?: string;
 }
 
 export interface ThemePalette {
@@ -127,31 +222,32 @@ export const TENANT_CONFIGS: TenantConfig[] = [
         { text: '100% Verified Profiles' },
         { text: 'Family-Approved Matches' },
       ],
-      whyChoose: [
-        { title: 'Trusted Platform', description: 'A reliable matrimonial platform with verified profiles and meaningful matchmaking.' },
-        { title: 'Smart Matching', description: 'AI-powered matching based on preferences, location, and lifestyle.' },
-        { title: 'Verified Profiles', description: 'Every profile is carefully verified for authenticity and trust.' },
-        { title: 'Affordable Plans', description: 'Quality matchmaking accessible for everyone.' },
+      whyItems: [
+        { icon: 'sparkles', title: 'Trusted Platform', text: 'A reliable matrimonial platform with verified profiles and meaningful matchmaking.' },
+        { icon: 'shield-check', title: 'Smart Matching', text: 'AI-powered matching based on preferences, location, and lifestyle.' },
+        { icon: 'badge-check', title: 'Verified Profiles', text: 'Every profile is carefully verified for authenticity and trust.' },
+        { icon: 'heart-handshake', title: 'Affordable Plans', text: 'Quality matchmaking accessible for everyone.' },
       ],
-      howItWorks: [
-        { title: 'Register & Create Profile', description: 'Sign up and tell us your details including profession, education, and family background.' },
-        { title: 'Enroll & Pay', description: 'Activate your account with an affordable yearly membership.' },
-        { title: 'Search Matches', description: 'Browse verified profiles filtered by age, location, education and occupation.' },
-        { title: 'Connect & Meet', description: 'Exchange contacts and start your journey with confidence.' },
+      steps: [
+        { title: 'Register & Create Profile', text: 'Sign up and tell us your details including profession, education, and family background.' },
+        { title: 'Enroll & Pay', text: 'Activate your account with an affordable yearly membership.' },
+        { title: 'Search Matches', text: 'Browse verified profiles filtered by age, location, education and occupation.' },
+        { title: 'Connect & Meet', text: 'Exchange contacts and start your journey with confidence.' },
       ],
-      trustCards: [
-        { value: '11,000+', title: 'Genuine Profiles', description: 'Every profile is verified by our team for authenticity and trust.', icon: '🪪' },
-        { value: '26+ Years', title: 'Most Trusted', description: 'The most trusted matrimony service.', icon: '🏆' },
-        { value: 'AI + Manual', title: 'Smart Match', description: 'Find matches by preferences, location, education and more.', icon: '🔎' },
-        { value: '28,000+', title: 'Weddings Complete', description: 'Thousands of happy families and success stories every year.', icon: '💍' },
+      trustItems: [
+        { icon: 'badge-check', title: '100% Verified Profiles' },
+        { icon: 'shield-check', title: 'Privacy Protected' },
+        { icon: 'heart-handshake', title: 'Family-Focused Matching' },
       ],
       ctaHeading: 'Begin Your Journey Today',
       ctaDescription: 'Join thousands of families who found their perfect match.',
       footerDescription: 'Trusted matrimony service with real profiles and meaningful matchmaking.',
-      footerLinks: [
-        { label: 'Privacy Policy', url: '/privacy' },
-        { label: 'Terms & Conditions', url: '/terms' },
-        { label: 'Refund Policy', url: '/refund' },
+      footerColumns: [
+        { heading: 'Legal', links: [
+          { label: 'Privacy Policy', url: '/privacy' },
+          { label: 'Terms & Conditions', url: '/terms' },
+          { label: 'Refund Policy', url: '/refund' },
+        ]},
       ],
     },
   },
@@ -189,31 +285,32 @@ export const TENANT_CONFIGS: TenantConfig[] = [
         { text: 'Verified Profiles' },
         { text: 'Family-Approved Matches' },
       ],
-      whyChoose: [
-        { title: '26+ Years of Experience', description: 'Decades of trusted matrimony service with deep roots in the Maratha community.' },
-        { title: 'Exclusive for Marathas', description: 'A focused platform for Marathas, including families, brides and grooms.' },
-        { title: 'Verified Profiles', description: 'Every profile is carefully verified for authenticity and better trust.' },
-        { title: 'Affordable Membership', description: 'A low yearly plan that keeps quality matchmaking accessible for everyone.' },
+      whyItems: [
+        { icon: 'sparkles', title: '26+ Years of Experience', text: 'Decades of trusted matrimony service with deep roots in the Maratha community.' },
+        { icon: 'users', title: 'Exclusive for Marathas', text: 'A focused platform for Marathas, including families, brides and grooms.' },
+        { icon: 'badge-check', title: 'Verified Profiles', text: 'Every profile is carefully verified for authenticity and better trust.' },
+        { icon: 'heart-handshake', title: 'Affordable Membership', text: 'A low yearly plan that keeps quality matchmaking accessible for everyone.' },
       ],
-      howItWorks: [
-        { title: 'Register & Create Profile', description: 'Sign up and tell us your details including profession, education, and family background.' },
-        { title: 'Enroll & Pay', description: 'Activate your account with an affordable yearly membership.' },
-        { title: 'Search Matches', description: 'Browse verified profiles filtered by age, location, education and occupation.' },
-        { title: 'Connect & Meet', description: 'Exchange contacts and start your journey with confidence.' },
+      steps: [
+        { title: 'Register & Create Profile', text: 'Sign up and tell us your details including profession, education, and family background.' },
+        { title: 'Enroll & Pay', text: 'Activate your account with an affordable yearly membership.' },
+        { title: 'Search Matches', text: 'Browse verified profiles filtered by age, location, education and occupation.' },
+        { title: 'Connect & Meet', text: 'Exchange contacts and start your journey with confidence.' },
       ],
-      trustCards: [
-        { value: '11,000+', title: 'Genuine Profiles', description: 'Every profile is verified by our team for authenticity and trust.', icon: '🪪' },
-        { value: '26+ Years', title: 'Most Trusted', description: 'The most trusted Maratha matrimony service in Maharashtra.', icon: '🏆' },
-        { value: 'AI + Manual', title: 'Smart Match', description: 'Find matches by preferences, location, education and more.', icon: '🔎' },
-        { value: '28,000+', title: 'Weddings Complete', description: 'Thousands of happy families and success stories every year.', icon: '💍' },
+      trustItems: [
+        { icon: 'badge-check', title: '100% Verified Profiles' },
+        { icon: 'shield-check', title: 'Privacy Protected' },
+        { icon: 'heart-handshake', title: 'Family-Focused Matching' },
       ],
       ctaHeading: 'Begin Your Journey Today',
       ctaDescription: 'Join thousands of families who found their perfect match.',
       footerDescription: 'Trusted matrimony service for the Maratha community.',
-      footerLinks: [
-        { label: 'Privacy Policy', url: '/privacy' },
-        { label: 'Terms & Conditions', url: '/terms' },
-        { label: 'Refund Policy', url: '/refund' },
+      footerColumns: [
+        { heading: 'Legal', links: [
+          { label: 'Privacy Policy', url: '/privacy' },
+          { label: 'Terms & Conditions', url: '/terms' },
+          { label: 'Refund Policy', url: '/refund' },
+        ]},
       ],
     },
   },

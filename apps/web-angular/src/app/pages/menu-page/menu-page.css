@@ -176,3 +176,45 @@
   border-color: var(--theme-border-strong);
   color: var(--theme-text);
 }
+
+.menu-rules-doc {
+  background: var(--theme-surface-raised);
+  border: 1px solid var(--theme-border);
+  border-radius: 1rem;
+  padding: 1.1rem;
+}
+
+.menu-rules-doc h2 {
+  margin: 0 0 0.7rem;
+  color: var(--theme-text);
+}
+
+.rules-image {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--theme-border);
+}
+
+.rules-pdf {
+  width: 100%;
+  height: 600px;
+  border: 1px solid var(--theme-border);
+  border-radius: 0.5rem;
+}
+
+.rules-download {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--tenant-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rules-download:hover {
+  text-decoration: underline;
+}
+
+.rules-loading {
+  color: var(--theme-text-muted);
+  margin: 0;
+}

@@ -13,7 +13,25 @@
     }
   </section>
 
-  @if (contactPhones.length > 0 || contactEmails.length > 0 || contactAddresses.length > 0) {
+  @if (pageData.showRulesDocument) {
+    @if (rulesLoading()) {
+      <section class="menu-rules-doc">
+        <p class="rules-loading">Loading document...</p>
+      </section>
+    } @else if (rulesUrl()) {
+      <section class="menu-rules-doc">
+        <h2>Rules &amp; Guidelines Document</h2>
+        @if (isImage) {
+          <img [src]="rulesUrl()" alt="Rules & Guidelines" class="rules-image" />
+        } @else {
+          <embed [src]="rulesUrl()" type="application/pdf" class="rules-pdf" />
+          <a [href]="rulesUrl()" target="_blank" rel="noopener" class="rules-download">Download PDF</a>
+        }
+      </section>
+    }
+  }
+
+  @if (showContact && (contactPhones.length > 0 || contactEmails.length > 0 || contactAddresses.length > 0)) {
   <section class="menu-contact">
     <h2>{{ 'menuPage.contactDetails' | translate }}</h2>
 

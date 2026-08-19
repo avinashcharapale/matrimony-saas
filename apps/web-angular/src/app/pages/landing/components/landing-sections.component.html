@@ -256,35 +256,35 @@
                   <div class="divider {{ motifDividerClass }} hero-rule"></div>
                 </div>
                 <div class="searchpanel">
-                  <h4>{{ tpl.formTitle || 'Create Free Matrimony Profile' }}</h4>
-                  <p class="sp-sub">{{ tpl.formSub || 'Join lakhs of happy Marathi families. Free forever.' }}</p>
+                  <h4>{{ formTitle }}</h4>
+                  <p class="sp-sub">{{ formSubtitle }}</p>
                   <div class="sp-field">
                     <div class="pill-group">
-                      <div class="pill {{ !formForGroom ? 'active' : '' }}">Bride</div>
-                      <div class="pill {{ formForGroom ? 'active' : '' }}">Groom</div>
+                      <div class="pill {{ !formForGroom ? 'active' : '' }}">{{ formBrideLabel }}</div>
+                      <div class="pill {{ formForGroom ? 'active' : '' }}">{{ formGroomLabel }}</div>
                     </div>
                   </div>
                   <div class="sp-field">
-                    <label for="tpl-looking">Looking for</label>
+                    <label for="tpl-looking">{{ formLookingForLabel }}</label>
                     <select class="sp-select" id="tpl-looking">
-                      <option>{{ (formForGroom ? 'Bride' : 'Groom') + ' aged 22 - 30' }}</option>
-                      <option>{{ (formForGroom ? 'Bride' : 'Groom') + ' aged 31 - 40' }}</option>
+                      @for (range of formAgeRanges; track range) {
+                        <option>{{ range }}</option>
+                      }
                     </select>
                   </div>
                   <div class="sp-field">
-                    <label for="tpl-caste">Caste / Community</label>
+                    <label for="tpl-caste">{{ formCasteLabel }}</label>
                     <select class="sp-select" id="tpl-caste">
-                      <option>Any Marathi community</option>
-                      <option>Maratha / 96 Kuli</option>
-                      <option>Deshastha Brahmin</option>
-                      <option>Chandraseniya Kayastha (CKP)</option>
+                      @for (comm of formCommunities; track comm) {
+                        <option>{{ comm }}</option>
+                      }
                     </select>
                   </div>
                   <a class="tbtn btn-{{ tpl.btn }} formbtn" routerLink="/register">{{ cta1 }}</a>
                   <div class="mini-stat">
-                    <div><b>5L+</b><span>Happy Stories</span></div>
-                    <div><b>350L+</b><span>Members</span></div>
-                    <div><b>100%</b><span>Mobile-verified</span></div>
+                    @for (ms of formMiniStats; track ms.label) {
+                      <div><b>{{ ms.value }}</b><span>{{ ms.label }}</span></div>
+                    }
                   </div>
                 </div>
               </div>
@@ -455,17 +455,17 @@
               } @else {
                 <div class="divider m-butti banner-top"></div>
               }
-              <div class="eyebrow banner-eyebrow">Create a Free Matrimony Profile</div>
-              <h2>50,000+ Successful Marriages &amp; Counting</h2>
-              <p>Our community celebrates one new wedding every 15 minutes — find your soulmate among lakhs of verified Marathi profiles.</p>
+              <div class="eyebrow banner-eyebrow">{{ bannerEyebrow }}</div>
+              <h2>{{ bannerHeading }}</h2>
+              <p>{{ bannerDescription }}</p>
               <div class="banner-chips">
-                <span><app-tpl-icon name="user-check"></app-tpl-icon>100% Verified</span>
-                <span><app-tpl-icon name="shield-check"></app-tpl-icon>Privacy Protected</span>
-                <span><app-tpl-icon name="heart-handshake"></app-tpl-icon>Family Approved</span>
+                @for (chip of bannerChips; track chip.label) {
+                  <span><app-tpl-icon [name]="chip.icon"></app-tpl-icon>{{ chip.label }}</span>
+                }
               </div>
               <div class="banner-ctas">
-                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">Create Free Profile</a>
-                <a class="tbtn btn-ghost" routerLink="/register">Learn More</a>
+                <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ bannerCta1 }}</a>
+                <a class="tbtn btn-ghost" routerLink="/register">{{ bannerCta2 }}</a>
               </div>
               <div class="divider m-butti banner-bottom"></div>
             </div>
@@ -500,8 +500,8 @@
       @case ('features') {
         <section class="tsec tpy-24">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow">Why Marathi Families Trust Us</div>
-            <h2 class="sectitle section-title-spaced">Matrimony the Way It Should Be</h2>
+            <div class="eyebrow">{{ featuresEyebrow }}</div>
+            <h2 class="sectitle section-title-spaced">{{ featuresTitle }}</h2>
             <div class="divider {{ motifClass }} section-divider"></div>
             @if (tpl.bannerGarland) { <div class="section-garland"></div> }
             <div class="feat-grid">
@@ -519,8 +519,8 @@
       @case ('how') {
         <section class="tsec darksec tpy-24 how-section">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow on-dark">How It Works</div>
-            <h2 class="sectitle on-dark section-title-spaced">Three Simple Steps to Your Match</h2>
+            <div class="eyebrow on-dark">{{ howEyebrow }}</div>
+            <h2 class="sectitle on-dark section-title-spaced">{{ howTitle }}</h2>
             <div class="steps">
               @for (s of steps; track s.title; let i = $index) {
                 <div>
@@ -539,10 +539,10 @@
           <div class="tsec-inner">
             <div class="prof-head">
               <div>
-                <div class="eyebrow">Freshly Joined Members</div>
-                <h2 class="sectitle" style="margin-top:12px">Recently Added Profiles</h2>
+                <div class="eyebrow">{{ profilesEyebrow }}</div>
+                <h2 class="sectitle" style="margin-top:12px">{{ profilesTitle }}</h2>
               </div>
-              <a class="viewall" routerLink="/search">View all profiles <app-tpl-icon name="arrow-right"></app-tpl-icon></a>
+              <a class="viewall" routerLink="/search">{{ profilesViewAll }} <app-tpl-icon name="arrow-right"></app-tpl-icon></a>
             </div>
             <div class="prof-grid">
               @for (p of profileCards; track p.key) {
@@ -564,8 +564,8 @@
       @case ('success') {
         <section class="tsec tpy-24">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow">Success Stories</div>
-            <h2 class="sectitle section-title-spaced">A Thousand Happy Beginnings</h2>
+            <div class="eyebrow">{{ storiesEyebrow }}</div>
+            <h2 class="sectitle section-title-spaced">{{ storiesTitle }}</h2>
             <div class="divider {{ motifClass }} section-divider"></div>
             @if (tpl.bannerGarland) { <div class="section-garland"></div> }
             <div class="story-grid">
@@ -596,7 +596,7 @@
                 <p class="muted">{{ ctaSub }}</p>
                 <div class="cta-ctas">
                   <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
-                  <a class="tbtn btn-ghost-dark" routerLink="/register">Talk to an Advisor</a>
+                  <a class="tbtn btn-ghost-dark" routerLink="/register">{{ ctaAdvisorLabel }}</a>
                 </div>
               </div>
             } @else {
@@ -607,7 +607,7 @@
                 <p class="on-dark-soft">{{ ctaSub }}</p>
                 <div class="cta-ctas">
                   <a class="tbtn btn-{{ tpl.btn }}" routerLink="/register">{{ cta1 }}</a>
-                  <a class="tbtn btn-ghost" routerLink="/register">Talk to an Advisor</a>
+                  <a class="tbtn btn-ghost" routerLink="/register">{{ ctaAdvisorLabel }}</a>
                 </div>
               </div>
             }
@@ -617,8 +617,8 @@
       @case ('why') {
         <section class="tsec tpy-24">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow">{{ tpl.whyEyebrow || 'Why Choose Us' }}</div>
-            <h2 class="sectitle section-title-spaced">{{ tpl.whyTitle || 'Trusted by Families, Powered by Technology' }}</h2>
+            <div class="eyebrow">{{ whyEyebrow }}</div>
+            <h2 class="sectitle section-title-spaced">{{ whyTitle }}</h2>
             <div class="divider {{ motifClass }} section-divider"></div>
             <div class="why-grid">
               @for (w of whyItems; track w.title) {
@@ -635,29 +635,29 @@
       @case ('castes') {
         <section class="tsec altsection tpy-24">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow">{{ tpl.casteEyebrow || 'Communities We Serve' }}</div>
-            <h2 class="sectitle section-title-spaced">{{ tpl.casteTitle || '200+ Marathi Castes & Communities' }}</h2>
+            <div class="eyebrow">{{ casteEyebrow }}</div>
+            <h2 class="sectitle section-title-spaced">{{ casteTitle }}</h2>
             <div class="caste-wrap">
               @for (c of castes; track c; let i = $index) {
                 <span class="caste-chip {{ i < 4 ? 'hot' : '' }}">{{ c }}</span>
               }
             </div>
-            <p class="muted caste-note">{{ tpl.casteNote || 'From Brahmin to Kshatriya and every community in between — find a match who shares your heritage.' }}</p>
+            <p class="muted caste-note">{{ casteNote }}</p>
           </div>
         </section>
       }
       @case ('melava') {
         <section class="tsec tpy-24">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow">{{ tpl.melavaEyebrow || 'Melava & Events' }}</div>
-            <h2 class="sectitle section-title-spaced">{{ tpl.melavaTitle || 'Meet Families In Person' }}</h2>
+            <div class="eyebrow">{{ melavaEyebrow }}</div>
+            <h2 class="sectitle section-title-spaced">{{ melavaTitle }}</h2>
             <div class="event-grid">
               @for (e of events; track e.title + e.day) {
                 <div class="event-card">
                   <div class="event-date"><b>{{ e.day }}</b><span>{{ e.month }}</span></div>
                   <h3>{{ e.title }}</h3>
                   <p>{{ e.place }}</p>
-                  <span class="event-tag">View details</span>
+                  <span class="event-tag">{{ melavaViewLabel }}</span>
                 </div>
               }
             </div>
@@ -669,9 +669,9 @@
           <div class="tsec-inner">
             <div class="appband darksec appband-panel">
               <div>
-                <div class="eyebrow on-dark">{{ tpl.appEyebrow || 'Download the App' }}</div>
-                <h2 class="sectitle on-dark section-title-spaced">{{ tpl.appTitle || 'Find Your Match in 30 Seconds' }}</h2>
-                <p class="on-dark-soft appband-copy">{{ tpl.appSub || 'Fast, simple and delightful. The most loved Marathi matrimony app — search, chat and connect on the go.' }}</p>
+                <div class="eyebrow on-dark">{{ appEyebrow }}</div>
+                <h2 class="sectitle on-dark section-title-spaced">{{ appTitle }}</h2>
+                <p class="on-dark-soft appband-copy">{{ appDescription }}</p>
                 <div class="storebtns">
                   <a class="storebtn" href="#"><app-tpl-icon name="smartphone"></app-tpl-icon> Google Play</a>
                   <a class="storebtn storebtn-apple" href="#"><app-tpl-icon name="apple"></app-tpl-icon> App Store</a>
@@ -679,8 +679,8 @@
               </div>
               <div>
                 <div class="ttext-center">
-                  <div class="rating rating-centered"><span class="stars">★★★★★</span><span>4.3 · 10M+ Downloads</span></div>
-                  <div class="app-review-note">Based on customer reviews</div>
+                  <div class="rating rating-centered"><span class="stars">★★★★★</span><span>{{ appRating }}</span></div>
+                  <div class="app-review-note">{{ appReviewNote }}</div>
                 </div>
               </div>
             </div>
@@ -690,8 +690,8 @@
       @case ('testimonials') {
         <section class="tsec tpy-24">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow">What Families Say</div>
-            <h2 class="sectitle section-title-spaced">Testimonials from Happy Families</h2>
+            <div class="eyebrow">{{ testimonialsEyebrow }}</div>
+            <h2 class="sectitle section-title-spaced">{{ testimonialsTitle }}</h2>
             <div class="divider {{ motifClass }} section-divider"></div>
             <div class="testimonial-grid">
               @for (s of testimonialItems; track s.name) {
@@ -709,8 +709,8 @@
       @case ('counters') {
         <section class="tsec darksec tpy-24">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow on-dark">By the Numbers</div>
-            <h2 class="sectitle on-dark section-title-spaced">Our Journey in Numbers</h2>
+            <div class="eyebrow on-dark">{{ countersEyebrow }}</div>
+            <h2 class="sectitle on-dark section-title-spaced">{{ countersTitle }}</h2>
             <div class="divider {{ motifClass }} section-divider"></div>
             <div class="counter-grid">
               @for (c of counterItems; track c.label) {
@@ -726,8 +726,8 @@
       @case ('beforeafter') {
         <section class="tsec altsection tpy-24">
           <div class="tsec-inner ttext-center">
-            <div class="eyebrow">Before &amp; After</div>
-            <h2 class="sectitle section-title-spaced">Transform Your Story</h2>
+            <div class="eyebrow">{{ beforeAfterEyebrow }}</div>
+            <h2 class="sectitle section-title-spaced">{{ beforeAfterTitle }}</h2>
             <div class="divider {{ motifClass }} section-divider"></div>
             <div class="before-after-wrap before-after-feature">
               <img class="ba-after" [src]="beforeAfterImages.after" alt="" loading="lazy" />
@@ -749,24 +749,17 @@
               <div class="foot-brand">@if (tenant.logoUrl) {<img [src]="tenant.logoUrl" [alt]="brandName + ' logo'" class="nav-logo-img" />} @else {<span class="nav-logo footer-logo">{{ brandLetter }}</span>}{{ brandName }}</div>
               <p class="foot-blurb">{{ footerBlurb }}</p>
             </div>
+            @for (col of footerContentColumns; track col.heading) {
             <div>
-              <h4>Find a Match</h4>
+              <h4>{{ col.heading }}</h4>
               <ul>
-                <li><a routerLink="/search">Brides</a></li>
-                <li><a routerLink="/search">Grooms</a></li>
-                <li><a routerLink="/search">NRI Profiles</a></li>
-                <li><a href="#">Horoscope Matching</a></li>
+                @for (link of col.links; track link.label) {
+                  <li><a [href]="link.url">{{ link.label }}</a></li>
+                }
               </ul>
             </div>
-            <div>
-              <h4>Community</h4>
-              <ul>
-                <li><a href="#">Success Stories</a></li>
-                <li><a href="#">Matrimonial Events</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Help &amp; Support</a></li>
-              </ul>
-            </div>
+            }
+            @if (footerSettings.showContactInfo) {
             <div>
               <h4>Contact Us</h4>
               <ul class="foot-contact">
@@ -777,7 +770,43 @@
                   <li><app-tpl-icon name="mail"></app-tpl-icon>{{ contactEmail }}</li>
                 }
               </ul>
+              @if (footerSettings.showSocialMedia && socialMediaItems.length > 0) {
+                <div class="footer-social">
+                  @for (item of socialMediaItems; track item.key) {
+                    <a [href]="item.url" target="_blank" rel="noopener noreferrer" class="social-icon" [attr.aria-label]="item.label" [title]="item.label">
+                      @switch (item.key) {
+                        @case ('facebook') {
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        }
+                        @case ('instagram') {
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                        }
+                        @case ('youtube') {
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        }
+                        @case ('twitter') {
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        }
+                        @case ('whatsapp') {
+                          <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        }
+                      }
+                    </a>
+                  }
+                </div>
+              }
             </div>
+            }
+            @if (footerSettings.showLegalLinks) {
+            <div>
+              <h4>Legal</h4>
+              <ul>
+                <li><a routerLink="/privacy">Privacy Policy</a></li>
+                <li><a routerLink="/terms">Terms &amp; Conditions</a></li>
+                <li><a routerLink="/refund">Refund Policy</a></li>
+              </ul>
+            </div>
+            }
           </div>
           <div class="foot-bottom">
             <p>{{ tenant.copyrightText }}</p>

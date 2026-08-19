@@ -34,6 +34,10 @@ export class TenantService {
     return this.selectedThemeId;
   }
 
+  get tenantHeaderId(): string | null {
+    return this.store.tenantHeaderId();
+  }
+
   flagEnabled(code: string): boolean {
     return this.currentTenant.featureFlags?.[code] ?? true;
   }
@@ -59,13 +63,20 @@ export class TenantService {
       return;
     }
 
+    let branding: any = {};
+    if (resolved.brandingJson) {
+      try { branding = JSON.parse(resolved.brandingJson); } catch {}
+    }
+
+    const logoSettings = branding.logoDisplay || branding.logoSettings || {};
+
     this.currentTenant = {
       ...this.currentTenant,
       displayName: resolved.displayName || resolved.name || this.currentTenant.displayName,
-      logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
-      faviconUrl: resolved.faviconUrl ?? this.currentTenant.faviconUrl,
-      primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
-      accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
+      logoUrl: branding.logoUrl ?? this.currentTenant.logoUrl,
+      faviconUrl: branding.faviconUrl ?? this.currentTenant.faviconUrl,
+      primaryColor: branding.primaryColor ?? this.currentTenant.primaryColor,
+      accentColor: branding.accentColor ?? this.currentTenant.accentColor,
       contacts:
         resolved.contacts && resolved.contacts.length > 0
           ? resolved.contacts.map((c) => ({
@@ -89,6 +100,29 @@ export class TenantService {
         resolved.domainAliases && resolved.domainAliases.length > 0
           ? resolved.domainAliases
           : this.currentTenant.domainAliases,
+      logoSettings: {
+        width: logoSettings.width ?? this.currentTenant.logoSettings?.width,
+        height: logoSettings.height ?? this.currentTenant.logoSettings?.height,
+        objectFit: logoSettings.objectFit ?? this.currentTenant.logoSettings?.objectFit,
+        padding: logoSettings.padding ?? this.currentTenant.logoSettings?.padding,
+        margin: logoSettings.margin ?? this.currentTenant.logoSettings?.margin,
+        background: logoSettings.background ?? this.currentTenant.logoSettings?.background,
+        borderRadius: logoSettings.borderRadius ?? this.currentTenant.logoSettings?.borderRadius,
+        border: logoSettings.border ?? this.currentTenant.logoSettings?.border,
+        shadow: logoSettings.shadow ?? this.currentTenant.logoSettings?.shadow,
+      },
+      socialMedia: {
+        facebook: branding.facebookUrl ?? this.currentTenant.socialMedia?.facebook,
+        instagram: branding.instagramUrl ?? this.currentTenant.socialMedia?.instagram,
+        youtube: branding.youTubeUrl ?? this.currentTenant.socialMedia?.youtube,
+        twitter: branding.twitterUrl ?? this.currentTenant.socialMedia?.twitter,
+        whatsapp: branding.whatsAppUrl ?? this.currentTenant.socialMedia?.whatsapp,
+      },
+      footerSettings: {
+        showSocialMedia: branding.showFooterSocialMedia ?? this.currentTenant.footerSettings?.showSocialMedia,
+        showLegalLinks: branding.showFooterLegalLinks ?? this.currentTenant.footerSettings?.showLegalLinks,
+        showContactInfo: branding.showFooterContactInfo ?? this.currentTenant.footerSettings?.showContactInfo,
+      },
     };
     this.applyTheme(this.currentTenant, this.resolveInitialThemeId());
   }
@@ -127,6 +161,19 @@ export class TenantService {
     root.style.setProperty('--tenant-bg-mid', mergedTheme.bgMid);
     root.style.setProperty('--tenant-bg-end', mergedTheme.bgEnd);
     root.style.setProperty('--tenant-text', mergedTheme.text);
+
+    const ls = tenant.logoSettings;
+    if (ls) {
+      if (ls.width) root.style.setProperty('--logo-width', ls.width);
+      if (ls.height) root.style.setProperty('--logo-height', ls.height);
+      if (ls.objectFit) root.style.setProperty('--logo-object-fit', ls.objectFit);
+      if (ls.padding) root.style.setProperty('--logo-padding', ls.padding);
+      if (ls.margin) root.style.setProperty('--logo-margin', ls.margin);
+      if (ls.background) root.style.setProperty('--logo-bg', ls.background);
+      if (ls.borderRadius) root.style.setProperty('--logo-radius', ls.borderRadius);
+      if (ls.border) root.style.setProperty('--logo-border', ls.border);
+      if (ls.shadow) root.style.setProperty('--logo-shadow', ls.shadow);
+    }
 
     root.style.setProperty('--ion-color-primary', mergedTheme.primary || tenant.primaryColor);
     root.style.setProperty('--ion-color-secondary', mergedTheme.accent || tenant.accentColor);

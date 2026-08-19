@@ -7,6 +7,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { TenantClient, TenantDto } from '@org/generated';
 import {
   BrandingPanel,
+  LandingContentPanel,
   DomainsPanel,
   ContactsPanel,
   FeatureFlagsPanel,
@@ -25,7 +26,7 @@ import { LandingTemplatePanel } from './landing-template-panel.component';
   standalone: true,
   imports: [
     CommonModule, RouterModule, MatButtonModule, MatIconModule, MatTabsModule,
-    BrandingPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDocumentsPanel,
+    BrandingPanel, LandingContentPanel, DomainsPanel, ContactsPanel, FeatureFlagsPanel, LegalDocumentsPanel,
     SecuritySettingsPanel, EmailSettingsPanel, NotificationSettingsPanel, PaymentSettingsPanel, GatewayKeysPanel,
     LandingTemplatePanel,
   ],
@@ -50,9 +51,12 @@ import { LandingTemplatePanel } from './landing-template-panel.component';
       </div>
 
       <mat-tab-group animationDuration="200ms">
-        <mat-tab label="Branding">
+        <mat-tab label="Landing Page Settings">
           <ng-template matTabContent>
             <app-branding-panel [tenantId]="tenantId()" />
+            <div style="margin-top: 1.5rem;">
+              <app-landing-content-panel [tenantId]="tenantId()" />
+            </div>
           </ng-template>
         </mat-tab>
         <mat-tab label="Landing Template">

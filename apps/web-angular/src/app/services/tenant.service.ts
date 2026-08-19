@@ -114,17 +114,53 @@ export class TenantService {
       return;
     }
 
+    let branding: any = {};
+    if (resolved.brandingJson) {
+      try { branding = JSON.parse(resolved.brandingJson); } catch {}
+    }
+
+    let landingContent: any = {};
+    if (resolved.landingContentJson) {
+      try { landingContent = JSON.parse(resolved.landingContentJson); } catch {}
+    }
+
+    const logoSettings = branding.logoDisplay || branding.logoSettings || {};
+
     this.currentTenant = {
       ...this.currentTenant,
       displayName:
         resolved.displayName || resolved.name || this.currentTenant.displayName,
-      logoUrl: resolved.logoUrl ?? this.currentTenant.logoUrl,
-      faviconUrl: resolved.faviconUrl ?? this.currentTenant.faviconUrl,
-      heroImageUrl: resolved.heroImageUrl ?? this.currentTenant.heroImageUrl,
-      bannerImageUrl: resolved.bannerImageUrl ?? this.currentTenant.bannerImageUrl,
-      primaryColor: resolved.primaryColor ?? this.currentTenant.primaryColor,
-      accentColor: resolved.accentColor ?? this.currentTenant.accentColor,
-      themeTemplateId: resolved.themeTemplateId ?? this.currentTenant.themeTemplateId,
+      logoUrl: branding.logoUrl ?? this.currentTenant.logoUrl,
+      faviconUrl: branding.faviconUrl ?? this.currentTenant.faviconUrl,
+      heroImageUrl: branding.heroImageUrl ?? this.currentTenant.heroImageUrl,
+      bannerImageUrl: branding.bannerImageUrl ?? this.currentTenant.bannerImageUrl,
+      primaryColor: branding.primaryColor ?? this.currentTenant.primaryColor,
+      accentColor: branding.accentColor ?? this.currentTenant.accentColor,
+      themeTemplateId: branding.themeTemplateId ?? this.currentTenant.themeTemplateId,
+      logoSettings: {
+        width: logoSettings.width ?? this.currentTenant.logoSettings?.width,
+        height: logoSettings.height ?? this.currentTenant.logoSettings?.height,
+        objectFit: logoSettings.objectFit ?? this.currentTenant.logoSettings?.objectFit,
+        padding: logoSettings.padding ?? this.currentTenant.logoSettings?.padding,
+        margin: logoSettings.margin ?? this.currentTenant.logoSettings?.margin,
+        background: logoSettings.background ?? this.currentTenant.logoSettings?.background,
+        borderRadius: logoSettings.borderRadius ?? this.currentTenant.logoSettings?.borderRadius,
+        border: logoSettings.border ?? this.currentTenant.logoSettings?.border,
+        shadow: logoSettings.shadow ?? this.currentTenant.logoSettings?.shadow,
+      },
+      socialMedia: {
+        facebook: branding.facebookUrl ?? this.currentTenant.socialMedia?.facebook,
+        instagram: branding.instagramUrl ?? this.currentTenant.socialMedia?.instagram,
+        youtube: branding.youTubeUrl ?? this.currentTenant.socialMedia?.youtube,
+        twitter: branding.twitterUrl ?? this.currentTenant.socialMedia?.twitter,
+        whatsapp: branding.whatsAppUrl ?? this.currentTenant.socialMedia?.whatsapp,
+      },
+      footerSettings: {
+        showSocialMedia: branding.showFooterSocialMedia ?? this.currentTenant.footerSettings?.showSocialMedia,
+        showLegalLinks: branding.showFooterLegalLinks ?? this.currentTenant.footerSettings?.showLegalLinks,
+        showContactInfo: branding.showFooterContactInfo ?? this.currentTenant.footerSettings?.showContactInfo,
+      },
+      landingContent: this.currentTenant.landingContent || landingContent,
       contacts:
         resolved.contacts && resolved.contacts.length > 0
           ? resolved.contacts.map((c) => ({
@@ -202,6 +238,20 @@ export class TenantService {
     root.style.setProperty('--tenant-bg-mid', mergedTheme.bgMid);
     root.style.setProperty('--tenant-bg-end', mergedTheme.bgEnd);
     root.style.setProperty('--tenant-text', mergedTheme.text);
+
+    const ls = tenant.logoSettings;
+    if (ls) {
+      if (ls.width) root.style.setProperty('--logo-width', ls.width);
+      if (ls.height) root.style.setProperty('--logo-height', ls.height);
+      if (ls.objectFit) root.style.setProperty('--logo-object-fit', ls.objectFit);
+      if (ls.padding) root.style.setProperty('--logo-padding', ls.padding);
+      if (ls.margin) root.style.setProperty('--logo-margin', ls.margin);
+      if (ls.background) root.style.setProperty('--logo-bg', ls.background);
+      if (ls.borderRadius) root.style.setProperty('--logo-radius', ls.borderRadius);
+      if (ls.border) root.style.setProperty('--logo-border', ls.border);
+      if (ls.shadow) root.style.setProperty('--logo-shadow', ls.shadow);
+    }
+
     document.title = tenant.displayName;
 
     const iconUrl = tenant.faviconUrl ?? tenant.logoUrl;
