@@ -270,8 +270,8 @@ export function bootstrapFromTemplate(config: TenantConfig): TenantConfig {
     accentColor: config.accentColor || tpl.c.s,
     defaultLanguage: config.defaultLanguage || 'en',
     defaultCurrency: config.defaultCurrency || 'INR',
-    ctaLogin: config.ctaLogin || tpl.cta2 || 'Sign In',
-    ctaEnroll: config.ctaEnroll || tpl.cta1 || 'Register Free',
+    ctaLogin: config.ctaLogin || 'Login',
+    ctaEnroll: config.ctaEnroll || 'Register Free',
     copyrightText: config.copyrightText || `© ${new Date().getFullYear()} ${tpl.brand} Matrimony. All rights reserved.`,
     contacts: config.contacts || [],
   };

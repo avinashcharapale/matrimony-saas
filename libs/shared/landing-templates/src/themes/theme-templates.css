@@ -429,11 +429,17 @@
 .tpl-root .testimonial-item blockquote{font-style:italic;font-size:16px;line-height:1.7;color:var(--tp-t);max-width:520px;margin:0 auto;}
 .tpl-root .testimonial-item .t-author{margin-top:16px;font-weight:700;color:var(--tp-p);font-size:15px;}
 .tpl-root .testimonial-item .t-role{font-size:12px;color:var(--tp-ts);margin-top:2px;}
-.tpl-root .testimonial-dots{display:flex;gap:8px;justify-content:center;margin-top:20px;}
-.tpl-root .testimonial-dots span{width:10px;height:10px;border-radius:50%;background:var(--tp-pl);cursor:pointer;transition:background .2s;}
-.tpl-root .testimonial-dots span.active{background:var(--tp-s);}
 .tpl-root .testimonial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;}
 .tpl-root .testimonial-grid .testimonial-item{flex:none;scroll-snap-align:unset;}
+
+/* ── testimonial carousel (single card auto-rotate) ── */
+.tpl-root .testimonial-carousel{position:relative;max-width:640px;margin:40px auto 0;}
+.tpl-root .testimonial-carousel .testimonial-item{display:none;animation:fadeIn .5s ease;}
+.tpl-root .testimonial-carousel .testimonial-item.active{display:block;}
+.tpl-root .testimonial-dots{display:flex;gap:8px;justify-content:center;margin-top:24px;}
+.tpl-root .testimonial-dots span{width:10px;height:10px;border-radius:50%;background:var(--tp-pl);cursor:pointer;transition:background .2s;}
+.tpl-root .testimonial-dots span.active{background:var(--tp-s);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── animated counters ── */
 .tpl-root .counter-val{font-family:var(--tp-h);font-size:48px;font-weight:700;color:var(--tp-p);line-height:1;}
@@ -562,8 +568,8 @@
    ───────────────────────────────────────────────────────────── */
 
 /* paithani-royal: gold butti bands above/below the dark hero frame */
-.tpl-root .hero.dark::before{content:var(--td-hero-butt-top-content,none);position:absolute;top:var(--td-hero-butt-top,84px);left:0;right:0;height:var(--td-hero-butt-top-h,0);opacity:var(--td-hero-butt-top-op,0);z-index:1;background:var(--td-hero-butt-top-bg,none);}
-.tpl-root .hero.dark::after{content:var(--td-hero-butt-bottom-content,none);position:absolute;bottom:var(--td-hero-butt-bottom,36px);left:0;right:0;height:var(--td-hero-butt-bottom-h,0);opacity:var(--td-hero-butt-bottom-op,0);z-index:1;background:var(--td-hero-butt-bottom-bg,none);}
+.tpl-root .hero.dark::before{content:var(--td-hero-butt-top-content,none);position:absolute;top:var(--td-hero-butt-top,84px);left:0;right:0;width:auto;height:var(--td-hero-butt-top-h,0);opacity:var(--td-hero-butt-top-op,0);z-index:1;background:var(--td-hero-butt-top-bg,none);border-radius:0;-webkit-mask:none;mask:none;}
+.tpl-root .hero.dark::after{content:var(--td-hero-butt-bottom-content,none);position:absolute;bottom:var(--td-hero-butt-bottom,36px);left:0;right:0;width:auto;height:var(--td-hero-butt-bottom-h,0);opacity:var(--td-hero-butt-bottom-op,0);z-index:1;background:var(--td-hero-butt-bottom-bg,none);border-radius:0;-webkit-mask:none;mask:none;}
 
 /* marigold-traditional: corner rangoli ornaments on light hero */
 .tpl-root .hero::before,

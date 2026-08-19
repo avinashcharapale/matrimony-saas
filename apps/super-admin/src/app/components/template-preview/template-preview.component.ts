@@ -11,21 +11,39 @@ const U = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=cro
 
 const IMG = {
   hero: [
-    'photo-1519225421980-715cb0215aed',
-    'photo-1591604466107-ec97de577aff',
+    'photo-1741201864879-c5e7f81c98b0',
+    'photo-1602631985686-1bb0e6a8696e',
+    'photo-1511795409834-ef04bbd61622',
+    'photo-1522673607200-164d1b6ce486',
     'photo-1587271407850-8d438ca9fdf2',
-    'photo-1520854221256-17451cc331bf',
-    'photo-1583939003579-730e3918a45a',
-    'photo-1606216794074-735e91aa2c92',
-    'photo-1519741497674-611481863552',
     'photo-1465495976277-4387d4b0b4c6',
+    'photo-1607330289024-1535c6b4e1c1',
+    'photo-1519741497674-611481863552',
+  ],
+  brides: [
+    'photo-1531123897727-8f129e1688ce',
+    'photo-1589156280159-27698a70f29e',
+    'photo-1607330289024-1535c6b4e1c1',
+    'photo-1531746020798-e6953c6e8e04',
+    'photo-1587271407850-8d438ca9fdf2',
+    'photo-1465495976277-4387d4b0b4c6',
+  ],
+  grooms: [
+    'photo-1583394838336-acd977736f90',
+    'photo-1568602471122-7832951cc4c5',
+    'photo-1506794778202-cad84cf45f1d',
+    'photo-1635488640163-e5f6782cda6e',
+    'photo-1520854221256-17451cc331bf',
+    'photo-1519225421980-715cb0215aed',
   ],
   stories: [
     'photo-1519741497674-611481863552',
     'photo-1587271407850-8d438ca9fdf2',
     'photo-1465495976277-4387d4b0b4c6',
+    'photo-1583939003579-730e3918a45a',
+    'photo-1602631985686-1bb0e6a8696e',
+    'photo-1511795409834-ef04bbd61622',
   ],
-  banner: 'photo-1587271407850-8d438ca9fdf2',
 };
 
 const TRUST: string[] = [
@@ -949,7 +967,7 @@ export class TemplatePreviewComponent implements OnInit {
   }
 
   get heroFullbleedBg(): string {
-    const src = this.tpl.bannerImg || IMG.banner;
+    const src = this.tpl.bannerImg || IMG.hero[(this.templateIndex() + 3) % IMG.hero.length];
     const base = src.includes('://') ? src : U(src);
     return `url('${base}&w=1600&q=70'), linear-gradient(160deg,var(--tp-p),var(--tp-d1) 55%,var(--tp-d2))`;
   }
@@ -959,7 +977,7 @@ export class TemplatePreviewComponent implements OnInit {
   }
 
   get heroParallaxBg(): string {
-    const src = this.tpl.bannerImg || IMG.banner;
+    const src = this.tpl.bannerImg || IMG.hero[(this.templateIndex() + 3) % IMG.hero.length];
     const base = src.includes('://') ? src : U(src);
     return `url('${base}&w=1600&q=70')`;
   }
@@ -969,7 +987,7 @@ export class TemplatePreviewComponent implements OnInit {
   }
 
   get testimonialItems(): { name: string; meta: string; quote: string; img: string }[] {
-    return STORIES.map((s) => ({ ...s, img: U(IMG.stories[s.image % IMG.stories.length]) + '&w=200&q=60' }));
+    return STORIES.map((s) => ({ ...s, img: U(IMG.stories[(s.image + this.templateIndex()) % IMG.stories.length]) + '&w=200&q=60' }));
   }
 
   get counterItems(): { value: string; label: string }[] {
@@ -997,7 +1015,7 @@ export class TemplatePreviewComponent implements OnInit {
   }
 
   get bannerImg(): string {
-    const src = this.tpl.bannerImg || IMG.banner;
+    const src = this.tpl.bannerImg || IMG.hero[(this.templateIndex() + 3) % IMG.hero.length];
     const base = src.includes('://') ? src : U(src);
     return base + '&w=1920&q=70';
   }
@@ -1015,24 +1033,22 @@ export class TemplatePreviewComponent implements OnInit {
   }
 
   get profileCards(): { name: string; sub: string; status: string; img: string }[] {
-    const brides = [
-      'photo-1531123897727-8f129e1688ce',
-      'photo-1589156280159-27698a70f29e',
+    const start = this.templateIndex();
+    const names = [
+      { name: 'Pranali K', sub: 'Pune · Software Engineer', status: 'Verified' },
+      { name: 'Aditya S', sub: 'Mumbai · Bank Manager', status: 'Verified' },
+      { name: 'Sneha J', sub: 'Nashik · Teacher', status: 'New' },
+      { name: 'Rohan D', sub: 'NRI · London', status: 'New' },
     ];
-    const grooms = [
-      'photo-1583394838336-acd977736f90',
-      'photo-1568602471122-7832951cc4c5',
-    ];
-    return [
-      { name: 'Pranali K', sub: 'Pune · Software Engineer', status: 'Verified', img: U(brides[0]) + '&w=600&q=60' },
-      { name: 'Aditya S', sub: 'Mumbai · Bank Manager', status: 'Verified', img: U(grooms[0]) + '&w=600&q=60' },
-      { name: 'Sneha J', sub: 'Nashik · Teacher', status: 'New', img: U(brides[1]) + '&w=600&q=60' },
-      { name: 'Rohan D', sub: 'NRI · London', status: 'New', img: U(grooms[1]) + '&w=600&q=60' },
-    ];
+    return names.map((n, i) => {
+      const pool = i % 2 === 0 ? IMG.brides : IMG.grooms;
+      const idx = (start + Math.floor(i / 2)) % pool.length;
+      return { ...n, img: U(pool[idx]) + '&w=600&q=60' };
+    });
   }
 
   get storyCards(): { name: string; meta: string; quote: string; img: string }[] {
-    return STORIES.map((s) => ({ ...s, img: U(IMG.stories[s.image % IMG.stories.length]) + '&w=700&q=60' }));
+    return STORIES.map((s) => ({ ...s, img: U(IMG.stories[(s.image + this.templateIndex()) % IMG.stories.length]) + '&w=700&q=60' }));
   }
 
   get castes(): string[] {

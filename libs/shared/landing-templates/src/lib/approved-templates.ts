@@ -14,8 +14,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "frame",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#8e1f4f",
@@ -66,7 +66,7 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
     "td-nav-bg": "color-mix(in srgb, var(--tp-p) 5%, var(--tp-bg))",
     "td-nav-brand-size": "22px",
     "td-nav-brand-weight": "700",
-    "td-dark-bg": "linear-gradient(165deg,#8e1f4f 0%,#5c1233 50%,#3f0c22 100%)",
+    "td-dark-bg": "radial-gradient(120% 90% at 15% 0%,#a5275d 0%,#8e1f4f 42%,#5c1233 100%)",
     "td-dark-bg-deep": "linear-gradient(165deg,#8e1f4f 0%,#5c1233 50%,#3f0c22 100%)",
     "td-alt-bg": "var(--tp-bgd)",
     "td-card-bg": "var(--tp-card)",
@@ -88,7 +88,17 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
     "td-hero-garland-w": "260px",
     "td-hero-garland-mt": "40px",
     "td-hero-garland-op": ".7",
-    "td-hero-garland-bg": "radial-gradient(circle at 20% 50%,#d4a643 0 5px,transparent 5.5px) repeat-x center / 40px 14px,radial-gradient(circle at 30% 30%,#b98a2e 0 4px,transparent 4.5px) repeat-x center / 40px 14px"
+    "td-hero-garland-bg": "radial-gradient(circle at 20% 50%,#d4a643 0 5px,transparent 5.5px) repeat-x center / 40px 14px,radial-gradient(circle at 30% 30%,#b98a2e 0 4px,transparent 4.5px) repeat-x center / 40px 14px",
+    "td-hero-butt-top-content": "\"\"",
+    "td-hero-butt-top": "80px",
+    "td-hero-butt-top-h": "12px",
+    "td-hero-butt-top-op": "0.6",
+    "td-hero-butt-top-bg": "radial-gradient(ellipse at 50% 50%,#ecc97f 0 4px,transparent 5px) repeat-x center / 30px 12px,radial-gradient(circle at 50% 50%,#d4a643 0 2px,transparent 3px) repeat-x center / 15px 12px,linear-gradient(90deg,transparent,#d4a643 20%,#d4a643 80%,transparent) center / 100% 2px no-repeat",
+    "td-hero-butt-bottom-content": "\"\"",
+    "td-hero-butt-bottom": "40px",
+    "td-hero-butt-bottom-h": "6px",
+    "td-hero-butt-bottom-op": "0.5",
+    "td-hero-butt-bottom-bg": "radial-gradient(circle at 50% 50%,#d4a643 0 2.5px,transparent 3px) repeat-x center / 22px 6px,linear-gradient(90deg,transparent,#d4a643 18%,#d4a643 82%,transparent) center / 100% 1px no-repeat"
   }
 },
   {
@@ -541,8 +551,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "frame",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#1a5e2a",
@@ -630,8 +640,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "frame",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#8e2f4f",
@@ -1396,8 +1406,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "royal",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#3d1a6e",
@@ -1485,8 +1495,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "royal",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#5c1233",
@@ -1574,8 +1584,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "frame",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#6b3a1f",
@@ -1660,11 +1670,11 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "h": "Marcellus",
   "b": "Lato",
   "motif": "sariborder",
-  "hero": "royal",
+   "hero": "royal",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#1a2340",
@@ -1837,8 +1847,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "royal",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#5c4a1e",
@@ -2861,8 +2871,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "frame",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#8e3050",
@@ -3423,8 +3433,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "royal",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#1a1a1a",
@@ -3589,8 +3599,8 @@ export const APPROVED_TEMPLATES: LandingTemplate[] = [
   "hero": "frame",
   "btn": "gradient",
   "nav": {
-    "dark": true,
-    "glass": false
+    "dark": false,
+    "glass": true
   },
   "c": {
     "p": "#6b3a0f",

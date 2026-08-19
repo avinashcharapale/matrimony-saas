@@ -1,4 +1,4 @@
-﻿import { Component, ChangeDetectionStrategy, Input, inject, OnInit, HostListener, signal } from '@angular/core';
+﻿import { Component, ChangeDetectionStrategy, Input, inject, OnInit, OnDestroy, AfterViewInit, HostListener, signal } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -93,6 +93,8 @@ export interface TplTenantView {
     formCasteLabel?: string;
     formCommunities?: string[];
     formMiniStats?: { value: string; label: string }[];
+    playStoreUrl?: string;
+    appStoreUrl?: string;
   };
   socialMedia?: { facebook?: string; instagram?: string; youtube?: string; twitter?: string; whatsapp?: string };
   footerSettings?: { showSocialMedia?: boolean; showLegalLinks?: boolean; showContactInfo?: boolean };
@@ -237,8 +239,10 @@ export class LandingSectionsComponent implements OnInit {
 
   readonly stickyBarVisible = signal(false);
   readonly mobileMenuOpen = signal(false);
+  readonly testimonialIndex = signal(0);
   private readonly isLoading = signal(true);
   private readonly scrollThreshold = 600;
+  private testimonialTimer: ReturnType<typeof setInterval> | null = null;
 
   @HostListener('window:scroll')
   onWindowScroll(): void {
@@ -258,6 +262,23 @@ export class LandingSectionsComponent implements OnInit {
   ngOnInit(): void {
     this.loadTemplateFonts();
     setTimeout(() => this.isLoading.set(false), 300);
+    this.startTestimonialRotation();
+  }
+
+  ngOnDestroy(): void {
+    if (this.testimonialTimer) clearInterval(this.testimonialTimer);
+  }
+
+  private startTestimonialRotation(): void {
+    this.testimonialTimer = setInterval(() => {
+      this.testimonialIndex.update(i => (i + 1) % this.testimonialItems.length);
+    }, 4000);
+  }
+
+  setTestimonial(index: number): void {
+    this.testimonialIndex.set(index);
+    if (this.testimonialTimer) clearInterval(this.testimonialTimer);
+    this.startTestimonialRotation();
   }
 
   toggleMobileMenu(): void {
@@ -316,7 +337,9 @@ export class LandingSectionsComponent implements OnInit {
   }
 
   get heroDark(): boolean {
-    return !!this.tpl.darkHero;
+    if (this.tpl.darkHero !== undefined) return this.tpl.darkHero;
+    const darkHeroes = ['frame', 'royal', 'fullbleed', 'parallax'];
+    return darkHeroes.includes(this.tpl.hero);
   }
 
   get heroOrnClass(): string {
@@ -386,7 +409,7 @@ export class LandingSectionsComponent implements OnInit {
   }
 
   get bannerImg(): string {
-    const src = this.overrides.bannerImage || this.tenant.landingContent?.bannerOverrideImageUrl || this.tpl.bannerImg || IMG.banner;
+    const src = this.overrides.bannerImage || this.tenant.landingContent?.bannerOverrideImageUrl || this.tpl.bannerImg || IMG.hero[(this.templateIndex() + 3) % IMG.hero.length];
     const base = src.includes('://') ? src : U(src);
     return img(base, 'w=1920&q=70');
   }
@@ -425,10 +448,12 @@ export class LandingSectionsComponent implements OnInit {
   }
 
   get profileCards(): (ProfileItem & { img: string })[] {
-    return this.autoScrollProfiles.slice(0, 4).map((p, i) => ({
-      ...p,
-      img: p.photoUrl || U((i % 2 === 0 ? IMG.brides : IMG.grooms)[Math.floor(i / 2) % 2]) + '&w=600&q=60',
-    }));
+    const start = this.templateIndex();
+    return this.autoScrollProfiles.slice(0, 4).map((p, i) => {
+      const pool = i % 2 === 0 ? IMG.brides : IMG.grooms;
+      const idx = (start + Math.floor(i / 2)) % pool.length;
+      return { ...p, img: p.photoUrl || U(pool[idx]) + '&w=600&q=60' };
+    });
   }
 
   get storyCards(): (TplStory & { img: string })[] {
@@ -436,7 +461,7 @@ export class LandingSectionsComponent implements OnInit {
     const source = lcStories?.length
       ? lcStories.map(s => ({ name: s.name, meta: s.meta, quote: s.quote, image: s.image ?? 0 }))
       : STORIES;
-    return source.map((s) => ({ ...s, img: U(IMG.stories[s.image % IMG.stories.length]) + '&w=700&q=60' }));
+    return source.map((s) => ({ ...s, img: U(IMG.stories[(s.image + this.templateIndex()) % IMG.stories.length]) + '&w=700&q=60' }));
   }
 
   get castes(): string[] {
@@ -639,6 +664,14 @@ export class LandingSectionsComponent implements OnInit {
 
   get ctaAdvisorLabel(): string {
     return this.tenant.landingContent?.ctaAdvisorLabel || 'Talk to an Advisor';
+  }
+
+  get playStoreUrl(): string {
+    return this.tenant.landingContent?.playStoreUrl || '';
+  }
+
+  get appStoreUrl(): string {
+    return this.tenant.landingContent?.appStoreUrl || '';
   }
 
   get whyEyebrow(): string {
