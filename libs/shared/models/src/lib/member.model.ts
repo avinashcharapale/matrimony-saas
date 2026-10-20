@@ -24,6 +24,7 @@ export interface MemberRecord {
   genderId?: number;
   registrationDetails?: RegisterFormDetails;
   planVisibility?: ProfilePlanVisibility;
+  isContactUnlocked?: boolean;
   createdAt: string;
   createdAtDate?: string;
   dobText?: string;
@@ -90,7 +91,10 @@ export interface RegisterHoroscopeDetails {
   birthHour: string;
   birthMinute: string;
   birthPeriod: string;
+  birthState: string;
+  birthStateOther: string;
   birthDistrict: string;
+  birthDistrictOther: string;
   devak: string;
 }
 
@@ -100,6 +104,10 @@ export interface RegisterProfessionalDetails {
   occupationType: string;
   occupationDetails: string;
   workingCityCountry: string;
+  workingState: string;
+  workingStateOther: string;
+  workingCountry: string;
+  workingCountryOther: string;
   incomeAmount: string;
   incomePeriod: string;
 }
@@ -127,8 +135,12 @@ export interface RegisterFamilyDetails {
   relativesSurnames: string;
   familyWealth: string;
   mamaSurnamePlace: string;
+  nativeState: string;
+  nativeStateOther: string;
   nativeDistrict: string;
+  nativeDistrictOther: string;
   nativeTaluka: string;
+  nativeTalukaOther: string;
   intercastMarriage: string;
   intercastRelation: string;
 }
@@ -145,6 +157,11 @@ export interface RegisterExpectationDetails {
   divorcee: string;
   expectedCasteIds?: number[];
   expectedCasteNoBar?: boolean;
+  expectedEducationIds?: number[];
+  expectedEducationNoBar?: boolean;
+  expectedOccupationIds?: number[];
+  expectedOccupationNoBar?: boolean;
+  expectedIncomeRangeId?: string;
 }
 
 export interface RegisterVerificationDetails {
@@ -167,6 +184,7 @@ export interface RegisterFormDetails {
   expectations: RegisterExpectationDetails;
   verification: RegisterVerificationDetails;
   photos: RegisterPhotoDetails[];
+  interests?: string;
   accountPassword?: string;
   confirmPassword?: string;
 }
@@ -207,7 +225,10 @@ export function createEmptyRegisterFormDetails(): RegisterFormDetails {
       birthHour: '',
       birthMinute: '',
       birthPeriod: '',
+      birthState: '',
+      birthStateOther: '',
       birthDistrict: '',
+      birthDistrictOther: '',
       devak: '',
     },
     professional: {
@@ -216,6 +237,10 @@ export function createEmptyRegisterFormDetails(): RegisterFormDetails {
       occupationType: '',
       occupationDetails: '',
       workingCityCountry: '',
+      workingState: '',
+      workingStateOther: '',
+      workingCountry: '',
+      workingCountryOther: '',
       incomeAmount: '',
       incomePeriod: '',
     },
@@ -241,8 +266,12 @@ export function createEmptyRegisterFormDetails(): RegisterFormDetails {
       relativesSurnames: '',
       familyWealth: '',
       mamaSurnamePlace: '',
+      nativeState: '',
+      nativeStateOther: '',
       nativeDistrict: '',
+      nativeDistrictOther: '',
       nativeTaluka: '',
+      nativeTalukaOther: '',
       intercastMarriage: '',
       intercastRelation: '',
     },

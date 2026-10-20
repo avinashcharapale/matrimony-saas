@@ -2,8 +2,42 @@
   padding: 12px;
 }
 
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f7f4f9;
+}
+
+.summary-card span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8a8393;
+}
+
+.summary-card strong {
+  font-size: 16px;
+  color: #2c003e;
+}
+
 ion-segment {
   margin-bottom: 12px;
+}
+
+.tx-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
 }
 
 .empty-state ion-card-content p {

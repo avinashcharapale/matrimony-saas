@@ -1,0 +1,82 @@
+<ion-page>
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>My Photos</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <div class="shell">
+      @if (isLoading()) {
+      <div class="empty-state">Loading your photos&hellip;</div>
+      } @else if (errorMessage()) {
+      <div class="empty-state error-text">{{ errorMessage() }}</div>
+      } @else {
+      @if (successMessage()) {
+      <p class="success-msg">{{ successMessage() }}</p>
+      }
+
+      <p class="photo-count">{{ photoCount() }} of {{ maxSlots }} photos added</p>
+
+      <section class="hero">
+        <button class="hero-img-btn" (click)="openGallery(0)">
+          <img class="hero-img" [src]="heroUrl()" alt="Primary photo" />
+          <span class="hero-badge">Primary</span>
+        </button>
+        <label class="hero-action">
+          @if (busySlot() === primarySlot()) {
+          <ion-spinner name="crescent" class="spinner-inline"></ion-spinner>
+          }
+          <span>{{ photoForSlot(primarySlot()) ? 'Change Photo' : 'Add Photo' }}</span>
+          <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onSlotFileChange($event, primarySlot())" />
+        </label>
+      </section>
+
+      <div class="grid">
+        @for (slot of slots; track slot) {
+        @if (slot !== primarySlot()) {
+        <div class="tile">
+          @if (photoForSlot(slot)) {
+          <button class="tile-img-btn" (click)="openTileGallery(slot)">
+            <img class="tile-img" [src]="slotPhotoUrl(slot)" [alt]="photoName(slot)" />
+          </button>
+          <div class="tile-actions">
+            <label class="tile-btn">
+              {{ busySlot() === slot ? '\u2026' : 'Change' }}
+              <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onSlotFileChange($event, slot)" />
+            </label>
+            <button class="tile-btn danger" (click)="deleteSlot(slot)" [disabled]="busySlot() === slot">Delete</button>
+          </div>
+          } @else {
+          <label class="tile-add">
+            @if (busySlot() === slot) {
+            <ion-spinner name="crescent"></ion-spinner>
+            } @else {
+            <ion-icon name="add"></ion-icon>
+            <span>Add Photo</span>
+            }
+            <input type="file" accept=".jpg,.jpeg,.png,.webp" (change)="onSlotFileChange($event, slot)" />
+          </label>
+          }
+        </div>
+        }
+        }
+      </div>
+      }
+    </div>
+  </ion-content>
+</ion-page>
+
+@if (galleryIndex() !== null) {
+<div class="gallery-overlay" (click)="closeGallery()" (keydown)="onOverlayKeydown($event)" tabindex="-1" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="gallery-close" (click)="closeGallery(); $event.stopPropagation()">&#10005;</button>
+  <button class="gallery-nav prev" (click)="galleryPrev(); $event.stopPropagation()">&#10094;</button>
+  <button class="gallery-img-wrap" (click)="$event.stopPropagation()">
+    <img class="gallery-img" [src]="currentGalleryUrl()" alt="Photo preview" />
+  </button>
+  <button class="gallery-nav next" (click)="galleryNext(); $event.stopPropagation()">&#10095;</button>
+  <p class="gallery-count">{{ galleryPosition() }} / {{ sortedPhotos().length }}</p>
+</div>
+}

@@ -5,9 +5,11 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MemberRecord, MemberService } from '../../services/member.service';
 import { AuthStore } from '@org/data-access-auth';
-import { MatchClient } from '@org/generated';
+import { MatchClient, ProfileClient, SubscriptionClient } from '@org/generated';
+import { RegisterMasterDataService } from '@org/data-access-registration';
 import { finalize } from 'rxjs/operators';
 import { TenantService } from '../../services/tenant.service';
+import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 
 interface ProfileField {
   label: string;
@@ -35,6 +37,9 @@ export class ProfileDetail implements OnInit {
   private readonly authStore = inject(AuthStore);
   private readonly http = inject(HttpClient);
   private readonly matchClient = inject(MatchClient);
+  private readonly profileClient = inject(ProfileClient);
+  private readonly subscriptionClient = inject(SubscriptionClient);
+  private readonly masterData = inject(RegisterMasterDataService);
   private readonly tenantService = inject(TenantService);
 
   readonly profile = signal<MemberRecord | null>(null);
@@ -44,14 +49,30 @@ export class ProfileDetail implements OnInit {
   readonly showUpgradePrompt = signal(false);
   readonly isSendingInterest = signal(false);
   readonly interestSent = signal(false);
+  readonly interestError = signal<string | null>(null);
   readonly existingInterestStatus = signal<string | null>(null);
+  readonly isShortlisted = signal(false);
+  readonly isTogglingShortlist = signal(false);
+  readonly shortlistError = signal<string | null>(null);
+  readonly isContactUnlocked = signal(false);
+  readonly subscriptionActive = signal(false);
   readonly isLoading = signal(true);
+  readonly educationMap = signal<Map<number, string>>(new Map());
+  readonly occupationMap = signal<Map<number, string>>(new Map());
+  readonly casteMap = signal<Map<number, string>>(new Map());
 
   readonly isVisitor = computed(() => !this.authStore.isAuthenticated());
-  readonly isFreeUser = computed(() => this.authStore.isAuthenticated());
-  readonly isPaidUser = computed(() => false);
+  readonly isFreeUser = computed(() => this.authStore.isAuthenticated() && !this.subscriptionActive());
+  readonly isPaidUser = computed(() => this.subscriptionActive());
 
   private readonly visibilityMask = '•• ••••••';
+
+  private get canViewAll(): boolean {
+    const pv = this.profile()?.planVisibility;
+    if (!pv) return true;
+    return !!pv.canViewEducation && !!pv.canViewOccupation && !!pv.canViewHoroscope && !!pv.canViewFamily && !!pv.canViewPhotos;
+  }
+
   readonly anyGatedContent = computed(() => {
     const pv = this.profile()?.planVisibility;
     return !pv
@@ -59,24 +80,22 @@ export class ProfileDetail implements OnInit {
       : !pv.canViewEducation || !pv.canViewOccupation || !pv.canViewHoroscope || !pv.canViewFamily;
   });
 
+  readonly planUpgradePrompt = computed(() =>
+    this.subscriptionActive() && !this.canViewAll,
+  );
+
   private myProfileId = 0;
 
   readonly galleryPhotos = computed(() => {
     const p = this.profile();
     const photos = p?.registrationDetails?.photos ?? [];
-    const genderId = p?.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null;
-    const seed = encodeURIComponent((p?.email || p?.id || p?.name || '').toLowerCase());
+    const genderId = p?.genderId ?? (p?.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null);
     const urls: string[] = [];
     for (let i = 0; i < Math.min(photos.length, 3); i++) {
-      const photo = photos[i] as any;
-      const url = photo.fileUrl ?? photo.FileUrl;
-      if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-        urls.push(url);
-      } else {
-        urls.push(`https://i.pravatar.cc/300?u=${seed}-${i}`);
-      }
+      const photo = photos[i] as unknown as { fileUrl?: string; FileUrl?: string };
+      urls.push(resolvePhotoUrl(photo.fileUrl ?? photo.FileUrl, p?.name, genderId));
     }
-    if (urls.length === 0) urls.push(`https://i.pravatar.cc/300?u=${seed}`);
+    if (urls.length === 0) urls.push(getDefaultAvatar(p?.name, genderId));
     return urls.slice(0, 3);
   });
 
@@ -109,7 +128,10 @@ export class ProfileDetail implements OnInit {
           this.field('Weight', personal?.weightKg),
           this.field('Gender', personal?.gender),
           this.field('Religion', personal?.religion),
+          this.field('Caste', personal?.caste),
+          this.field('Sub Caste', personal?.subCast),
           this.field('Blood Group', personal?.bloodGroup),
+          this.field('Spectacles / Lens', `${personal?.spectacles || '-'} / ${personal?.lens || '-'}`),
           this.field('Complexion', personal?.complexion),
           this.field('Diet', personal?.diet),
           this.field('Marital Status', personal?.maritalStatus),
@@ -125,6 +147,8 @@ export class ProfileDetail implements OnInit {
           this.field('Manglik', mask ? this.visibilityMask : horoscope?.manglik),
           this.field('Rashi', mask ? this.visibilityMask : horoscope?.rashi),
           this.field('Nakshatra', mask ? this.visibilityMask : horoscope?.nakshatra),
+          this.field('Charan', mask ? this.visibilityMask : horoscope?.charan),
+          this.field('Gotra / Devak', mask ? this.visibilityMask : horoscope?.devak),
           this.field('Birth Time', mask ? this.visibilityMask : this.timeText(horoscope?.birthHour, horoscope?.birthMinute, horoscope?.birthPeriod)),
           this.field('Birth District', mask ? this.visibilityMask : horoscope?.birthDistrict, 'profileFieldBirthPlace'),
         ].filter((f): f is ProfileField => f !== null),
@@ -144,14 +168,18 @@ export class ProfileDetail implements OnInit {
     });
 
     if (this.flagEnabled('profileSectionContact')) {
+      const unlocked = this.isContactUnlocked();
       sections.push({
         title: 'Address & Contact',
-        fields: [
-          this.field('Address', contact?.residenceAddress || p?.location),
-          this.field('Email', contact?.contactEmail || p?.email),
-          this.field('Mobile', contact?.smsMobile),
-          this.field('Phone', contact?.phonePrimary),
-        ].filter((f): f is ProfileField => f !== null),
+        fields: this.isVisitor() || !unlocked
+          ? []
+          : [
+              this.field('Address', contact?.residenceAddress || p?.location),
+              this.field('Email', contact?.contactEmail || p?.email),
+              this.field('Mobile', contact?.smsMobile),
+              this.field('Secondary Mobile', contact?.mobileSecondary),
+              this.field('Phone', contact?.phonePrimary),
+            ].filter((f): f is ProfileField => f !== null),
       });
     }
 
@@ -164,8 +192,12 @@ export class ProfileDetail implements OnInit {
           this.field('Mother', mask ? this.visibilityMask : family?.motherStatus),
           this.field('Brothers', mask ? this.visibilityMask : family?.brothers),
           this.field('Sisters', mask ? this.visibilityMask : family?.sisters),
+          this.field('Mama', mask ? this.visibilityMask : family?.mamaSurnamePlace),
           this.field('Native District', mask ? this.visibilityMask : family?.nativeDistrict),
           this.field('Native Taluka', mask ? this.visibilityMask : family?.nativeTaluka),
+          this.field('Relatives', mask ? this.visibilityMask : family?.relativesSurnames),
+          this.field('Parents Residing In', mask ? this.visibilityMask : family?.parentsResidentCity),
+          this.field('Family Wealth', mask ? this.visibilityMask : family?.familyWealth),
         ].filter((f): f is ProfileField => f !== null),
       });
     }
@@ -175,10 +207,37 @@ export class ProfileDetail implements OnInit {
         title: 'Expectations',
         fields: [
           this.field('Preferred Cities', expectations?.preferredCities),
-          this.field('Expected Caste', expectations?.expectedCaste),
+          this.field('Age Difference Up To', expectations?.maxAgeDifference),
+          this.field(
+            'Expected Caste',
+            this.resolveExpectation(
+              expectations?.expectedCasteNoBar,
+              expectations?.expectedCasteIds,
+              this.casteMap(),
+              expectations?.expectedCaste,
+            ),
+          ),
           this.field('Expected Height', this.heightText(expectations?.expectedHeightFt, expectations?.expectedHeightIn)),
-          this.field('Expected Education', expectations?.expectedEducation),
-          this.field('Expected Occupation', expectations?.expectedOccupationIncome),
+          this.field(
+            'Expected Education',
+            this.resolveExpectation(
+              expectations?.expectedEducationNoBar,
+              expectations?.expectedEducationIds,
+              this.educationMap(),
+              expectations?.expectedEducation,
+            ),
+          ),
+          this.field(
+            'Expected Occupation',
+            this.resolveExpectation(
+              expectations?.expectedOccupationNoBar,
+              expectations?.expectedOccupationIds,
+              this.occupationMap(),
+              expectations?.expectedOccupationIncome,
+            ),
+          ),
+          this.field('Divorce', expectations?.divorcee),
+          this.field('Mangal', expectations?.expectedManglik),
         ].filter((f): f is ProfileField => f !== null),
       });
     }
@@ -188,44 +247,120 @@ export class ProfileDetail implements OnInit {
 
   ngOnInit(): void {
     const profileId = this.route.snapshot.paramMap.get('id');
-    if (profileId) {
-      this.isLoading.set(true);
-      const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
-      if (!isNaN(numericId)) {
-        this.memberService.getProfileByIdFromApi(numericId, this.authStore.isAuthenticated()).pipe(
-          finalize(() => this.isLoading.set(false)),
-        ).subscribe({
-          next: (record) => {
-            if (record) {
-              this.profile.set(record);
-              this.checkExistingInterest(numericId);
-            } else {
-              this.profile.set(this.memberService.getProfileById(profileId));
-            }
-          },
-          error: () => {
-            this.profile.set(this.memberService.getProfileById(profileId));
-          },
-        });
-      } else {
-        this.profile.set(this.memberService.getProfileById(profileId));
-        this.isLoading.set(false);
-      }
+    if (!profileId) {
+      this.profile.set(null);
+      this.isLoading.set(false);
+      return;
     }
+
+    this.isLoading.set(true);
+    this.profile.set(null);
+
+    const numericId = parseInt(profileId.split('-')[1] || profileId, 10);
+    if (isNaN(numericId)) {
+      this.isLoading.set(false);
+      return;
+    }
+
+    this.loadMasterData();
+
+    const viewProfile = (): void => {
+      this.memberService.getProfileByIdFromApi(numericId, this.authStore.isAuthenticated()).pipe(
+        finalize(() => this.isLoading.set(false)),
+      ).subscribe({
+        next: (record) => {
+          if (record) {
+            this.profile.set(record);
+            this.isContactUnlocked.set(record.isContactUnlocked === true);
+            this.loadCastesForProfile(record);
+            this.afterProfileLoaded();
+          }
+        },
+        error: () => this.profile.set(null),
+      });
+    };
+
+    if (!this.authStore.isAuthenticated()) {
+      viewProfile();
+      return;
+    }
+
+    const userId = this.authStore.userId();
+    if (userId) {
+      this.subscriptionClient.getUserSubscriptionStatus(userId).subscribe({
+        next: (status) => this.subscriptionActive.set((status?.isActive ?? false) && !(status?.isTrial ?? false)),
+      });
+    }
+
+    this.profileClient.getMyProfile().subscribe({
+      next: (myProfile) => {
+        const mp = myProfile as unknown as Record<string, unknown>;
+        this.myProfileId = Number(mp['profileId'] ?? mp['userId'] ?? userId ?? 0);
+        viewProfile();
+      },
+      error: () => viewProfile(),
+    });
+  }
+
+  private loadMasterData(): void {
+    this.masterData.getEducations().subscribe({
+      next: (opts) => this.educationMap.set(new Map(opts.map((o) => [o.id, o.label]))),
+      error: () => { /* noop */ },
+    });
+    this.masterData.getOccupations().subscribe({
+      next: (opts) => this.occupationMap.set(new Map(opts.map((o) => [o.id, o.label]))),
+      error: () => { /* noop */ },
+    });
+  }
+
+  private loadCastesForProfile(record: MemberRecord): void {
+    const religionName = record.registrationDetails?.personal?.religion;
+    if (!religionName) return;
+    this.masterData.getReligions().subscribe({
+      next: (religions) => {
+        const match = religions.find((r) => r.label === religionName);
+        if (!match) return;
+        this.masterData.getCastes(match.id).subscribe({
+          next: (opts) => this.casteMap.set(new Map(opts.map((o) => [o.id, o.label]))),
+          error: () => { /* noop */ },
+        });
+      },
+      error: () => { /* noop */ },
+    });
+  }
+
+  private afterProfileLoaded(): void {
+    const p = this.profile();
+    if (!p) return;
+
+    const targetProfileId = parseInt(p.id, 10);
+    if (!this.authStore.isAuthenticated() || !this.myProfileId || isNaN(targetProfileId)) {
+      return;
+    }
+
+    if (this.myProfileId !== targetProfileId) {
+      this.matchClient.recordProfileView({ viewedProfileId: targetProfileId }).subscribe({ error: () => { /* noop */ } });
+
+      this.matchClient.getShortlistsByProfile(this.myProfileId).subscribe({
+        next: (shortlists) => {
+          if (shortlists) {
+            this.isShortlisted.set(shortlists.some((s) => s.targetProfileId === targetProfileId));
+          }
+        },
+        error: () => { /* noop */ },
+      });
+    }
+
+    this.checkExistingInterest(targetProfileId);
   }
 
   private checkExistingInterest(targetProfileId: number): void {
-    if (!this.authStore.isAuthenticated()) return;
+    if (!this.myProfileId) return;
 
-    const userId = this.authStore.userId();
-    if (!userId || userId === targetProfileId) return;
-
-    this.myProfileId = userId;
-
-    this.matchClient.getInterestRequestsByRequester(userId).subscribe({
-      next: (requests: any[]) => {
+    this.matchClient.getInterestRequestsByRequester(this.myProfileId).subscribe({
+      next: (requests) => {
         if (!requests) return;
-        const existing = requests.find((r: any) => r.targetProfileId === targetProfileId);
+        const existing = requests.find((r) => r.targetProfileId === targetProfileId);
         if (existing) {
           const status = String(existing.status ?? 'Pending');
           this.existingInterestStatus.set(status);
@@ -234,7 +369,7 @@ export class ProfileDetail implements OnInit {
           }
         }
       },
-      error: () => {},
+      error: () => { /* noop */ },
     });
   }
 
@@ -242,39 +377,47 @@ export class ProfileDetail implements OnInit {
     const p = this.profile();
     if (!p) return '';
     const photos = p.registrationDetails?.photos ?? [];
-    const genderId = p.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null;
-    const seed = encodeURIComponent((p.email || p.id || p.name).toLowerCase());
+    const genderId = p.genderId ?? (p.registrationDetails?.personal?.gender ? Number(p.registrationDetails.personal.gender) || null : null);
 
-    if (secondary && photos.length > 1) {
-      const url = (photos[1] as any).fileUrl ?? (photos[1] as any).FileUrl;
-      if (url && (url.startsWith('http://') || url.startsWith('https://'))) return url;
-      return `https://i.pravatar.cc/300?u=${seed}-alt`;
+    const typedPhotos = photos as unknown as Array<{ fileUrl?: string; FileUrl?: string }>;
+    if (secondary && typedPhotos.length > 1) {
+      return resolvePhotoUrl(typedPhotos[1].fileUrl ?? typedPhotos[1].FileUrl, p.name, genderId);
     }
-    if (photos.length > 0) {
-      const url = (photos[0] as any).fileUrl ?? (photos[0] as any).FileUrl;
-      if (url && (url.startsWith('http://') || url.startsWith('https://'))) return url;
+    if (typedPhotos.length > 0) {
+      return resolvePhotoUrl(typedPhotos[0].fileUrl ?? typedPhotos[0].FileUrl, p.name, genderId);
     }
-    return `https://i.pravatar.cc/300?u=${seed}`;
+    return getDefaultAvatar(p.name, genderId);
   }
 
   getMemberId(): string {
     const p = this.profile();
     if (!p) return '';
+    if (p.profileCode) return p.profileCode;
     const seed = this.hashSeed(p);
     const code = 10000 + (seed % 89999);
     return `MBU${code}`;
   }
 
   nextPhoto(): void {
-    if ((this.profile()?.registrationDetails?.photos.length ?? 0) > 1) {
-      this.currentPhotoIndex.update(i => (i + 1) % 2);
+    const count = this.galleryPhotos().length;
+    if (count > 1) {
+      this.currentPhotoIndex.update(i => (i + 1) % count);
     }
   }
 
   prevPhoto(): void {
-    if ((this.profile()?.registrationDetails?.photos.length ?? 0) > 1) {
-      this.currentPhotoIndex.update(i => (i - 1 + 2) % 2);
+    const count = this.galleryPhotos().length;
+    if (count > 1) {
+      this.currentPhotoIndex.update(i => (i - 1 + count) % count);
     }
+  }
+
+  getReligionTag(): string {
+    return this.profile()?.registrationDetails?.personal?.religion ?? '';
+  }
+
+  getCasteTag(): string {
+    return this.profile()?.registrationDetails?.personal?.caste ?? '';
   }
 
   openGallery(): void {
@@ -303,32 +446,11 @@ export class ProfileDetail implements OnInit {
       this.router.navigate(['/register']);
       return;
     }
-    if (this.interestSent() || this.existingInterestStatus()) {
+    if (this.isFreeUser() && !this.existingInterestStatus()) {
+      this.showUpgradePrompt.set(true);
       return;
     }
-
-    const p = this.profile();
-    if (!p) return;
-
-    const targetProfileId = parseInt(p.id, 10);
-    if (isNaN(targetProfileId)) return;
-
-    this.isSendingInterest.set(true);
-
-    this.http.post('/match/InterestRequests', {
-      targetProfileId,
-      message: '',
-    }).pipe(
-      finalize(() => this.isSendingInterest.set(false)),
-    ).subscribe({
-      next: () => {
-        this.interestSent.set(true);
-        this.existingInterestStatus.set('Pending');
-      },
-      error: (err: unknown) => {
-        console.error('Failed to send interest:', err);
-      },
-    });
+    this.sendInterest();
   }
 
   dismissUpgradePrompt(): void {
@@ -337,6 +459,89 @@ export class ProfileDetail implements OnInit {
 
   goToPlans(): void {
     this.router.navigate(['/plans']);
+  }
+
+  private sendInterest(): void {
+    const p = this.profile();
+    if (!p || this.isSendingInterest() || this.interestSent() || this.existingInterestStatus()) return;
+
+    const targetProfileId = parseInt(p.id, 10);
+    if (isNaN(targetProfileId)) return;
+
+    this.isSendingInterest.set(true);
+    this.interestError.set(null);
+    const tenantId = Number(this.tenantService.tenantHeaderId);
+
+    this.http.post('/match/InterestRequests', {
+      targetProfileId,
+      message: '',
+    }, {
+      headers: tenantId ? { 'X-Tenant-Id': String(tenantId) } : {},
+    }).pipe(
+      finalize(() => this.isSendingInterest.set(false)),
+    ).subscribe({
+      next: () => {
+        this.interestSent.set(true);
+        this.existingInterestStatus.set('Pending');
+      },
+      error: (err: unknown) => {
+        this.interestError.set(this.extractErrorMessage(err));
+      },
+    });
+  }
+
+  toggleShortlist(): void {
+    if (this.isVisitor()) {
+      this.router.navigate(['/register']);
+      return;
+    }
+    if (this.isTogglingShortlist()) return;
+
+    const targetProfileId = parseInt(this.profile()?.id ?? '', 10);
+    if (isNaN(targetProfileId) || !this.myProfileId) return;
+
+    this.isTogglingShortlist.set(true);
+    this.shortlistError.set(null);
+
+    if (this.isShortlisted()) {
+      this.matchClient.getShortlistsByProfile(this.myProfileId).pipe(
+        finalize(() => this.isTogglingShortlist.set(false)),
+      ).subscribe({
+        next: (shortlists) => {
+          const existing = shortlists.find(s => s.targetProfileId === targetProfileId);
+          if (existing?.shortlistId) {
+            this.matchClient.deleteShortlist(existing.shortlistId).subscribe({
+              next: () => this.isShortlisted.set(false),
+              error: (err: unknown) => this.shortlistError.set(this.extractErrorMessage(err)),
+            });
+          }
+        },
+        error: (err: unknown) => this.shortlistError.set(this.extractErrorMessage(err)),
+      });
+    } else {
+      this.matchClient.addShortlist({
+        profileId: this.myProfileId,
+        targetProfileId,
+      }).pipe(
+        finalize(() => this.isTogglingShortlist.set(false)),
+      ).subscribe({
+        next: () => this.isShortlisted.set(true),
+        error: (err: unknown) => this.shortlistError.set(this.extractErrorMessage(err)),
+      });
+    }
+  }
+
+  private extractErrorMessage(err: unknown): string {
+    if (err && typeof err === 'object' && 'error' in err) {
+      const httpErr = err as { error: unknown };
+      if (httpErr.error && typeof httpErr.error === 'object' && 'message' in httpErr.error) {
+        return (httpErr.error as { message: string }).message;
+      }
+      if (typeof httpErr.error === 'string') {
+        return httpErr.error;
+      }
+    }
+    return 'Something went wrong. Please try again.';
   }
 
   private field(label: string, value: unknown, flagCode?: string): ProfileField | null {
@@ -359,6 +564,20 @@ export class ProfileDetail implements OnInit {
       return '-';
     }
     return `${hour || '00'}:${minute || '00'} ${period || ''}`.trim();
+  }
+
+  private resolveExpectation(
+    noBar: boolean | undefined,
+    ids: number[] | undefined,
+    map: Map<number, string>,
+    fallback?: string,
+  ): string {
+    if (noBar) return 'No Bar';
+    const resolved = (ids ?? [])
+      .map((id) => map.get(id))
+      .filter((label): label is string => !!label);
+    if (resolved.length > 0) return resolved.join(', ');
+    return fallback || '';
   }
 
   private heightText(ft?: string, inch?: string): string {

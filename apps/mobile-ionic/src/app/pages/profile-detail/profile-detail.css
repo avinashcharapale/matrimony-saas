@@ -1,6 +1,6 @@
 .profile-detail-container {
   padding: 0.75rem;
-  background: #f8f6f3;
+  background: var(--theme-page-background, #f8f6f3);
 }
 
 /* Photo Section */
@@ -71,14 +71,14 @@
 .member-card h1 {
   margin: 0;
   font-size: 1.4rem;
-  color: #1f2230;
+  color: var(--tenant-text, #1f2230);
   font-weight: 600;
 }
 
 .member-id {
   margin: 0.4rem 0 0;
   font-size: 0.75rem;
-  color: #9a5e45;
+  color: var(--tenant-primary, #9a5e45);
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -87,12 +87,31 @@
 .member-meta {
   margin: 0.3rem 0 0.8rem;
   font-size: 0.85rem;
-  color: #6d7285;
+  color: var(--text-muted, #6d7285);
+}
+
+.member-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: var(--theme-accent-soft, color-mix(in srgb, var(--tenant-primary) 10%, #fff));
+  color: var(--tenant-primary, #9a5e45);
+  border: 1px solid var(--border-strong, color-mix(in srgb, var(--tenant-primary) 40%, #fff));
 }
 
 .connect-btn {
   width: 100%;
-  background: #9a5e45;
+  background: var(--tenant-primary, #9a5e45);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -104,7 +123,7 @@
 }
 
 .connect-btn:active {
-  background: #7d4a37;
+  background: var(--accent-strong, #7d4a37);
 }
 
 /* Detail Sections */
@@ -119,11 +138,11 @@
 .detail-section h2 {
   margin: 0 0 0.7rem;
   font-size: 0.85rem;
-  color: #3d3d3d;
+  color: var(--tenant-text, #3d3d3d);
   font-weight: 700;
   letter-spacing: 0.4px;
   text-transform: uppercase;
-  border-bottom: 1px solid #f0ede8;
+  border-bottom: 1px solid var(--border-soft, #f0ede8);
   padding-bottom: 0.6rem;
 }
 
@@ -141,7 +160,7 @@
 
 .field-label {
   font-size: 0.68rem;
-  color: #9a8f86;
+  color: var(--text-muted, #9a8f86);
   font-weight: 600;
   letter-spacing: 0.2px;
   text-transform: uppercase;
@@ -149,7 +168,7 @@
 
 .field-value {
   font-size: 0.8rem;
-  color: #1f2230;
+  color: var(--tenant-text, #1f2230);
   font-weight: 500;
   word-break: break-word;
 }
@@ -319,7 +338,7 @@
 }
 
 .dot.active {
-  background: #9a5e45;
+  background: var(--tenant-primary, #9a5e45);
 }
 
 .dot:active:not(.active) {
@@ -343,7 +362,7 @@
 .gate-message {
   margin: 0;
   font-size: 0.8rem;
-  color: #9a8f86;
+  color: var(--text-muted, #9a8f86);
   text-align: center;
   font-style: italic;
   padding: 0.5rem 0;
@@ -392,7 +411,7 @@
   background: none;
   border: none;
   font-size: 1.2rem;
-  color: #9a8f86;
+  color: var(--text-muted, #9a8f86);
   cursor: pointer;
   padding: 0.25rem;
   line-height: 1;
@@ -401,19 +420,19 @@
 .upgrade-content h2 {
   margin: 0 0 0.75rem;
   font-size: 1.2rem;
-  color: #1f2230;
+  color: var(--tenant-text, #1f2230);
 }
 
 .upgrade-content p {
   margin: 0 0 1.5rem;
   font-size: 0.9rem;
-  color: #6d7285;
+  color: var(--text-muted, #6d7285);
   line-height: 1.5;
 }
 
 .upgrade-cta {
   display: block;
-  background: #9a5e45;
+  background: var(--tenant-primary, #9a5e45);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -427,16 +446,98 @@
 }
 
 .upgrade-cta:active {
-  background: #7d4a37;
+  background: var(--accent-strong, #7d4a37);
 }
 
 .upgrade-cancel {
   display: block;
   background: none;
   border: none;
-  color: #9a8f86;
+  color: var(--text-muted, #9a8f86);
   font-size: 0.85rem;
   cursor: pointer;
   padding: 0.5rem;
   width: 100%;
+}
+
+/* Shortlist Button */
+.shortlist-btn {
+  width: 100%;
+  background: #fff;
+  color: var(--tenant-primary, #9a5e45);
+  border: 1px solid var(--tenant-primary, #9a5e45);
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.shortlist-btn:active:not(:disabled) {
+  background: #f7efe9;
+}
+
+.shortlist-btn.active {
+  background: var(--tenant-primary, #9a5e45);
+  color: #fff;
+}
+
+.shortlist-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.action-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  color: var(--theme-danger, #c0392b);
+  text-align: center;
+}
+
+.unlock-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted, #9a8f86);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Plan Upgrade Banner */
+.plan-upgrade-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fdf3e7;
+  border: 1px solid #e8d5bf;
+  text-align: center;
+}
+
+.plan-upgrade-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--tenant-primary, #9a5e45);
+}
+
+.plan-upgrade-text {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6d7285);
+}
+
+.plan-upgrade-cta {
+  background: var(--tenant-primary, #9a5e45);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.25rem;
+}
+
+.plan-upgrade-cta:active {
+  background: var(--accent-strong, #7d4a37);
 }

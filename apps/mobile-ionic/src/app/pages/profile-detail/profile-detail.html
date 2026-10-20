@@ -14,16 +14,19 @@
       <!-- Photo Section -->
       <div class="photo-section">
         <img 
-          [src]="currentPhotoIndex() === 0 ? getProfilePhoto() : getProfilePhoto(true)" 
+          [src]="galleryPhotos()[currentPhotoIndex()]" 
           [alt]="profile()!.name" 
           class="profile-photo"
+          role="button"
+          tabindex="0"
           (click)="openGallery()"
+          (keyup.enter)="openGallery()"
           title="Click to view gallery"
         />
-        @if ((profile()!.registrationDetails?.photos?.length || 0) > 1) {
+        @if (galleryPhotos().length > 1) {
         <div class="photo-nav">
           <button class="photo-btn prev" (click)="prevPhoto()">‹</button>
-          <span class="photo-indicator">{{ currentPhotoIndex() + 1 }}/2</span>
+          <span class="photo-indicator">{{ currentPhotoIndex() + 1 }}/{{ galleryPhotos().length }}</span>
           <button class="photo-btn next" (click)="nextPhoto()">›</button>
         </div>
         }
@@ -34,6 +37,12 @@
         <h1>{{ profile()!.name }}</h1>
         <p class="member-id">{{ getMemberId() }}</p>
         <p class="member-meta">{{ profile()!.age }} years • {{ profile()!.location }}</p>
+        @if (getReligionTag() || getCasteTag()) {
+        <div class="member-tags">
+          @if (getReligionTag()) { <span class="tag">{{ getReligionTag() }}</span> }
+          @if (getCasteTag()) { <span class="tag">{{ getCasteTag() }}</span> }
+        </div>
+        }
         @if (flagEnabled('profileConnectButton')) {
         <button class="connect-btn" [class.sent]="interestSent() || (existingInterestStatus() === 'Pending')" [class.declined]="existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" [disabled]="isSendingInterest() || existingInterestStatus() === 'Declined' || existingInterestStatus() === 'Withdrawn'" (click)="onConnect()">
           @if (isVisitor()) {
@@ -57,19 +66,50 @@
           }
         </button>
         }
+        @if (interestError()) {
+        <p class="action-error">{{ interestError() }}</p>
+        }
+
+        @if (!isVisitor() && flagEnabled('profileShortlistButton')) {
+        <button class="shortlist-btn" [class.active]="isShortlisted()" [disabled]="isTogglingShortlist()" (click)="toggleShortlist()">
+          @if (isTogglingShortlist()) {
+            Saving...
+          } @else if (isShortlisted()) {
+            &#9733; Shortlisted
+          } @else {
+            &#9734; Save to Shortlist
+          }
+        </button>
+        @if (shortlistError()) {
+        <p class="action-error">{{ shortlistError() }}</p>
+        }
+        }
+
+        @if (!isVisitor() && !isContactUnlocked()) {
+        <p class="unlock-hint">Subscribe to view contact details & full profile.</p>
+        }
       </div>
 
       <!-- Sections -->
-      @if (anyGatedContent()) {
-      <div class="detail-section gate-banner" (click)="showUpgradePrompt.set(true)">
+      @if (anyGatedContent() && !planUpgradePrompt()) {
+      <div class="detail-section gate-banner" role="button" tabindex="0" (click)="showUpgradePrompt.set(true)" (keyup.enter)="showUpgradePrompt.set(true)">
         <p class="gate-message">Some details are hidden on this plan. Upgrade to view them all.</p>
       </div>
       }
+
+      @if (planUpgradePrompt()) {
+      <div class="detail-section plan-upgrade-banner">
+        <span class="plan-upgrade-title">&#128274; Restricted View</span>
+        <span class="plan-upgrade-text">Upgrade your plan to unlock full profile access.</span>
+        <button class="plan-upgrade-cta" (click)="goToPlans()">View Plans</button>
+      </div>
+      }
+
       @for (section of sections(); track section.title) {
-      @if (section.title === 'Address & Contact' && isVisitor()) {
+      @if (section.title === 'Address & Contact' && section.fields.length === 0) {
       <div class="detail-section contact-gated">
         <h2>{{ section.title }}</h2>
-        <p class="gate-message">Register to view contact details</p>
+        <p class="gate-message">{{ isVisitor() ? 'Register to view contact details' : 'Subscribe to unlock contact details' }}</p>
       </div>
       } @else {
       <div class="detail-section">
@@ -89,8 +129,8 @@
 
     <!-- Gallery Modal -->
     @if (isGalleryOpen()) {
-    <div class="mobile-gallery-overlay" (click)="closeGallery()">
-      <div class="mobile-gallery-modal" (click)="$event.stopPropagation()">
+    <div class="mobile-gallery-overlay" role="button" tabindex="0" (click)="closeGallery()" (keyup.enter)="closeGallery()">
+      <div class="mobile-gallery-modal" role="dialog" tabindex="0" (click)="$event.stopPropagation()" (keyup.enter)="$event.stopPropagation()">
         <button class="gallery-close-btn" (click)="closeGallery()">✕</button>
         
         <div class="mobile-gallery-container">
@@ -112,6 +152,7 @@
             <button 
               class="dot" 
               [class.active]="i === currentGalleryIndex()"
+              [attr.aria-label]="'View photo ' + (i + 1)"
               (click)="goToGalleryPhoto($index)"
             ></button>
             }
@@ -135,8 +176,8 @@
 
     <!-- Upgrade Prompt Modal -->
     @if (showUpgradePrompt()) {
-    <div class="upgrade-overlay" (click)="dismissUpgradePrompt()">
-      <div class="upgrade-modal" (click)="$event.stopPropagation()">
+    <div class="upgrade-overlay" role="button" tabindex="0" (click)="dismissUpgradePrompt()" (keyup.enter)="dismissUpgradePrompt()">
+      <div class="upgrade-modal" role="dialog" tabindex="0" (click)="$event.stopPropagation()" (keyup.enter)="$event.stopPropagation()">
         <button class="upgrade-close" (click)="dismissUpgradePrompt()">&#x2715;</button>
         <div class="upgrade-content">
           <h2>Upgrade to Connect</h2>

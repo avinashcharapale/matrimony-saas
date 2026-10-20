@@ -1,0 +1,46 @@
+<ion-menu contentId="main-content" type="overlay" class="app-menu">
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="menu-toolbar">
+      <ion-title>{{ tenant.displayName }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button menuClose>
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="menu-content">
+    <a routerLink="/home" class="menu-brand" menuClose>
+      @if (tenant.logoUrl) {
+      <img class="brand-logo" [src]="tenant.logoUrl" [alt]="tenant.displayName + ' logo'" />
+      } @else {
+      <span class="brand-mark">{{ tenant.logoEmoji || '&#127804;' }}</span>
+      }
+      <span class="brand-name">{{ tenant.displayName }}</span>
+    </a>
+
+    <div class="menu-user">
+      <img class="menu-avatar" [src]="userPhotoUrl() || defaultAvatar" alt="" />
+      <div class="menu-user-info">
+        <strong>{{ userName() || 'Member' }}</strong>
+        <p>{{ userOccupation() || 'Welcome back' }}</p>
+      </div>
+    </div>
+
+    <nav class="menu-nav">
+      @for (item of navItems; track item.path) {
+        @if (flagEnabled(item.flag)) {
+        <ion-item button detail="false" lines="none" [routerLink]="item.path" routerLinkActive="active" menuClose>
+          <ion-icon slot="start" [name]="item.icon"></ion-icon>
+          <ion-label>{{ item.label }}</ion-label>
+        </ion-item>
+        }
+      }
+      <ion-item button detail="false" lines="none" class="menu-logout" (click)="logout()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        <ion-label>Logout</ion-label>
+      </ion-item>
+    </nav>
+  </ion-content>
+</ion-menu>

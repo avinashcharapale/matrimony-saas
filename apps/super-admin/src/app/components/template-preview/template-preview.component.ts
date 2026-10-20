@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, Output, EventEmitter, inject, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   APPROVED_TEMPLATES,
@@ -125,31 +125,45 @@ const ICONS: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-template-preview',
   standalone: true,
+  styles: [`:host { display: block; width: 100%; }`],
   template: `
-    <div class="tpl-root tpl-wrap" [attr.data-tpl]="tpl.id" [style]="hostStyle">
+    <div class="tpl-root tpl-wrap" [class.builder-mode]="builderMode" [attr.data-tpl]="tpl.id" [style]="hostStyle">
       @for (section of sections; track section) {
-        @switch (section) {
-          @case ('nav') {
-            <div class="tpl-nav" [style]="navDark ? 'background:var(--tp-ink)' : ''">
-              <div class="nav-brand">
-                <span class="nav-logo">{{ brandLetter }}</span>
-                <span>{{ brandName }}</span>
-              </div>
-              <div class="nav-links">
-                <a href="#">Home</a>
-                <a href="#">Search</a>
-                <a href="#">How It Works</a>
-                <a href="#">Plans</a>
-                <a href="#">Contact</a>
-              </div>
-              <div class="nav-right">
-                <a class="nav-login" href="#" [style]="navDark ? 'color:var(--tp-od)' : 'color:var(--tp-p)'">Login</a>
-                <a class="tbtn btn-{{ tpl.btn }} btn-sm" href="#">Register Free</a>
-              </div>
+        <div class="section-wrap"
+             [class.section-selected]="isSectionSelected(section)"
+             [class.section-hidden]="isSectionHidden(section)"
+             [class.section-hover]="builderMode"
+             (click)="onSectionClick(section, $event)">
+          @if (builderMode) {
+            <div class="section-label">
+              <span class="section-label__text">{{ section }}</span>
+              @if (isSectionHidden(section)) {
+                <span class="section-label__badge">Hidden</span>
+              }
             </div>
           }
-          @case ('hero') {
-            @switch (tpl.hero) {
+          @switch (section) {
+            @case ('nav') {
+              <div class="tpl-nav" [style]="navDark ? 'background:var(--tp-ink)' : ''">
+                <div class="nav-brand">
+                  <span class="nav-logo">{{ brandLetter }}</span>
+                  <span>{{ brandName }}</span>
+                </div>
+                <div class="nav-links">
+                  <a href="#">Home</a>
+                  <a href="#">Search</a>
+                  <a href="#">How It Works</a>
+                  <a href="#">Plans</a>
+                  <a href="#">Contact</a>
+                </div>
+                <div class="nav-right">
+                  <a class="nav-login" href="#" [style]="navDark ? 'color:var(--tp-od)' : 'color:var(--tp-p)'">Login</a>
+                  <a class="tbtn btn-{{ tpl.btn }} btn-sm" href="#">Register Free</a>
+                </div>
+              </div>
+            }
+            @case ('hero') {
+              @switch (tpl.hero) {
               @case ('frame') {
                 <header class="hero tsec {{ heroDark ? 'dark' : '' }}">
                   <div class="hero-frame {{ heroDark ? '' : 'on-light' }}">
@@ -875,6 +889,7 @@ const ICONS: Record<string, string> = {
             </footer>
           }
         }
+        </div>
       }
     </div>
   `,
@@ -884,6 +899,11 @@ export class TemplatePreviewComponent implements OnInit {
 
   @Input({ required: true }) tpl!: LandingTemplate;
   @Input() overrides: TemplateOverrides = {};
+  @Input() selectedSection: string | null = null;
+  @Input() hiddenSections: string[] = [];
+  @Input() sectionConfigs: Record<string, Record<string, any>> = {};
+  @Input() builderMode = false;
+  @Output() sectionClicked = new EventEmitter<string>();
 
   ngOnInit(): void {
     this.loadTemplateFonts();
@@ -904,6 +924,20 @@ export class TemplatePreviewComponent implements OnInit {
 
   get sections(): string[] {
     return ['nav', 'hero', ...this.tpl.order, 'footer'];
+  }
+
+  isSectionSelected(key: string): boolean {
+    return this.builderMode && this.selectedSection === key;
+  }
+
+  isSectionHidden(key: string): boolean {
+    return this.builderMode && this.hiddenSections.includes(key);
+  }
+
+  onSectionClick(key: string, event: Event): void {
+    if (!this.builderMode) return;
+    event.stopPropagation();
+    this.sectionClicked.emit(key);
   }
 
   get brandName(): string {

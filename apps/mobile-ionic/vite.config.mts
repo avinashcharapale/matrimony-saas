@@ -8,6 +8,9 @@ export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/mobile-ionic',
   plugins: [angular(), nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
+  optimizeDeps: {
+    exclude: ['@ionic/core', 'ionicons'],
+  },
   server: {
     proxy: {
       '/identity': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
@@ -17,6 +20,7 @@ export default defineConfig(() => ({
       '/match': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
       '/chat': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
       '/gateway': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
+      '/api': { target: 'http://127.0.0.1:8000', secure: false, changeOrigin: true },
     },
   },
   test: {
@@ -27,6 +31,11 @@ export default defineConfig(() => ({
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     setupFiles: ['src/test-setup.ts'],
     reporters: ['default'],
+    server: {
+      deps: {
+        inline: [/@ionic\/angular/, /@ionic\/core/, /ionicons/],
+      },
+    },
     coverage: {
       reportsDirectory: '../../coverage/apps/mobile-ionic',
       provider: 'v8' as const,

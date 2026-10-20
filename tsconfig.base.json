@@ -19,6 +19,9 @@
       "@org/data-access-tenant": ["libs/data-access/tenant/src/index.ts"],
       "@org/data-access-auth": ["libs/data-access/auth/src/index.ts"],
       "@org/data-access-profile": ["libs/data-access/profile/src/index.ts"],
+      "@org/data-access-registration": [
+        "libs/data-access/registration/src/index.ts"
+      ],
       "@org/data-access-subscription": [
         "libs/data-access/subscription/src/index.ts"
       ],

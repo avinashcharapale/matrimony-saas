@@ -1,127 +1,191 @@
 <ion-page>
-  <ion-content>
+  <ion-header class="ion-no-border">
     <ion-toolbar class="mobile-toolbar">
       <ion-buttons slot="start">
-        <ion-back-button defaultHref="/login"></ion-back-button>
+        <ion-menu-button></ion-menu-button>
       </ion-buttons>
       <ion-title>{{ tenant.displayName }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button routerLink="/settings">
+          <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
+  </ion-header>
 
+  <ion-content>
     <section class="mobile-shell">
-      <article class="hero-card">
-        <p class="eyebrow">Trusted for 26+ years</p>
-        <h1>{{ heroText.heading }}</h1>
-        <p>{{ heroText.subheading }}</p>
-        <div class="hero-visual">👫</div>
-        <div class="hero-actions">
-          <a routerLink="/login" class="btn primary">Register Now - Free</a>
-          <a routerLink="/login" class="btn ghost">Browse Profiles</a>
+      <article class="greeting-card">
+        <img class="greeting-avatar" [src]="userPhotoUrl()" alt="" />
+        <div class="greeting-body">
+          <p class="eyebrow">{{ currentDate() }}</p>
+          <h1>Welcome back, {{ userFirstName() || userName() || 'Member' }}</h1>
+          <p>{{ userOccupation() || 'Complete your profile to get better matches.' }}</p>
         </div>
       </article>
 
-      <article class="stats-grid">
-        @for (stat of stats; track stat.label) {
-        <div class="stat-tile">
-          <h3>{{ stat.value }}</h3>
-          <p>{{ stat.label }}</p>
+      @if (subscriptionPlanName()) {
+      <article class="plan-banner" [class.plan-active]="subscriptionActive()">
+        <span class="plan-icon">&#128142;</span>
+        <div class="plan-body">
+          <strong>{{ subscriptionPlanName() }}</strong>
+          <p>{{ subscriptionActive() ? 'Active plan' : 'Plan inactive' }}</p>
+        </div>
+        <a routerLink="/plans" class="plan-link">Manage</a>
+      </article>
+      } @else {
+      <article class="plan-banner">
+        <span class="plan-icon">&#128142;</span>
+        <div class="plan-body">
+          <strong>No active plan</strong>
+          <p>Subscribe to unlock contact details.</p>
+        </div>
+        <a routerLink="/plans" class="plan-link">View Plans</a>
+      </article>
+      }
+
+      @if (quickStats().length > 0) {
+      <section class="stats-grid">
+        @for (card of quickStats(); track card.label) {
+        <div class="stat-tile" [class]="'stat-tile ' + card.tone">
+          <span class="stat-icon">{{ card.icon }}</span>
+          <h3>{{ card.value }}</h3>
+          <p>{{ card.label }}</p>
+          @if (card.hint) {
+          <span class="stat-hint">{{ card.hint }}</span>
+          }
+        </div>
+        }
+      </section>
+      }
+
+      <nav class="quick-nav">
+        <a routerLink="/profiles" class="nav-tile"><span>&#128269;</span>Search</a>
+        <a routerLink="/interests" class="nav-tile"><span>&#128140;</span>Interests</a>
+        <a routerLink="/shortlists" class="nav-tile"><span>&#11088;</span>Shortlists</a>
+        <a routerLink="/messages" class="nav-tile"><span>&#9993;</span>Messages</a>
+      </nav>
+
+      <article class="panel">
+        <div class="panel-title">
+          <h3>Top Matches</h3>
+          <a routerLink="/profiles">View all</a>
+        </div>
+        @if (topMatches().length > 0) {
+        <div class="list">
+          @for (match of topMatches(); track match.id) {
+          <a class="row" [routerLink]="['/profiles', match.profileId]">
+            <img class="avatar" [src]="match.photoUrl || defaultAvatar" alt="" />
+            <div class="row-main">
+              <strong>{{ match.name }}</strong>
+              <p>{{ match.detail || 'View profile' }}</p>
+            </div>
+            @if (match.score > 0) {
+            <div class="row-side">
+              <strong>{{ match.score }}%</strong>
+              <span class="badge">{{ match.badge }}</span>
+            </div>
+            }
+          </a>
+          }
+        </div>
+        } @else {
+        <div class="empty">
+          <p>No matches yet.</p>
+          <a routerLink="/profiles" class="empty-cta">Search Profiles</a>
         </div>
         }
       </article>
 
-      <article class="stack-card">
-        <p class="section-label">Why Choose Us</p>
-        <h2>Why Choose {{ tenant.displayName }}?</h2>
-        <ul>
-          @for (item of whyUs; track item) {
-          <li>{{ item }}</li>
+      <article class="panel">
+        <div class="panel-title">
+          <h3>Interests Received</h3>
+          <a routerLink="/interests">View all</a>
+        </div>
+        @if (interests().length > 0) {
+        <div class="list">
+          @for (item of interests(); track item.id) {
+          <a class="row" [routerLink]="['/profiles', item.profileId]">
+            <img class="avatar sm" [src]="item.photoUrl || defaultAvatar" alt="" />
+            <div class="row-main">
+              <strong>{{ item.name }}</strong>
+              @if (item.status) {
+              <span class="status-badge" [class]="'status-badge ' + (item.status | lowercase)">{{ item.status }}</span>
+              }
+            </div>
+          </a>
           }
-        </ul>
+        </div>
+        } @else {
+        <div class="empty"><p>No interests received yet.</p></div>
+        }
       </article>
 
-      <article class="stack-card">
-        <p class="section-label">How It Works</p>
-        @for (step of howItWorks; track step.title; let idx = $index) {
-        <div class="step-item">
-          <span>{{ idx + 1 }}</span>
-          <div>
-            <h3>{{ step.title }}</h3>
-            <p>{{ step.description }}</p>
-          </div>
+      <article class="panel">
+        <div class="panel-title">
+          <h3>Recently Shortlisted</h3>
+          <a routerLink="/shortlists">View all</a>
+        </div>
+        @if (recentlyShortlisted().length > 0) {
+        <div class="list">
+          @for (item of recentlyShortlisted(); track item.profileId) {
+          <a class="row" [routerLink]="['/profiles', item.profileId]">
+            <img class="avatar sm" [src]="item.photoUrl || defaultAvatar" alt="" />
+            <div class="row-main">
+              <strong>{{ item.name }}</strong>
+              <p>{{ item.detail }}</p>
+            </div>
+          </a>
+          }
+        </div>
+        } @else {
+        <div class="empty"><p>No saved profiles yet.</p></div>
+        }
+      </article>
+
+      <article class="panel">
+        <div class="panel-title">
+          <h3>Horoscope</h3>
+          <a routerLink="/my-profile">Full report</a>
+        </div>
+        @if (horoscopeTags().length > 0) {
+        <div class="tag-row">
+          @for (tag of horoscopeTags(); track tag) {
+          <span class="tag">{{ tag }}</span>
+          }
+        </div>
+        } @else {
+        <div class="empty">
+          <p>Add horoscope details to improve matching.</p>
+          <a routerLink="/my-profile/edit" class="empty-cta">Add Details</a>
         </div>
         }
       </article>
 
-      <article class="stack-card">
-        <p class="section-label">Recently Joined</p>
-        <h2>Recently Added Profiles</h2>
-        @for (profile of profiles; track profile.name) {
-        <div class="profile-card">
-          <div class="avatar">{{ profile.icon }}</div>
-          <div>
-            <h3>{{ profile.name }}</h3>
-            <p>{{ profile.occupation }} - {{ profile.age }} yrs</p>
-            <p>{{ profile.location }}</p>
-          </div>
+      <article class="panel">
+        <div class="panel-title">
+          <h3>Messages</h3>
+          <a routerLink="/messages">Open</a>
         </div>
+        @if (messages().length > 0) {
+        <div class="list">
+          @for (item of messages(); track item.conversationId ?? item.name) {
+          <a class="row" routerLink="/messages">
+            <img class="avatar sm" [src]="item.photoUrl || defaultAvatar" alt="" />
+            <div class="row-main">
+              <div class="row-head">
+                <strong>{{ item.name }}</strong>
+                @if (item.unread) { <span class="unread">{{ item.unread }}</span> }
+              </div>
+              <p>{{ item.text || 'No messages yet' }}</p>
+            </div>
+          </a>
+          }
+        </div>
+        } @else {
+        <div class="empty"><p>No conversations yet.</p></div>
         }
       </article>
-
-      <article class="stack-card">
-        <p class="section-label">Why Trusted</p>
-        <h2>Best Maratha Matrimony</h2>
-        <div class="trust-grid">
-          @for (card of trustCards; track card.title) {
-          <div class="trust-card">
-            <span>{{ card.icon }}</span>
-            <h3>{{ card.value }}</h3>
-            <p>{{ card.title }}</p>
-          </div>
-          }
-        </div>
-      </article>
-
-      <article class="cta-card">
-        <h2>{{ ctaText.heading }}</h2>
-        <p>{{ ctaText.subheading }}</p>
-        <div class="hero-actions">
-          <a routerLink="/login" class="btn light">Register</a>
-          <a routerLink="/login" class="btn outline">Login</a>
-        </div>
-      </article>
-
-      <footer class="mobile-footer">
-        <h3>{{ tenant.displayName }}</h3>
-        <p>Trusted Vadhhu Var Suchak Kendra for the Maratha community.</p>
-
-        <div class="footer-block">
-          <h4>Enquiry & Support</h4>
-          @for (contact of tenant.contacts ?? []; track contact.value) {
-            @if (contact.type === 'Phone' || contact.type === 'WhatsApp') {
-              <p>📞 {{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
-            }
-            @if (contact.type === 'Email') {
-              <p>✉️ {{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
-            }
-          }
-        </div>
-
-        <div class="footer-block">
-          <h4>Address</h4>
-          @for (contact of tenant.contacts ?? []; track contact.value) {
-            @if (contact.type === 'Address') {
-              <p>{{ contact.label ? contact.label + ': ' : '' }}{{ contact.value }}</p>
-            }
-          }
-        </div>
-
-        <div class="footer-links">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms & Conditions</a>
-          <a href="#">Refund Policy</a>
-        </div>
-
-        <p class="copyright">{{ tenant.copyrightText }}</p>
-      </footer>
     </section>
   </ion-content>
 </ion-page>

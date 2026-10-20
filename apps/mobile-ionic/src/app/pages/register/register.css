@@ -1,7 +1,25 @@
 .shell {
   padding: 1rem;
   display: grid;
-  gap: 0.8rem;
+  gap: 1rem;
+}
+
+.step-panel {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 0.5rem;
+}
+
+.step-panel h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #7b321e;
+}
+
+.sub-heading {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: #7b321e;
 }
 
 .intro {
@@ -10,19 +28,73 @@
   line-height: 1.45;
 }
 
-.section-card {
-  display: grid;
-  gap: 0.75rem;
-  padding: 1rem;
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 244, 238, 0.98));
-  box-shadow: 0 18px 40px rgba(92, 52, 24, 0.08);
+.stepper {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  padding: 0.25rem 0 0.5rem;
 }
 
-.section-card h3 {
-  margin: 0;
-  font-size: 1rem;
+.step-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 3.5rem;
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #8a93a5;
+  background: #f1e9e1;
+  border: 2px solid #e6d8ca;
+  transition: all 0.2s ease;
+}
+
+.step-dot.active .step-num {
+  color: #fff;
+  background: var(--tenant-primary, #8a3a1f);
+  border-color: var(--tenant-primary, #8a3a1f);
+  transform: scale(1.08);
+}
+
+.step-dot.done .step-num {
+  color: var(--tenant-primary, #8a3a1f);
+  border-color: var(--tenant-primary, #8a3a1f);
+}
+
+.step-label {
+  font-size: 0.6rem;
+  color: #8a93a5;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.step-dot.active .step-label {
   color: #7b321e;
+  font-weight: 700;
+}
+
+.step-progress {
+  height: 5px;
+  border-radius: 4px;
+  background: #f1e9e1;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--tenant-primary, #8a3a1f), #b0482a);
+  transition: width 0.3s ease;
 }
 
 .double-grid,
@@ -31,10 +103,18 @@
   gap: 0.75rem;
 }
 
-.verification-code {
-  margin: 0;
-  font-weight: 700;
-  color: #7b321e;
+.captcha-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.captcha-img {
+  display: block;
+  height: 3.4rem;
+  border-radius: 8px;
+  border: 1px solid #e6d8ca;
+  background: #f9f5f0;
 }
 
 .upload-field {
@@ -47,13 +127,39 @@
   font: inherit;
 }
 
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
 .msg {
   margin: 0;
   color: var(--tenant-primary);
+  font-weight: 600;
 }
 
 .msg.error {
   color: #b42318;
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.loading-overlay p {
+  margin: 0;
+  color: #5d6474;
 }
 
 @media (min-width: 720px) {

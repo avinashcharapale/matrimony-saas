@@ -22,9 +22,14 @@ import {
   correlationInterceptor,
   loadingInterceptor,
   errorInterceptor,
+  TENANT_HOST_OVERRIDE,
+  SIGNALR_BASE_URL,
 } from '@org/core';
+import { baseUrlInterceptor } from './interceptors/base-url.interceptor';
+import { environment } from '../environments/environment';
 import { TenantService } from './services/tenant.service';
 import { LocaleService } from '@org/i18n';
+import { TENANT_CONTEXT, TenantContextFactory } from '@org/data-access-registration';
 
 function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, '/assets/i18n/', '.json');
@@ -42,8 +47,12 @@ export const appConfig: ApplicationConfig = {
         correlationInterceptor,
         tenantInterceptor,
         authInterceptor,
+        // Rewrites relative API URLs to the native API origin — must stay last.
+        baseUrlInterceptor,
       ]),
     ),
+    { provide: TENANT_HOST_OVERRIDE, useValue: environment.tenantHost ?? '' },
+    { provide: SIGNALR_BASE_URL, useValue: environment.apiBaseUrl ?? '' },
     ...(TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -57,5 +66,13 @@ export const appConfig: ApplicationConfig = {
       const locale = inject(LocaleService);
       locale.initialize(tenant.tenant);
     }),
+    {
+      provide: TENANT_CONTEXT,
+      useFactory: (tenant: TenantService): TenantContextFactory => () => ({
+        tenantId: (tenant.tenantHeaderId ?? tenant.tenant.id ?? 'default') as string,
+        tenantHeaderId: tenant.tenantHeaderId,
+      }),
+      deps: [TenantService],
+    },
   ],
 };

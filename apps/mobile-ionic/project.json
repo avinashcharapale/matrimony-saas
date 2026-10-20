@@ -17,11 +17,22 @@
           {
             "glob": "**/*",
             "input": "apps/mobile-ionic/public"
+          },
+          {
+            "glob": "**/*.json",
+            "input": "libs/shared/i18n/src/assets/i18n",
+            "output": "/assets/i18n"
+          },
+          {
+            "glob": "**/*.html",
+            "input": "libs/shared/landing-templates/designs",
+            "output": "/assets/designs"
           }
         ],
         "styles": [
           "apps/mobile-ionic/src/styles.css",
-          "libs/shared/theme/src/themes/theme-base.css"
+          "libs/shared/theme/src/themes/theme-base.css",
+          "libs/shared/landing-templates/src/themes/theme-templates.css"
         ]
       },
       "configurations": {
@@ -29,8 +40,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "900kb",
-              "maximumError": "1mb"
+              "maximumWarning": "1.2mb",
+              "maximumError": "1.5mb"
             },
             {
               "type": "anyComponentStyle",
@@ -38,12 +49,24 @@
               "maximumError": "16kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/mobile-ionic/src/environments/environment.ts",
+              "with": "apps/mobile-ionic/src/environments/environment.prod.ts"
+            }
+          ]
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/mobile-ionic/src/environments/environment.ts",
+              "with": "apps/mobile-ionic/src/environments/environment.development.ts"
+            }
+          ]
         }
       },
       "defaultConfiguration": "production"

@@ -8,13 +8,9 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="plans-header">
-    <h1>Upgrade to Connect</h1>
-    <p>Unlock premium features to find your perfect match</p>
-  </div>
-
   @if (checkoutResult()) {
-  <div class="checkout-success">
+  <div class="checkout-success" [class.pending]="activationState() === 'confirming'">
+    @if (activationState() === 'activated') {
     <div class="success-icon">&#x2713;</div>
     <h2>Payment Successful!</h2>
     <p class="success-detail">
@@ -25,9 +21,91 @@
       to {{ checkoutResult()!.endDate | date:'mediumDate' }}
     </p>
     <p class="success-amount">Amount paid: {{ formatPrice(checkoutResult()!.amount) }}</p>
-    <ion-button expand="block" color="primary" (click)="goBack()">Browse Profiles</ion-button>
+    <ion-button expand="block" color="primary" (click)="goToProfiles()">Browse Profiles</ion-button>
+    } @else if (activationState() === 'failed') {
+    <div class="success-icon failed">&#x2717;</div>
+    <h2>Payment Failed</h2>
+    <p class="success-detail">We could not confirm your payment. If money was deducted, it will be refunded.</p>
+    <ion-button expand="block" color="primary" (click)="goToProfiles()">Browse Profiles</ion-button>
+    } @else {
+    <ion-spinner name="crescent"></ion-spinner>
+    <h2>Confirming Payment</h2>
+    <p class="success-detail"><strong>{{ checkoutResult()!.planName }}</strong></p>
+    <p class="success-amount">Amount paid: {{ formatPrice(checkoutResult()!.amount) }}</p>
+    @if (activationState() === 'timeout') {
+    <p class="success-dates">This is taking longer than usual. We will confirm your payment shortly.</p>
+    }
+    }
+  </div>
+  } @else if (showMethodChooser()) {
+  <div class="checkout-success chooser">
+    <h2>Choose Payment Method</h2>
+    <p class="success-detail">How would you like to pay?</p>
+    <div class="chooser-buttons">
+      <ion-button expand="block" color="primary" (click)="chooseOnline()">Pay Online</ion-button>
+      <ion-button expand="block" color="secondary" (click)="chooseOffline()">Pay Offline</ion-button>
+    </div>
+    <ion-button fill="clear" expand="block" (click)="cancelChooser()">Cancel</ion-button>
+  </div>
+  } @else if (showOfflineChooser()) {
+  <div class="checkout-success chooser">
+    <h2>Choose Offline Method</h2>
+    <p class="success-detail">Select how you will make the payment.</p>
+    <div class="chooser-buttons">
+      @if (paymentSettings()?.upiId || paymentSettings()?.upiQrUrl) {
+      <ion-button expand="block" color="primary" (click)="selectOfflineMethod('upi')">UPI</ion-button>
+      }
+      @if (paymentSettings()?.accountNumber && paymentSettings()?.ifscCode) {
+      <ion-button expand="block" color="secondary" (click)="selectOfflineMethod('bank_transfer')">Bank Transfer</ion-button>
+      }
+    </div>
+    <ion-button fill="clear" expand="block" (click)="cancelChooser()">Cancel</ion-button>
+  </div>
+  } @else if (offlinePending()) {
+  <div class="checkout-success pending offline-details">
+    <h2>Offline Payment</h2>
+    <p class="success-detail"><strong>{{ offlinePending()!.planName }}</strong></p>
+    <p class="success-amount">Amount to pay: {{ formatPrice(offlinePending()!.amount) }}</p>
+
+    @if (selectedOfflineMethod() === 'upi' || offlinePending()!.paymentMethod === 'upi') {
+    <div class="offline-block">
+      <div class="offline-block-title">UPI Details</div>
+      @if (offlinePending()!.offlinePayment?.qrUrl) {
+      <img class="qr-image" [src]="offlinePending()!.offlinePayment!.qrUrl!" alt="UPI QR code" />
+      }
+      @if (offlinePending()!.offlinePayment?.upiId) {
+      <p class="offline-line"><span class="offline-label">UPI ID:</span> <span class="offline-value">{{ offlinePending()!.offlinePayment!.upiId }}</span></p>
+      }
+    </div>
+    }
+
+    @if (selectedOfflineMethod() === 'bank_transfer' || offlinePending()!.paymentMethod === 'bank_transfer') {
+    <div class="offline-block">
+      <div class="offline-block-title">Bank Details</div>
+      <p class="offline-line"><span class="offline-label">Account Holder:</span> <span class="offline-value">{{ offlinePending()!.offlinePayment?.accountHolderName }}</span></p>
+      <p class="offline-line"><span class="offline-label">Bank Name:</span> <span class="offline-value">{{ offlinePending()!.offlinePayment?.bankName }}</span></p>
+      <p class="offline-line"><span class="offline-label">Account Number:</span> <span class="offline-value">{{ offlinePending()!.offlinePayment?.accountNumber }}</span></p>
+      <p class="offline-line"><span class="offline-label">IFSC:</span> <span class="offline-value">{{ offlinePending()!.offlinePayment?.ifscCode }}</span></p>
+    </div>
+    }
+
+    @if (offlineReported()) {
+    <p class="success-dates">Thanks! We have recorded your payment report.</p>
+    <p class="success-detail">Your plan will be activated after we verify the payment.</p>
+    } @else {
+    <ion-button expand="block" color="primary" [disabled]="isProcessing()" (click)="reportOfflineDone()">
+      I Have Paid
+    </ion-button>
+    <p class="success-dates">Already made the payment? Tap above so we can verify it.</p>
+    }
+    <ion-button fill="clear" expand="block" (click)="backToPlans()">Back to Plans</ion-button>
   </div>
   } @else {
+  <div class="plans-header">
+    <h1>Upgrade to Connect</h1>
+    <p>Unlock premium features to find your perfect match</p>
+  </div>
+
   @if (loading()) {
   <div class="loading-container">
     <ion-spinner name="crescent"></ion-spinner>
@@ -74,6 +152,10 @@
       </div>
       }
 
+      @if (isLoggedIn()) {
+      @if (isActiveFreePlan(plan)) {
+      <ion-button expand="block" color="medium" [disabled]="true">Current Plan</ion-button>
+      } @else {
       <ion-button
         expand="block"
         [color]="plan.isPopular ? 'primary' : 'secondary'"
@@ -86,6 +168,12 @@
         Select Plan
         }
       </ion-button>
+      }
+      } @else {
+      <ion-button expand="block" [color]="plan.isPopular ? 'primary' : 'secondary'" (click)="selectPlan(plan)">
+        Register to Subscribe
+      </ion-button>
+      }
     </div>
     }
   </div>

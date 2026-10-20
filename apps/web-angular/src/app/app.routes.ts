@@ -90,14 +90,6 @@ export const appRoutes: Route[] = [
         canActivate: [authGuard],
       },
       {
-        path: 'gallery',
-        loadComponent: () =>
-          import('./pages/photo-gallery/photo-gallery').then(
-            (m) => m.PhotoGallery,
-          ),
-        canActivate: [authGuard],
-      },
-      {
         path: 'settings',
         loadComponent: () =>
           import('./pages/settings/settings').then((m) => m.Settings),

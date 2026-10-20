@@ -43,6 +43,37 @@ export const appRoutes: Route[] = [
       ),
   },
   {
+    path: 'my-profile',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/my-profile/my-profile').then((m) => m.MyProfile),
+  },
+  {
+    path: 'my-profile/edit',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/edit-profile/edit-profile').then((m) => m.EditProfile),
+  },
+  { path: 'edit-profile', redirectTo: 'my-profile/edit', pathMatch: 'full' },
+  {
+    path: 'my-photos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/my-photos/my-photos').then((m) => m.MyPhotos),
+  },
+  {
+    path: 'gallery',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/gallery/gallery').then((m) => m.Gallery),
+  },
+  {
+    path: 'settings',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/settings/settings').then((m) => m.Settings),
+  },
+  {
     path: 'plans',
     loadComponent: () =>
       import('./pages/plans/plans').then((m) => m.Plans),
@@ -52,6 +83,30 @@ export const appRoutes: Route[] = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/profile-list/profile-list').then((m) => m.ProfileList),
+  },
+  {
+    path: 'interests',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/interests/interests').then((m) => m.Interests),
+  },
+  {
+    path: 'shortlists',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/shortlists/shortlists').then((m) => m.Shortlists),
+  },
+  {
+    path: 'messages',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/messages/messages').then((m) => m.Messages),
+  },
+  {
+    path: 'events',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/events/events').then((m) => m.Events),
   },
   {
     path: 'rules',
@@ -99,6 +154,24 @@ export const appRoutes: Route[] = [
         'Help desk available for renewal and login issues.',
       ],
     },
+  },
+  {
+    path: 'privacy',
+    loadComponent: () =>
+      import('./pages/legal-document/legal-document').then((m) => m.LegalDocumentPage),
+    data: { kind: 'privacy' },
+  },
+  {
+    path: 'terms',
+    loadComponent: () =>
+      import('./pages/legal-document/legal-document').then((m) => m.LegalDocumentPage),
+    data: { kind: 'terms' },
+  },
+  {
+    path: 'refund',
+    loadComponent: () =>
+      import('./pages/legal-document/legal-document').then((m) => m.LegalDocumentPage),
+    data: { kind: 'refund' },
   },
   { path: 'success', redirectTo: 'success-stories', pathMatch: 'full' },
   { path: '**', redirectTo: '' },

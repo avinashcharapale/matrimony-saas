@@ -10,9 +10,29 @@
 
   <ion-content>
     <div class="payments-container">
+      <div class="summary-row">
+        <div class="summary-card">
+          <span>Total Spent</span>
+          <strong>{{ formatCurrency(totalSpent()) }}</strong>
+        </div>
+        <div class="summary-card">
+          <span>Wallet Balance</span>
+          <strong>{{ walletBalance() }}</strong>
+        </div>
+        <div class="summary-card">
+          <span>Saved Methods</span>
+          <strong>{{ paymentMethodsCount() }}</strong>
+        </div>
+        <div class="summary-card">
+          <span>Invoices</span>
+          <strong>{{ invoicesCount() }}</strong>
+        </div>
+      </div>
+
       <ion-segment [value]="activeTab()" (ionChange)="setTab($event.detail.value)">
         <ion-segment-button value="transactions">Transactions</ion-segment-button>
         <ion-segment-button value="invoices">Invoices</ion-segment-button>
+        <ion-segment-button value="methods">Methods</ion-segment-button>
         <ion-segment-button value="wallet">Wallet</ion-segment-button>
       </ion-segment>
 
@@ -62,6 +82,39 @@
                   <span class="tx-amount">{{ formatCurrency(inv.totalAmount) }}</span>
                   <span class="badge" [class]="statusClass(inv.status)">{{ inv.status }}</span>
                 </div>
+                <div class="tx-actions">
+                  <ion-button size="small" fill="outline" (click)="downloadInvoicePdf(inv)">
+                    <ion-icon slot="start" name="download-outline"></ion-icon>
+                    PDF
+                  </ion-button>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          }
+        }
+      } @else if (activeTab() === 'methods') {
+        @if (methods().length === 0) {
+          <ion-card class="empty-state">
+            <ion-card-content><p>No saved payment methods.</p></ion-card-content>
+          </ion-card>
+        } @else {
+          @for (m of methods(); track m.paymentMethodId) {
+            <ion-card class="tx-card">
+              <ion-card-header>
+                <ion-card-title>{{ m.methodType }}</ion-card-title>
+                <ion-card-subtitle>
+                  {{ m.cardBrand || '' }} {{ m.cardLastFour ? '•••• ' + m.cardLastFour : '' }}
+                </ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="tx-row">
+                  <span class="tx-desc">Expiry {{ m.expiryMonth }} / {{ m.expiryYear }}</span>
+                  @if (m.isDefault) {
+                    <span class="badge success">Default</span>
+                  } @else {
+                    <span class="badge">Not Default</span>
+                  }
+                </div>
               </ion-card-content>
             </ion-card>
           }
@@ -70,7 +123,7 @@
         <ion-card class="empty-state">
           <ion-card-content>
             <p class="wallet-balance">
-              Balance: <strong>{{ formatCurrency(billingStore.wallet()?.balance) }}</strong>
+              Balance: <strong>{{ walletBalance() }}</strong>
             </p>
           </ion-card-content>
         </ion-card>
@@ -131,15 +184,33 @@
             </ion-item>
             <ion-item>
               <ion-label>
+                <h2>Gateway Order</h2>
+                <p>{{ selectedDetail()?.transaction?.gatewayOrderId || '—' }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Gateway Payment</h2>
+                <p>{{ selectedDetail()?.transaction?.gatewayPaymentId || '—' }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label>
                 <h2>Invoice</h2>
                 <p>{{ selectedDetail()?.transaction?.invoiceNumber || '—' }}</p>
               </ion-label>
+              @if (selectedDetail()?.invoice; as inv) {
+                <ion-button slot="end" size="small" fill="outline" (click)="downloadInvoicePdf(inv)">PDF</ion-button>
+              }
             </ion-item>
             <ion-item>
               <ion-label>
                 <h2>Receipt</h2>
                 <p>{{ selectedDetail()?.transaction?.receiptNumber || '—' }}</p>
               </ion-label>
+              @if (selectedDetail()?.receipt; as rc) {
+                <ion-button slot="end" size="small" fill="outline" (click)="downloadReceiptPdf(rc)">PDF</ion-button>
+              }
             </ion-item>
           </ion-list>
 

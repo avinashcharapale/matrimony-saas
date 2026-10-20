@@ -39,3 +39,29 @@ ion-content {
   text-align: center;
   margin-top: 0.5rem;
 }
+
+.field-error {
+  display: block;
+  margin: -0.5rem 0 0 1rem;
+}
+
+.login-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--tenant-text) 70%, #ffffff 30%);
+}
+
+.login-links a {
+  color: var(--tenant-accent, #9a5e45);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.links-sep {
+  opacity: 0.5;
+}

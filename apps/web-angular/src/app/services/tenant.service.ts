@@ -16,6 +16,7 @@ import {
   TemplateOverrides,
   resolveTemplateStyleVars,
 } from '@org/landing-templates';
+import { environment } from '../../environments/environment';
 
 function resolveTenantHost(): string {
   return globalThis.location?.hostname ?? '';
@@ -38,6 +39,7 @@ export class TenantService {
     const routingConfig = resolveTenant(
       resolveTenantHost(),
       window.location.search,
+      environment.defaultTenantId,
     );
     this.currentTenant = bootstrapFromTemplate(routingConfig);
     this.applyTheme(this.currentTenant);
@@ -97,7 +99,7 @@ export class TenantService {
     return firstValueFrom(
       this.store
         .resolveTenant(
-          resolveTenantHost(),
+          environment.tenantHost ?? resolveTenantHost(),
           window.location.pathname,
           window.location.search,
         )

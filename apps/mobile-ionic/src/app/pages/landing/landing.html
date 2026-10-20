@@ -1,14 +1,15 @@
 <ion-page>
   <ion-content>
-    <div class="landing-shell">
-      <h1>{{ tenant.displayName }}</h1>
-      <p>Trusted matrimony platform with verified profiles and meaningful matches.</p>
-
-      <div class="actions">
-        <a routerLink="/register" class="btn primary">Register</a>
-        <a routerLink="/profiles" class="btn ghost">Browse Profiles</a>
-        <a routerLink="/login" class="btn ghost">Login</a>
-      </div>
-    </div>
+    <app-landing-sections
+      [tpl]="template"
+      [overrides]="templateOverrides"
+      [tenant]="tenant"
+      [stats]="stats()"
+      [whyChoose]="whyChoose()"
+      [howItWorks]="howItWorks()"
+      [autoScrollProfiles]="autoScrollProfiles"
+      [trustCards]="trustCards()"
+      [sectionsVisible]="sectionsVisible">
+    </app-landing-sections>
   </ion-content>
 </ion-page>

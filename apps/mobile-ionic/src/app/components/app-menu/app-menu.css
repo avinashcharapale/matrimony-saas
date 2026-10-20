@@ -1,0 +1,119 @@
+.app-menu {
+  --width: 280px;
+  --background: var(--surface-card, #fff);
+}
+
+.menu-toolbar {
+  --background: var(--tenant-primary);
+  --color: var(--on-primary, #fff);
+}
+
+.menu-toolbar ion-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.menu-toolbar ion-button {
+  --color: var(--on-primary, #fff);
+}
+
+.menu-content {
+  --background: var(--tenant-bg-start, #fbf7f0);
+}
+
+.menu-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1rem 0.5rem;
+  text-decoration: none;
+  color: var(--tenant-text);
+}
+
+.brand-logo {
+  max-height: 32px;
+  width: auto;
+}
+
+.brand-mark {
+  font-size: 1.5rem;
+}
+
+.brand-name {
+  font-family: var(--font-heading, serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.menu-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 1rem 0.75rem;
+  padding: 0.85rem;
+  border-radius: var(--theme-radius-md, 0.875rem);
+  background: var(--surface-card, #fff);
+  border: 1px solid var(--border-soft, #e5e7eb);
+}
+
+.menu-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.menu-user-info {
+  min-width: 0;
+}
+
+.menu-user-info strong {
+  display: block;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-user-info p {
+  margin: 0.1rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.5rem 1rem;
+}
+
+.menu-nav ion-item {
+  --background: transparent;
+  --padding-start: 0.75rem;
+  --min-height: 46px;
+  border-radius: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.menu-nav ion-item.active {
+  --background: var(--theme-accent-soft, rgba(93, 23, 47, 0.08));
+  --color: var(--tenant-primary);
+  font-weight: 600;
+}
+
+.menu-nav ion-item ion-icon {
+  color: var(--tenant-primary);
+}
+
+.menu-logout {
+  margin-top: 0.35rem;
+  --color: var(--theme-danger, #991b1b);
+}
+
+.menu-logout ion-icon {
+  color: var(--theme-danger, #991b1b);
+}

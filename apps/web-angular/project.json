@@ -67,6 +67,27 @@
               "with": "apps/web-angular/src/environments/environment.development.ts"
             }
           ]
+        },
+        "tenant-demo": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "900kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "20kb",
+              "maximumError": "24kb"
+            }
+          ],
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/web-angular/src/environments/environment.ts",
+              "with": "apps/web-angular/src/environments/environment.tenant-demo.ts"
+            }
+          ]
         }
       },
       "defaultConfiguration": "production"

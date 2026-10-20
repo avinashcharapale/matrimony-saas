@@ -1,4 +1,5 @@
 import { APPROVED_TEMPLATES, type LandingTemplate } from '@org/landing-templates';
+import { TENANT_MANIFEST } from './tenants.manifest';
 
 export interface TenantContact {
   type: 'Email' | 'Phone' | 'WhatsApp' | 'Social' | 'Address';
@@ -208,21 +209,24 @@ export const THEME_PALETTES: ThemePalette[] = [
   },
 ];
 
-export const TENANT_CONFIGS: TenantConfig[] = [
-  {
-    id: 'demo',
-    domainAliases: ['localhost'],
-    pathAliases: [],
-    themeTemplateId: 'marigold-traditional',
-  },
-];
+export const TENANT_CONFIGS: TenantConfig[] = TENANT_MANIFEST;
 
 export const DEFAULT_TENANT = TENANT_CONFIGS[0];
 
+/**
+ * Resolve the active tenant config.
+ *
+ * Precedence:
+ *   1. `?tenant=<id>` query param (deep link / live-reload).
+ *   2. Explicit `defaultTenantId` — baked into native/white-label builds where
+ *      `location.hostname` is only `localhost`.
+ *   3. Hostname match against each tenant's `domainAliases` (web).
+ *   4. `DEFAULT_TENANT`.
+ */
 export function resolveTenant(
   hostname: string,
   search: string,
-  defaultTenantId = DEFAULT_TENANT.id,
+  defaultTenantId?: string,
 ): TenantConfig {
   const params = new URLSearchParams(search);
   const tenantId = params.get('tenant');
@@ -234,6 +238,15 @@ export function resolveTenant(
     }
   }
 
+  if (defaultTenantId) {
+    const explicit = TENANT_CONFIGS.find(
+      (config) => config.id === defaultTenantId,
+    );
+    if (explicit) {
+      return explicit;
+    }
+  }
+
   const normalizedHost = hostname.toLowerCase();
   const hostMatch = TENANT_CONFIGS.find((config) =>
     config.domainAliases.some((alias) => normalizedHost.includes(alias)),
@@ -242,10 +255,7 @@ export function resolveTenant(
     return hostMatch;
   }
 
-  return (
-    TENANT_CONFIGS.find((config) => config.id === defaultTenantId) ??
-    DEFAULT_TENANT
-  );
+  return DEFAULT_TENANT;
 }
 
 const DEFAULT_TEMPLATE_ID = 'marigold-traditional';

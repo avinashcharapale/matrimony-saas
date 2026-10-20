@@ -1,10 +1,23 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, InjectionToken } from '@angular/core';
 import { TenantStore } from '@org/data-access-tenant';
+
+/**
+ * Optional override for the host reported as `x-tenant-host`.
+ *
+ * On native (Capacitor) `window.location.hostname` is only `localhost`, so the
+ * white-label build provides the tenant's real canonical host here.
+ */
+export const TENANT_HOST_OVERRIDE = new InjectionToken<string>(
+  'TENANT_HOST_OVERRIDE',
+);
 
 export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
   const tenantStore = inject(TenantStore);
   const tenantId = tenantStore.tenantHeaderId();
+  const tenantHost =
+    inject(TENANT_HOST_OVERRIDE, { optional: true }) ||
+    window.location.hostname;
   const isProfileMasterDataRequest = req.url.includes('/profile/master-data');
 
   if (!tenantId) {
@@ -36,7 +49,7 @@ export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
   const requestWithTenant = req.clone({
     setHeaders: {
       'x-tenant-id': tenantId,
-      'x-tenant-host': window.location.hostname,
+      'x-tenant-host': tenantHost,
     },
   });
 
@@ -44,7 +57,7 @@ export const tenantInterceptor: HttpInterceptorFn = (req, next) => {
     console.debug('[tenant-interceptor] Added tenant headers for request:', {
       url: req.url,
       tenantId,
-      tenantHost: window.location.hostname,
+      tenantHost,
     });
   }
 

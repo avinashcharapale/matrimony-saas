@@ -1,11 +1,11 @@
 export { authGuard, adminGuard } from '../../core/auth/src/index';
 export { authInterceptor } from '../../core/auth/src/index';
-export { tenantInterceptor } from '../../core/tenant/src/index';
+export { tenantInterceptor, TENANT_HOST_OVERRIDE } from '../../core/tenant/src/index';
 export { correlationInterceptor } from '../../core/correlation/src/index';
 export { LoadingService, loadingInterceptor } from '../../core/loading/src/index';
 export { ErrorService, errorInterceptor } from '../../core/error/src/index';
 export type { AppError } from '../../core/error/src/index';
 export { NotificationService, notificationInterceptor } from '../../core/notification/src/index';
 export type { NotificationKind } from '../../core/notification/src/index';
-export { SignalRService } from '../../core/signalr/src/index';
+export { SignalRService, SIGNALR_BASE_URL } from '../../core/signalr/src/index';
 export type { NotificationEvent } from '../../core/signalr/src/index';

@@ -2,7 +2,31 @@ import { Injectable, inject } from '@angular/core';
 import { catchError, map, of } from 'rxjs';
 import { TenantStore } from '@org/data-access-tenant';
 import { TenantResolveResponse } from '@org/generated';
-import { resolveTenant, bootstrapFromTemplate, TenantConfig, TenantContact, THEME_PALETTES, ThemePalette } from '@org/tenant-config';
+import { resolveTenant, bootstrapFromTemplate, TenantConfig, TenantContact, THEME_PALETTES, ThemePalette, TenantLandingContent, TenantLogoSettings } from '@org/tenant-config';
+
+interface ResolvedTenantBranding {
+  themeTemplateId?: string;
+  logoUrl?: string;
+  faviconUrl?: string;
+  primaryColor?: string;
+  accentColor?: string;
+  logoDisplay?: TenantLogoSettings;
+  logoSettings?: TenantLogoSettings;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  youTubeUrl?: string;
+  twitterUrl?: string;
+  whatsAppUrl?: string;
+  showFooterSocialMedia?: boolean;
+  showFooterLegalLinks?: boolean;
+  showFooterContactInfo?: boolean;
+}
+import {
+  APPROVED_TEMPLATES,
+  LandingTemplate,
+  TemplateOverrides,
+  resolveTemplateStyleVars,
+} from '@org/landing-templates';
 
 @Injectable({
   providedIn: 'root',
@@ -63,14 +87,14 @@ export class TenantService {
       return;
     }
 
-    let branding: any = {};
+    let branding: ResolvedTenantBranding = {};
     if (resolved.brandingJson) {
-      try { branding = JSON.parse(resolved.brandingJson); } catch {}
+      try { branding = JSON.parse(resolved.brandingJson) as ResolvedTenantBranding; } catch { /* noop */ }
     }
 
-    let landingContent: any = {};
+    let landingContent: TenantLandingContent = {};
     if (resolved.landingContentJson) {
-      try { landingContent = JSON.parse(resolved.landingContentJson); } catch {}
+      try { landingContent = JSON.parse(resolved.landingContentJson) as TenantLandingContent; } catch { /* noop */ }
     }
 
     const logoSettings = branding.logoDisplay || branding.logoSettings || {};
@@ -155,7 +179,7 @@ export class TenantService {
     const theme = this.findTheme(resolvedThemeId) ?? THEME_PALETTES[0];
     this.selectedThemeId = theme.id;
 
-    const mergedTheme: ThemePalette = {
+    let mergedTheme: ThemePalette = {
       ...theme,
       primary: tenant.customTheme?.primary ?? theme.primary,
       accent: tenant.customTheme?.accent ?? theme.accent,
@@ -166,6 +190,16 @@ export class TenantService {
     };
 
     const root = document.documentElement;
+    const templateTheme = this.templateTheme(tenant);
+    if (templateTheme) {
+      mergedTheme = { ...mergedTheme, ...templateTheme.palette };
+      root.style.setProperty('--on-primary', templateTheme.onPrimary);
+      root.style.setProperty('--font-heading', templateTheme.headingFont);
+      root.style.setProperty('--font-body', templateTheme.bodyFont);
+    } else {
+      root.style.setProperty('--on-primary', '#fff8f3');
+    }
+
     root.setAttribute('data-theme', theme.id);
     root.style.setProperty('--tenant-primary', mergedTheme.primary || (tenant.primaryColor ?? ''));
     root.style.setProperty('--tenant-accent', mergedTheme.accent || (tenant.accentColor ?? ''));
@@ -196,6 +230,78 @@ export class TenantService {
     if (iconUrl) {
       this.setFavicon(iconUrl);
     }
+  }
+
+  /** Approved landing template chosen for this tenant (DB ThemeTemplateId). */
+  get template(): LandingTemplate {
+    const id = this.currentTenant.themeTemplateId;
+    const found = id ? APPROVED_TEMPLATES.find((t) => t.id === id) : undefined;
+    return found ?? APPROVED_TEMPLATES[0];
+  }
+
+  /** Tenant branding overrides that beat template defaults. */
+  get templateOverrides(): TemplateOverrides {
+    const legacyColors = this.currentTenant.themeTemplateId
+      ? {}
+      : {
+          primary:
+            this.currentTenant.primaryColor ??
+            this.currentTenant.customTheme?.primary,
+          secondary:
+            this.currentTenant.accentColor ??
+            this.currentTenant.customTheme?.accent,
+          background: this.currentTenant.customTheme?.bgStart,
+          text: this.currentTenant.customTheme?.text,
+        };
+    return {
+      ...legacyColors,
+      heroImage: this.currentTenant.heroImageUrl,
+      bannerImage: this.currentTenant.bannerImageUrl,
+    };
+  }
+
+  /** When a landing template is selected, expose its palette + fonts as the app theme
+   *  so every page matches the approved design set in web-angular. */
+  private templateTheme(tenant: TenantConfig): {
+    palette: ThemePalette;
+    onPrimary: string;
+    headingFont: string;
+    bodyFont: string;
+  } | null {
+    const id = tenant.themeTemplateId;
+    const tpl = id ? APPROVED_TEMPLATES.find((t) => t.id === id) : undefined;
+    if (!tpl) {
+      return null;
+    }
+    const overrides: TemplateOverrides = tenant.themeTemplateId
+      ? {
+          heroImage: tenant.heroImageUrl,
+          bannerImage: tenant.bannerImageUrl,
+        }
+      : {
+          primary: tenant.primaryColor ?? tenant.customTheme?.primary,
+          secondary: tenant.accentColor ?? tenant.customTheme?.accent,
+          background: tenant.customTheme?.bgStart,
+          text: tenant.customTheme?.text,
+        };
+    const { vars } = resolveTemplateStyleVars(tpl, overrides);
+    const h = vars['tp-h'] ?? "'Fraunces', serif";
+    const b = vars['tp-b'] ?? "'Manrope', sans-serif";
+    return {
+      palette: {
+        id: tpl.id,
+        name: tpl.name,
+        primary: vars['tp-p'],
+        accent: vars['tp-s'],
+        bgStart: vars['tp-bg'],
+        bgMid: vars['tp-bgd'],
+        bgEnd: vars['tp-bgd'],
+        text: vars['tp-t'],
+      },
+      onPrimary: vars['tp-od'],
+      headingFont: h,
+      bodyFont: b,
+    };
   }
 
   private resolveInitialThemeId(): string {

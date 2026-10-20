@@ -100,6 +100,15 @@ interface MenuPageData {
           </div>
           }
 
+          <section class="menu-cta">
+            <h2>Ready to find your match?</h2>
+            <p>Join free and browse verified profiles today.</p>
+            <div class="cta-actions">
+              <a routerLink="/register" class="btn cta-primary">Register Free</a>
+              <a routerLink="/search" class="btn cta-muted">Browse Profiles</a>
+            </div>
+          </section>
+
           <a routerLink="/home" class="btn">Back to Home</a>
         </div>
       </ion-content>
@@ -200,6 +209,39 @@ interface MenuPageData {
         background: var(--tenant-primary);
         padding: 0.6rem 0.8rem;
         border-radius: 0.6rem;
+      }
+
+      .menu-cta {
+        margin-top: 1.25rem;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        background: var(--surface-overlay);
+        display: grid;
+        gap: 0.4rem;
+      }
+
+      .menu-cta h2 {
+        font-size: 1.05rem;
+      }
+
+      .menu-cta p {
+        margin: 0;
+      }
+
+      .cta-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
+      }
+
+      .cta-actions .btn {
+        margin-top: 0;
+      }
+
+      .cta-muted {
+        background: color-mix(in srgb, var(--tenant-primary) 12%, #ffffff);
+        color: var(--tenant-primary);
       }
 
       .rules-doc {

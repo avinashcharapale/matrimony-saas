@@ -1,6 +1,16 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject, InjectionToken } from '@angular/core';
 import { HubConnectionBuilder, HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { Subject, Observable, filter, map } from 'rxjs';
+
+/**
+ * Absolute API origin for SignalR hub URLs. Empty string (default) keeps the
+ * hubs same-origin, which is correct for web and dev live-reload. Native
+ * white-label builds provide the gateway origin here.
+ */
+export const SIGNALR_BASE_URL = new InjectionToken<string>('SIGNALR_BASE_URL', {
+  providedIn: 'root',
+  factory: () => '',
+});
 
 export interface NotificationEvent {
   notificationId: number;
@@ -24,8 +34,13 @@ export interface TypingEvent {
 
 @Injectable({ providedIn: 'root' })
 export class SignalRService implements OnDestroy {
+  private readonly baseUrl = inject(SIGNALR_BASE_URL).replace(/\/+$/, '');
   private notificationConnection: HubConnection | null = null;
   private chatConnection: HubConnection | null = null;
+
+  private hubUrl(path: string): string {
+    return this.baseUrl ? `${this.baseUrl}${path}` : path;
+  }
 
   private readonly notificationReceived$ = new Subject<NotificationEvent>();
   private readonly chatMessageReceived$ = new Subject<ChatMessageEvent>();
@@ -60,7 +75,7 @@ export class SignalRService implements OnDestroy {
     if (this.notificationConnection?.state === HubConnectionState.Connected) return;
 
     this.notificationConnection = new HubConnectionBuilder()
-      .withUrl('/hubs/notifications', { accessTokenFactory: () => accessToken })
+      .withUrl(this.hubUrl('/hubs/notifications'), { accessTokenFactory: () => accessToken })
       .withAutomaticReconnect([0, 2, 5, 10, 15, 30])
       .build();
 
@@ -92,7 +107,7 @@ export class SignalRService implements OnDestroy {
     if (this.chatConnection?.state === HubConnectionState.Connected) return;
 
     this.chatConnection = new HubConnectionBuilder()
-      .withUrl('/hubs/chat', { accessTokenFactory: () => accessToken })
+      .withUrl(this.hubUrl('/hubs/chat'), { accessTokenFactory: () => accessToken })
       .withAutomaticReconnect([0, 2, 5, 10, 15, 30])
       .build();
 

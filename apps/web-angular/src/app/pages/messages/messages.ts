@@ -2,17 +2,24 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { ChatClient } from '@org/generated';
+import { ChatClient, ChatMessageDto } from '@org/generated';
 import { AuthService } from '../../services/auth.service';
 import { MemberService } from '../../services/member.service';
 import { SubscriptionStore } from '@org/data-access-subscription';
 import { SharedSidebarComponent } from '../../components/shared-sidebar/shared-sidebar.component';
 import { getDefaultAvatar, resolvePhotoUrl } from '../../utils/default-avatar';
 
+interface Message {
+  id?: string;
+  byMe: boolean;
+  text: string;
+  time: string;
+}
+
 interface Conversation {
   id: string;
   name: string;
-  messages: { byMe: boolean; text: string; time: string }[];
+  messages: Message[];
 }
 
 @Component({
@@ -41,7 +48,7 @@ interface Conversation {
             <aside class="chat-list">
               @if (conversations().length > 0) {
                 @for (chat of conversations(); track chat.id) {
-                <button type="button" [class.active]="chat.id === activeId()" (click)="activeId.set(chat.id)">
+                <button type="button" [class.active]="chat.id === activeId()" (click)="selectConversation(chat.id)">
                   <strong>{{ chat.name || ('messages.unknown' | translate) }}</strong>
                   <span>{{ chat.messages[chat.messages.length - 1]?.text }}</span>
                 </button>
@@ -139,24 +146,94 @@ export class Messages implements OnInit {
         }));
         this.conversations.set(mapped);
         if (mapped.length > 0) {
-          this.activeId.set(mapped[0].id);
+          this.selectConversation(mapped[0].id);
         }
       },
       error: () => {},
     });
   }
 
+  selectConversation(id: string): void {
+    this.activeId.set(id);
+    const conversationId = Number(id);
+    if (!conversationId) return;
+
+    const userId = this.authService.getSession()?.userId;
+    this.chatClient.getMessagesByConversation(conversationId).subscribe({
+      next: (messages) => this.applyMessages(id, messages ?? []),
+      error: () => {},
+    });
+
+    if (userId) {
+      this.chatClient
+        .markMessagesAsRead({ conversationId, userId })
+        .subscribe({ next: () => {}, error: () => {} });
+    }
+  }
+
   sendMessage(): void {
     const draftValue = this.draft().trim();
     const active = this.activeConversation();
     if (!draftValue || !active) return;
+
+    const session = this.authService.getSession();
+    const userId = session?.userId;
+    const conversationId = Number(active.id);
+    const localId = `local-${Date.now()}`;
+
     this.conversations.update(convos =>
       convos.map((c) =>
         c.id === active.id
-          ? { ...c, messages: [...c.messages, { byMe: true, text: draftValue, time: '' }] }
+          ? { ...c, messages: [...c.messages, { id: localId, byMe: true, text: draftValue, time: '' }] }
           : c
       )
     );
     this.draft.set('');
+
+    if (!userId || !conversationId) return;
+
+    this.chatClient
+      .sendMessage({
+        conversationId,
+        senderUserId: userId,
+        tenantId: session?.tenantId ?? undefined,
+        content: draftValue,
+        type: 'text',
+      })
+      .subscribe({
+        next: (message) => {
+          const sentAt = message?.sentDate ?? new Date().toISOString();
+          this.conversations.update(convos =>
+            convos.map((c) =>
+              c.id === active.id
+                ? {
+                    ...c,
+                    messages: c.messages.map((m) =>
+                      m.id === localId ? { ...m, id: String(message?.messageId ?? localId), time: sentAt } : m
+                    ),
+                  }
+                : c
+            )
+          );
+        },
+        error: () => {},
+      });
+  }
+
+  private applyMessages(conversationId: string, messages: ChatMessageDto[]): void {
+    const userId = this.authService.getSession()?.userId;
+    const mapped = messages
+      .slice()
+      .sort((a, b) => (a.sentDate ?? '').localeCompare(b.sentDate ?? ''))
+      .map((m) => ({
+        id: String(m.messageId ?? ''),
+        byMe: m.senderUserId != null && m.senderUserId === userId,
+        text: m.content ?? '',
+        time: m.sentDate ?? '',
+      }));
+    if (mapped.length === 0) return;
+    this.conversations.update((convos) =>
+      convos.map((c) => (c.id === conversationId ? { ...c, messages: mapped } : c))
+    );
   }
 }
