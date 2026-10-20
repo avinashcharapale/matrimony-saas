@@ -1,11 +1,11 @@
-﻿{
+{
   "graph": {
     "nodes": {
-      "matrimony-models": {
-        "name": "matrimony-models",
+      "data-access-notification": {
+        "name": "data-access-notification",
         "type": "lib",
         "data": {
-          "root": "libs/matrimony-models",
+          "root": "libs/data-access/notification",
           "targets": {
             "lint": {
               "executor": "@nx/eslint:lint",
@@ -19,351 +19,94 @@
                 "{workspaceRoot}/.eslintignore",
                 "{workspaceRoot}/eslint.config.mjs"
               ]
-            },
-            "test": {
-              "options": {
-                "cwd": "libs/matrimony-models",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\matrimony-models"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vite"
-                ],
-                "description": "Run Vite tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "typecheck": {
-              "cache": true,
-              "inputs": [
-                "production",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "typescript"
-                  ]
-                }
-              ],
-              "options": {
-                "cwd": "libs/matrimony-models",
-                "command": "tsc --noEmit -p tsconfig.lib.json"
-              },
-              "metadata": {
-                "description": "Runs type-checking for the project.",
-                "technologies": [
-                  "typescript"
-                ],
-                "help": {
-                  "command": "npx tsc -p tsconfig.lib.json --help",
-                  "example": {
-                    "options": {
-                      "noEmit": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "build-deps": {
-              "dependsOn": [
-                "^build"
-              ],
-              "configurations": {},
-              "options": {},
-              "parallelism": true,
-              "executor": "nx:noop"
-            },
-            "watch-deps": {
-              "continuous": true,
-              "dependsOn": [
-                "build-deps"
-              ],
-              "executor": "nx:run-commands",
-              "options": {
-                "command": "npx nx watch --projects matrimony-models --includeDependentProjects -- npx nx build-deps matrimony-models"
-              },
-              "configurations": {},
-              "parallelism": true
-            },
-            "vite:test": {
-              "options": {
-                "cwd": "libs/matrimony-models",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\matrimony-models"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vitest"
-                ],
-                "description": "Run Vitest tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
             }
           },
-          "metadata": {},
+          "name": "data-access-notification",
+          "sourceRoot": "libs/data-access/notification/src",
           "projectType": "library",
-          "name": "matrimony-models",
-          "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "libs/matrimony-models/src",
-          "prefix": "lib",
-          "tags": [],
+          "tags": [
+            "scope:data-access"
+          ],
           "implicitDependencies": []
         }
       },
-      "mobile-ionic-e2e": {
-        "name": "mobile-ionic-e2e",
-        "type": "e2e",
+      "data-access-registration": {
+        "name": "data-access-registration",
+        "type": "lib",
         "data": {
-          "root": "apps/mobile-ionic-e2e",
-          "metadata": {
-            "targetGroups": {
-              "E2E (CI)": [
-                "e2e-ci--src/example.spec.ts",
-                "e2e-ci",
-                "e2e-ci--merge-reports"
+          "root": "libs/data-access/registration",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
               ]
             }
           },
+          "name": "data-access-registration",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/data-access/registration/src",
+          "prefix": "lib",
+          "projectType": "library",
+          "tags": [
+            "scope:data-access"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "data-access-subscription": {
+        "name": "data-access-subscription",
+        "type": "lib",
+        "data": {
+          "root": "libs/data-access/subscription",
           "targets": {
-            "e2e": {
-              "options": {
-                "cwd": "apps/mobile-ionic-e2e",
-                "command": "playwright test"
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                {
-                  "projects": [
-                    "mobile-ionic"
-                  ],
-                  "target": "serve"
-                }
-              ],
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/test-output",
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/playwright-report",
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/blob-report"
-              ],
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "e2e-ci--src/example.spec.ts": {
-              "options": {
-                "cwd": "apps/mobile-ionic-e2e",
-                "env": {
-                  "PLAYWRIGHT_HTML_OUTPUT_DIR": "..\\..\\dist\\.playwright\\apps\\mobile-ionic-e2e\\playwright-report\\src-example-spec-ts",
-                  "PLAYWRIGHT_HTML_REPORT": "..\\..\\dist\\.playwright\\apps\\mobile-ionic-e2e\\playwright-report\\src-example-spec-ts",
-                  "PLAYWRIGHT_BLOB_OUTPUT_FILE": "..\\..\\dist\\.playwright\\apps\\mobile-ionic-e2e\\blob-report\\src-example-spec-ts.zip"
-                },
-                "command": "playwright test src/example.spec.ts --output=..\\..\\dist\\.playwright\\apps\\mobile-ionic-e2e\\test-output\\src-example-spec-ts"
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests in src/example.spec.ts in CI",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "dependsOn": [
-                {
-                  "projects": [
-                    "mobile-ionic"
-                  ],
-                  "target": "serve"
-                }
-              ],
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/test-output/src-example-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/playwright-report/src-example-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/blob-report/src-example-spec-ts.zip"
-              ],
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "e2e-ci": {
-              "executor": "nx:noop",
-              "cache": true,
-              "inputs": [
-                "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/test-output",
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/playwright-report",
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/blob-report"
-              ],
-              "dependsOn": [
-                {
-                  "target": "e2e-ci--src/example.spec.ts",
-                  "projects": "self",
-                  "params": "forward",
-                  "options": "forward"
-                }
-              ],
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Runs Playwright Tests in CI",
-                "nonAtomizedTarget": "e2e",
-                "help": {
-                  "command": "npx playwright test --help",
-                  "example": {
-                    "options": {
-                      "workers": 1
-                    }
-                  }
-                }
-              },
-              "configurations": {},
+            "lint": {
+              "executor": "@nx/eslint:lint",
               "options": {},
-              "parallelism": true
-            },
-            "e2e-ci--merge-reports": {
-              "executor": "@nx/playwright:merge-reports",
+              "configurations": {},
+              "parallelism": true,
               "cache": true,
               "inputs": [
                 "default",
-                "^{projectRoot}/tsconfig*.json",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "@playwright/test"
-                  ]
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}/dist/.playwright/apps/mobile-ionic-e2e/playwright-report"
-              ],
-              "options": {
-                "config": "playwright.config.ts",
-                "expectedSuites": 1
-              },
-              "metadata": {
-                "technologies": [
-                  "playwright"
-                ],
-                "description": "Merges Playwright blob reports from atomized tasks to produce unified reports for the configured reporters."
-              },
-              "configurations": {},
-              "parallelism": true
-            },
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "data-access-subscription",
+          "sourceRoot": "libs/data-access/subscription/src",
+          "projectType": "library",
+          "tags": [
+            "scope:data-access"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "landing-templates": {
+        "name": "landing-templates",
+        "type": "lib",
+        "data": {
+          "root": "libs/shared/landing-templates",
+          "targets": {
             "lint": {
               "cache": true,
               "options": {
-                "cwd": "apps/mobile-ionic-e2e",
+                "cwd": "libs/shared/landing-templates",
                 "command": "eslint ."
               },
               "inputs": [
                 "default",
                 "^default",
-                "{workspaceRoot}/eslint.config.mjs",
-                "{workspaceRoot}/apps/mobile-ionic-e2e/eslint.config.mjs",
+                "{workspaceRoot}/eslint.base.config.mjs",
+                "{workspaceRoot}/libs/shared/landing-templates/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
                   "externalDependencies": [
@@ -391,40 +134,10 @@
               "executor": "nx:run-commands",
               "configurations": {},
               "parallelism": true
-            }
-          },
-          "name": "mobile-ionic-e2e",
-          "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "projectType": "application",
-          "sourceRoot": "apps/mobile-ionic-e2e/src",
-          "implicitDependencies": [
-            "mobile-ionic"
-          ],
-          "tags": []
-        }
-      },
-      "shared-services": {
-        "name": "shared-services",
-        "type": "lib",
-        "data": {
-          "root": "libs/shared-services",
-          "targets": {
-            "lint": {
-              "executor": "@nx/eslint:lint",
-              "options": {},
-              "configurations": {},
-              "parallelism": true,
-              "cache": true,
-              "inputs": [
-                "default",
-                "{workspaceRoot}/.eslintrc.json",
-                "{workspaceRoot}/.eslintignore",
-                "{workspaceRoot}/eslint.config.mjs"
-              ]
             },
             "test": {
               "options": {
-                "cwd": "libs/shared-services",
+                "cwd": "libs/shared/landing-templates",
                 "command": "vitest"
               },
               "cache": true,
@@ -441,7 +154,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shared-services"
+                "{workspaceRoot}\\coverage\\libs\\shared\\landing-templates"
               ],
               "metadata": {
                 "technologies": [
@@ -474,7 +187,7 @@
                 }
               ],
               "options": {
-                "cwd": "libs/shared-services",
+                "cwd": "libs/shared/landing-templates",
                 "command": "tsc --noEmit -p tsconfig.lib.json"
               },
               "metadata": {
@@ -511,14 +224,14 @@
               ],
               "executor": "nx:run-commands",
               "options": {
-                "command": "npx nx watch --projects shared-services --includeDependentProjects -- npx nx build-deps shared-services"
+                "command": "npx nx watch --projects landing-templates --includeDependentProjects -- npx nx build-deps landing-templates"
               },
               "configurations": {},
               "parallelism": true
             },
             "vite:test": {
               "options": {
-                "cwd": "libs/shared-services",
+                "cwd": "libs/shared/landing-templates",
                 "command": "vitest"
               },
               "cache": true,
@@ -535,7 +248,7 @@
                 }
               ],
               "outputs": [
-                "{workspaceRoot}\\coverage\\libs\\shared-services"
+                "{workspaceRoot}\\coverage\\libs\\shared\\landing-templates"
               ],
               "metadata": {
                 "technologies": [
@@ -559,12 +272,628 @@
           },
           "metadata": {},
           "projectType": "library",
-          "name": "shared-services",
-          "$schema": "../../node_modules/nx/schemas/project-schema.json",
-          "sourceRoot": "libs/shared-services/src",
-          "prefix": "lib",
+          "name": "landing-templates",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/shared/landing-templates/src",
           "tags": [
             "scope:shared"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "tenant-config": {
+        "name": "tenant-config",
+        "type": "lib",
+        "data": {
+          "root": "libs/shared/tenant-config",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "tenant-config",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/shared/tenant-config/src",
+          "projectType": "library",
+          "tags": [
+            "scope:shared"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "data-access-billing": {
+        "name": "data-access-billing",
+        "type": "lib",
+        "data": {
+          "root": "libs/data-access/billing",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "data-access-billing",
+          "sourceRoot": "libs/data-access/billing/src",
+          "projectType": "library",
+          "tags": [
+            "scope:data-access"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "data-access-profile": {
+        "name": "data-access-profile",
+        "type": "lib",
+        "data": {
+          "root": "libs/data-access/profile",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            },
+            "test": {
+              "options": {
+                "cwd": "libs/data-access/profile",
+                "command": "vitest"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "vitest"
+                  ]
+                },
+                {
+                  "env": "CI"
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}\\coverage\\libs\\data-access\\profile"
+              ],
+              "metadata": {
+                "technologies": [
+                  "vite"
+                ],
+                "description": "Run Vite tests",
+                "help": {
+                  "command": "npx vitest --help",
+                  "example": {
+                    "options": {
+                      "bail": 1,
+                      "coverage": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "cache": true,
+              "inputs": [
+                "production",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "typescript"
+                  ]
+                }
+              ],
+              "options": {
+                "cwd": "libs/data-access/profile",
+                "command": "tsc --noEmit -p tsconfig.lib.json"
+              },
+              "metadata": {
+                "description": "Runs type-checking for the project.",
+                "technologies": [
+                  "typescript"
+                ],
+                "help": {
+                  "command": "npx tsc -p tsconfig.lib.json --help",
+                  "example": {
+                    "options": {
+                      "noEmit": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "npx nx watch --projects data-access-profile --includeDependentProjects -- npx nx build-deps data-access-profile"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "vite:test": {
+              "options": {
+                "cwd": "libs/data-access/profile",
+                "command": "vitest"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "vitest"
+                  ]
+                },
+                {
+                  "env": "CI"
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}\\coverage\\libs\\data-access\\profile"
+              ],
+              "metadata": {
+                "technologies": [
+                  "vitest"
+                ],
+                "description": "Run Vitest tests",
+                "help": {
+                  "command": "npx vitest --help",
+                  "example": {
+                    "options": {
+                      "bail": 1,
+                      "coverage": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "metadata": {},
+          "projectType": "library",
+          "name": "data-access-profile",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/data-access/profile/src",
+          "prefix": "lib",
+          "tags": [
+            "scope:data-access"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "data-access-tenant": {
+        "name": "data-access-tenant",
+        "type": "lib",
+        "data": {
+          "root": "libs/data-access/tenant",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            },
+            "test": {
+              "options": {
+                "cwd": "libs/data-access/tenant",
+                "command": "vitest"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "vitest"
+                  ]
+                },
+                {
+                  "env": "CI"
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}\\coverage\\libs\\data-access\\tenant"
+              ],
+              "metadata": {
+                "technologies": [
+                  "vite"
+                ],
+                "description": "Run Vite tests",
+                "help": {
+                  "command": "npx vitest --help",
+                  "example": {
+                    "options": {
+                      "bail": 1,
+                      "coverage": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "cache": true,
+              "inputs": [
+                "production",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "typescript"
+                  ]
+                }
+              ],
+              "options": {
+                "cwd": "libs/data-access/tenant",
+                "command": "tsc --noEmit -p tsconfig.lib.json"
+              },
+              "metadata": {
+                "description": "Runs type-checking for the project.",
+                "technologies": [
+                  "typescript"
+                ],
+                "help": {
+                  "command": "npx tsc -p tsconfig.lib.json --help",
+                  "example": {
+                    "options": {
+                      "noEmit": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "npx nx watch --projects data-access-tenant --includeDependentProjects -- npx nx build-deps data-access-tenant"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "vite:test": {
+              "options": {
+                "cwd": "libs/data-access/tenant",
+                "command": "vitest"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "vitest"
+                  ]
+                },
+                {
+                  "env": "CI"
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}\\coverage\\libs\\data-access\\tenant"
+              ],
+              "metadata": {
+                "technologies": [
+                  "vitest"
+                ],
+                "description": "Run Vitest tests",
+                "help": {
+                  "command": "npx vitest --help",
+                  "example": {
+                    "options": {
+                      "bail": 1,
+                      "coverage": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "metadata": {},
+          "projectType": "library",
+          "name": "data-access-tenant",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/data-access/tenant/src",
+          "prefix": "lib",
+          "tags": [
+            "scope:data-access"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "data-access-auth": {
+        "name": "data-access-auth",
+        "type": "lib",
+        "data": {
+          "root": "libs/data-access/auth",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            },
+            "test": {
+              "options": {
+                "cwd": "libs/data-access/auth",
+                "command": "vitest"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "vitest"
+                  ]
+                },
+                {
+                  "env": "CI"
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}\\coverage\\libs\\data-access\\auth"
+              ],
+              "metadata": {
+                "technologies": [
+                  "vite"
+                ],
+                "description": "Run Vite tests",
+                "help": {
+                  "command": "npx vitest --help",
+                  "example": {
+                    "options": {
+                      "bail": 1,
+                      "coverage": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "cache": true,
+              "inputs": [
+                "production",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "typescript"
+                  ]
+                }
+              ],
+              "options": {
+                "cwd": "libs/data-access/auth",
+                "command": "tsc --noEmit -p tsconfig.lib.json"
+              },
+              "metadata": {
+                "description": "Runs type-checking for the project.",
+                "technologies": [
+                  "typescript"
+                ],
+                "help": {
+                  "command": "npx tsc -p tsconfig.lib.json --help",
+                  "example": {
+                    "options": {
+                      "noEmit": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "npx nx watch --projects data-access-auth --includeDependentProjects -- npx nx build-deps data-access-auth"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "vite:test": {
+              "options": {
+                "cwd": "libs/data-access/auth",
+                "command": "vitest"
+              },
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                {
+                  "externalDependencies": [
+                    "vitest"
+                  ]
+                },
+                {
+                  "env": "CI"
+                }
+              ],
+              "outputs": [
+                "{workspaceRoot}\\coverage\\libs\\data-access\\auth"
+              ],
+              "metadata": {
+                "technologies": [
+                  "vitest"
+                ],
+                "description": "Run Vitest tests",
+                "help": {
+                  "command": "npx vitest --help",
+                  "example": {
+                    "options": {
+                      "bail": 1,
+                      "coverage": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "metadata": {},
+          "projectType": "library",
+          "name": "data-access-auth",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/data-access/auth/src",
+          "prefix": "lib",
+          "tags": [
+            "scope:data-access"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "data-access-user": {
+        "name": "data-access-user",
+        "type": "lib",
+        "data": {
+          "root": "libs/data-access/user",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "data-access-user",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/data-access/user/src",
+          "projectType": "library",
+          "tags": [
+            "scope:data-access"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "tenant-settings": {
+        "name": "tenant-settings",
+        "type": "lib",
+        "data": {
+          "root": "libs/tenant-settings",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "tenant-settings",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/tenant-settings/src",
+          "projectType": "library",
+          "tags": [
+            "scope:core"
           ],
           "implicitDependencies": []
         }
@@ -624,8 +953,7 @@
               ],
               "outputs": [
                 "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/test-output",
-                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/playwright-report",
-                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/blob-report"
+                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/playwright-report"
               ],
               "executor": "nx:run-commands",
               "configurations": {},
@@ -636,8 +964,7 @@
                 "cwd": "apps/web-angular-e2e",
                 "env": {
                   "PLAYWRIGHT_HTML_OUTPUT_DIR": "..\\..\\dist\\.playwright\\apps\\web-angular-e2e\\playwright-report\\src-example-spec-ts",
-                  "PLAYWRIGHT_HTML_REPORT": "..\\..\\dist\\.playwright\\apps\\web-angular-e2e\\playwright-report\\src-example-spec-ts",
-                  "PLAYWRIGHT_BLOB_OUTPUT_FILE": "..\\..\\dist\\.playwright\\apps\\web-angular-e2e\\blob-report\\src-example-spec-ts.zip"
+                  "PLAYWRIGHT_HTML_REPORT": "..\\..\\dist\\.playwright\\apps\\web-angular-e2e\\playwright-report\\src-example-spec-ts"
                 },
                 "command": "playwright test src/example.spec.ts --output=..\\..\\dist\\.playwright\\apps\\web-angular-e2e\\test-output\\src-example-spec-ts"
               },
@@ -676,8 +1003,7 @@
               ],
               "outputs": [
                 "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/test-output/src-example-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/playwright-report/src-example-spec-ts",
-                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/blob-report/src-example-spec-ts.zip"
+                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/playwright-report/src-example-spec-ts"
               ],
               "executor": "nx:run-commands",
               "configurations": {},
@@ -698,8 +1024,7 @@
               ],
               "outputs": [
                 "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/test-output",
-                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/playwright-report",
-                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/blob-report"
+                "{workspaceRoot}/dist/.playwright/apps/web-angular-e2e/playwright-report"
               ],
               "dependsOn": [
                 {
@@ -766,7 +1091,7 @@
               "inputs": [
                 "default",
                 "^default",
-                "{workspaceRoot}/eslint.config.mjs",
+                "{workspaceRoot}/eslint.base.config.mjs",
                 "{workspaceRoot}/apps/web-angular-e2e/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
@@ -822,7 +1147,7 @@
               "inputs": [
                 "default",
                 "^default",
-                "{workspaceRoot}/eslint.config.mjs",
+                "{workspaceRoot}/eslint.base.config.mjs",
                 "{workspaceRoot}/libs/shared/models/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
@@ -998,11 +1323,116 @@
           "implicitDependencies": []
         }
       },
-      "mobile-ionic": {
-        "name": "mobile-ionic",
+      "shared-utils": {
+        "name": "shared-utils",
+        "type": "lib",
+        "data": {
+          "root": "libs/shared/utils",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "shared-utils",
+          "sourceRoot": "libs/shared/utils/src",
+          "projectType": "library",
+          "tags": [
+            "scope:shared"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "theme": {
+        "name": "theme",
+        "type": "lib",
+        "data": {
+          "root": "libs/shared/theme",
+          "name": "theme",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/shared/theme/src",
+          "projectType": "library",
+          "tags": [
+            "scope:shared"
+          ],
+          "targets": {},
+          "implicitDependencies": []
+        }
+      },
+      "core-tenant": {
+        "name": "core-tenant",
+        "type": "lib",
+        "data": {
+          "root": "libs/core/tenant",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "core-tenant",
+          "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/core/tenant/src",
+          "projectType": "library",
+          "tags": [
+            "scope:core"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "i18n": {
+        "name": "i18n",
+        "type": "lib",
+        "data": {
+          "root": "libs/shared/i18n",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "i18n",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/shared/i18n/src",
+          "projectType": "library",
+          "tags": [
+            "scope:shared"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "super-admin": {
+        "name": "super-admin",
         "type": "app",
         "data": {
-          "root": "apps/mobile-ionic",
+          "root": "apps/super-admin",
           "targets": {
             "lint": {
               "executor": "@nx/eslint:lint",
@@ -1017,157 +1447,29 @@
                 "{workspaceRoot}/eslint.config.mjs"
               ]
             },
-            "test": {
-              "options": {
-                "cwd": "apps/mobile-ionic",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\apps\\mobile-ionic"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vite"
-                ],
-                "description": "Run Vite tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "typecheck": {
-              "cache": true,
-              "inputs": [
-                "production",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "typescript"
-                  ]
-                }
-              ],
-              "options": {
-                "cwd": "apps/mobile-ionic",
-                "command": "tsc --noEmit -p tsconfig.app.json"
-              },
-              "metadata": {
-                "description": "Runs type-checking for the project.",
-                "technologies": [
-                  "typescript"
-                ],
-                "help": {
-                  "command": "npx tsc -p tsconfig.app.json --help",
-                  "example": {
-                    "options": {
-                      "noEmit": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
-            "build-deps": {
-              "dependsOn": [
-                "^build"
-              ],
-              "configurations": {},
-              "options": {},
-              "parallelism": true,
-              "executor": "nx:noop"
-            },
-            "watch-deps": {
-              "continuous": true,
-              "dependsOn": [
-                "build-deps"
-              ],
-              "executor": "nx:run-commands",
-              "options": {
-                "command": "npx nx watch --projects mobile-ionic --includeDependentProjects -- npx nx build-deps mobile-ionic"
-              },
-              "configurations": {},
-              "parallelism": true
-            },
-            "vite:test": {
-              "options": {
-                "cwd": "apps/mobile-ionic",
-                "command": "vitest"
-              },
-              "cache": true,
-              "inputs": [
-                "default",
-                "^production",
-                {
-                  "externalDependencies": [
-                    "vitest"
-                  ]
-                },
-                {
-                  "env": "CI"
-                }
-              ],
-              "outputs": [
-                "{workspaceRoot}\\coverage\\apps\\mobile-ionic"
-              ],
-              "metadata": {
-                "technologies": [
-                  "vitest"
-                ],
-                "description": "Run Vitest tests",
-                "help": {
-                  "command": "npx vitest --help",
-                  "example": {
-                    "options": {
-                      "bail": 1,
-                      "coverage": true
-                    }
-                  }
-                }
-              },
-              "executor": "nx:run-commands",
-              "configurations": {},
-              "parallelism": true
-            },
             "build": {
               "executor": "@angular/build:application",
               "outputs": [
                 "{options.outputPath}"
               ],
               "options": {
-                "outputPath": "dist/apps/mobile-ionic",
-                "browser": "apps/mobile-ionic/src/main.ts",
-                "tsConfig": "apps/mobile-ionic/tsconfig.app.json",
+                "outputPath": "dist/apps/super-admin",
+                "browser": "apps/super-admin/src/main.ts",
+                "tsConfig": "apps/super-admin/tsconfig.app.json",
                 "assets": [
                   {
                     "glob": "**/*",
-                    "input": "apps/mobile-ionic/public"
+                    "input": "apps/super-admin/public"
+                  },
+                  {
+                    "glob": "**/*.html",
+                    "input": "libs/shared/landing-templates/designs",
+                    "output": "/assets/designs"
                   }
                 ],
                 "styles": [
-                  "apps/mobile-ionic/src/styles.css"
+                  "apps/super-admin/src/styles.css",
+                  "libs/shared/landing-templates/src/themes/theme-templates.css"
                 ]
               },
               "configurations": {
@@ -1175,8 +1477,8 @@
                   "budgets": [
                     {
                       "type": "initial",
-                      "maximumWarning": "900kb",
-                      "maximumError": "1mb"
+                      "maximumWarning": "1mb",
+                      "maximumError": "1.5mb"
                     },
                     {
                       "type": "anyComponentStyle",
@@ -1184,12 +1486,24 @@
                       "maximumError": "16kb"
                     }
                   ],
-                  "outputHashing": "all"
+                  "outputHashing": "all",
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/super-admin/src/environments/environment.ts",
+                      "with": "apps/super-admin/src/environments/environment.prod.ts"
+                    }
+                  ]
                 },
                 "development": {
                   "optimization": false,
                   "extractLicenses": false,
-                  "sourceMap": true
+                  "sourceMap": true,
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/super-admin/src/environments/environment.ts",
+                      "with": "apps/super-admin/src/environments/environment.development.ts"
+                    }
+                  ]
                 }
               },
               "defaultConfiguration": "production",
@@ -1206,38 +1520,29 @@
             "serve": {
               "continuous": true,
               "executor": "@angular/build:dev-server",
+              "options": {
+                "proxyConfig": "apps/super-admin/proxy.conf.js"
+              },
               "configurations": {
                 "production": {
-                  "buildTarget": "mobile-ionic:build:production"
+                  "buildTarget": "super-admin:build:production"
                 },
                 "development": {
-                  "buildTarget": "mobile-ionic:build:development"
+                  "buildTarget": "super-admin:build:development"
                 }
               },
               "defaultConfiguration": "development",
-              "options": {},
-              "parallelism": true
-            },
-            "serve-static": {
-              "continuous": true,
-              "executor": "@nx/web:file-server",
-              "options": {
-                "buildTarget": "mobile-ionic:build",
-                "port": 4200,
-                "staticFilePath": "dist/apps/mobile-ionic/browser",
-                "spa": true
-              },
-              "configurations": {},
               "parallelism": true
             }
           },
-          "metadata": {},
-          "projectType": "application",
-          "name": "mobile-ionic",
+          "name": "super-admin",
           "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
           "prefix": "app",
-          "sourceRoot": "apps/mobile-ionic/src",
-          "tags": [],
+          "sourceRoot": "apps/super-admin/src",
+          "tags": [
+            "scope:super-admin"
+          ],
           "implicitDependencies": []
         }
       },
@@ -1407,10 +1712,22 @@
                   {
                     "glob": "**/*",
                     "input": "apps/web-angular/public"
+                  },
+                  {
+                    "glob": "**/*.json",
+                    "input": "libs/shared/i18n/src/assets/i18n",
+                    "output": "/assets/i18n"
+                  },
+                  {
+                    "glob": "**/*.html",
+                    "input": "libs/shared/landing-templates/designs",
+                    "output": "/assets/designs"
                   }
                 ],
                 "styles": [
-                  "apps/web-angular/src/styles.css"
+                  "apps/web-angular/src/styles.css",
+                  "libs/shared/theme/src/themes/theme-base.css",
+                  "libs/shared/landing-templates/src/themes/theme-templates.css"
                 ]
               },
               "configurations": {
@@ -1423,16 +1740,49 @@
                     },
                     {
                       "type": "anyComponentStyle",
-                      "maximumWarning": "12kb",
-                      "maximumError": "16kb"
+                      "maximumWarning": "20kb",
+                      "maximumError": "24kb"
                     }
                   ],
-                  "outputHashing": "all"
+                  "outputHashing": "all",
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/web-angular/src/environments/environment.ts",
+                      "with": "apps/web-angular/src/environments/environment.prod.ts"
+                    }
+                  ]
                 },
                 "development": {
                   "optimization": false,
                   "extractLicenses": false,
-                  "sourceMap": true
+                  "sourceMap": true,
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/web-angular/src/environments/environment.ts",
+                      "with": "apps/web-angular/src/environments/environment.development.ts"
+                    }
+                  ]
+                },
+                "tenant-demo": {
+                  "budgets": [
+                    {
+                      "type": "initial",
+                      "maximumWarning": "900kb",
+                      "maximumError": "1mb"
+                    },
+                    {
+                      "type": "anyComponentStyle",
+                      "maximumWarning": "20kb",
+                      "maximumError": "24kb"
+                    }
+                  ],
+                  "outputHashing": "all",
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/web-angular/src/environments/environment.ts",
+                      "with": "apps/web-angular/src/environments/environment.tenant-demo.ts"
+                    }
+                  ]
                 }
               },
               "defaultConfiguration": "production",
@@ -1449,6 +1799,9 @@
             "serve": {
               "continuous": true,
               "executor": "@angular/build:dev-server",
+              "options": {
+                "proxyConfig": "apps/web-angular/proxy.conf.js"
+              },
               "configurations": {
                 "production": {
                   "buildTarget": "web-angular:build:production"
@@ -1458,7 +1811,6 @@
                 }
               },
               "defaultConfiguration": "development",
-              "options": {},
               "parallelism": true
             },
             "serve-static": {
@@ -1486,6 +1838,338 @@
           "implicitDependencies": []
         }
       },
+      "admin-web": {
+        "name": "admin-web",
+        "type": "app",
+        "data": {
+          "root": "apps/admin-web",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            },
+            "build": {
+              "executor": "@angular/build:application",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "options": {
+                "outputPath": "dist/apps/admin-web",
+                "browser": "apps/admin-web/src/main.ts",
+                "tsConfig": "apps/admin-web/tsconfig.app.json",
+                "assets": [
+                  {
+                    "glob": "**/*",
+                    "input": "apps/admin-web/public"
+                  }
+                ],
+                "styles": [
+                  "apps/admin-web/src/styles.css",
+                  "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+                ]
+              },
+              "configurations": {
+                "production": {
+                  "budgets": [
+                    {
+                      "type": "initial",
+                      "maximumWarning": "900kb",
+                      "maximumError": "1mb"
+                    },
+                    {
+                      "type": "anyComponentStyle",
+                      "maximumWarning": "12kb",
+                      "maximumError": "16kb"
+                    }
+                  ],
+                  "outputHashing": "all",
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/admin-web/src/environments/environment.ts",
+                      "with": "apps/admin-web/src/environments/environment.prod.ts"
+                    }
+                  ]
+                },
+                "development": {
+                  "optimization": false,
+                  "extractLicenses": false,
+                  "sourceMap": true,
+                  "fileReplacements": [
+                    {
+                      "replace": "apps/admin-web/src/environments/environment.ts",
+                      "with": "apps/admin-web/src/environments/environment.development.ts"
+                    }
+                  ]
+                }
+              },
+              "defaultConfiguration": "production",
+              "parallelism": true,
+              "cache": true,
+              "dependsOn": [
+                "^build"
+              ],
+              "inputs": [
+                "production",
+                "^production"
+              ]
+            },
+            "serve": {
+              "continuous": true,
+              "executor": "@angular/build:dev-server",
+              "options": {
+                "proxyConfig": "apps/admin-web/proxy.conf.js"
+              },
+              "configurations": {
+                "production": {
+                  "buildTarget": "admin-web:build:production"
+                },
+                "development": {
+                  "buildTarget": "admin-web:build:development"
+                }
+              },
+              "defaultConfiguration": "development",
+              "parallelism": true
+            }
+          },
+          "name": "admin-web",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
+          "prefix": "app",
+          "sourceRoot": "apps/admin-web/src",
+          "tags": [
+            "scope:admin"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "core-auth": {
+        "name": "core-auth",
+        "type": "lib",
+        "data": {
+          "root": "libs/core/auth",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "core-auth",
+          "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/core/auth/src",
+          "projectType": "library",
+          "tags": [
+            "scope:core"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "generated": {
+        "name": "generated",
+        "type": "lib",
+        "data": {
+          "root": "libs/generated",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "generated",
+          "sourceRoot": "libs/generated/src",
+          "projectType": "library",
+          "tags": [
+            "scope:shared",
+            "type:api-client"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "shared-ui-components": {
+        "name": "shared-ui-components",
+        "type": "lib",
+        "data": {
+          "root": "libs/shared/ui",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "shared-ui-components",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/shared/ui/src",
+          "projectType": "library",
+          "tags": [
+            "scope:shared"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "landing": {
+        "name": "landing",
+        "type": "app",
+        "data": {
+          "root": "apps/landing",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            },
+            "build": {
+              "executor": "@angular/build:application",
+              "outputs": [
+                "{options.outputPath}"
+              ],
+              "options": {
+                "outputPath": "dist/apps/landing",
+                "browser": "apps/landing/src/main.ts",
+                "tsConfig": "apps/landing/tsconfig.app.json",
+                "assets": [
+                  {
+                    "glob": "**/*",
+                    "input": "apps/landing/public"
+                  }
+                ],
+                "styles": [
+                  "apps/landing/src/styles.css"
+                ]
+              },
+              "configurations": {
+                "production": {
+                  "budgets": [
+                    {
+                      "type": "initial",
+                      "maximumWarning": "500kb",
+                      "maximumError": "600kb"
+                    },
+                    {
+                      "type": "anyComponentStyle",
+                      "maximumWarning": "8kb",
+                      "maximumError": "12kb"
+                    }
+                  ],
+                  "outputHashing": "all"
+                },
+                "development": {
+                  "optimization": false,
+                  "extractLicenses": false,
+                  "sourceMap": true
+                }
+              },
+              "defaultConfiguration": "production",
+              "parallelism": true,
+              "cache": true,
+              "dependsOn": [
+                "^build"
+              ],
+              "inputs": [
+                "production",
+                "^production"
+              ]
+            },
+            "serve": {
+              "continuous": true,
+              "executor": "@angular/build:dev-server",
+              "configurations": {
+                "production": {
+                  "buildTarget": "landing:build:production"
+                },
+                "development": {
+                  "buildTarget": "landing:build:development"
+                }
+              },
+              "defaultConfiguration": "development",
+              "options": {},
+              "parallelism": true
+            }
+          },
+          "name": "landing",
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "projectType": "application",
+          "prefix": "app",
+          "sourceRoot": "apps/landing/src",
+          "tags": [
+            "scope:marketing"
+          ],
+          "implicitDependencies": []
+        }
+      },
+      "core": {
+        "name": "core",
+        "type": "lib",
+        "data": {
+          "root": "libs/core",
+          "targets": {
+            "lint": {
+              "executor": "@nx/eslint:lint",
+              "options": {},
+              "configurations": {},
+              "parallelism": true,
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/.eslintrc.json",
+                "{workspaceRoot}/.eslintignore",
+                "{workspaceRoot}/eslint.config.mjs"
+              ]
+            }
+          },
+          "name": "core",
+          "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "libs/core/src",
+          "prefix": "lib",
+          "projectType": "library",
+          "tags": [
+            "scope:core"
+          ],
+          "implicitDependencies": []
+        }
+      },
       "api": {
         "name": "api",
         "type": "app",
@@ -1501,7 +2185,7 @@
               "inputs": [
                 "default",
                 "^default",
-                "{workspaceRoot}/eslint.config.mjs",
+                "{workspaceRoot}/eslint.base.config.mjs",
                 "{workspaceRoot}/apps/api/eslint.config.mjs",
                 "{workspaceRoot}/tools/eslint-rules/**/*",
                 {
@@ -1835,18 +2519,99 @@
       }
     },
     "dependencies": {
-      "matrimony-models": [],
-      "mobile-ionic-e2e": [
+      "data-access-notification": [
         {
-          "source": "mobile-ionic-e2e",
-          "target": "mobile-ionic",
-          "type": "implicit"
+          "source": "data-access-notification",
+          "target": "generated",
+          "type": "static"
         }
       ],
-      "shared-services": [
+      "data-access-registration": [
         {
-          "source": "shared-services",
+          "source": "data-access-registration",
+          "target": "generated",
+          "type": "static"
+        },
+        {
+          "source": "data-access-registration",
           "target": "models",
+          "type": "static"
+        }
+      ],
+      "data-access-subscription": [
+        {
+          "source": "data-access-subscription",
+          "target": "generated",
+          "type": "static"
+        }
+      ],
+      "landing-templates": [],
+      "tenant-config": [
+        {
+          "source": "tenant-config",
+          "target": "landing-templates",
+          "type": "static"
+        }
+      ],
+      "data-access-billing": [
+        {
+          "source": "data-access-billing",
+          "target": "generated",
+          "type": "static"
+        }
+      ],
+      "data-access-profile": [
+        {
+          "source": "data-access-profile",
+          "target": "models",
+          "type": "static"
+        },
+        {
+          "source": "data-access-profile",
+          "target": "i18n",
+          "type": "static"
+        },
+        {
+          "source": "data-access-profile",
+          "target": "generated",
+          "type": "static"
+        }
+      ],
+      "data-access-tenant": [
+        {
+          "source": "data-access-tenant",
+          "target": "generated",
+          "type": "static"
+        }
+      ],
+      "data-access-auth": [
+        {
+          "source": "data-access-auth",
+          "target": "generated",
+          "type": "static"
+        }
+      ],
+      "data-access-user": [
+        {
+          "source": "data-access-user",
+          "target": "generated",
+          "type": "static"
+        }
+      ],
+      "tenant-settings": [
+        {
+          "source": "tenant-settings",
+          "target": "generated",
+          "type": "static"
+        },
+        {
+          "source": "tenant-settings",
+          "target": "core",
+          "type": "static"
+        },
+        {
+          "source": "tenant-settings",
+          "target": "shared-ui-components",
           "type": "static"
         }
       ],
@@ -1858,33 +2623,207 @@
         }
       ],
       "models": [],
-      "mobile-ionic": [
+      "shared-utils": [],
+      "theme": [],
+      "core-tenant": [
         {
-          "source": "mobile-ionic",
-          "target": "shared-services",
+          "source": "core-tenant",
+          "target": "data-access-tenant",
           "type": "static"
         }
       ],
-      "products": [
+      "i18n": [
         {
-          "source": "products",
-          "target": "models",
+          "source": "i18n",
+          "target": "tenant-config",
           "type": "static"
         }
       ],
-      "web-angular": [],
-      "api": [
+      "super-admin": [
         {
-          "source": "api",
-          "target": "products",
+          "source": "super-admin",
+          "target": "core",
           "type": "static"
         },
         {
-          "source": "api",
-          "target": "models",
+          "source": "super-admin",
+          "target": "shared-ui-components",
+          "type": "static"
+        },
+        {
+          "source": "super-admin",
+          "target": "landing-templates",
+          "type": "static"
+        },
+        {
+          "source": "super-admin",
+          "target": "data-access-auth",
+          "type": "static"
+        },
+        {
+          "source": "super-admin",
+          "target": "generated",
+          "type": "static"
+        },
+        {
+          "source": "super-admin",
+          "target": "tenant-settings",
           "type": "static"
         }
-      ]
+      ],
+      "web-angular": [
+        {
+          "source": "web-angular",
+          "target": "core",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "i18n",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "data-access-registration",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "generated",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "landing-templates",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "data-access-subscription",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "tenant-config",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "data-access-billing",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "models",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "shared-utils",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "data-access-tenant",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "data-access-auth",
+          "type": "static"
+        },
+        {
+          "source": "web-angular",
+          "target": "data-access-profile",
+          "type": "static"
+        }
+      ],
+      "admin-web": [
+        {
+          "source": "admin-web",
+          "target": "core",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "shared-ui-components",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "data-access-auth",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "data-access-notification",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "data-access-user",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "data-access-profile",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "generated",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "data-access-billing",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "data-access-subscription",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "tenant-settings",
+          "type": "static"
+        },
+        {
+          "source": "admin-web",
+          "target": "data-access-tenant",
+          "type": "static"
+        }
+      ],
+      "core-auth": [
+        {
+          "source": "core-auth",
+          "target": "data-access-auth",
+          "type": "static"
+        }
+      ],
+      "generated": [],
+      "shared-ui-components": [
+        {
+          "source": "shared-ui-components",
+          "target": "core",
+          "type": "static"
+        }
+      ],
+      "landing": [],
+      "core": [
+        {
+          "source": "core",
+          "target": "core-auth",
+          "type": "static"
+        },
+        {
+          "source": "core",
+          "target": "core-tenant",
+          "type": "static"
+        }
+      ],
+      "api": []
     }
   }
 }

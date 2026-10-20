@@ -10,10 +10,9 @@
 
 This repository demonstrates a production-ready Angular monorepo with:
 
-- **3 Applications**
+- **2 Applications**
 
   - `web-angular` - Web client
-  - `mobile-ionic` - Ionic mobile client
   - `api` - Backend API with Docker support
 
 - **Core Libraries**
@@ -24,7 +23,6 @@ This repository demonstrates a production-ready Angular monorepo with:
 
 - **E2E Testing**
   - `web-angular-e2e` - Playwright tests for web app
-  - `mobile-ionic-e2e` - Playwright tests for mobile app
 
 ## 🚀 Quick Start
 
@@ -40,9 +38,6 @@ npm install
 # Serve the web application
 npx nx serve web-angular
 
-# Serve the mobile application
-npx nx serve mobile-ionic
-
 # ...or you can serve the API separately
 npx nx serve api
 
@@ -57,7 +52,6 @@ npx nx run-many -t lint
 
 # Run e2e tests
 npx nx e2e web-angular-e2e
-npx nx e2e mobile-ionic-e2e
 
 # Run tasks in parallel
 
@@ -164,8 +158,6 @@ This feature helps maintain a healthy CI pipeline by automatically detecting and
 ├── apps/
 │   ├── web-angular/                  - Angular web app
 │   ├── web-angular-e2e/              - E2E tests for web app
-│   ├── mobile-ionic/                 - Ionic mobile app
-│   ├── mobile-ionic-e2e/             - E2E tests for mobile app
 │   └── api/                          - Backend API with Docker
 ├── libs/
 │   ├── api/
@@ -186,7 +178,6 @@ This repository uses tags to enforce module boundaries:
 | Project            | Tags                        | Can Import From              |
 | ------------------ | --------------------------- | ---------------------------- |
 | `web-angular`      | `scope:web`                 | `scope:shared`, `scope:api`  |
-| `mobile-ionic`     | `scope:mobile`              | `scope:shared`, `scope:api`  |
 | `api`              | `scope:api`                 | `scope:shared`               |
 | `shared-services`  | `scope:shared`, `type:data` | `scope:shared`, `scope:api`  |
 | `models`           | `scope:shared`, `type:data` | Nothing (base library)       |
@@ -201,10 +192,8 @@ npx nx show project web-angular --web           # View project details
 
 # Development
 npx nx serve web-angular                        # Serve web app
-npx nx serve mobile-ionic                       # Serve mobile app
 npx nx serve api                               # Serve backend API
 npx nx build web-angular                        # Build web app
-npx nx build mobile-ionic                       # Build mobile app
 npx nx test shared-services                     # Test a specific library
 npx nx lint web-angular                         # Lint a specific app
 
