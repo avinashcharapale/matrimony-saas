@@ -1,0 +1,123 @@
+# Fastlane configuration for Android
+# Run with: bundle exec fastlane [lane]
+
+fastlane_version "2.220.0"
+
+default_platform :android
+
+platform :android do
+  # App package name
+  package_name = "com.matrimony.saas"
+  
+  # Path to AAB/APK
+  aab_path = "../app/build/outputs/bundle/release/app-release.aab"
+  apk_path = "../app/build/outputs/apk/release/app-release.apk"
+
+  before_all do
+    # Ensure we have the keystore
+    unless ENV['ANDROID_KEYSTORE_PATH']
+      UI.error "ANDROID_KEYSTORE_PATH environment variable not set"
+      exit 1
+    end
+  end
+
+  desc "Build release AAB"
+  lane :build do
+    gradle(
+      task: "bundleRelease",
+      project_dir: "..",
+      properties: {
+        "versionCode" => ENV['VERSION_CODE'] || "1",
+        "versionName" => ENV['VERSION_NAME'] || "1.0.0"
+      }
+    )
+  end
+
+  desc "Deploy to Google Play Console (internal testing)"
+  lane :deploy_internal do
+    build
+    
+    upload_to_play_store(
+      track: 'internal',
+      aab: aab_path,
+      json_key: ENV['PLAY_STORE_CONFIG_JSON'],
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: 'draft'
+    )
+  end
+
+  desc "Deploy to Google Play Console (alpha/beta)"
+  lane :deploy_alpha do
+    build
+    
+    upload_to_play_store(
+      track: 'alpha',
+      aab: aab_path,
+      json_key: ENV['PLAY_STORE_CONFIG_JSON'],
+      skip_upload_apk: true,
+      release_status: 'draft'
+    )
+  end
+
+  desc "Deploy to Google Play Console (production)"
+  lane :deploy_production do
+    build
+    
+    upload_to_play_store(
+      track: 'production',
+      aab: aab_path,
+      json_key: ENV['PLAY_STORE_CONFIG_JSON'],
+      skip_upload_apk: true,
+      release_status: 'draft'
+    )
+  end
+
+  desc "Deploy to specified track (internal/alpha/beta/production)"
+  lane :deploy do |options|
+    track = options[:track] || 'internal'
+    
+    build
+    
+    upload_to_play_store(
+      track: track,
+      aab: aab_path,
+      json_key: ENV['PLAY_STORE_CONFIG_JSON'],
+      skip_upload_apk: true,
+      release_status: 'draft'
+    )
+  end
+
+  desc "Promote release between tracks"
+  lane :promote do |options|
+    from_track = options[:from] || 'internal'
+    to_track = options[:to] || 'alpha'
+    
+    upload_to_play_store(
+      track: to_track,
+      track_promote_to: to_track,
+      track_promote_from: from_track,
+      json_key: ENV['PLAY_STORE_CONFIG_JSON'],
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Get current version info from Play Console"
+  lane :version_info do
+    track = ENV['TRACK'] || 'internal'
+    
+    versions = google_play_track_version_codes(
+      track: track,
+      json_key: ENV['PLAY_STORE_CONFIG_JSON'],
+      package_name: package_name
+    )
+    
+    UI.message "Current version codes on #{track}: #{versions}"
+  end
+end

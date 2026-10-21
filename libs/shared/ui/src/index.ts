@@ -8,3 +8,7 @@ export { StatusBadgeComponent } from './lib/status-badge.component';
 export { EmptyStateComponent } from './lib/empty-state.component';
 export { PaginatorComponent } from './lib/paginator.component';
 export { createSort, createPagination } from './lib/table-utils';
+export { SkeletonComponent } from './lib/skeleton/skeleton.component';
+export { ProfileSkeletonComponent } from './lib/skeleton/profile-skeleton.component';
+export { StatsSkeletonComponent } from './lib/skeleton/stats-skeleton.component';
+export { MessageSkeletonComponent } from './lib/skeleton/message-skeleton.component';

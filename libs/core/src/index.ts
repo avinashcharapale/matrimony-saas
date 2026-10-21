@@ -9,3 +9,4 @@ export { NotificationService, notificationInterceptor } from '../../core/notific
 export type { NotificationKind } from '../../core/notification/src/index';
 export { SignalRService, SIGNALR_BASE_URL } from '../../core/signalr/src/index';
 export type { NotificationEvent } from '../../core/signalr/src/index';
+export { ThemeService, type ThemeVariables } from '../../core/theme/src/index';

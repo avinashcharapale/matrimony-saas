@@ -93,6 +93,8 @@ export class Home implements OnInit {
   readonly recentlyShortlisted = signal<ShortlistItem[]>([]);
   readonly sidebarOpen = this.sidebarService.isOpen;
 
+  readonly isLoading = signal(true);
+
   private myProfileId: number | null = null;
   private myUserId: number | null = null;
 
@@ -149,6 +151,7 @@ export class Home implements OnInit {
   }
 
   private loadMyProfile(): void {
+    this.isLoading.set(true);
     this.memberService.getMyProfile().subscribe({
       next: (profile) => {
         const fullName = profile.fullName ?? '';
@@ -168,26 +171,39 @@ export class Home implements OnInit {
         const session = this.authService.getSession();
         this.myUserId = session?.userId ?? null;
 
+        let pendingLoads = 0;
+        const checkLoading = () => {
+          pendingLoads--;
+          if (pendingLoads <= 0) {
+            this.isLoading.set(false);
+          }
+        };
+
         if (profile.profileId) {
-          this.loadTopMatches(profile.profileId);
-          this.loadInterests(profile.profileId);
-          this.loadShortlists(profile.profileId);
-          this.loadQuickStats(profile.profileId);
+          pendingLoads += 4;
+          this.loadTopMatches(profile.profileId, checkLoading);
+          this.loadInterests(profile.profileId, checkLoading);
+          this.loadShortlists(profile.profileId, checkLoading);
+          this.loadQuickStats(profile.profileId, checkLoading);
         }
         this.loadHoroscope(profile);
         if (this.myUserId) {
-          this.loadMessages();
+          pendingLoads++;
+          this.loadMessages(checkLoading);
+        }
+        if (pendingLoads === 0) {
+          this.isLoading.set(false);
         }
       },
-      error: () => {},
+      error: () => this.isLoading.set(false),
     });
   }
 
-  private loadTopMatches(profileId: number): void {
+  private loadTopMatches(profileId: number, onComplete?: () => void): void {
     this.matchClient.getRecommendationsByProfile(profileId).subscribe({
       next: (recommendations) => {
         if (recommendations.length === 0) {
-          this.loadFallbackMatches();
+          this.loadFallbackMatches(onComplete);
           return;
         }
         const top = recommendations
@@ -216,15 +232,20 @@ export class Home implements OnInit {
               };
             });
             this.topMatches.set(matches);
+            onComplete?.();
           },
-          error: () => this.loadFallbackMatches(),
+          error: () => {
+            this.loadFallbackMatches(onComplete);
+          },
         });
       },
-      error: () => this.loadFallbackMatches(),
+      error: () => {
+        this.loadFallbackMatches(onComplete);
+      },
     });
   }
 
-  private loadFallbackMatches(): void {
+  private loadFallbackMatches(onComplete?: () => void): void {
     this.memberService.getProfiles(1, 5).subscribe({
       next: (response) => {
         const matches: MatchItem[] = response.profiles.map((p) => ({
@@ -239,8 +260,9 @@ export class Home implements OnInit {
           photoUrl: p.thumbnailUrl,
         }));
         this.topMatches.set(matches);
+        onComplete?.();
       },
-      error: () => {},
+      error: () => onComplete?.(),
     });
   }
 
@@ -258,11 +280,12 @@ export class Home implements OnInit {
     return map[Number(code)] ?? 'match';
   }
 
-  private loadInterests(profileId: number): void {
+  private loadInterests(profileId: number, onComplete?: () => void): void {
     this.matchClient.getInterestRequestsByTarget(profileId).subscribe({
       next: (requests) => {
         if (requests.length === 0) {
           this.interests.set([]);
+          onComplete?.();
           return;
         }
         const top = requests.slice(0, 5);
@@ -280,6 +303,7 @@ export class Home implements OnInit {
               status: this.mapInterestStatus(r.status),
             }))
           );
+          onComplete?.();
           return;
         }
 
@@ -304,11 +328,12 @@ export class Home implements OnInit {
               };
             });
             this.interests.set(interests);
+            onComplete?.();
           },
-          error: () => {},
+          error: () => onComplete?.(),
         });
       },
-      error: () => {},
+      error: () => onComplete?.(),
     });
   }
 
@@ -316,11 +341,12 @@ export class Home implements OnInit {
     return '';
   }
 
-  private loadShortlists(profileId: number): void {
+  private loadShortlists(profileId: number, onComplete?: () => void): void {
     this.matchClient.getShortlistsByProfile(profileId).subscribe({
       next: (shortlists) => {
         if (shortlists.length === 0) {
           this.recentlyShortlisted.set([]);
+          onComplete?.();
           return;
         }
         const top = shortlists.slice(0, 5);
@@ -338,6 +364,7 @@ export class Home implements OnInit {
                 : this.translate.instant('home.saved'),
             }))
           );
+          onComplete?.();
           return;
         }
 
@@ -362,15 +389,16 @@ export class Home implements OnInit {
               };
             });
             this.recentlyShortlisted.set(items);
+            onComplete?.();
           },
-          error: () => {},
+          error: () => onComplete?.(),
         });
       },
-      error: () => {},
+      error: () => onComplete?.(),
     });
   }
 
-  private loadQuickStats(profileId: number): void {
+  private loadQuickStats(profileId: number, onComplete?: () => void): void {
     let interestsCount = 0;
     let shortlistsCount = 0;
     let completed = 0;
@@ -381,6 +409,7 @@ export class Home implements OnInit {
         this.interestsCount.set(interestsCount);
         this.shortlistsCount.set(shortlistsCount);
         this.quickStatsLoaded.set(true);
+        onComplete?.();
       }
     };
 
@@ -401,8 +430,11 @@ export class Home implements OnInit {
     });
   }
 
-  private loadMessages(): void {
-    if (!this.myUserId) return;
+  private loadMessages(onComplete?: () => void): void {
+    if (!this.myUserId) {
+      onComplete?.();
+      return;
+    }
     this.chatClient.getConversationsByUser(this.myUserId).subscribe({
       next: (conversations) => {
         const active = conversations
@@ -431,8 +463,9 @@ export class Home implements OnInit {
           };
         });
         this.messages.set(messages);
+        onComplete?.();
       },
-      error: () => {},
+      error: () => onComplete?.(),
     });
   }
 

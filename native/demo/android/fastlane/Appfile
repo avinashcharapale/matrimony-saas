@@ -1,0 +1,11 @@
+# Fastlane Appfile for Android
+# Configuration for Google Play Console
+
+package_name "com.matrimony.saas"
+
+# JSON key file for Google Play Developer API
+# Set via environment variable: PLAY_STORE_CONFIG_JSON
+# json_key_file "path/to/google-play-credentials.json"
+
+# Optional: If you have multiple apps in the same project
+# json_key_data ENV["PLAY_STORE_CONFIG_JSON"]

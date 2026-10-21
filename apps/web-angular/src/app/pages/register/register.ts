@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl, FormArray, Validators, AbstractControl } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MemberService } from '../../services/member.service';
 import { RegisterDraftContext, RegisterDraftService } from '../../services/register-draft.service';
-import { normalizeText, normalizePhone, isValidTenDigitPhone, isValidEmail, isValidName } from '@org/shared-utils';
 import { TenantStore } from '@org/data-access-tenant';
-import { CreateProfileDto } from '@org/generated';
 import { RegisterStepperComponent } from './components/register-stepper.component';
 import { RegisterStepPersonalComponent } from './components/register-step-personal/register-step-personal.component';
 import { RegisterStepHoroscopeComponent } from './components/register-step-horoscope/register-step-horoscope.component';
@@ -14,20 +12,8 @@ import { RegisterStepEducationComponent } from './components/register-step-educa
 import { RegisterStepAddressComponent } from './components/register-step-address/register-step-address.component';
 import { RegisterStepFamilyComponent } from './components/register-step-family/register-step-family.component';
 import { RegisterStepExpectationComponent } from './components/register-step-expectation/register-step-expectation.component';
+import { RegistrationFormService, EnrollStep, ValidationResult, CaptchaData } from './registration-form.service';
 import { finalize } from 'rxjs/operators';
-
-interface EnrollStep {
-  title: string;
-}
-
-const STEP_GROUP_NAMES: Record<number, string> = {
-  1: 'personalDetails',
-  2: 'profileHoroscope',
-  3: 'careerDetails',
-  4: 'contactDetails',
-  5: 'familyDetails',
-  6: 'partnerPreference',
-};
 
 @Component({
   selector: 'app-register',
@@ -55,141 +41,13 @@ export class Register implements OnInit, OnDestroy {
   private readonly registerDraftService = inject(RegisterDraftService);
   private readonly tenantStore = inject(TenantStore);
   private readonly translate = inject(TranslateService);
-
-  private static readonly CAPTCHA_LENGTH = 6;
-  private static readonly CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  private readonly formService = inject(RegistrationFormService);
 
   private draftContext: RegisterDraftContext | null = null;
   private persistTimer: ReturnType<typeof setTimeout> | null = null;
   private selectedPhotos: File[] = [];
 
-  readonly profileForm = new FormGroup({
-    personalDetails: new FormGroup({
-      firstName: new FormControl(''),
-      middleName: new FormControl(''),
-      lastName: new FormControl(''),
-      dobDay: new FormControl<number | null>(null),
-      dobMonth: new FormControl(''),
-      dobYear: new FormControl<number | null>(null),
-      genderId: new FormControl<number | null>(null, Validators.required),
-      religionId: new FormControl<number | null>(null, Validators.required),
-      casteId: new FormControl<number | null>(null, Validators.required),
-      subCasteId: new FormControl<number | null>(null),
-      maritalStatusId: new FormControl<number | null>(null, Validators.required),
-      heightFt: new FormControl(5),
-      heightIn: new FormControl(4),
-      weightKg: new FormControl(40),
-      bloodGroupId: new FormControl<number | null>(null),
-      complexionId: new FormControl<number | null>(null),
-      physicalDisability: new FormControl(false),
-      disabilityDetail: new FormControl(''),
-      dietId: new FormControl<number | null>(null),
-      spectacles: new FormControl(false),
-      lens: new FormControl(false),
-      personalityId: new FormControl<number | null>(null),
-    }),
-    profileHoroscope: new FormGroup({
-      manglik: new FormControl(false),
-      rashiId: new FormControl<number | null>(null),
-      nakshatraId: new FormControl<number | null>(null),
-      charanId: new FormControl<number | null>(null),
-      nadiId: new FormControl<number | null>(null),
-      ganId: new FormControl<number | null>(null),
-      birthHour: new FormControl(1),
-      birthMinute: new FormControl(0),
-      birthPeriod: new FormControl(''),
-      birthStateId: new FormControl<number | null>(null),
-      birthStateOther: new FormControl(''),
-      birthDistrictId: new FormControl<number | null>(null),
-      birthDistrictOther: new FormControl(''),
-      devak: new FormControl(''),
-    }),
-    careerDetails: new FormGroup({
-      educationAreaId: new FormControl<number | null>(null),
-      educationId: new FormControl<number | null>(null, Validators.required),
-      occupationId: new FormControl<number | null>(null, Validators.required),
-      occupationDetails: new FormControl(''),
-      workingCity: new FormControl('', Validators.required),
-      workingCityOther: new FormControl(''),
-      workingStateId: new FormControl<number | null>(null),
-      workingStateOther: new FormControl(''),
-      workingCountryId: new FormControl<number | null>(null),
-      workingCountryOther: new FormControl(''),
-      incomeAmount: new FormControl<number | null>(null, Validators.required),
-      incomePeriodId: new FormControl<number | null>(null),
-    }),
-    contactDetails: new FormGroup({
-      residenceAddress: new FormControl(''),
-      contactEmail: new FormControl(''),
-      idProofNumber: new FormControl(''),
-      smsMobile: new FormControl(''),
-      mobile2: new FormControl(''),
-      phone1: new FormControl(''),
-      phone2: new FormControl(''),
-    }),
-    familyDetails: new FormGroup({
-      fatherStatus: new FormControl(false),
-      motherStatus: new FormControl(false),
-      brothers: new FormControl(0),
-      marriedBrothers: new FormControl(0),
-      sisters: new FormControl(0),
-      marriedSisters: new FormControl(0),
-      parentsFullName: new FormControl(''),
-      parentsOccupation: new FormControl(''),
-      parentsResidentCity: new FormControl(''),
-      familyWealth: new FormControl(''),
-      mamaSurnamePlace: new FormControl(''),
-      nativeStateId: new FormControl<number | null>(null),
-      nativeStateOther: new FormControl(''),
-      nativeDistrictId: new FormControl<number | null>(null, Validators.required),
-      nativeDistrictOther: new FormControl(''),
-      nativeTalukaId: new FormControl<number | null>(null),
-      nativeTalukaOther: new FormControl(''),
-      intercastMarriage: new FormControl(false),
-      intercastRelation: new FormControl(''),
-    }, {
-      validators: [
-        (g: AbstractControl) => g.get('marriedBrothers')!.value > g.get('brothers')!.value
-          ? { marriedBrothersExceeds: true } : null,
-        (g: AbstractControl) => g.get('marriedSisters')!.value > g.get('sisters')!.value
-          ? { marriedSistersExceeds: true } : null,
-      ],
-    }),
-    partnerPreference: new FormGroup({
-      expectedManglik: new FormControl(false),
-      maxAgeDifference: new FormControl(0),
-      expectedHeightFt: new FormControl(5),
-      expectedHeightIn: new FormControl(0),
-      divorcee: new FormControl(false),
-      expectedCasteNoBar: new FormControl(false),
-      expectedEducationNoBar: new FormControl(false),
-      expectedOccupationNoBar: new FormControl(false),
-      expectedCasteIds: new FormControl(''),
-      expectedEducationIds: new FormControl(''),
-      expectedOccupationIds: new FormControl(''),
-      expectedIncomeRangeId: new FormControl<number | null>(null),
-    }),
-    fullName: new FormControl<string | null>(null),
-    age: new FormControl<number | null>(null),
-    bio: new FormControl<string | null>(null),
-    locationText: new FormControl<string | null>(null),
-    occupationText: new FormControl<string | null>(null),
-    preferredCities: new FormControl(''),
-    relativesSurnames: new FormControl(''),
-    interests: new FormControl(''),
-    account: new FormGroup({
-      password: new FormControl(''),
-      confirmPassword: new FormControl(''),
-    }),
-    verification: new FormGroup({
-      code: new FormControl(''),
-      input: new FormControl(''),
-      imageDataUrl: new FormControl(''),
-    }),
-    photos: new FormGroup({
-      photo1Name: new FormControl(''),
-    }),
-  });
+  readonly profileForm: FormGroup = this.formService.createForm();
 
   private readonly tenantRekeyEffect = effect(() => {
     const headerId = this.tenantStore.tenantHeaderId();
@@ -199,21 +57,7 @@ export class Register implements OnInit, OnDestroy {
     }
   });
 
-  get steps(): EnrollStep[] {
-    return this.stepsSignal();
-  }
-
-  readonly stepsSignal = computed<EnrollStep[]>(() => {
-    this.langTick();
-    return [
-      { title: this.t('register.steps.personal') },
-      { title: this.t('register.steps.horoscope') },
-      { title: this.t('register.steps.education') },
-      { title: this.t('register.steps.address') },
-      { title: this.t('register.steps.family') },
-      { title: this.t('register.steps.expectation') },
-    ];
-  });
+  readonly steps = this.formService.getSteps();
 
   private readonly langTick = signal(0);
 
@@ -260,10 +104,10 @@ export class Register implements OnInit, OnDestroy {
 
   nextStep(): void {
     this.persistCurrentStep();
-    const stepError = this.validateStep(this.currentStep());
-    if (stepError) {
+    const validation = this.formService.validateStep(this.profileForm, this.currentStep());
+    if (!validation.isValid) {
       this.isError.set(true);
-      this.message.set(stepError);
+      this.message.set(validation.errorMessage!);
       return;
     }
     this.message.set('');
@@ -285,14 +129,14 @@ export class Register implements OnInit, OnDestroy {
     this.isLoading.set(true);
 
     for (let step = 1; step <= this.steps.length; step += 1) {
-      const stepError = this.validateStep(step);
-      if (stepError) {
-        if (step === this.steps.length && stepError.includes('verification code')) {
+      const validation = this.formService.validateStep(this.profileForm, step);
+      if (!validation.isValid) {
+        if (step === this.steps.length && validation.errorMessage?.includes('verification code')) {
           this.refreshCaptcha();
         }
         this.currentStep.set(step);
         this.isError.set(true);
-        this.message.set(stepError);
+        this.message.set(validation.errorMessage!);
         this.isLoading.set(false);
         return;
       }
@@ -334,18 +178,18 @@ export class Register implements OnInit, OnDestroy {
 
     const bioParts = [
       education && `Education: ${education}`,
-      occupation && `Occupation: ${normalizeText(occupation)}`,
-      address && `Address: ${normalizeText(address)}`,
+      occupation && `Occupation: ${occupation}`,
+      address && `Address: ${address}`,
     ].filter(Boolean);
 
     this.registerAsync(name, ct.contactEmail.trim().toLowerCase(), account.password, bioParts.join(' | '), age);
   }
 
   refreshCaptcha(): void {
-    const code = this.generateCaptchaCode();
+    const captcha: CaptchaData = this.formService.generateCaptcha();
     this.profileForm.get('verification')!.patchValue({
-      code,
-      imageDataUrl: this.createCaptchaImage(code),
+      code: captcha.code,
+      imageDataUrl: captcha.imageDataUrl,
       input: '',
     });
     this.queueDraftPersist();
@@ -365,7 +209,7 @@ export class Register implements OnInit, OnDestroy {
   }
 
   private registerAsync(name: string, email: string, password: string, bio: string, age?: number): void {
-    const dto = this.buildCreateProfileDto(age);
+    const dto = this.formService.buildCreateProfileDto(this.profileForm, age);
     this.persistAllSteps();
     this.memberService.registerWithProfile({
       email,
@@ -395,323 +239,6 @@ export class Register implements OnInit, OnDestroy {
     });
   }
 
-  private buildCreateProfileDto(age?: number): CreateProfileDto {
-    const f = this.profileForm.value;
-    const pd = f.personalDetails!;
-    const hd = f.profileHoroscope!;
-    const cd = f.careerDetails!;
-    const ct = f.contactDetails!;
-    const fd = f.familyDetails!;
-    const pp = f.partnerPreference!;
-
-    const phoneNumbers: Array<{ phoneType: string; phoneNumber: string }> = [];
-    if (ct.smsMobile) phoneNumbers.push({ phoneType: 'sms_mobile', phoneNumber: ct.smsMobile });
-    if (ct.mobile2) phoneNumbers.push({ phoneType: 'mobile_secondary', phoneNumber: ct.mobile2 });
-    if (ct.phone1) phoneNumbers.push({ phoneType: 'phone_primary', phoneNumber: ct.phone1 });
-    if (ct.phone2) phoneNumbers.push({ phoneType: 'phone_secondary', phoneNumber: ct.phone2 });
-
-    const relativeSurnames = f.relativesSurnames
-      ? f.relativesSurnames.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
-      : undefined;
-
-    const profilePhotos: Array<{ photoSlot: number; fileName: string; isPrimary: boolean }> = [];
-    const p1 = f.photos?.photo1Name;
-    if (p1) profilePhotos.push({ photoSlot: 1, fileName: p1, isPrimary: true });
-
-    const preferredCities = f.preferredCities
-      ? f.preferredCities.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
-      : undefined;
-
-    const interests = f.interests
-      ? f.interests.split(/[,\n]/).map((s: string) => s.trim()).filter(Boolean)
-      : undefined;
-
-    const expectedCasteIds = pp.expectedCasteIds
-      ? String(pp.expectedCasteIds).split(',').map((s: string) => Number(s.trim())).filter((n: number) => Number.isFinite(n) && n > 0)
-      : undefined;
-
-    const expectedEducationIds = pp.expectedEducationIds
-      ? String(pp.expectedEducationIds).split(',').map((s: string) => Number(s.trim())).filter((n: number) => Number.isFinite(n) && n > 0)
-      : undefined;
-
-    const expectedOccupationIds = pp.expectedOccupationIds
-      ? String(pp.expectedOccupationIds).split(',').map((s: string) => Number(s.trim())).filter((n: number) => Number.isFinite(n) && n > 0)
-      : undefined;
-
-    return {
-      fullName: [pd.firstName, pd.middleName, pd.lastName].filter(Boolean).join(' '),
-      age: f.age ?? age,
-      bio: f.bio ?? undefined,
-      locationText: (f.locationText || ct.residenceAddress || cd.workingCity) ?? undefined,
-      occupationText: (f.occupationText || cd.occupationDetails) ?? undefined,
-      personalDetails: {
-        firstName: pd.firstName ?? undefined,
-        middleName: pd.middleName ?? undefined,
-        lastName: pd.lastName ?? undefined,
-        dobDay: pd.dobDay ?? undefined,
-        dobMonth: pd.dobMonth ?? undefined,
-        dobYear: pd.dobYear ?? undefined,
-        genderId: pd.genderId ?? undefined,
-        religionId: pd.religionId ?? undefined,
-        casteId: pd.casteId ?? undefined,
-        subCasteId: pd.subCasteId ?? undefined,
-        maritalStatusId: pd.maritalStatusId ?? undefined,
-        heightFt: pd.heightFt ?? undefined,
-        heightIn: pd.heightIn ?? undefined,
-        weightKg: pd.weightKg ?? undefined,
-        bloodGroupId: pd.bloodGroupId ?? undefined,
-        complexionId: pd.complexionId ?? undefined,
-        physicalDisability: pd.physicalDisability ?? undefined,
-        disabilityDetail: pd.disabilityDetail ?? undefined,
-        dietId: pd.dietId ?? undefined,
-        spectacles: pd.spectacles ?? undefined,
-        lens: pd.lens ?? undefined,
-        personalityId: pd.personalityId ?? undefined,
-      },
-      contactDetails: {
-        residenceAddress: ct.residenceAddress ?? undefined,
-        contactEmail: ct.contactEmail ?? undefined,
-        idProofNumber: ct.idProofNumber ?? undefined,
-      },
-      phoneNumbers: phoneNumbers.length > 0 ? phoneNumbers : undefined,
-      careerDetails: {
-        educationAreaId: cd.educationAreaId ?? undefined,
-        educationId: cd.educationId ?? undefined,
-        occupationId: cd.occupationId ?? undefined,
-        occupationDetails: cd.occupationDetails ?? undefined,
-        workingCity: cd.workingCity === '__other__' ? (cd.workingCityOther || undefined) : (cd.workingCity || undefined),
-        workingStateId: cd.workingStateId && cd.workingStateId !== 0 ? cd.workingStateId : undefined,
-        workingStateOther: cd.workingStateId === 0 ? cd.workingStateOther || undefined : undefined,
-        workingCountryId: cd.workingCountryId && cd.workingCountryId !== 0 ? cd.workingCountryId : undefined,
-        workingCountryOther: cd.workingCountryId === 0 ? cd.workingCountryOther || undefined : undefined,
-        incomeAmount: cd.incomeAmount ? Number(cd.incomeAmount) : undefined,
-        incomePeriodId: cd.incomePeriodId ?? undefined,
-      },
-      familyDetails: {
-        fatherStatus: fd.fatherStatus ?? undefined,
-        motherStatus: fd.motherStatus ?? undefined,
-        brothers: fd.brothers ?? undefined,
-        marriedBrothers: fd.marriedBrothers ?? undefined,
-        sisters: fd.sisters ?? undefined,
-        marriedSisters: fd.marriedSisters ?? undefined,
-        parentsFullName: fd.parentsFullName ?? undefined,
-        parentsOccupation: fd.parentsOccupation ?? undefined,
-        parentsResidentCity: fd.parentsResidentCity ?? undefined,
-        familyWealth: fd.familyWealth ?? undefined,
-        mamaSurnamePlace: fd.mamaSurnamePlace ?? undefined,
-        nativeDistrictId: fd.nativeDistrictId && fd.nativeDistrictId !== 0 ? fd.nativeDistrictId : undefined,
-        nativeDistrictOther: fd.nativeDistrictId === 0 ? fd.nativeDistrictOther || undefined : undefined,
-        nativeTalukaId: fd.nativeTalukaId && fd.nativeTalukaId !== 0 ? fd.nativeTalukaId : undefined,
-        nativeTalukaOther: fd.nativeTalukaId === 0 ? fd.nativeTalukaOther || undefined : undefined,
-        intercastMarriage: fd.intercastMarriage ?? undefined,
-        intercastRelation: fd.intercastRelation ?? undefined,
-      },
-      relativeSurnames,
-      partnerPreference: {
-        expectedManglik: pp.expectedManglik ?? undefined,
-        maxAgeDifference: pp.maxAgeDifference ?? undefined,
-        expectedHeightFt: pp.expectedHeightFt ?? undefined,
-        expectedHeightIn: pp.expectedHeightIn ?? undefined,
-        divorcee: pp.divorcee ?? undefined,
-        expectedCasteNoBar: pp.expectedCasteNoBar ?? undefined,
-        expectedEducationNoBar: pp.expectedEducationNoBar ?? undefined,
-        expectedOccupationNoBar: pp.expectedOccupationNoBar ?? undefined,
-        expectedIncomeRangeId: pp.expectedIncomeRangeId ?? undefined,
-      },
-      profileHoroscope: {
-        manglik: hd.manglik ?? undefined,
-        birthHour: hd.birthHour ?? undefined,
-        birthMinute: hd.birthMinute ?? undefined,
-        birthPeriod: hd.birthPeriod ?? undefined,
-        devak: hd.devak ?? undefined,
-        rashiId: hd.rashiId ?? undefined,
-        nakshatraId: hd.nakshatraId ?? undefined,
-        charanId: hd.charanId ?? undefined,
-        nadiId: hd.nadiId ?? undefined,
-        ganId: hd.ganId ?? undefined,
-        birthStateId: hd.birthStateId && hd.birthStateId !== 0 ? hd.birthStateId : undefined,
-        birthStateOther: hd.birthStateOther || undefined,
-        birthDistrictId: hd.birthDistrictId && hd.birthDistrictId !== 0 ? hd.birthDistrictId : undefined,
-        birthDistrictOther: hd.birthDistrictOther || undefined,
-      },
-      profilePhotos: profilePhotos.length > 0 ? profilePhotos : undefined,
-      interests,
-      preferredCities,
-      expectedCasteIds,
-      expectedEducationIds,
-      expectedOccupationIds,
-    };
-  }
-
-  private validateStep(step: number): string | null {
-    const pd = this.profileForm.get('personalDetails')!.value!;
-    const hd = this.profileForm.get('profileHoroscope')!.value!;
-    const cd = this.profileForm.get('careerDetails')!.value!;
-    const ct = this.profileForm.get('contactDetails')!.value!;
-    const fd = this.profileForm.get('familyDetails')!.value!;
-    const pp = this.profileForm.get('partnerPreference')!.value!;
-    const verification = this.profileForm.get('verification')!.value!;
-    const account = this.profileForm.get('account')!.value!;
-
-    if (step === 1) {
-      if (!normalizeText(pd.firstName) || !normalizeText(pd.lastName)) {
-        return this.t('register.errors.nameRequired');
-      }
-      if (!isValidName(pd.firstName || '') || !isValidName(pd.lastName || '')) {
-        return this.t('register.errors.nameCharsOnly');
-      }
-      if (!pd.dobDay || !pd.dobMonth || !pd.dobYear) {
-        return this.t('register.errors.dobComplete');
-      }
-      if (!pd.genderId) {
-        return this.t('register.errors.genderRequired');
-      }
-      if (!pd.religionId) {
-        return this.t('register.errors.religionRequired');
-      }
-      const age = new Date().getFullYear() - (pd.dobYear || 0);
-      if (Number.isNaN(age) || age < 18 || age > 80) {
-        return this.t('register.errors.ageRange');
-      }
-      if (pd.physicalDisability && !normalizeText(pd.disabilityDetail || '')) {
-        return this.t('register.errors.disabilityDetail');
-      }
-    }
-
-    if (step === 2) {
-      if (!hd.birthPeriod) {
-        return this.t('register.errors.birthPeriod');
-      }
-      const birthStateIsOther = hd.birthStateId === 0;
-      const birthDistrictIsSelected = hd.birthDistrictId && hd.birthDistrictId !== 0;
-      const birthDistrictIsOther = hd.birthDistrictId === 0;
-      if (!birthStateIsOther && !birthDistrictIsSelected && !birthDistrictIsOther) {
-        return this.t('register.errors.birthDistrict');
-      }
-    }
-
-    if (step === 3) {
-      if (!cd.educationAreaId || !cd.educationId) {
-        return this.t('register.errors.educationDetails');
-      }
-      if (!cd.occupationId || !normalizeText(cd.occupationDetails || '')) {
-        return this.t('register.errors.occupationDetails');
-      }
-      if (!cd.workingCity) {
-        return this.t('register.errors.workingCity');
-      }
-      if (cd.incomeAmount && !Number.isFinite(Number(cd.incomeAmount))) {
-        return this.t('register.errors.incomeNumeric');
-      }
-    }
-
-    if (step === 4) {
-      const address = normalizeText(ct.residenceAddress || '');
-      if (!address || address.length < 10) {
-        return this.t('register.errors.residenceAddress');
-      }
-      if (!isValidEmail(ct.contactEmail || '')) {
-        return this.t('register.errors.contactEmail');
-      }
-      if (!isValidTenDigitPhone(ct.smsMobile || '')) {
-        return this.t('register.errors.smsMobile');
-      }
-      if (ct.mobile2 && !isValidTenDigitPhone(ct.mobile2)) {
-        return this.t('register.errors.mobile2');
-      }
-      if (ct.phone1 && !isValidTenDigitPhone(ct.phone1)) {
-        return this.t('register.errors.phone1');
-      }
-      if (ct.phone2 && !isValidTenDigitPhone(ct.phone2)) {
-        return this.t('register.errors.phone2');
-      }
-
-      const normalize = (v: string) => normalizePhone(v);
-      this.profileForm.get('contactDetails')!.patchValue({
-        smsMobile: normalize(ct.smsMobile || ''),
-        mobile2: ct.mobile2 ? normalize(ct.mobile2) : '',
-        phone1: ct.phone1 ? normalize(ct.phone1) : '',
-        phone2: ct.phone2 ? normalize(ct.phone2) : '',
-        residenceAddress: ct.residenceAddress,
-        contactEmail: ct.contactEmail,
-        idProofNumber: ct.idProofNumber,
-      });
-    }
-
-    if (step === 5) {
-      if (!normalizeText(fd.parentsFullName || '')) {
-        return this.t('register.errors.parentsFullName');
-      }
-      const stateIsOther = fd.nativeStateId === 0;
-      const districtIsSelected = fd.nativeDistrictId && fd.nativeDistrictId !== 0;
-      const districtIsOther = fd.nativeDistrictId === 0;
-      if (!stateIsOther && !districtIsSelected && !districtIsOther) {
-        return this.t('register.errors.nativeDistrict');
-      }
-    }
-
-    if (step === 6) {
-      if (!normalizeText(this.profileForm.get('preferredCities')!.value || '')) {
-        return this.t('register.errors.preferredCities');
-      }
-      if (!account.password || !account.confirmPassword) {
-        return this.t('register.errors.accountPassword');
-      }
-      if (account.password.length < 8) {
-        return this.t('register.errors.passwordMin');
-      }
-      if (account.password !== account.confirmPassword) {
-        return this.t('register.errors.passwordMatch');
-      }
-      if ((verification.input || '').trim().toUpperCase() !== (verification.code || '')) {
-        return this.t('register.errors.verificationCode');
-      }
-    }
-
-    return null;
-  }
-
-  private generateCaptchaCode(): string {
-    let result = '';
-    for (let i = 0; i < Register.CAPTCHA_LENGTH; i++) {
-      result += Register.CAPTCHA_CHARS[Math.floor(Math.random() * Register.CAPTCHA_CHARS.length)];
-    }
-    return result;
-  }
-
-  private createCaptchaImage(code: string): string {
-    const width = 280;
-    const height = 90;
-    const textNodes = code.split('').map((char, i) => {
-      const x = 28 + i * 40;
-      const y = 54 + Math.floor(Math.random() * 14) - 7;
-      const rotate = Math.floor(Math.random() * 30) - 15;
-      return `<text x="${x}" y="${y}" transform="rotate(${rotate} ${x} ${y})" font-size="36" font-family="Georgia, serif" font-weight="700" fill="#1f2638">${char}</text>`;
-    }).join('');
-
-    const noiseLines = Array.from({ length: 6 }, () => {
-      const x1 = Math.floor(Math.random() * width);
-      const y1 = Math.floor(Math.random() * height);
-      const x2 = Math.floor(Math.random() * width);
-      const y2 = Math.floor(Math.random() * height);
-      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#b88b66" stroke-width="1" opacity="0.45" />`;
-    }).join('');
-
-    const noiseDots = Array.from({ length: 24 }, () => {
-      const cx = Math.floor(Math.random() * width);
-      const cy = Math.floor(Math.random() * height);
-      const r = Math.floor(Math.random() * 2) + 1;
-      return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#8b6f47" opacity="0.25" />`;
-    }).join('');
-
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-      <rect width="${width}" height="${height}" rx="8" fill="#f9f5f0" />
-      ${noiseLines}${noiseDots}${textNodes}
-    </svg>`;
-
-    return `data:image/svg+xml;base64,${btoa(svg)}`;
-  }
-
   private queueDraftPersist(): void {
     if (this.persistTimer) {
       clearTimeout(this.persistTimer);
@@ -727,7 +254,7 @@ export class Register implements OnInit, OnDestroy {
     this.registerDraftService.saveStep(
       this.draftContext,
       this.currentStep(),
-      this.captureStepValues(this.currentStep()),
+      this.formService.captureStepValues(this.profileForm, this.currentStep()),
     );
   }
 
@@ -749,42 +276,12 @@ export class Register implements OnInit, OnDestroy {
     if (!state) return;
 
     for (const [step, values] of Object.entries(state.steps)) {
-      const groupName = STEP_GROUP_NAMES[Number(step)];
-      if (groupName) {
-        this.profileForm.get(groupName)?.patchValue(values, { emitEvent: false });
-      }
-      if (Number(step) === 6) {
-        const v = values as Record<string, unknown>;
-        if (v['preferredCities'] != null) this.profileForm.get('preferredCities')?.patchValue(v['preferredCities'] as string, { emitEvent: false });
-        if (v['relativesSurnames'] != null) this.profileForm.get('relativesSurnames')?.patchValue(v['relativesSurnames'] as string, { emitEvent: false });
-        if (v['account']) this.profileForm.get('account')?.patchValue(v['account'] as { password: string | null; confirmPassword: string | null }, { emitEvent: false });
-        if (v['verification']) this.profileForm.get('verification')?.patchValue(v['verification'] as { code: string | null; input: string | null; imageDataUrl: string | null }, { emitEvent: false });
-        if (v['photos']) this.profileForm.get('photos')?.patchValue(v['photos'] as { photo1Name: string | null }, { emitEvent: false });
-      }
+      this.formService.restoreStepValues(this.profileForm, Number(step), values as Record<string, unknown>);
     }
 
     if (Number.isInteger(state.currentStep) && state.currentStep >= 1 && state.currentStep <= this.steps.length) {
       this.currentStep.set(state.currentStep);
     }
-  }
-
-  private captureStepValues(step: number): Record<string, unknown> {
-    const groupName = STEP_GROUP_NAMES[step];
-    if (groupName) {
-      const groupValue = this.profileForm.get(groupName)?.value ?? {};
-      if (step === 6) {
-        return {
-          ...groupValue,
-          preferredCities: this.profileForm.get('preferredCities')?.value,
-          relativesSurnames: this.profileForm.get('relativesSurnames')?.value,
-          account: this.profileForm.get('account')?.value,
-          verification: this.profileForm.get('verification')?.value,
-          photos: this.profileForm.get('photos')?.value,
-        };
-      }
-      return groupValue;
-    }
-    return {};
   }
 
   private persistAllSteps(): void {
@@ -794,7 +291,7 @@ export class Register implements OnInit, OnDestroy {
       this.persistTimer = null;
     }
     for (let step = 1; step <= this.steps.length; step++) {
-      const stepValues = this.captureStepValues(step);
+      const stepValues = this.formService.captureStepValues(this.profileForm, step);
       this.registerDraftService.saveStep(this.draftContext, step, stepValues);
     }
   }

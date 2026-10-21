@@ -1,0 +1,394 @@
+name: Mobile Build & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tenant:
+        description: 'Tenant ID (from tenants.manifest.ts)'
+        required: true
+        type: choice
+        options:
+          - demo
+      platform:
+        description: 'Target platform(s)'
+        required: true
+        type: choice
+        options:
+          - android
+          - ios
+          - both
+      buildType:
+        description: 'Build type'
+        required: true
+        type: choice
+        options:
+          - debug
+          - release
+      version:
+        description: 'Version name (e.g., 1.2.3)'
+        required: true
+        type: string
+      versionCode:
+        description: 'Version code (integer, Android only)'
+        required: true
+        type: string
+      uploadArtifacts:
+        description: 'Upload build artifacts'
+        required: true
+        type: boolean
+        default: true
+
+env:
+  NODE_VERSION: '20'
+  JAVA_VERSION: '21'
+  XCODE_VERSION: '15.4'
+  CAP_PRODUCTION: 'true'
+
+jobs:
+  # Shared setup job
+  setup:
+    name: Setup & Validate
+    runs-on: ubuntu-latest
+    outputs:
+      tenant-config: ${{ steps.tenant-config.outputs.config }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate tenant exists
+        id: tenant-config
+        run: |
+          TENANT="${{ github.event.inputs.tenant }}"
+          if grep -q "\"id\": \"$TENANT\"" libs/shared/tenant-config/src/lib/tenants.manifest.ts; then
+            echo "config={\"tenant\":\"$TENANT\",\"exists\":true}" >> $GITHUB_OUTPUT
+          else
+            echo "Tenant $TENANT not found in manifest"
+            echo "config={\"tenant\":\"$TENANT\",\"exists\":false}" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Generate native environment
+        run: |
+          npm run native:env
+        env:
+          CAP_TENANT: ${{ github.event.inputs.tenant }}
+          CAP_API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          CAP_TENANT_HOST: ${{ secrets.TENANT_HOST }}
+
+  # Android Build Job
+  build-android:
+    name: Build Android (${{ matrix.buildType }})
+    needs: setup
+    if: github.event.inputs.platform == 'android' || github.event.inputs.platform == 'both'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        buildType: [debug, release]
+        include:
+          - buildType: debug
+            gradleTask: assembleDebug
+            artifactName: app-debug
+          - buildType: release
+            gradleTask: bundleRelease
+            artifactName: app-release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate native environment
+        run: npm run native:env
+        env:
+          CAP_TENANT: ${{ github.event.inputs.tenant }}
+          CAP_API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          CAP_TENANT_HOST: ${{ secrets.TENANT_HOST }}
+          NODE_ENV: production
+          CAP_PRODUCTION: 'true'
+
+      - name: Build web app
+        run: npm run web:build
+        env:
+          NODE_ENV: production
+
+      - name: Setup Android keystore (release only)
+        if: matrix.buildType == 'release'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > native/${{ github.event.inputs.tenant }}/android/app/keystore.jks
+          echo "keystorePath=keystore.jks" >> native/${{ github.event.inputs.tenant }}/android/keystore.properties
+          echo "keystorePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> native/${{ github.event.inputs.tenant }}/android/keystore.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> native/${{ github.event.inputs.tenant }}/android/keystore.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> native/${{ github.event.inputs.tenant }}/android/keystore.properties
+
+      - name: Configure google-services.json
+        if: matrix.buildType == 'release'
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > native/${{ github.event.inputs.tenant }}/android/app/google-services.json
+
+      - name: Capacitor Sync Android
+        run: npx cap sync android
+        working-directory: native/${{ github.event.inputs.tenant }}
+
+      - name: Build Android
+        run: |
+          cd native/${{ github.event.inputs.tenant }}/android
+          ./gradlew ${{ matrix.gradleTask }} \
+            -PversionCode=${{ github.event.inputs.versionCode }} \
+            -PversionName=${{ github.event.inputs.version }} \
+            --no-daemon \
+            --stacktrace
+
+      - name: Upload Android Artifacts
+        if: github.event.inputs.uploadArtifacts && matrix.buildType == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ github.event.inputs.tenant }}-${{ github.event.inputs.version }}
+          path: |
+            native/${{ github.event.inputs.tenant }}/android/app/build/outputs/bundle/release/*.aab
+            native/${{ github.event.inputs.tenant }}/android/app/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: Upload Android Debug Artifacts
+        if: github.event.inputs.uploadArtifacts && matrix.buildType == 'debug'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ github.event.inputs.tenant }}-debug-${{ github.event.inputs.version }}
+          path: native/${{ github.event.inputs.tenant }}/android/app/build/outputs/apk/debug/*.apk
+          retention-days: 7
+
+  # iOS Build Job
+  build-ios:
+    name: Build iOS (${{ matrix.buildType }})
+    needs: setup
+    if: github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'both'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        buildType: [debug, release]
+        include:
+          - buildType: debug
+            configuration: Debug
+            artifactName: app-debug
+          - buildType: release
+            configuration: Release
+            artifactName: app-release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate native environment
+        run: npm run native:env
+        env:
+          CAP_TENANT: ${{ github.event.inputs.tenant }}
+          CAP_API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          CAP_TENANT_HOST: ${{ secrets.TENANT_HOST }}
+          NODE_ENV: production
+          CAP_PRODUCTION: 'true'
+
+      - name: Build web app
+        run: npm run web:build
+        env:
+          NODE_ENV: production
+
+      - name: Install CocoaPods
+        run: |
+          cd native/${{ github.event.inputs.tenant }}/ios/App
+          pod install --repo-update
+
+      - name: Capacitor Sync iOS
+        run: npx cap sync ios
+        working-directory: native/${{ github.event.inputs.tenant }}
+
+      - name: Import Apple Certificates (release only)
+        if: matrix.buildType == 'release'
+        uses: apple-actions/import-codesign-certificates@v3
+        with:
+          p12-file-base64: ${{ secrets.APPLE_DISTRIBUTION_CERT_BASE64 }}
+          p12-password: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
+
+      - name: Import Provisioning Profile (release only)
+        if: matrix.buildType == 'release'
+        run: |
+          echo "${{ secrets.APP_STORE_PROVISIONING_PROFILE_BASE64 }}" | base64 -d > native/${{ github.event.inputs.tenant }}/ios/App/App_AppStore.mobileprovision
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp native/${{ github.event.inputs.tenant }}/ios/App/App_AppStore.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Build iOS
+        run: |
+          cd native/${{ github.event.inputs.tenant }}/ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration ${{ matrix.configuration }} \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/App.xcarchive \
+            CODE_SIGN_STYLE=${{ matrix.buildType == 'release' && 'Manual' || 'Automatic' }} \
+            DEVELOPMENT_TEAM=${{ secrets.APPLE_TEAM_ID }} \
+            PROVISIONING_PROFILE_SPECIFIER=${{ matrix.buildType == 'release' && secrets.APP_STORE_PROVISIONING_PROFILE_NAME || '' }} \
+            MARKETING_VERSION=${{ github.event.inputs.version }} \
+            CURRENT_PROJECT_VERSION=${{ github.event.inputs.versionCode }} \
+            APP_DISPLAY_NAME="${{ github.event.inputs.tenant == 'demo' && 'Matrimony SaaS' || secrets.APP_DISPLAY_NAME }}" \
+            TENANT_ID=${{ github.event.inputs.tenant }} \
+            API_DOMAIN=${{ secrets.API_DOMAIN }} \
+            ASSOCIATED_DOMAIN=${{ secrets.ASSOCIATED_DOMAIN }} \
+            clean archive
+
+      - name: Export IPA (release only)
+        if: matrix.buildType == 'release'
+        run: |
+          cd native/${{ github.event.inputs.tenant }}/ios/App
+          xcodebuild -exportArchive \
+            -archivePath build/App.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/ipa
+
+      - name: Upload iOS Artifacts
+        if: github.event.inputs.uploadArtifacts && matrix.buildType == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-${{ github.event.inputs.tenant }}-${{ github.event.inputs.version }}
+          path: native/${{ github.event.inputs.tenant }}/ios/App/build/ipa/*.ipa
+          retention-days: 30
+
+      - name: Upload iOS Debug Artifacts
+        if: github.event.inputs.uploadArtifacts && matrix.buildType == 'debug'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-${{ github.event.inputs.tenant }}-debug-${{ github.event.inputs.version }}
+          path: native/${{ github.event.inputs.tenant }}/ios/App/build/App.xcarchive
+          retention-days: 7
+
+  # Release Job (for release builds only)
+  release:
+    name: Create Release
+    needs: [build-android, build-ios]
+    if: github.event.inputs.buildType == 'release' && github.event.inputs.uploadArtifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Android Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-${{ github.event.inputs.tenant }}-${{ github.event.inputs.version }}
+          path: artifacts/android
+
+      - name: Download iOS Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-${{ github.event.inputs.tenant }}-${{ github.event.inputs.version }}
+          path: artifacts/ios
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.tenant }}-v${{ github.event.inputs.version }}
+          name: ${{ github.event.inputs.tenant }} v${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/android/*.aab
+            artifacts/android/*.apk
+            artifacts/ios/*.ipa
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Fastlane Deploy Job (optional - for store deployment)
+  deploy-android:
+    name: Deploy to Play Console
+    needs: release
+    if: github.event.inputs.buildType == 'release' && github.event.inputs.platform != 'ios'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Android Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-${{ github.event.inputs.tenant }}-${{ github.event.inputs.version }}
+          path: artifacts/android
+
+      - name: Setup Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: native/${{ github.event.inputs.tenant }}/android/fastlane
+
+      - name: Deploy to Play Console
+        run: bundle exec fastlane deploy
+        env:
+          PLAY_STORE_CONFIG_JSON: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+          PACKAGE_NAME: ${{ secrets.ANDROID_PACKAGE_NAME }}
+
+  deploy-ios:
+    name: Deploy to TestFlight / App Store
+    needs: release
+    if: github.event.inputs.buildType == 'release' && github.event.inputs.platform != 'android'
+    runs-on: macos-latest
+    steps:
+      - name: Download iOS Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-${{ github.event.inputs.tenant }}-${{ github.event.inputs.version }}
+          path: artifacts/ios
+
+      - name: Setup Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: native/${{ github.event.inputs.tenant }}/ios/fastlane
+
+      - name: Deploy to TestFlight
+        run: bundle exec fastlane testflight
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}

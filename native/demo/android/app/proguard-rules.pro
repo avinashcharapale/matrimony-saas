@@ -1,21 +1,58 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Capacitor / WebView keep rules
+-keep class com.getcapacitor.** { *; }
+-keep class com.capacitor.** { *; }
+-keep class org.chromium.** { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Capacitor Plugins
+-keep class com.capacitorjs.plugins.** { *; }
+-keep class com.getcapacitor.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Firebase / Google Services
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# AndroidX / Jetpack
+-keep class androidx.** { *; }
+
+# Kotlin Coroutines
+-keep class kotlinx.coroutines.** { *; }
+
+# OkHttp / Retrofit (if used via plugins)
+-keep class okhttp3.** { *; }
+-keep class retrofit2.** { *; }
+
+# Gson / Serialization
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.gson.** { *; }
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+# Keep JS Interface methods
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+
+# Keep Parcelable creators
+-keep class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+
+# Keep Enum values
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Keep native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Prevent obfuscation of Capacitor plugin classes
+-keep class * extends com.getcapacitor.Plugin { *; }
+-keep class * extends com.getcapacitor.PluginHandle { *; }
+
+# Network Security Config
+-keep class android.security.NetworkSecurityPolicy { *; }

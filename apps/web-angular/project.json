@@ -33,7 +33,8 @@
           "apps/web-angular/src/styles.css",
           "libs/shared/theme/src/themes/theme-base.css",
           "libs/shared/landing-templates/src/themes/theme-templates.css"
-        ]
+        ],
+        "serviceWorker": true
       },
       "configurations": {
         "production": {

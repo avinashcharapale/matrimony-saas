@@ -5,7 +5,9 @@
       <a routerLink="/profiles">{{ 'common.viewAll' | translate }}</a>
     </div>
 
-    @if (topMatches.length > 0) {
+    @if (loading) {
+      <ui-profile-skeleton [count]="5" [columns]="1"></ui-profile-skeleton>
+    } @else if (topMatches.length > 0) {
       <div class="match-list">
         @for (match of topMatches; track match.id) {
         <div class="match-item" [routerLink]="['/profiles', match.profileId]">
@@ -45,7 +47,9 @@
         <h3>{{ 'home.interestsReceived' | translate }}</h3>
         <a routerLink="/interests">{{ 'common.viewAll' | translate }}</a>
       </div>
-      @if (interests.length > 0) {
+      @if (loading) {
+        <ui-message-skeleton [count]="5"></ui-message-skeleton>
+      } @else if (interests.length > 0) {
         <div class="simple-list">
           @for (item of interests; track item.id) {
           <div class="interest-row" [routerLink]="['/profiles', item.profileId]">
@@ -82,7 +86,9 @@
         <h3>{{ 'home.recentlyShortlisted' | translate }}</h3>
         <a routerLink="/shortlists">{{ 'common.viewAll' | translate }}</a>
       </div>
-      @if (shortlists.length > 0) {
+      @if (loading) {
+        <ui-profile-skeleton [count]="3" [columns]="1"></ui-profile-skeleton>
+      } @else if (shortlists.length > 0) {
         <div class="simple-list">
           @for (item of shortlists; track item.profileId) {
           <div class="shortlist-row" [routerLink]="['/profiles', item.profileId]">

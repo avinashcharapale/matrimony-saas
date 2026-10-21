@@ -1,0 +1,17 @@
+# Fastlane Appfile for iOS
+# Configuration for App Store Connect
+
+app_identifier "com.matrimony.saas"
+apple_id "your-apple-id@example.com"
+team_id ENV['APPLE_TEAM_ID'] || "YOUR_TEAM_ID"
+
+# API Key for App Store Connect (preferred over apple_id/password)
+# Set via environment variables:
+# APP_STORE_CONNECT_API_KEY_ID
+# APP_STORE_CONNECT_API_ISSUER_ID
+# APP_STORE_CONNECT_API_KEY_BASE64
+
+# Match configuration for certificate/provisioning profile management
+# match_git_url "https://github.com/your-org/certificates.git"
+# match_type "appstore"
+# match_app_identifier "com.matrimony.saas"

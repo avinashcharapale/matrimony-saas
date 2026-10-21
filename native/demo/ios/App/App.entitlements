@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Push Notifications -->
+    <key>aps-environment</key>
+    <string>production</string>
+    
+    <!-- Associated Domains for Universal Links -->
+    <key>com.apple.developer.associated-domains</key>
+    <array>
+        <string>applinks:$(ASSOCIATED_DOMAIN)</string>
+    </array>
+    
+    <!-- Keychain Access Groups (for shared keychain if needed) -->
+    <key>keychain-access-groups</key>
+    <array>
+        <string>$(AppIdentifierPrefix)com.matrimony.saas.shared</string>
+    </array>
+    
+    <!-- App Groups (for widget/extension data sharing if needed) -->
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>group.com.matrimony.saas.$(TENANT_ID)</string>
+    </array>
+</dict>
+</plist>

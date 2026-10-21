@@ -1,0 +1,163 @@
+# Fastlane configuration for iOS
+# Run with: bundle exec fastlane [lane]
+
+fastlane_version "2.220.0"
+
+default_platform :ios
+
+platform :ios do
+  # App identifier
+  app_identifier = "com.matrimony.saas"
+  
+  # Team ID
+  team_id = ENV['APPLE_TEAM_ID'] || "YOUR_TEAM_ID"
+  
+  # Path to built IPA
+  ipa_path = "../App/build/ipa/App.ipa"
+
+  before_all do
+    # Setup CI environment
+    setup_ci if ENV['CI']
+  end
+
+  desc "Build and sign iOS app for App Store"
+  lane :build do
+    # Build using xcodebuild (already done in CI)
+    # This lane is for local builds
+    build_app(
+      workspace: "../App/App.xcworkspace",
+      scheme: "App",
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          app_identifier => ENV['APP_STORE_PROVISIONING_PROFILE_NAME']
+        }
+      },
+      output_directory: "../App/build/ipa",
+      output_name: "App.ipa",
+      clean: true,
+      silent: true
+    )
+  end
+
+  desc "Upload to TestFlight"
+  lane :testflight do
+    # Build if not already built
+    unless File.exist?(ipa_path)
+      build
+    end
+    
+    # Upload to TestFlight
+    upload_to_testflight(
+      api_key_path: ENV['APP_STORE_CONNECT_API_KEY_PATH'],
+      api_key: ENV['APP_STORE_CONNECT_API_KEY_BASE64'],
+      api_key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+      api_issuer: ENV['APP_STORE_CONNECT_API_ISSUER_ID'],
+      skip_waiting_for_build_processing: false,
+      changelog: ENV['CHANGELOG'] || "Build #{ENV['VERSION_NAME']} (#{ENV['VERSION_CODE']})",
+      groups: ENV['TESTFLIGHT_GROUPS'] ? ENV['TESTFLIGHT_GROUPS'].split(',') : [],
+      distribute_external: ENV['DISTRIBUTE_EXTERNAL'] == 'true',
+      notify_external_testers: ENV['NOTIFY_EXTERNAL_TESTERS'] == 'true'
+    )
+  end
+
+  desc "Upload to App Store Connect (for review)"
+  lane :appstore do
+    build
+    
+    upload_to_app_store(
+      api_key_path: ENV['APP_STORE_CONNECT_API_KEY_PATH'],
+      api_key: ENV['APP_STORE_CONNECT_API_KEY_BASE64'],
+      api_key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+      api_issuer: ENV['APP_STORE_CONNECT_API_ISSUER_ID'],
+      skip_metadata: false,
+      skip_screenshots: false,
+      skip_binary_upload: false,
+      submit_for_review: false,
+      automatic_release: false,
+      force: true
+    )
+  end
+
+  desc "Submit for App Store review"
+  lane :submit_review do
+    deliver(
+      api_key_path: ENV['APP_STORE_CONNECT_API_KEY_PATH'],
+      api_key: ENV['APP_STORE_CONNECT_API_KEY_BASE64'],
+      api_key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+      api_issuer: ENV['APP_STORE_CONNECT_API_ISSUER_ID'],
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        add_id_info_serves_ads: false,
+        add_id_info_tracks_action: false,
+        add_id_info_tracks_install: false,
+        add_id_info_limits_tracking: true,
+        export_compliance_uses_encryption: false,
+        export_compliance_is_exempt: false,
+        export_compliance_encryption_updated: false,
+        content_rights_contains_third_party_content: false,
+        content_rights_has_rights: true
+      }
+    )
+  end
+
+  desc "Refresh provisioning profiles"
+  lane :refresh_profiles do
+    match(
+      type: "appstore",
+      app_identifier: app_identifier,
+      team_id: team_id,
+      readonly: false,
+      api_key_path: ENV['APP_STORE_CONNECT_API_KEY_PATH'],
+      api_key: ENV['APP_STORE_CONNECT_API_KEY_BASE64'],
+      api_key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+      api_issuer: ENV['APP_STORE_CONNECT_API_ISSUER_ID']
+    )
+  end
+
+  desc "Sync certificates and profiles (Match)"
+  lane :sync_certificates do
+    match(
+      type: "appstore",
+      app_identifier: app_identifier,
+      team_id: team_id,
+      readonly: true,
+      api_key_path: ENV['APP_STORE_CONNECT_API_KEY_PATH'],
+      api_key: ENV['APP_STORE_CONNECT_API_KEY_BASE64'],
+      api_key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+      api_issuer: ENV['APP_STORE_CONNECT_API_ISSUER_ID']
+    )
+  end
+
+  desc "Create app on App Store Connect"
+  lane :create_app do
+    produce(
+      app_identifier: app_identifier,
+      app_name: ENV['APP_DISPLAY_NAME'] || "Matrimony SaaS",
+      language: "English",
+      app_version: ENV['VERSION_NAME'] || "1.0.0",
+      sku: ENV['SKU'] || "matrimony-saas-#{Time.now.to_i}",
+      team_id: team_id,
+      api_key_path: ENV['APP_STORE_CONNECT_API_KEY_PATH'],
+      api_key: ENV['APP_STORE_CONNECT_API_KEY_BASE64'],
+      api_key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+      api_issuer: ENV['APP_STORE_CONNECT_API_ISSUER_ID']
+    )
+  end
+
+  desc "Get current version from App Store Connect"
+  lane :version_info do
+    latest_version = latest_testflight_build_number(
+      api_key_path: ENV['APP_STORE_CONNECT_API_KEY_PATH'],
+      api_key: ENV['APP_STORE_CONNECT_API_KEY_BASE64'],
+      api_key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+      api_issuer: ENV['APP_STORE_CONNECT_API_ISSUER_ID']
+    )
+    
+    UI.message "Latest TestFlight build: #{latest_version}"
+  end
+end

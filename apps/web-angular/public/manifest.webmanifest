@@ -1,0 +1,36 @@
+{
+  "name": "Matrimony SaaS",
+  "short_name": "Matrimony",
+  "description": "Find your perfect match with Matrimony SaaS",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf6ec",
+  "theme_color": "#8e1f4f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/icons/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["lifestyle", "social"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Search Profiles",
+      "short_name": "Search",
+      "description": "Browse and search for matches",
+      "url": "/profiles",
+      "icons": [{ "src": "/assets/icons/search-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Matches",
+      "short_name": "Matches",
+      "description": "View your matched profiles",
+      "url": "/home",
+      "icons": [{ "src": "/assets/icons/matches-icon.png", "sizes": "192x192" }]
+    }
+  ]
+}
